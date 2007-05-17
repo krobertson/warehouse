@@ -49,6 +49,25 @@ h1, h2, h3, h4, h5, h6 {
   padding: 10px;
   position: relative;
 }
+
+#content {
+  width: 900px;
+  margin:  auto;
+  text-align: left;
+}
+
+#main {
+  float: left;
+  padding: 20px;
+  width: 540px;
+  border-right: 1px dotted #aaa;
+}
+
+#sbar {
+  margin-left: 600px;
+  padding: 20px;
+  border-right: 1px dotted #ccc;
+}
 /* @end */
 
 
