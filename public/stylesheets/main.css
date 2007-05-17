@@ -1,0 +1,65 @@
+/* @override http://localhost:3000/stylesheets/main.css */
+html {
+  margin: 0 0 1px 0; /* force FF to show scrollbar to prevent page jumping */
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  text-align: center;
+  padding: 0;
+  font: normal 12px/1.5em "Lucida Grande", "Helvetica Neue", Arial, sans-serif;
+  background: #e6e6e6;
+  color: #333;
+  min-width: 900px;
+}
+
+/* @group Utilities */
+
+a {
+  outline: none;
+}
+
+a { outline: none; }
+a:link, a:visited {  color: #07b; text-decoration: none; }
+
+a:hover {
+  color: #d30;
+}
+
+ul, li, form, input, dt, dl, dd, ol, div, p, 
+blockquote, h1, h2, h3, h4, h5, h6, a {
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-size: 100%;
+}
+
+/* @end */
+
+
+/* @group Structure */
+#header {
+  background: #232C30;
+  margin: 0;
+  text-align: left;
+  padding: 10px;
+  position: relative;
+}
+/* @end */
+
+
+
+/* @group Header */
+
+#header h1 a {
+  color: #fff;
+  text-decoration: none;
+}
+
+
+/* @end */
+
