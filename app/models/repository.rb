@@ -14,7 +14,8 @@ class Repository < ActiveRecord::Base
   validates_presence_of :name, :path, :permalink
   attr_accessible :name, :path
   
-  has_many :changesets, :dependent => :delete_all
+  has_many :changesets, :order => 'revision', :dependent => :delete_all
+  has_many :changes, :through => :changesets, :order => 'changesets.revision', :dependent => :delete_all
   has_one  :latest_changeset, :class_name => 'Changeset', :foreign_key => 'repository_id', :order => 'revision DESC'
   
   def path=(value)
@@ -40,12 +41,12 @@ class Repository < ActiveRecord::Base
   
   def sync_all_revisions!
     Changeset.delete_all
+    Change.delete_all
     @revisions_to_sync = nil
     sync_revisions
   end
-  
-  protected
-    def backend
-      @backend ||= Svn::Repos.open(path)
-    end
+
+  def backend
+    @backend ||= Svn::Repos.open(path)
+  end
 end
