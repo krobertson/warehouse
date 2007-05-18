@@ -1,0 +1,8 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+one:
+  id: 1
+  revision: 1
+  author: MyString
+  message: MyText
+  changed_at: 2007-05-17 22:27:43
+  repository_id: 1
