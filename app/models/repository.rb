@@ -26,6 +26,10 @@ class Repository < ActiveRecord::Base
     @latest_revision ||= backend.youngest_rev
   end
 
+  def node(path, rev = nil)
+    Node.new(self, path, rev)
+  end
+
   def revisions_to_sync(refresh = false)
     unless refresh || @revisions_to_sync
       @revisions_to_sync = (latest_changeset ? latest_changeset.revision + 1 : 1)..latest_revision
