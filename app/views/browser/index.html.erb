@@ -1,12 +1,10 @@
 <div id="last-log">
     <p>
-      <span class="change-number">234</span>
-      This was my last changeset message...
-      <span class="log">10 days ago</span>
+      <span class="change-number"><%= repository.latest_revision %></span>
+      <%=h repository.latest_changeset.message %>
+      <span class="log"><%= time_ago_in_words repository.latest_changeset.changed_at %> ago</span>
     </p>
 </div>
-
-<strong><%= @node.paths.inspect %></strong>
 
 <table id="browser" cellspacing="0" cellpadding="0">
   <thead>
@@ -30,8 +28,8 @@
   <tr>
     <td><%= link_to h(node.name), url_for_node(node), :class => 'folder' %></td>
     <td>
-      Updated by rick 10 minutes ago
-      <span class="log">Made some swanky changes...</span>
+      Updated by <%=h node.author %> <%= time_ago_in_words node.changed_at %> ago
+      <span class="log"><%= node.message %></span>
     </td>
   </tr>
   <% end -%>

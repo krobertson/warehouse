@@ -29,6 +29,18 @@ class Node
     @child_node_names ||= self.dir? ? root.dir_entries(path).keys : []
   end
 
+  def author
+    @author ||= prop(Svn::Core::PROP_REVISION_AUTHOR).to_s
+  end
+  
+  def changed_at
+    @changed_at ||= prop(Svn::Core::PROP_REVISION_DATE)
+  end
+    
+  def message
+    @message ||= prop(Svn::Core::PROP_REVISION_LOG)
+  end
+
   def type_code
     @type_code ||= root.check_path(path)
   end
