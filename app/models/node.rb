@@ -1,14 +1,14 @@
 class Node
   @@default_mime_type = 'application/octet-stream'
-  attr_reader :revision
+  attr_reader :base_revision
   attr_reader :path
   attr_reader :repository
   delegate :backend, :to => :repository
   
-  def initialize(repository, path, revision = nil)
-    @repository = repository
-    @path       = path
-    @revision   = revision || repository.latest_revision
+  def initialize(repository, path, rev = nil)
+    @repository    = repository
+    @path          = path
+    @base_revision = rev || repository.latest_revision
   end
 
   def changeset
@@ -21,12 +21,16 @@ class Node
 
   def child_nodes
     @child_nodes ||= self.child_node_names.collect do |name|
-      self.class.new(repository, path.blank? ? name : File.join(path, name), revision)
+      self.class.new(repository, path.blank? ? name : File.join(path, name), base_revision)
     end.sort_by { |node| [node.node_type, node.name.downcase] }
   end
 
   def child_node_names
     @child_node_names ||= self.dir? ? root.dir_entries(path).keys : []
+  end
+
+  def revision
+    @revision ||= root.node_created_rev(path)
   end
 
   def author
@@ -89,7 +93,7 @@ class Node
 
   protected
     def root
-      @root ||= backend.fs.root(revision)
+      @root ||= backend.fs.root(base_revision)
     end
 
     def prop(const, rev = nil)
@@ -97,6 +101,6 @@ class Node
     end
 
     def previous_root
-      @previous_root ||= backend.fs.root(revision - 1)
+      @previous_root ||= backend.fs.root(base_revision - 1)
     end
 end
