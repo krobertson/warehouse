@@ -11,9 +11,11 @@ class Changeset < ActiveRecord::Base
   delegate :backend, :to => :repository
 
   def self.find_all_by_path(path, options = {})
-    with_path path do
-      find :all, options
-    end
+    with_path(path) { find :all, options }
+  end
+
+  def self.find_by_path(path, options = {})
+    with_path(path) { find :first, options }
   end
 
   def to_param
@@ -22,7 +24,7 @@ class Changeset < ActiveRecord::Base
 
   protected
     def self.with_path(path, &block)
-      with_scope :find => { :joins => 'inner join changes on changesets.id = changes.changeset_id', :conditions => ['changes.path = ?', path] }, &block
+      with_scope :find => { :select => 'changesets.*', :joins => 'inner join changes on changesets.id = changes.changeset_id', :conditions => ['changes.path = ?', path], :order => 'changesets.revision desc' }, &block
     end
 
     def seed_svn_info

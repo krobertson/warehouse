@@ -101,7 +101,7 @@ class Node
       end      
       content_charset = 'utf-8'
       unless self.mime_type.blank?
-        content_charset = self.mime_type.slice(%r{charset=([A-Za-z0-9\-_]+)}, 1) || 'utf-8'
+        content_charset = self.mime_type.slice(%r{charset=([A-Za-z0-9\-_]+)}, 1) || content_charset
       end
       @content = convert_to_utf8(content, content_charset)          
     end

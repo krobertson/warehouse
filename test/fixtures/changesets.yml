@@ -2,7 +2,14 @@
 one:
   id: 1
   revision: 1
-  author: MyString
-  message: MyText
+  author: rick
+  message: brb going to the moon
   changed_at: 2007-05-17 22:27:43
+  repository_id: 1
+two:
+  id: 2
+  revision: 2
+  author: justin
+  message: hai guys guess where i'm going
+  changed_at: 2007-05-18 22:27:43
   repository_id: 1

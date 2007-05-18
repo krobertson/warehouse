@@ -15,8 +15,8 @@ class Repository < ActiveRecord::Base
   attr_accessible :name, :path
   
   has_many :changesets, :order => 'revision desc', :dependent => :delete_all
-  has_many :changes, :through => :changesets, :order => 'changesets.revision', :dependent => :delete_all
-  has_one  :latest_changeset, :class_name => 'Changeset', :foreign_key => 'repository_id', :order => 'revision DESC'
+  has_many :changes, :through => :changesets, :order => 'changesets.revision desc', :dependent => :delete_all
+  has_one  :latest_changeset, :class_name => 'Changeset', :foreign_key => 'repository_id', :order => 'revision desc'
   
   def path=(value)
     write_attribute(:path, value ? value.to_s.chomp('/') : nil)

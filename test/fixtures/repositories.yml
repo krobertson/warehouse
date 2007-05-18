@@ -1,5 +1,4 @@
-# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
-one:
+sample:
   id: 1
   name: Sample
   path: <%= File.expand_path(File.dirname(__FILE__)) %>/db/sample

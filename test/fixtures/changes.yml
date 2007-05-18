@@ -1,15 +1,16 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
-one:
+one_moon:
   id: 1
   changeset_id: 1
-  name: MyString
-  path: MyText
-  from_path: MyText
-  from_revision: 1
-two:
+  name: A
+  path: moon
+one_moon_file:
   id: 2
   changeset_id: 1
-  name: MyString
-  path: MyText
-  from_path: MyText
-  from_revision: 1
+  name: A
+  path: moon/file.txt
+two_moon_file:
+  id: 3
+  changeset_id: 2
+  name: M
+  path: moon/file.txt
