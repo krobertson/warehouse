@@ -1,14 +1,14 @@
 module ChangesetsHelper
-  def diff_for(node)    
-    raw_diff = node.unified_diff
+  def diff_for(change)    
+    raw_diff = change.unified_diff
     diff_line_regex = %r{@@ -(\d+),?(\d*) \+(\d+),?(\d*) @@}
     lines = raw_diff.split("\n")
         
     original_revision_num = lines[0].scan(%r{(\d+)}).flatten.first
     current_revision_num = lines[1].scan(%r{(\d+)}).flatten.first
     
-    original_revision = link_to_node(original_revision_num, node.path, original_revision)
-    current_revision  = link_to_node(current_revision_num, node.path, current_revision)
+    original_revision = link_to_node(original_revision_num, change.path, original_revision)
+    current_revision  = link_to_node(current_revision_num, change.path, current_revision)
     
     th_pnum = content_tag('th', original_revision, :class => 'csnum')
     th_cnum = content_tag('th', current_revision, :class => 'csnum')  
@@ -47,13 +47,13 @@ module ChangesetsHelper
       <thead>
         <tr class="controls">
           <td colspan="3">
-            <div class="control-head">
+            <div class="control-
               <p class="controlblock">
-                <a href="#" class="back">back</a>
-                <a href="#" class="forward">forward</a>
+                #{link_to 'back', previous_changeset, :class => 'back' if previous_changeset}
+                #{link_to 'forward', next_changeset, :class => 'forward' if next_changeset}
               </p>
-              #{link_to_node node.path, node.node, current_revision_num}
-              [Diff link here]
+              #{link_to_node change.path, change.node, current_revision_num}
+              [#{link_to 'diff', formatted_changeset_change_path(@changeset, change, :diff)}]
             </div>
           </td>
         </tr>
@@ -66,7 +66,5 @@ module ChangesetsHelper
       #{table_rows.join("\n")}
     </table>
     )
-    
-    #content_tag('table', table_rows.join("\n"), :class => 'line-numbered-code')      
   end
 end

@@ -1,6 +1,6 @@
 class BrowserController < ApplicationController
   before_filter :find_node
-  helper_method :current_revision, :current_changeset
+  helper_method :current_revision, :current_changeset, :previous_changeset, :next_changeset
 
   def index
     render :action => @node.node_type.downcase
@@ -30,5 +30,13 @@ class BrowserController < ApplicationController
     
     def current_changeset
       @current_changeset ||= @revision ? current_repository.changesets.find_by_revision(@revision) : current_repository.latest_changeset
+    end
+
+    def previous_changeset
+      @previous_changeset ||= current_repository.changesets.find_by_path(@node.path, :conditions => ['revision < ?', current_revision])
+    end
+    
+    def next_changeset
+      @next_changeset ||= current_repository.changesets.find_by_path(@node.path, :conditions => ['revision > ?', current_revision])
     end
 end
