@@ -13,7 +13,6 @@ module ChangesetsHelper
     th_pnum = content_tag('th', original_revision, :class => 'csnum')
     th_cnum = content_tag('th', current_revision, :class => 'csnum')  
     table_rows = []  
-    # table_rows = [content_tag('tr', pnum + cnum + content_tag('th', ' '))]
         
     lines = lines[2..lines.length].collect{ |line| h(line) }
   

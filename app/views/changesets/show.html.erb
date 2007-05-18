@@ -1,9 +1,13 @@
-<div id="last-log">
+<div id="last-log" class="clearfix">
     <p>
       <span class="change-number"><%= link_to @changeset.revision, @changeset %></span>
       <%=h @changeset.message %>
-      <span class="message">(<%= time_ago_in_words @changeset.changed_at %> ago)</span>
+      <span class="time">(<%= time_ago_in_words @changeset.changed_at %> ago)</span>
     </p>
+    <ul class="changeset-nav">
+      <li class="prev"><a href="#" title="Back">Previous Changeset</a></li>
+      <li class="next"><a href="#" title="Forward">Next Changeset</a></li>
+    </ul>
 </div>
 
 <ul id="change-list">

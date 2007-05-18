@@ -80,6 +80,15 @@ h1, h2, h3, h4, h5, h6 {
   padding: 20px;
   min-height: 500px;
 }
+
+#footer {
+  position: fixed;
+  bottom: 0;
+  background: #ddd;
+  width: 100%;
+  padding: 10px;
+  font-size: 92%;
+}
 /* @end */
 
 
@@ -87,6 +96,7 @@ h1, h2, h3, h4, h5, h6 {
 /* @group Header */
 
 #hdr-cnt {
+  position: relative;
   width: 860px;
   margin: 0 auto;
   padding: 0 20px;
@@ -95,6 +105,44 @@ h1, h2, h3, h4, h5, h6 {
 #header h1 a {
   color: #fff;
   text-decoration: none;
+}
+
+#nav {
+  position: absolute;
+  top: 3px;
+  left: 162px;
+  list-style: none;
+}
+
+#nav li {
+  display: inline;
+}
+
+#nav li a {
+  border-top: 1px solid #fff;
+  background: #eee;
+  color: #333;
+  font-size: 92%;
+  font-weight: bold;
+  margin-right: 5px;
+  padding: 3px 20px;
+  display: block;
+  float: left;
+}
+
+#nav li a:hover {
+  background-color: #ddd;
+  color: #222;
+}
+
+li#code a {
+  padding-left: 25px;
+  background: #eee url(../images/app/icons/code.png) 5px 50% no-repeat;
+}
+
+li#activity a {
+  padding-left: 25px;
+  background: #eee url(../images/app/icons/activity.png) 5px 50% no-repeat;
 }
 
 /* @end */
@@ -130,27 +178,7 @@ span.active {
 /* @end */
 
 /* @group Dashboard */
-#last-log {
-  padding: 10px;
-  padding-left: 50px;
-  background: #f7f7f7 url(../images/app/icons/terminal.png) 5px 50% no-repeat;
-  margin-bottom: 20px;
-  border: 1px solid #ddd;
-  border-bottom-color: #ccc;
-  border-right-color: #ccc;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 120%;
-  font-weight: bold;
-}
 
-.change-number a {
-  font-size: 200%;
-  font-weight: bold;
-  color: green;
-  display: block;
-  float: left;
-  padding-right: 10px;
-}
 
 /* @end */
 
@@ -274,21 +302,60 @@ td span.log {
 
 /* @group Changesets */
 
-.message {
-  float: right;
+#last-log {
+  padding: 10px;
+  padding-left: 50px;
+  padding-right: 70px;
+  background: #f7f7f7 url(../images/app/icons/terminal.png) 5px 3px no-repeat;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-bottom-color: #ccc;
+  border-right-color: #ccc;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 120%;
+  font-weight: bold;
+  position: relative;
+}
+
+.time {
   font-size: 82%;
   color: #777;
-  padding-left: 20px;
 }
 
 #changesets {
   list-style: none;
 }
 
+ul.changeset-nav {
+  list-style: none;
+  position: absolute;
+  top: 3px;
+  width: 32px;
+  right: 8px;
+  height: 16px;
+}
+
+li.next a, li.prev a {
+  position: absolute;
+  display: block;
+  text-indent: -9999px;
+  width: 16px;
+  height: 16px;
+  left: 20px;
+  top: 0;
+  background: url(../images/app/icons/forward.png) no-repeat;
+}
+
+li.prev a {
+  left: 0;
+  top: 0;
+  background: url(../images/app/icons/back.png) no-repeat;
+}
+
 .changeset {
   padding: 10px;
   padding-left: 50px;
-  background: #f7f7f7 url(../images/app/icons/terminal.png) 5px 50% no-repeat;
+  background: #f7f7f7 url(../images/app/icons/terminal.png) 5px 3px no-repeat;
   margin-bottom: 10px;
   border: 1px solid #ddd;
   border-bottom-color: #ccc;
@@ -305,6 +372,7 @@ td span.log {
   display: block;
   float: left;
   padding-right: 10px;
+  margin-bottom: 5px;
 }
 
 .changeset .author {

@@ -13,14 +13,15 @@
       <div id="header">
         <div id="hdr-cnt">
           <h1><%= link_to 'Warehouse', root_path %></h1>
-          <div>
-            <%= link_to 'Browse', browser_path %> |
-            <%= link_to 'Latest', changesets_path %> |
+          <ul id="nav">
+            <li id="code"><%= link_to 'Code', browser_path %></li>
+            <li id="activity"><%= link_to 'Activity', changesets_path %></li>
             <% if logged_in? -%>
-            <%= link_to 'Logout', logout_path %>
+             <li><%= link_to 'Logout', logout_path %></li>
             <% else -%>
-            <%= link_to 'Login', new_session_path %>
+             <li><%= link_to 'Login', new_session_path %></li>
             <% end -%>
+          </ul>
           </div>
         </div>
       </div>

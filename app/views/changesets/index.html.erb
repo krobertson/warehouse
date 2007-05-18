@@ -4,7 +4,7 @@
     <p>
       <span class="change-number"><%= link_to(changeset.revision, changeset_path(changeset.revision)) %></span>
       <span class="author"><%= changeset.author %>:</span> <%=h changeset.message %>
-      <span class="message">(<%= time_ago_in_words changeset.changed_at %> ago)</span>
+      <span class="time">(<%= time_ago_in_words changeset.changed_at %> ago)</span>
     </p>
   </li>
   <% end %>

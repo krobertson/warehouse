@@ -4,6 +4,10 @@
       <%=h current_changeset.message %>
       <span class="message"><%= time_ago_in_words current_changeset.changed_at %> ago</span>
     </p>
+    <ul class="changeset-nav">
+      <li class="prev"><a href="#" title="Back">Previous Changeset</a></li>
+      <li class="next"><a href="#" title="Forward">Next Changeset</a></li>
+    </ul>
 </div>
 
 <table id="browser" cellspacing="0" cellpadding="0">
