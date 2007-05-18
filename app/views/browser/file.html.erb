@@ -13,3 +13,8 @@
 <% else -%>
   Not text!  <%= @node.mime_type %>
 <% end -%>
+
+<p>
+  <%= link_to 'Raw', raw_path(:paths => @node.paths) %>
+  <% if @node.text? -%>| <%= link_to 'Text', text_path(:paths => @node.paths) %><% end -%>
+</p>

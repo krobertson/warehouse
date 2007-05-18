@@ -1,7 +1,11 @@
 ActionController::Routing::Routes.draw do |map|
   map.resources :changesets
-  map.rev_browser 'browser/:rev/*paths', :controller => 'browser', :action => 'index', :rev => /r\d+/
-  map.browser 'browser/*paths', :controller => 'browser', :action => 'index'
+  map.with_options :controller => 'browser', :action => 'index' do |b|
+    b.rev_browser 'browser/:rev/*paths', :rev => /r\d+/
+    b.browser 'browser/*paths'
+    b.text    'text/*paths', :action => 'text'
+    b.raw     'raw/*paths',  :action => 'raw'
+  end
   map.history 'history/*paths', :controller => 'history', :action => 'index'
   map.root :controller => "dashboard"
   map.connect ':controller/:action/:id'
