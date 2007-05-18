@@ -1,6 +1,6 @@
 <div id="last-log">
     <p>
-      <span class="change-number"><%= repository.latest_revision %></span>
+      <span class="change-number"><%= link_to(repository.latest_revision, changeset_url(repository)) %></span>
       <%=h repository.latest_changeset.message %>
       <span class="message"><%= time_ago_in_words repository.latest_changeset.changed_at %> ago</span>
     </p>

@@ -143,7 +143,7 @@ span.active {
   font-weight: bold;
 }
 
-.change-number {
+.change-number a {
   font-size: 200%;
   font-weight: bold;
   color: green;
@@ -171,7 +171,7 @@ span.active {
   border-left: 1px solid #ddd;
   text-align: left;
   background: #f7f7f7;
-  padding: 10px;
+  padding: 5px 10px;
   border-bottom: 1px solid #ccc;
 }
 
@@ -270,6 +270,7 @@ td span.log {
 /* @group Changesets */
 
 .message {
+  float: right;
   font-size: 82%;
   color: #777;
   padding-left: 20px;
