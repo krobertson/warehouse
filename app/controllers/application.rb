@@ -7,6 +7,6 @@ class ApplicationController < ActionController::Base
 
   protected
     def repository
-      @repository = Repository.find(1)
+      @repository ||= Repository.find(1)
     end
 end
