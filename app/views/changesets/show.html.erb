@@ -16,11 +16,7 @@
 </ul>
 
 <% @changeset.changes.each do |change| next unless change.diffable?; -%>
-  <h3>
-    Changes for <%= link_to_node change.path, change.node, @changeset.revision %>
-    [<%= link_to 'Diff', formatted_changeset_change_path(@changeset, change, :diff)%>]
-  </h3>
-  <pre><%= diff_for change %></pre>
+  <%= diff_for change %>
 <% end -%>
 
 <p><%= link_to 'Full diff', formatted_changeset_path(@changeset, :diff) %></p>

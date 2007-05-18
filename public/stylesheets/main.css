@@ -156,7 +156,7 @@ span.active {
 
 /* @group Browser */
 
-#browser {
+#browser, .diff {
   width: 100%;
   border-collapse: collapse;
   border: 1px solid #ccc;
@@ -167,7 +167,7 @@ span.active {
   padding: 5px 10px;
 }
 
-#browser th {
+#browser th, .diff th {
   border-left: 1px solid #ddd;
   text-align: left;
   background: #f7f7f7;
@@ -181,7 +181,7 @@ span.active {
   border-left: 1px solid #ddd;
 }
 
-tr#controls td {
+tr#controls td, tr.controls td {
   padding: 0;
   height: 20px;
   border-top: 1px solid #f7f7f7;
@@ -281,6 +281,10 @@ td span.log {
   padding-left: 20px;
 }
 
+#changesets {
+  list-style: none;
+}
+
 .changeset {
   padding: 10px;
   padding-left: 50px;
@@ -309,6 +313,7 @@ td span.log {
 
 #change-list {
   list-style: none;
+  margin-bottom: 20px;
 }
 
 #change-list li {
@@ -335,6 +340,35 @@ span.m {
   background-color: #06b;
 }
 
+
+/* @end */
+
+/* @group Diff */
+
+.diff {
+  margin-bottom: 20px;
+  font-family: "Courier New", Monaco, fixed;
+}
+
+.diff td {
+  padding: 2px 5px;
+}
+
+.diff th.csnum, .ln {
+  white-space: no-wrap;
+  width: 1px;
+  text-align: center;
+}
+
+.ln {
+  background: #eee;
+  border-right: 1px solid #fff;
+}
+
+.diff tr.controls td {
+  padding: 5px;
+  font-family: "Lucida Grande", Helvetica, Arial, sans-serif;
+}
 
 /* @end */
 
