@@ -1,12 +1,12 @@
 require File.dirname(__FILE__) + '/../test_helper'
-require 'changeset_controller'
+require 'changesets_controller'
 
 # Re-raise errors caught by the controller.
-class ChangesetController; def rescue_action(e) raise e end; end
+class ChangesetsController; def rescue_action(e) raise e end; end
 
-class ChangesetControllerTest < Test::Unit::TestCase
+class ChangesetsControllerTest < Test::Unit::TestCase
   def setup
-    @controller = ChangesetController.new
+    @controller = ChangesetsController.new
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
   end
