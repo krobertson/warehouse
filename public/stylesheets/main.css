@@ -347,7 +347,7 @@ span.m {
 
 .diff {
   margin-bottom: 20px;
-  font-family: "Courier New", Monaco, fixed;
+  font-family: monospace, "Courier New", Monaco, fixed;
 }
 
 .diff td {
@@ -375,7 +375,13 @@ span.m {
 }
 
 .diff tbody td {
-  background: #f7f7f7;
+  background: #f1f1f1;
+}
+
+.diff td.insert {
+  background: #dfd;
+  border-right: 1px solid #4C4;
+  border-left: 1px solid #4C4 !important;
 }
 /* @end */
 
