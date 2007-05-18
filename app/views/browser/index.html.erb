@@ -2,7 +2,7 @@
     <p>
       <span class="change-number"><%= repository.latest_revision %></span>
       <%=h repository.latest_changeset.message %>
-      <span class="log"><%= time_ago_in_words repository.latest_changeset.changed_at %> ago</span>
+      <span class="message"><%= time_ago_in_words repository.latest_changeset.changed_at %> ago</span>
     </p>
 </div>
 
@@ -28,6 +28,7 @@
   <tr>
     <td><%= link_to h(node.name), url_for_node(node), :class => 'folder' %></td>
     <td>
+      <span class="rev<% if repository.latest_revision == node.revision %> changed<% end %>"><%= node.revision %></span>
       Updated by <%=h node.author %> <%= time_ago_in_words node.changed_at %> ago
       <span class="log"><%= node.message %></span>
     </td>

@@ -1,0 +1,7 @@
+<div id="last-log">
+    <p>
+      <span class="change-number"><%= @changeset.revision %></span>
+      <%=h @changeset.message %>
+      <span class="message">(<%= time_ago_in_words @changeset.changed_at %> ago)</span>
+    </p>
+</div>

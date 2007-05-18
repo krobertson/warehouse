@@ -240,11 +240,42 @@ a.script {
 a.txt, a.file {
   background: url(../images/app/icons/text-small.png) 0 50% no-repeat;
 }
+
 td span.log {
   font-size: 92%;
   display: block;
   color: #888;
 }
+
+.rev {
+  line-height: 100%;
+  float: right;
+  background: #f7f7f7;
+  padding: 3px;
+  border: 1px solid #fff;
+  color: #666;
+  font-size: 92%;
+  -moz-border-radius: 4px;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: bold;
+}
+
+.changed {
+  background-color: #7b0;
+  color: #fff;
+}
+
+/* @end */
+
+/* @group Changesets */
+
+.message {
+  font-size: 82%;
+  color: #777;
+  padding-left: 20px;
+}
+
+
 
 /* @end */
 
