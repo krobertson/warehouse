@@ -159,23 +159,36 @@ span.active {
   border-left: 1px solid #ddd;
   text-align: left;
   background: #f7f7f7;
+  padding: 10px;
   border-bottom: 1px solid #ccc;
 }
 
 #browser td {
   background: #eee;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #ccc;
+  border-left: 1px solid #ddd;
 }
 
 #browser td a {
   font-weight: bold;
 }
 
-a.folder {
+.file, .folder, .script, .txt {
+  padding: 2px 0;
   padding-left: 25px;
+}
+
+a.folder {
   background: url(../images/app/icons/folder-small.png) 0 50% no-repeat;
 }
 
+a.script {
+  background: url(../images/app/icons/script-small.png) 0 50% no-repeat;
+}
+
+a.txt, a.file {
+  background: url(../images/app/icons/text-small.png) 0 50% no-repeat;
+}
 td span.log {
   font-size: 92%;
   display: block;
