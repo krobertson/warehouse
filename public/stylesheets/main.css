@@ -224,6 +224,11 @@ a.forward {
   font-weight: bold;
 }
 
+td.item a {
+  display: block;
+  padding: 5px 5px 5px 25px;
+}
+
 .file, .folder, .script, .txt {
   padding: 2px 0;
   padding-left: 25px;
