@@ -117,3 +117,72 @@ span.active {
 
 /* @end */
 
+/* @group Dashboard */
+#last-log {
+  padding: 10px;
+  padding-left: 50px;
+  background: #f7f7f7 url(../images/app/icons/terminal.png) 5px 50% no-repeat;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-bottom-color: #ccc;
+  border-right-color: #ccc;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.change-number {
+  font-size: 200%;
+  font-weight: bold;
+  color: green;
+  display: block;
+  float: left;
+}
+
+#change-body {
+  margin-left: 60px;
+  font-size: 120%;
+  font-weight: bold;
+}
+/* @end */
+
+/* @group Browser */
+
+#browser {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ccc;
+  border-top: none;
+}
+
+#browser th, #browser td {
+  padding: 5px 10px;
+}
+
+#browser th {
+  border-left: 1px solid #ddd;
+  text-align: left;
+  background: #f7f7f7;
+  border-bottom: 1px solid #ccc;
+}
+
+#browser td {
+  background: #eee;
+  border-bottom: 1px solid #ddd;
+}
+
+#browser td a {
+  font-weight: bold;
+}
+
+a.folder {
+  padding-left: 25px;
+  background: url(../images/app/icons/folder-small.png) 0 50% no-repeat;
+}
+
+td span.log {
+  font-size: 92%;
+  display: block;
+  color: #888;
+}
+
+/* @end */
+
