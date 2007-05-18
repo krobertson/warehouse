@@ -226,7 +226,7 @@ a.forward {
 
 td.item a {
   display: block;
-  padding: 5px 5px 5px 25px;
+  padding: 8px 5px 8px 25px;
 }
 
 .file, .folder, .script, .txt {
@@ -281,6 +281,31 @@ td span.log {
   padding-left: 20px;
 }
 
+.changeset {
+  padding: 10px;
+  padding-left: 50px;
+  background: #f7f7f7 url(../images/app/icons/terminal.png) 5px 50% no-repeat;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-bottom-color: #ccc;
+  border-right-color: #ccc;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 120%;
+  font-weight: bold;
+}
+
+.change-number a {
+  font-size: 200%;
+  font-weight: bold;
+  color: green;
+  display: block;
+  float: left;
+  padding-right: 10px;
+}
+
+.changeset .author {
+  color: #555;
+}
 
 
 /* @end */
