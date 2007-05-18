@@ -4,9 +4,9 @@
 class ApplicationController < ActionController::Base
   helper :all # include all helpers, all the time
   helper_method :repository
+  before_filter { |c| c.repository.sync_revisions }
 
-  protected
-    def repository
-      @repository ||= Repository.find(1)
-    end
+  def repository
+    @repository ||= Repository.find(1)
+  end
 end

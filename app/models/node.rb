@@ -108,6 +108,25 @@ class Node
     @content
   end
 
+  def unified_diff
+    unless @unified_diff || !diffable?
+      differ = Svn::Fs::FileDiff.new(previous_root, path, root, path)
+  
+      if differ.binary?
+        @unified_diff = ''
+      else
+        old = "Revision #{previous_root.node_created_rev(path)}"
+        cur = "Revision #{root.node_created_rev(path)}"
+        @unified_diff = differ.unified(old, cur)
+      end
+    end
+    @unified_diff
+  end
+  
+  def diffable?
+    @diffable ||= self.text? && previous_root.check_path(path) == Svn::Core::NODE_FILE
+  end
+
   protected
     def root
       @root ||= backend.fs.root(base_revision)

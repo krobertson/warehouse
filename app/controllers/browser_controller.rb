@@ -1,5 +1,6 @@
 class BrowserController < ApplicationController
   before_filter :find_node
+  helper_method :current_revision, :current_changeset
 
   def index
     render :action => @node.node_type.downcase
@@ -21,5 +22,13 @@ class BrowserController < ApplicationController
     def find_node
       @revision = params[:rev][1..-1].to_i if params[:rev]
       @node     = repository.node(params[:paths] * '/', @revision)
+    end
+    
+    def current_revision
+      @revision || repository.latest_revision
+    end
+    
+    def current_changeset
+      @current_changeset ||= @revision ? repository.changesets.find_by_revision(@revision) : repository.latest_changeset
     end
 end

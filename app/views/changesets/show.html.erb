@@ -11,3 +11,8 @@
   <li><strong><%=h change.name %></strong> <%= link_to_node change.path, change.path, @changeset.revision %></li>
 <% end -%>
 </ul>
+
+<% @changeset.changes.each do |change| next unless change.diffable?; -%>
+  <h3>Changes for <%= link_to_node change.path, @changeset.revision %></h3>
+  <pre><%= change.unified_diff %></pre>
+<% end -%>

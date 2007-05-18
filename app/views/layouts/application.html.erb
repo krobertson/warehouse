@@ -12,7 +12,11 @@
       <!-- header -->
       <div id="header">
         <div id="hdr-cnt">
-          <h1><a href="#">Warehouse</a></h1>
+          <h1><%= link_to 'Warehouse', root_path %></h1>
+          <div>
+            <%= link_to 'Browse', browser_path %> |
+            <%= link_to 'Latest', changesets_path %>
+          </div>
         </div>
       </div>
       <!-- /header -->

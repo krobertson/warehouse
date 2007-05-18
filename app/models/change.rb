@@ -4,6 +4,8 @@ class Change < ActiveRecord::Base
 
   belongs_to :changeset
   delegate :revision, :to => :changeset
+  delegate :unified_diff, :to => :node
+  delegate :diffable?, :to => :node
   attr_accessible :path, :name, :orig_path
 
   before_save :process_orig_path_info
@@ -38,6 +40,10 @@ class Change < ActiveRecord::Base
     deleted_files.each do |path|
       changeset.changes.create!(:name => 'D', :path => path)
     end
+  end
+  
+  def node
+    @node ||= changeset.repository.node(path, revision)
   end
   
   def backend
