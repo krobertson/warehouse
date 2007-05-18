@@ -10,11 +10,21 @@ class Changeset < ActiveRecord::Base
 
   delegate :backend, :to => :repository
 
+  def self.find_all_by_path(path, options = {})
+    with_path path do
+      find :all, options
+    end
+  end
+
   def to_param
     revision.to_s
   end
 
   protected
+    def self.with_path(path, &block)
+      with_scope :find => { :joins => 'inner join changes on changesets.id = changes.changeset_id', :conditions => ['changes.path = ?', path] }, &block
+    end
+
     def seed_svn_info
       self.author     = backend.fs.prop(Svn::Core::PROP_REVISION_AUTHOR, revision)
       self.message    = backend.fs.prop(Svn::Core::PROP_REVISION_LOG,    revision)

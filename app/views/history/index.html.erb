@@ -1,0 +1,6 @@
+<h1>History for <%= link_to_node @node.path, @node %></h1>
+<% @changesets.each do |changeset| -%>
+  <h2><%= link_to "[#{changeset.revision}]", changeset %> / <%= link_to_node "@#{changeset.revision}", @node, changeset.revision %></h2>
+  <pre><%=h changeset.message %></pre>
+  <p>by <%=h changeset.author %></p>
+<% end -%>

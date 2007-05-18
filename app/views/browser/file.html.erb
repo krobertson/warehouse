@@ -8,6 +8,7 @@
 
 <% if @node.text? -%>
   <p><%= link_to_crumbs @node.path %></p>
+  <p><%= link_to_history 'Revision History', @node %></p>
   <pre><%=h @node.content %></pre>
 <% else -%>
   Not text!  <%= @node.mime_type %>
