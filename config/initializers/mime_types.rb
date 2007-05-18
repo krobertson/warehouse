@@ -71,3 +71,6 @@ MIME_TYPE_MAP = KNOWN_MIME_TYPES.inject({}) do |result, (k,v)|
   end 
   result        
 end
+
+CSS_CLASSES = {}
+%w(.rb).each { |e| CSS_CLASSES[e] = :script }

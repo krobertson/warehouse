@@ -21,4 +21,8 @@ module BrowserHelper
       link
     end.join(" / ") << ' / ' << name
   end
+  
+  def css_class_for(node)
+    node.dir? ? 'folder' : CSS_CLASSES[File.extname(node.name)] || 'file'
+  end
 end
