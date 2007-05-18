@@ -352,6 +352,7 @@ span.m {
 
 .diff td {
   padding: 2px 5px;
+  background: #eee;
 }
 
 .diff th.csnum, .ln {
@@ -361,8 +362,11 @@ span.m {
 }
 
 .ln {
-  background: #eee;
-  border-right: 1px solid #fff;
+  background: #e2e2e2 !important;
+  font-size: 92%;
+  border-right: 1px solid #ccc;
+  font-family: "Helvetica", Arial, sans-serif;
+  border-bottom: 1px dotted #ccc;
 }
 
 .diff tr.controls td {
@@ -370,5 +374,8 @@ span.m {
   font-family: "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
+.diff tbody td {
+  background: #f7f7f7;
+}
 /* @end */
 
