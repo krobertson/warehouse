@@ -1,1 +1,1 @@
-<%= render :partial => "changes/change", :collection => @changeset.changes %>
+<%= render :partial => "changes/change", :collection => @changeset.changes.select(&:diffable?) %>

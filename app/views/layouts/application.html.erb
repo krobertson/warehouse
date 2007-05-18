@@ -15,7 +15,12 @@
           <h1><%= link_to 'Warehouse', root_path %></h1>
           <div>
             <%= link_to 'Browse', browser_path %> |
-            <%= link_to 'Latest', changesets_path %>
+            <%= link_to 'Latest', changesets_path %> |
+            <% if logged_in? -%>
+            <%= link_to 'Logout', logout_path %>
+            <% else -%>
+            <%= link_to 'Login', new_session_path %>
+            <% end -%>
           </div>
         </div>
       </div>
@@ -25,6 +30,7 @@
         <!-- main -->
         <div id="main"<% if @fullscreen %> style="width:100%"<% end %>>
           <%= yield %>
+          <% if logged_in? -%><p><small>Logged in as <%=h current_user.identity_url %><%= ' Admin!' if admin? %></small></p><% end -%>
         </div>
         <!-- /main -->
         <% unless @fullscreen %>

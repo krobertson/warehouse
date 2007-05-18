@@ -15,8 +15,8 @@
 <% end -%>
 </ul>
 
-<% @changeset.changes.each do |change| next unless change.diffable?; -%>
+<% if @changeset.changes.select(&:diffable?).each do |change| -%>
   <%= diff_for change %>
-<% end -%>
-
+<% end.any? -%>
 <p><%= link_to 'Full diff', formatted_changeset_path(@changeset, :diff) %></p>
+<% end -%>

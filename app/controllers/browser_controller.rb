@@ -21,14 +21,14 @@ class BrowserController < ApplicationController
   protected
     def find_node
       @revision = params[:rev][1..-1].to_i if params[:rev]
-      @node     = repository.node(params[:paths] * '/', @revision)
+      @node     = current_repository.node(params[:paths] * '/', @revision)
     end
     
     def current_revision
-      @revision || repository.latest_revision
+      @revision || current_repository.latest_revision
     end
     
     def current_changeset
-      @current_changeset ||= @revision ? repository.changesets.find_by_revision(@revision) : repository.latest_changeset
+      @current_changeset ||= @revision ? current_repository.changesets.find_by_revision(@revision) : current_repository.latest_changeset
     end
 end

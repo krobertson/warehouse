@@ -4,7 +4,7 @@ class ChangesController < ApplicationController
   end
   
   def show
-    @changeset = repository.changesets.find_by_revision(params[:changeset_id])
+    @changeset = current_repository.changesets.find_by_revision(params[:changeset_id])
     @change    = @changeset.changes.find_by_id(params[:id])
     respond_to do |format|
       format.html
