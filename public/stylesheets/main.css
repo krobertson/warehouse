@@ -127,6 +127,8 @@ span.active {
   border-bottom-color: #ccc;
   border-right-color: #ccc;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 120%;
+  font-weight: bold;
 }
 
 .change-number {
@@ -135,13 +137,9 @@ span.active {
   color: green;
   display: block;
   float: left;
+  padding-right: 10px;
 }
 
-#change-body {
-  margin-left: 60px;
-  font-size: 120%;
-  font-weight: bold;
-}
 /* @end */
 
 /* @group Browser */
