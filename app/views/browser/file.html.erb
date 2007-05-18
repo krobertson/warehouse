@@ -1,0 +1,14 @@
+<div id="last-log">
+    <p>
+      <span class="change-number"><%= link_to(repository.latest_revision, changeset_url(repository.latest_revision)) %></span>
+      <%=h repository.latest_changeset.message %>
+      <span class="message"><%= time_ago_in_words repository.latest_changeset.changed_at %> ago</span>
+    </p>
+</div>
+
+<% if @node.text? -%>
+  <p><%= link_to_crumbs @node.path %></p>
+  <pre><%=h @node.content %></pre>
+<% else -%>
+  Not text!  <%= @node.mime_type %>
+<% end -%>

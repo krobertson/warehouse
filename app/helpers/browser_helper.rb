@@ -7,7 +7,18 @@ module BrowserHelper
   def url_for_node(node, rev = nil)
     paths = node.respond_to?(:paths) ? node.paths : node.to_s.split('/')
     rev = rev ? rev.to_s : params[:rev]
-    rev = "r#{rev}" unless rev =~ /^r/
+    rev = "r#{rev}" unless rev.nil? || rev =~ /^r/
     rev ? rev_browser_path(:paths => paths, :rev => rev) : browser_path(:paths => paths)
+  end
+  
+  def link_to_crumbs(path, rev = nil)
+    pieces = path.split '/'
+    name   = pieces.pop
+    prefix = ''
+    pieces.collect! do |piece|
+      link = link_to_node(piece, "#{prefix}#{piece}", rev)
+      prefix << piece << '/' 
+      link
+    end.join(" / ") << ' / ' << name
   end
 end

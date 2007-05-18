@@ -67,7 +67,7 @@ class Node
 
   def text?
     return false unless mime_type
-    @textual_type ||= self.mime_type =~ /^text/i
+    @text_type ||= self.mime_type =~ /^text/i
   end
     
   def image?
@@ -91,6 +91,23 @@ class Node
     end      
   end
 
+  def content
+    return if self.dir? || !self.exists?
+    unless @content
+      content = root.file_contents(self.path) do |s| 
+        rs = s.read(); 
+        GC.start;
+        rs
+      end      
+      content_charset = 'utf-8'
+      unless self.mime_type.blank?
+        content_charset = self.mime_type.slice(%r{charset=([A-Za-z0-9\-_]+)}, 1) || 'utf-8'
+      end
+      @content = convert_to_utf8(content, content_charset)          
+    end
+    @content
+  end
+
   protected
     def root
       @root ||= backend.fs.root(base_revision)
@@ -102,5 +119,10 @@ class Node
 
     def previous_root
       @previous_root ||= backend.fs.root(base_revision - 1)
+    end
+
+    def convert_to_utf8(content, content_charset)
+      return content if content_charset == 'utf-8'
+      Iconv.conv('utf-8', content_charset, content) rescue content
     end
 end
