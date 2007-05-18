@@ -23,11 +23,11 @@
       <!-- content -->
       <div id="content">
         <!-- main -->
-        <div id="main">
+        <div id="main"<% if @fullscreen %> style="width:100%"<% end %>>
           <%= yield %>
         </div>
         <!-- /main -->
-        
+        <% unless @fullscreen %>
         <!-- sbar -->
         <div id="sbar">
           <div id="bookmarks">
@@ -44,6 +44,7 @@
           </div>
         </div>
         <!-- /sbar -->
+        <% end %>
       </div>
       <!-- /content -->
     </div>

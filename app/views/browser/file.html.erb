@@ -1,3 +1,4 @@
+<% @fullscreen = true %>
 <div id="last-log">
     <p>
       <span class="change-number"><%= link_to(current_revision, changeset_path(current_revision)) %></span>
@@ -8,13 +9,32 @@
 
 <% if @node.text? -%>
   <p><%= link_to_crumbs @node.path %></p>
-  <p><%= link_to_history 'Revision History', @node %></p>
-  <pre><%=h @node.content %></pre>
+  
+  <table class="diff" cellspacing="0" cellpadding="0">
+    <thead>
+      <tr class="controls">
+        <td>
+          <div class="control-head">
+            <p class="controlblock">
+              <a href="#" class="back">back</a>
+              <a href="#" class="forward">forward</a>
+            </p>
+            <p class="formats">
+              <%= link_to_history 'Revision History', @node %> | 
+              <%= link_to 'Raw', raw_path(:paths => @node.paths) %>
+              <% if @node.text? -%>| <%= link_to 'Text', text_path(:paths => @node.paths) %><% end -%>
+            </p>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th><%= @node.path.split('/').last %></th>
+      </tr>
+    </thead>
+    <tr>
+      <td><pre><%=h @node.content %></pre></td>
+    </tr>
+  </table>
 <% else -%>
   Not text!  <%= @node.mime_type %>
 <% end -%>
-
-<p>
-  <%= link_to 'Raw', raw_path(:paths => @node.paths) %>
-  <% if @node.text? -%>| <%= link_to 'Text', text_path(:paths => @node.paths) %><% end -%>
-</p>
