@@ -24,6 +24,25 @@ class Repository < ActiveRecord::Base
   def latest_revision
     @latest_revision ||= backend.youngest_rev
   end
+
+  def revisions_to_sync(refresh = false)
+    unless refresh || @revisions_to_sync
+      @revisions_to_sync = (latest_changeset ? latest_changeset.revision + 1 : 1)..latest_revision
+    end
+    @revisions_to_sync
+  end
+  
+  def sync_revisions
+    revisions_to_sync.collect do |rev|
+      changesets.create(:revision => rev)
+    end
+  end
+  
+  def sync_all_revisions!
+    Changeset.delete_all
+    @revisions_to_sync = nil
+    sync_revisions
+  end
   
   protected
     def backend

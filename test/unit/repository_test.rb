@@ -23,4 +23,18 @@ context "Repository" do
     assert_valid r
     r.permalink.should == 'foo-bar'
   end
+  
+  specify "should get initial revisions to sync" do
+    r = Repository.new
+    r.expects(:latest_changeset).returns(nil)
+    r.expects(:latest_revision).returns(5)
+    r.revisions_to_sync.should == (1..5)
+  end
+  
+  specify "should get new revisions to sync" do
+    r = Repository.new
+    r.expects(:latest_changeset).times(2).returns(stub(:revision => 3))
+    r.expects(:latest_revision).returns(5)
+    r.revisions_to_sync.should == (4..5)
+  end
 end
