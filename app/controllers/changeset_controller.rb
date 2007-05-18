@@ -1,10 +1,10 @@
 class ChangesetController < ApplicationController
   def index
-    @changesets = Changeset.find(:all)
+    @changesets = repository.changesets
   end
   
   def show
-    @changeset = Changeset.find_by_revision(params[:rev])
+    @changeset = repository.changesets.find_by_revision(params[:rev])
   end
   
 end
