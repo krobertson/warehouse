@@ -10,6 +10,10 @@ class Changeset < ActiveRecord::Base
 
   delegate :backend, :to => :repository
 
+  def to_param
+    revision.to_s
+  end
+
   protected
     def seed_svn_info
       self.author     = backend.fs.prop(Svn::Core::PROP_REVISION_AUTHOR, revision)

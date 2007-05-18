@@ -1,6 +1,6 @@
 class ChangesetsController < ApplicationController
   def index
-    @changesets = repository.changesets
+    @changesets = repository.changesets.paginate(:page => params[:page], :order => 'revision desc')
   end
   
   def show

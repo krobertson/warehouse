@@ -14,7 +14,7 @@ class Repository < ActiveRecord::Base
   validates_presence_of :name, :path, :permalink
   attr_accessible :name, :path
   
-  has_many :changesets, :order => 'revision', :dependent => :delete_all
+  has_many :changesets, :order => 'revision desc', :dependent => :delete_all
   has_many :changes, :through => :changesets, :order => 'changesets.revision', :dependent => :delete_all
   has_one  :latest_changeset, :class_name => 'Changeset', :foreign_key => 'repository_id', :order => 'revision DESC'
   
