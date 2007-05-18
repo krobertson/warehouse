@@ -1,6 +1,6 @@
 <div id="last-log">
     <p>
-      <span class="change-number"><%= @changeset.revision %></span>
+      <span class="change-number"><%= link_to @changeset.revision, @changeset %></span>
       <%=h @changeset.message %>
       <span class="message">(<%= time_ago_in_words @changeset.changed_at %> ago)</span>
     </p>
@@ -13,6 +13,11 @@
 </ul>
 
 <% @changeset.changes.each do |change| next unless change.diffable?; -%>
-  <h3>Changes for <%= link_to_node change.path, change.node, @changeset.revision %></h3>
+  <h3>
+    Changes for <%= link_to_node change.path, change.node, @changeset.revision %>
+    [<%= link_to 'Diff', formatted_changeset_change_path(@changeset, change, :diff)%>]
+  </h3>
   <pre><%= diff_for change %></pre>
 <% end -%>
+
+<p><%= link_to 'Full diff', formatted_changeset_path(@changeset, :diff) %></p>

@@ -1,5 +1,1 @@
-<% @changeset.changes.each do |change| -%>
-Index: <%= change.path %>
-===================================================================
-<%= change.unified_diff %>
-<% end -%>
+<%= render :partial => "changes/change", :collection => @changeset.changes %>

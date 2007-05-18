@@ -1,5 +1,5 @@
 ActionController::Routing::Routes.draw do |map|
-  map.resources :changesets
+  map.resources :changesets, :has_many => :changes
   map.with_options :controller => 'browser', :action => 'index' do |b|
     b.rev_browser 'browser/:rev/*paths', :rev => /r\d+/
     b.browser 'browser/*paths'
