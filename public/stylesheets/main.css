@@ -17,6 +17,18 @@ body {
 
 /* @group Utilities */
 
+.clearfix:after {
+  content:".";
+  display:block;
+  height:0;
+  clear:both;
+  visibility:hidden;
+}
+.clearfix {display:inline-block;}
+/* Hide from IE Mac \*/
+.clearfix {display:block;}
+/* End hide from IE Mac */
+
 a {
   outline: none;
 }
@@ -167,6 +179,45 @@ span.active {
   background: #eee;
   border-bottom: 1px solid #ccc;
   border-left: 1px solid #ddd;
+}
+
+tr#controls td {
+  padding: 0;
+  height: 20px;
+  border-top: 1px solid #f7f7f7;
+  background: #eee url(../images/app/controls-bg.png) bottom left repeat-x;
+}
+
+div.control-head {
+  margin: 0;
+  padding: 0 0 0 40px;
+  position: relative;
+}
+
+p.controlblock {
+  position: absolute;
+  top: 1px;
+  left: 5px;
+}
+
+a.forward, a.back {
+  position: absolute;
+  display: block;
+  width: 16px;
+  height: 16px;
+  text-indent: -9999px;
+  background: url(../images/app/icons/forward.png) no-repeat;
+}
+
+a.back {
+  left: 0;
+  top: 0;
+  background: url(../images/app/icons/back.png) no-repeat;
+}
+
+a.forward {
+  left: 16px;
+  top: 0;
 }
 
 #browser td a {
