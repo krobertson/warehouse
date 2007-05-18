@@ -21,7 +21,7 @@ class Node
 
   def child_nodes
     @child_nodes ||= self.child_node_names.collect do |name|
-      self.class.new(repository, File.join(self.path, name), revision)
+      self.class.new(repository, path.blank? ? name : File.join(path, name), revision)
     end.sort_by { |node| [node.node_type, node.name.downcase] }
   end
 
@@ -43,6 +43,10 @@ class Node
           
   def name
     File.basename(path) + (self.dir? ? '/' : '')
+  end
+
+  def paths
+    path.split('/')
   end
 
   def text?

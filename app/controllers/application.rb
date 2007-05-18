@@ -3,4 +3,10 @@
 
 class ApplicationController < ActionController::Base
   helper :all # include all helpers, all the time
+  helper_method :repository
+
+  protected
+    def repository
+      @repository = Repository.find(1)
+    end
 end

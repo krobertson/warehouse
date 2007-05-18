@@ -1,0 +1,38 @@
+<div id="last-log">
+    <p>
+      <span class="change-number">234</span>
+      This was my last changeset message...
+      <span class="log">10 days ago</span>
+    </p>
+</div>
+
+<strong><%= @node.paths.inspect %></strong>
+
+<table id="browser" cellspacing="0" cellpadding="0">
+  <thead>
+    <tr id="controls">
+      <td colspan="2">
+        <div class="control-head">
+          <p class="controlblock">
+            <a href="#" class="back">back</a>
+            <a href="#" class="forward">forward</a>
+          </p>
+          &nbsp; <!-- Safari needs this? -->
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <th>File name</th>
+      <th>Revision</th>
+    </tr>
+  </thead>
+  <% @node.child_nodes.each do |node| -%>
+  <tr>
+    <td><%= link_to h(node.name), url_for_node(node), :class => 'folder' %></td>
+    <td>
+      Updated by rick 10 minutes ago
+      <span class="log">Made some swanky changes...</span>
+    </td>
+  </tr>
+  <% end -%>
+</table>
