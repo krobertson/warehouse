@@ -29,7 +29,7 @@ Rails::Initializer.run do |config|
   # Your secret key for verifying cookie session data integrity.
   # If you change this key, all old sessions will become invalid!
   config.action_controller.session = {
-    :session_key => '_xorn_session',
+    :session_key => '_warehouse_session',
     :secret      => '4b3eaf64bfa62da140e0f45c9030f272'
   }
 

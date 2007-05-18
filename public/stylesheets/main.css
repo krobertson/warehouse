@@ -10,7 +10,7 @@ body {
   text-align: center;
   padding: 0;
   font: normal 12px/1.5em "Lucida Grande", "Helvetica Neue", Arial, sans-serif;
-  background: #e6e6e6;
+  background: #ebebeb;
   color: #333;
   min-width: 900px;
 }
@@ -60,13 +60,13 @@ h1, h2, h3, h4, h5, h6 {
   float: left;
   padding: 20px;
   width: 540px;
-  border-right: 1px dotted #aaa;
 }
 
 #sbar {
+  background: url(../images/app/sbar-bg.png) no-repeat;
   margin-left: 600px;
   padding: 20px;
-  border-right: 1px dotted #ccc;
+  min-height: 500px;
 }
 /* @end */
 
@@ -74,11 +74,46 @@ h1, h2, h3, h4, h5, h6 {
 
 /* @group Header */
 
+#hdr-cnt {
+  width: 860px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
 #header h1 a {
   color: #fff;
   text-decoration: none;
 }
 
+/* @end */
+
+/* @group Sidebar */
+
+#bookmarks ul {
+  list-style: none;
+}
+
+#bookmarks li {
+  padding: 10px 5px 10px 40px;
+  background: url(../images/app/icons/box.png) 0 50% no-repeat;
+  border-bottom: 1px solid #bbb;
+}
+
+#bookmarks ul li a {
+  color: #333;
+}
+
+#bookmarks h4 {
+  font-size: 120%;
+  display: block;
+  font-weight: bold;
+  font-family: "Helvetica Neue", Helvetica, Arial;
+}
+
+span.active {
+  color: #777 !important;
+  font-size: 92%;
+}
 
 /* @end */
 
