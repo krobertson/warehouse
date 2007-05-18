@@ -115,8 +115,8 @@ class Node
       if differ.binary?
         @unified_diff = ''
       else
-        old = "Revision #{previous_root.node_created_rev(path)}"
-        cur = "Revision #{root.node_created_rev(path)}"
+        old = "#{path} (revision #{previous_root.node_created_rev(path)})"
+        cur = "#{path} (revision #{root.node_created_rev(path)})"
         @unified_diff = differ.unified(old, cur)
       end
     end

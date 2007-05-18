@@ -13,6 +13,6 @@
 </ul>
 
 <% @changeset.changes.each do |change| next unless change.diffable?; -%>
-  <h3>Changes for <%= link_to_node change.path, @changeset.revision %></h3>
-  <pre><%= change.unified_diff %></pre>
+  <h3>Changes for <%= link_to_node change.path, change.node, @changeset.revision %></h3>
+  <pre><%= diff_for change %></pre>
 <% end -%>
