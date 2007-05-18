@@ -307,6 +307,34 @@ td span.log {
   color: #555;
 }
 
+#change-list {
+  list-style: none;
+}
+
+#change-list li {
+  padding: 5px;
+  border-bottom: 1px solid #ddd;
+}
+
+#change-list .shade {
+  background: #eee;
+}
+
+span.a, .m, .d {
+  background: #7b0;
+  color: #fff;
+  font-size: 82%;
+  border: 1px solid #fff;
+  line-height: 100%;
+  padding: 1px;
+  font-weight: bold;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+span.m {
+  background-color: #06b;
+}
+
 
 /* @end */
 
