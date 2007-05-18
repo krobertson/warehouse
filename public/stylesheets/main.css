@@ -347,7 +347,11 @@ span.m {
 
 .diff {
   margin-bottom: 20px;
-  font-family: monospace, "Courier New", Monaco, fixed;
+  font-family: monospace, "Courier New", Monaco, fixed !important;
+}
+
+.diff code {
+  font-family: "Courier New", Monaco, fixed !important;
 }
 
 .diff td {
@@ -391,6 +395,19 @@ p.formats {
   margin: 0;
   padding: 0;
   line-height: 100%
+}
+
+table.sourcecode {
+  width: 900px !important;
+}
+
+div.viewsource {
+  width: 900px !important;
+  overflow: auto;
+}
+
+td.viewsource pre {
+  overflow: scroll;
 }
 /* @end */
 

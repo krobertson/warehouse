@@ -10,7 +10,7 @@
 <% if @node.text? -%>
   <p><%= link_to_crumbs @node.path %></p>
   
-  <table class="diff" cellspacing="0" cellpadding="0">
+  <table class="diff sourcecode" cellspacing="0" cellpadding="0">
     <thead>
       <tr class="controls">
         <td>
@@ -32,7 +32,9 @@
       </tr>
     </thead>
     <tr>
-      <td><pre><%=h @node.content %></pre></td>
+      <td>
+        <div class="viewsource"><pre><code><%=h @node.content %></code></pre></div>
+      </td>
     </tr>
   </table>
 <% else -%>
