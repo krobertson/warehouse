@@ -126,6 +126,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: bold;
   margin-right: 5px;
   padding: 3px 20px;
+  padding-left: 25px;
   display: block;
   float: left;
 }
@@ -136,13 +137,43 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 li#code a {
-  padding-left: 25px;
   background: #eee url(../images/app/icons/code.png) 5px 50% no-repeat;
 }
 
 li#activity a {
-  padding-left: 25px;
   background: #eee url(../images/app/icons/activity.png) 5px 50% no-repeat;
+}
+
+li#login a {
+  background: #eee url(../images/app/icons/login.png) 5px 50% no-repeat;
+}
+
+li#logout a {
+  background: #eee url(../images/app/icons/logout.png) 5px 50% no-repeat;
+}
+
+#login-form {
+  position: absolute;
+  background: #333;
+  padding: 20px;
+  z-index: 9999;
+  top: 50px;
+  left: 30%;
+  border: 2px solid #fff;
+}
+
+#login-form label {
+  font-weight: bold;
+  color: #fff;
+}
+
+#login-form input {
+  border: 1px dotted #ccc;
+}
+
+.btn {
+  border: 1px solid #fff;
+  background: #ddd;
 }
 
 /* @end */

@@ -5,6 +5,7 @@
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
     <title>Warehouse</title>
     <%= stylesheet_link_tag 'main' %>
+    <%= javascript_include_tag 'prototype' %>
   </head>
   <body>
     <!-- container -->
@@ -17,11 +18,23 @@
             <li id="code"><%= link_to 'Code', browser_path %></li>
             <li id="activity"><%= link_to 'Activity', changesets_path %></li>
             <% if logged_in? -%>
-             <li><%= link_to 'Logout', logout_path %></li>
+             <li id="logout"><%= link_to 'Logout', logout_path %></li>
             <% else -%>
-             <li><%= link_to 'Login', new_session_path %></li>
+             <li id="login"><%= link_to_function 'Login', %($('login-form').toggle();) %></li>
             <% end -%>
           </ul>
+          </div>
+          <div id="login-form" style="display:none">
+            <% if flash[:error] -%>
+            <p><%= flash[:error] %></p>
+            <% end -%>
+            <% form_tag session_path do -%>
+              <p>
+                <label for="openid_url">OpenID:</label>
+                <%= text_field_tag :openid_url %> 
+                <%= submit_tag 'Log in', :disable_with => 'Logging in...', :class => 'btn' %>
+              </p>
+            <% end -%>
           </div>
         </div>
       </div>
