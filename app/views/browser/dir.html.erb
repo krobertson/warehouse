@@ -5,8 +5,8 @@
       <span class="message"><%= time_ago_in_words current_changeset.changed_at %> ago</span>
     </p>
     <ul class="changeset-nav">
-      <li class="prev"><a href="#" title="Back">Previous Changeset</a></li>
-      <li class="next"><a href="#" title="Forward">Next Changeset</a></li>
+      <%= %(<li class="prev"> #{link_to_node('back', @node, previous_changeset.revision)}</li>) if previous_changeset %>
+      <%= %(<li class="next"> #{link_to_node('forward', @node, next_changeset.revision)}</li>) if @revision && next_changeset %>
     </ul>
 </div>
 
@@ -16,8 +16,7 @@
       <td colspan="2">
         <div class="control-head">
           <p class="controlblock">
-            <%= link_to_node 'back', @node, previous_changeset.revision, :class => 'back' if previous_changeset %>
-            <%= link_to_node 'forward', @node, next_changeset.revision, :class => 'forward' if @revision && next_changeset %>
+            <!-- This is for the file browsing back/forward, not changesets... -->
           </p>
           &nbsp; <!-- Safari needs this? -->
         </div>
