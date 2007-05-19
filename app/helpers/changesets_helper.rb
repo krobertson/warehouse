@@ -46,11 +46,7 @@ module ChangesetsHelper
       <thead>
         <tr class="controls">
           <td colspan="3">
-            <div class="control-
-              <p class="controlblock">
-                #{link_to 'back', previous_changeset, :class => 'back' if previous_changeset}
-                #{link_to 'forward', next_changeset, :class => 'forward' if next_changeset}
-              </p>
+            <div class="control-">
               #{link_to_node change.path, change.node, current_revision_num}
               [#{link_to 'diff', formatted_changeset_change_path(@changeset, change, :diff)}]
             </div>
