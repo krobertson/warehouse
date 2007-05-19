@@ -24,7 +24,7 @@
         <%= f.text_field :subdomain %>
       </p>
       <p class="btns">
-        <%= submit_tag 'Save', :disable_with => 'Saving...' %>
+        <%= submit_tag 'Save', :disable_with => 'Saving...' %> or <%= link_to_function('cancel', %($('repo-edit-#{repo.id}').toggle())) %>
       </p>
     <% end %>
   </li>

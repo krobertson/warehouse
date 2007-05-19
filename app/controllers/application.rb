@@ -18,6 +18,12 @@ class ApplicationController < ActionController::Base
     logged_in? && current_user.admin?
   end
 
+  def access_denied(options = {})
+    flash[:error] = options[:error]
+    redirect_to options[:url] || root_path
+    false
+  end
+
   def current_repository
     @current_repository ||= Repository.find(:first)
   end
