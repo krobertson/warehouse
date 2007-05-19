@@ -14,7 +14,7 @@ module BrowserHelper
   def link_to_crumbs(path, rev = nil)
     pieces    = path.split '/'
     name      = pieces.pop
-    home_link = %(<li#{' class="crumb-divide-last"' if pieces.size == 0 && !name.nil?}>#{link_to 'Home', (rev ? rev_browser_path : browser_path)}</li>)
+    home_link = %(<li#{' class="crumb-divide-last"' if pieces.size == 0 && !name.nil?}>#{link_to '~', (rev ? rev_browser_path : browser_path)}</li>)
     return home_link unless name
     prefix = ''
     pieces.collect! do |piece|

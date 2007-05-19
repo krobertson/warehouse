@@ -10,7 +10,9 @@
     </ul>
 </div>
 
+<% if params[:paths].any? %>
 <div id="crumbs"><ul class="clearfix"><%= link_to_crumbs @node.path %></li></div>
+<% end %>
 
 <table id="browser" cellspacing="0" cellpadding="0">
   <thead>

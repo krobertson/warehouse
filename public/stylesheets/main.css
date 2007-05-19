@@ -422,7 +422,7 @@ li.crumb-divide-last a {
   padding: 10px;
   padding-left: 50px;
   padding-right: 70px;
-  background: #f7f7f7 url(../images/app/icons/terminal.png) 5px 3px no-repeat;
+  background: #f7f7f7 url(../images/app/icons/terminal.png) 5px 3px no-repeat;  
   margin-bottom: 20px;
   border: 1px solid #ddd;
   border-bottom-color: #ccc;
@@ -527,7 +527,7 @@ span.m {
 
 /* @end */
 
-/* @group Diff */
+/* @group Diff and History */
 
 .diff {
   margin-bottom: 20px;
@@ -593,9 +593,26 @@ div.viewsource {
 td.viewsource pre {
   overflow: scroll;
 }
+
+.history {
+  position: relative;
+}
+
+.file-history {
+  display: block;
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  width: 16px;
+  height: 16px;
+  text-indent: -9999px;
+  background: url(../images/app/icons/history-small.png) 0 50%;
+}
+
 /* @end */
 
 /* @group Admin */
+
 #repos {
   list-style: none;
 }
