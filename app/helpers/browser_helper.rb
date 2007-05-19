@@ -17,10 +17,10 @@ module BrowserHelper
     return nil unless name
     prefix = ''
     pieces.collect! do |piece|
-      link = link_to_node(piece, "#{prefix}#{piece}", rev)
-      prefix << piece << '/' 
+      link = %(<li#{' class="crumb-divide-last"' if pieces.last == piece}>#{link_to_node(piece, "#{prefix}#{piece}", rev)}</li>)
+      prefix << piece  
       link
-    end.join(" / ") << ' / ' << name
+    end.join << %(<li id="current">#{name}</li>)
   end
   
   def css_class_for(node)

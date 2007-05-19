@@ -8,7 +8,9 @@
 </div>
 
 <% if @node.text? -%>
-  <p><%= link_to_crumbs @node.path %></p>
+  <div id="crumbs">
+    <ul class="clearfix"><%= link_to_crumbs @node.path %></ul>
+  </div>
   
   <table class="diff sourcecode" cellspacing="0" cellpadding="0">
     <thead>

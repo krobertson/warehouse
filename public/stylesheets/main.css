@@ -57,6 +57,25 @@ h2 {
   border-bottom: 1px solid #ccc;
 }
 
+div.errorExplanation {
+  padding: 10px 10px 10px 50px;
+  margin: 20px 0;
+  background: #fee url(../images/app/icons/no.png) 5px 5px no-repeat;
+  border: 1px solid #faa;
+  color: #333;
+}
+
+div.errorExplanation ul {
+  list-style: none;
+  margin: 5px 0;
+}
+
+div.errorExplanation h2 {
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+
 /* @end */
 
 
@@ -71,8 +90,9 @@ h2 {
 
 #content {
   width: 900px;
-  margin:  auto;
+  margin:  0 auto;
   text-align: left;
+  padding-bottom: 40px;
 }
 
 #main {
@@ -338,6 +358,57 @@ td span.log, #repos span.log {
 .changed {
   background-color: #7b0;
   color: #fff;
+}
+
+div#crumbs {
+  margin-bottom: 10px;
+  height: 20px;
+}
+
+div#crumbs ul  {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  line-height: 100%;
+  background: url(../images/app/crumbs-start.gif) no-repeat;
+  padding-left: 13px;
+}
+
+#crumbs li {
+  display: block;
+  margin: 0;
+  padding: 0;
+  background: url(../images/app/crumb-bg.png) repeat-x;
+  float: left;
+}
+
+#crumbs li a {
+  text-shadow: 2px 2px #fff;
+  background: url(../images/app/crumb-divide.gif) top right no-repeat;
+  display: block;
+  color: #555;
+  font-size: 92%;
+  padding: 4px 15px 7px 5px;
+  font-weight: bold;
+}
+
+#crumbs li a:hover {
+  color: #000;
+}
+
+li.crumb-divide-last a {
+  background: url(../images/app/crumb-divide-last.gif) top right no-repeat !important;
+}
+
+#crumbs li#current {
+ color: #fff;
+ font-size: 92%;
+ float: left;
+ text-shadow: 2px 2px #777;
+ background: url(../images/app/crumb-current.gif) repeat-x;
+ padding: 4px 10px 7px 10px;
+ border-right: 1px solid #999;
+ font-weight: bold;
 }
 
 /* @end */
