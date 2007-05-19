@@ -2,3 +2,7 @@
   <label for="user_name">Name:</label>
   <%= form.text_field :name %>
 </p>
+<p>
+  <%= image_tag(@user.avatar_path) if @user.avatar? %>
+  <%= form.file_field :avatar_data %>
+</p>

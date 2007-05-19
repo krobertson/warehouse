@@ -4,7 +4,7 @@
     <%=h @repository.name %>
     <span class="log"><%=h @repository.path %></span>
   </li>
-  <li class="repo repoedit" id="repo-edit-<%= @repository.id %>"
+  <li class="repo repoedit" id="repo-edit-<%= @repository.id %>">
     <% form_for @repository do |f| -%>
       <%= render :partial => "form", :object => f %>
       <p class="btns">

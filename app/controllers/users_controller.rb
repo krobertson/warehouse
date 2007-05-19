@@ -3,7 +3,7 @@ class UsersController < ApplicationController
   
   def update
     if @user.update_attributes(params[:user])
-      redirect_to(params[:id] ? user_path(@user) : profile_path)
+      redirect_to(@user != current_user ? user_path(@user) : profile_path)
     else
       render :action => 'show'
     end

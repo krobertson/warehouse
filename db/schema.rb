@@ -2,7 +2,17 @@
 # migrations feature of ActiveRecord to incrementally modify your database, and
 # then regenerate this schema definition.
 
-ActiveRecord::Schema.define(:version => 7) do
+ActiveRecord::Schema.define(:version => 8) do
+
+  create_table "avatars", :force => true do |t|
+    t.string  "content_type"
+    t.string  "filename"
+    t.integer "size"
+    t.integer "parent_id"
+    t.string  "thumbnail"
+    t.integer "width"
+    t.integer "height"
+  end
 
   create_table "changes", :force => true do |t|
     t.integer "changeset_id"
@@ -54,6 +64,8 @@ ActiveRecord::Schema.define(:version => 7) do
     t.string  "name"
     t.string  "identity_url"
     t.boolean "admin"
+    t.integer "avatar_id"
+    t.string  "avatar_path"
   end
 
 end
