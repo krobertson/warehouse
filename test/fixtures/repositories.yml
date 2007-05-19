@@ -2,4 +2,4 @@ sample:
   id: 1
   name: Sample
   path: <%= File.expand_path(File.dirname(__FILE__)) %>/db/sample
-  permalink: sample
+  subdomain: sample

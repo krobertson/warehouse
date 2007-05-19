@@ -10,8 +10,8 @@ require 'svn/repos'
 #   rmdir foo
 #   svn co file:///Users/rick/p/xorn/trunk/db/sample wc
 class Repository < ActiveRecord::Base
-  has_permalink :name
-  validates_presence_of :name, :path, :permalink
+  has_permalink :name, :subdomain
+  validates_presence_of :name, :path, :subdomain
   attr_accessible :name, :path
   
   has_many :changesets, :order => 'revision desc', :dependent => :delete_all
