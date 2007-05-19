@@ -12,15 +12,16 @@ module BrowserHelper
   end
   
   def link_to_crumbs(path, rev = nil)
-    pieces = path.split '/'
-    name   = pieces.pop
-    return nil unless name
+    pieces    = path.split '/'
+    name      = pieces.pop
+    home_link = %(<li>#{link_to 'Home', (rev ? rev_browser_path : browser_path)}</li>)
+    return home_link unless name
     prefix = ''
     pieces.collect! do |piece|
       link = %(<li#{' class="crumb-divide-last"' if pieces.last == piece}>#{link_to_node(piece, "#{prefix}#{piece}", rev)}</li>)
-      prefix << piece  
+      prefix << piece << '/'
       link
-    end.join << %(<li id="current">#{name}</li>)
+    end.unshift(home_link).join << %(<li id="current">#{name}</li>)
   end
   
   def css_class_for(node)
