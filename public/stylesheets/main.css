@@ -567,6 +567,47 @@ ul.admin-controls {
   background: url(../images/app/icons/delete.png) 0 50% no-repeat;
 }
 
+.repoedit {
+  margin-top:  -12px;
+  background: #f1f1f1 !important;
+  padding: 10px !important;
+}
+
+.repoedit p {
+  display: block;
+  border-bottom: 1px solid #ddd;
+  padding: 5px;
+}
+
+.repoedit label {
+  text-align: right;
+  padding-right: 5px;
+  display: block;
+  width: 80px;
+  font-size: 92%;
+  white-space: nowrap;
+  float: left;
+}
+
+form input {
+  padding: 2px;
+  border: 1px solid #ccc;
+  border-bottom: 1px solid #eee;
+  border-right: 1px solid #eee;
+}
+
+p.btns input {
+  border: 1px solid #888;
+  color: #fff;
+  background: #aaa;
+}
+
+p.btns {
+  background: #e7e7e7;
+  text-align: right;
+  border-bottom: 0;
+}
+
 
 /* @end */
 
