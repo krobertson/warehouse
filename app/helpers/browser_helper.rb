@@ -14,6 +14,7 @@ module BrowserHelper
   def link_to_crumbs(path, rev = nil)
     pieces = path.split '/'
     name   = pieces.pop
+    return nil unless name
     prefix = ''
     pieces.collect! do |piece|
       link = link_to_node(piece, "#{prefix}#{piece}", rev)
