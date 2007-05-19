@@ -282,12 +282,15 @@ div.control-head {
   margin: 0;
   padding: 0 0 0 40px;
   position: relative;
+  height: 16px;
 }
 
 p.controlblock {
   position: absolute;
-  top: 1px;
+  top: 0;
   left: 5px;
+  height: 16px;
+  width: 50px;
 }
 
 a.forward, a.back {
