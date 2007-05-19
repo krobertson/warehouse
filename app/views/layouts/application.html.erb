@@ -17,14 +17,15 @@
           <ul id="nav">
             <li id="code"><%= link_to 'Browser', browser_path %></li>
             <li id="activity"><%= link_to 'Activity', changesets_path %></li>
-            <% if logged_in? -%>
-             <li id="logout"><%= link_to 'Logout', logout_path %></li>
-            <% else -%>
-             <li id="login"><%= link_to_function 'Login', %($('login-form').toggle();) %></li>
-            <% end -%>
             <% if logged_in? && admin? %>
             <li id="admin"><%= link_to 'Admin', admin_path %></li>
             <% end %>
+            <% if logged_in? -%>
+              <li id="profile"><%= link_to 'Profile', profile_path %></li>
+              <li id="logout"><%= link_to 'Logout', logout_path %></li>
+            <% else -%>
+              <li id="login"><%= link_to_function 'Login', %($('login-form').toggle();) %></li>
+            <% end -%>
           </ul>
           </div>
           <div id="login-form" style="display:none">
@@ -47,7 +48,6 @@
         <!-- main -->
         <div id="main"<% if @fullscreen %> style="width:100%"<% end %>>
           <%= yield %>
-          <% if logged_in? -%><p><small>Logged in as <%=h current_user.identity_url %><%= ' Admin!' if admin? %></small></p><% end -%>
         </div>
         <!-- /main -->
         <% unless @fullscreen %>

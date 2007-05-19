@@ -2,7 +2,7 @@
 # migrations feature of ActiveRecord to incrementally modify your database, and
 # then regenerate this schema definition.
 
-ActiveRecord::Schema.define(:version => 6) do
+ActiveRecord::Schema.define(:version => 7) do
 
   create_table "changes", :force => true do |t|
     t.integer "changeset_id"
@@ -44,9 +44,10 @@ ActiveRecord::Schema.define(:version => 6) do
   end
 
   create_table "repositories", :force => true do |t|
-    t.string "name"
-    t.string "path"
-    t.string "subdomain"
+    t.string  "name"
+    t.string  "path"
+    t.string  "subdomain"
+    t.boolean "public"
   end
 
   create_table "users", :force => true do |t|

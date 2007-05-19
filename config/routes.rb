@@ -2,9 +2,10 @@ ActionController::Routing::Routes.draw do |map|
   map.open_id_complete 'session', :controller => "sessions", :action => "create", :requirements => { :method => :get }
   map.logout 'logout', :controller => 'sessions', :action => 'destroy'
 
-  map.resources :repositories
+  map.resources :repositories, :users
   map.resources :changesets, :has_many => :changes
   map.resource  :session, :controller => 'sessions'
+  map.resource  :profile, :controller => 'users'
 
   map.with_options :controller => 'browser' do |b|
     b.rev_browser 'browser/:rev/*paths', :rev => /r\d+/
