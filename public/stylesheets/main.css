@@ -50,6 +50,13 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 100%;
 }
 
+h2 {
+  background: #f4f4f4;
+  padding: 5px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
 /* @end */
 
 
@@ -309,7 +316,7 @@ a.txt, a.file {
   background: url(../images/app/icons/text-small.png) 0 50% no-repeat;
 }
 
-td span.log {
+td span.log, #repos span.log {
   font-size: 92%;
   display: block;
   color: #888;
@@ -387,7 +394,7 @@ li.prev a {
   background: url(../images/app/icons/back.png) no-repeat;
 }
 
-.changeset {
+.changeset, .repo {
   padding: 10px;
   padding-left: 50px;
   background: #f7f7f7 url(../images/app/icons/terminal.png) 5px 3px no-repeat;
@@ -512,5 +519,54 @@ div.viewsource {
 td.viewsource pre {
   overflow: scroll;
 }
+/* @end */
+
+/* @group Admin */
+#repos {
+  list-style: none;
+}
+
+li.repo {
+  position: relative;
+  background: #f7f7f7 url(../images/app/icons/repository.png) 3px 10px no-repeat;
+  padding: 10px 45px;
+}
+
+#repos span.log {
+  font-size: 92%;
+  font-weight: normal;
+}
+
+ul.admin-controls {
+  list-style: none;
+  position: absolute;
+  right: 42px;
+  top: 5px;
+  height: 16px;
+}
+
+.edit, .del{
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.del {
+  left: 20px;
+}
+
+.edit a, .del a {
+  display: block;
+  width: 16px;
+  height: 16px;
+  text-indent: -9999px;
+  background: url(../images/app/icons/edit.png) 0 50% no-repeat;
+}
+
+.del a {
+  background: url(../images/app/icons/delete.png) 0 50% no-repeat;
+}
+
+
 /* @end */
 

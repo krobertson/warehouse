@@ -23,7 +23,7 @@
              <li id="login"><%= link_to_function 'Login', %($('login-form').toggle();) %></li>
             <% end -%>
             <% if logged_in? && admin? %>
-            <li id="admin"><a href="#" title="">Admin</a></li>
+            <li id="admin"><%= link_to 'Admin', admin_path %></li>
             <% end %>
           </ul>
           </div>
@@ -70,6 +70,12 @@
         <% end %>
       </div>
       <!-- /content -->
+      <!-- footer -->
+      <div id="footer">
+        <a href="#">Warehouse&mdash;Simple Subversion Browser</a>. Copyright &copy; 2007 Active Reload, LLC.
+      </div>
+      <!-- /footer -->
+      
     </div>
     <!-- /container -->
     
