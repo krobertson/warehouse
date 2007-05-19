@@ -152,6 +152,10 @@ li#logout a {
   background: #eee url(../images/app/icons/logout.png) 5px 50% no-repeat;
 }
 
+li#admin a {
+  background: #eee url(../images/app/icons/admin.png) 5px 50% no-repeat;
+}
+
 #login-form {
   position: absolute;
   background: #333;

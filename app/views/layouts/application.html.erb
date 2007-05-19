@@ -22,6 +22,9 @@
             <% else -%>
              <li id="login"><%= link_to_function 'Login', %($('login-form').toggle();) %></li>
             <% end -%>
+            <% if logged_in? && admin? %>
+            <li id="admin"><a href="#" title="">Admin</a></li>
+            <% end %>
           </ul>
           </div>
           <div id="login-form" style="display:none">
