@@ -2,6 +2,7 @@ ActionController::Routing::Routes.draw do |map|
   map.open_id_complete 'session', :controller => "sessions", :action => "create", :requirements => { :method => :get }
   map.logout 'logout', :controller => 'sessions', :action => 'destroy'
 
+  map.resources :repositories
   map.resources :changesets, :has_many => :changes
   map.resource  :session, :controller => 'sessions'
 
@@ -13,7 +14,7 @@ ActionController::Routing::Routes.draw do |map|
   end
 
   map.history 'history/*paths', :controller => 'history'
-  map.admin   'admin',          :controller => 'admin'
+  map.admin   'admin',          :controller => 'repositories'
   
   map.root :controller => "dashboard"
 end

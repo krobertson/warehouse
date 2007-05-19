@@ -1,0 +1,15 @@
+<%= error_messages_for :repository %>
+<ul id="repos">
+  <li class="repo" id="repo-<%= @repository.id %>">
+    <%=h @repository.name %>
+    <span class="log"><%=h @repository.path %></span>
+  </li>
+  <li class="repo repoedit" id="repo-edit-<%= @repository.id %>"
+    <% form_for @repository do |f| -%>
+      <%= render :partial => "form", :object => f %>
+      <p class="btns">
+        <%= submit_tag 'Save', :disable_with => 'Saving...' %>
+      </p>
+    <% end -%>
+  </li>
+</ul>

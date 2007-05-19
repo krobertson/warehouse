@@ -12,7 +12,7 @@ require 'svn/repos'
 class Repository < ActiveRecord::Base
   has_permalink :name, :subdomain
   validates_presence_of :name, :path, :subdomain
-  attr_accessible :name, :path
+  attr_accessible :name, :path, :subdomain
   
   has_many :changesets, :order => 'revision desc', :dependent => :delete_all
   has_many :changes, :through => :changesets, :order => 'changesets.revision desc', :dependent => :delete_all
