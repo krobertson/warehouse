@@ -15,7 +15,7 @@
 <% @changeset.changes.each do |change| -%>
   <li<%= cycle '', ' class="shade"' %>>
     <span class="<%=h change.name.downcase %>" title="<%= word_for_change(change.name) %>"><%= change.name %></span> 
-    <%= link_to_node change.path, change.path, @changeset.revision %>
+    <%= link_to_node change.path, change.path, @changeset.revision %> [<%= link_to 'view', "##{dom_id change}" %>]
   </li>
 <% end -%>
 </ul>

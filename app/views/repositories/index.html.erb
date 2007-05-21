@@ -18,4 +18,19 @@
     <% end -%>
   </li>
 <% end -%>
+  <li class="repo" id="<%= dom_id @repository %>">
+    New Repository
+    <ul class="admin-controls">
+      <li class="edit"><%= link_to_function('Edit', %($('repo-new').toggle())) %></li>
+      <li class="del"><a href="#" title="Delete">Delete</a></li>
+    </ul>
+  </li>
+  <li class="repo repoedit" id="repo-new" style="display:none">
+    <% form_for @repository do |f| -%>
+      <%= render :partial => "form", :object => f %>
+      <p class="btns">
+        <%= submit_tag 'Create', :disable_with => 'Creating...' %> or <%= link_to_function('cancel', %($('repo-new').toggle())) %>
+      </p>
+    <% end -%>
+  </li>
 </ul>

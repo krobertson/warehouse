@@ -14,6 +14,9 @@ class Repository < ActiveRecord::Base
   
   has_many :changesets, :order => 'revision desc'
   has_many :changes, :through => :changesets, :order => 'changesets.revision desc'
+  has_many :memberships, :conditions => ['active = ?', true]
+  has_many :members, :through => :memberships, :source => :user, :select => 'users.*, memberships.login, memberships.id as membership_id, memberships.admin as membership_admin'
+  has_many :all_memberships, :class_name => 'Membership', :foreign_key => 'repository_id', :dependent => :delete_all
   has_one  :latest_changeset, :class_name => 'Changeset', :foreign_key => 'repository_id', :order => 'revision desc'
   before_destroy :clear_changesets
   

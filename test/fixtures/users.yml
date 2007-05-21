@@ -1,5 +1,11 @@
-# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
-one:
+rick:
   id: 1
-two:
+  name: rick
+  email: rick@wh.com
+  identity_url: rick.wh.com
+  admin: true
+justin:
   id: 2
+  name: justin
+  email: justin@wh.com
+  identity_url: justin.wh.com

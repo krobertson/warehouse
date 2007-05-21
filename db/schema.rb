@@ -2,7 +2,7 @@
 # migrations feature of ActiveRecord to incrementally modify your database, and
 # then regenerate this schema definition.
 
-ActiveRecord::Schema.define(:version => 8) do
+ActiveRecord::Schema.define(:version => 9) do
 
   create_table "avatars", :force => true do |t|
     t.string  "content_type"
@@ -33,6 +33,14 @@ ActiveRecord::Schema.define(:version => 8) do
   end
 
   add_index "changesets", ["repository_id"], :name => "index_changesets_on_repository_id"
+
+  create_table "memberships", :force => true do |t|
+    t.integer "user_id"
+    t.integer "repository_id"
+    t.boolean "active"
+    t.boolean "admin"
+    t.string  "login"
+  end
 
   create_table "open_id_authentication_associations", :force => true do |t|
     t.binary  "server_url"
@@ -66,6 +74,8 @@ ActiveRecord::Schema.define(:version => 8) do
     t.boolean "admin"
     t.integer "avatar_id"
     t.string  "avatar_path"
+    t.string  "email"
+    t.string  "token"
   end
 
 end

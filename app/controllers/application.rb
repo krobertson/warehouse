@@ -14,7 +14,8 @@ class ApplicationController < ActionController::Base
   end
   
   def current_user
-    @current_user ||= (session[:user_id] && User.find_by_id(session[:user_id])) || :false
+    @current_user ||= User.find_by_id(1)
+    #@current_user ||= (session[:user_id] && User.find_by_id(session[:user_id])) || :false
   end
   
   def admin?

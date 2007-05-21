@@ -42,7 +42,7 @@ module ChangesetsHelper
     
     %(
     <div class="diff-table">
-    <table class="diff" cellspacing="0" cellpadding="0">
+    <table class="diff" cellspacing="0" cellpadding="0" id="#{dom_id change}">
       <thead>
         <tr class="controls">
           <td colspan="3">

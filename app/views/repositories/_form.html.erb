@@ -6,7 +6,15 @@
   <label for="repository_path">Path:</label>
   <%= form.text_field :path %>
 </p>
-<p style="border-bottom:0">
+<p>
   <label for="repository_subdomain">Subdomain:</label>
   <%= form.text_field :subdomain %>
 </p>
+
+<p style="border-bottom:0">
+  <label>Public? <%= form.check_box :public %></label>
+</p>
+
+<% unless form.object.new_record? -%>
+<p><%= link_to "Members", members_path %> | <%= link_to 'Permissions', permissions_path %></p>
+<% end -%>
