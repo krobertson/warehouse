@@ -36,8 +36,7 @@ module ChangesetsHelper
     lines[1..lines.length].collect do |line|
       pnum = content_tag('td', line[0], :class => 'ln')
       cnum = content_tag('td', line[1], :class => 'ln')    
-      code = content_tag('td', "<pre>#{line[2]}</pre>", :class => 'code' + (line[3] ? " #{line[3]}" : ''))
-  
+      code = content_tag('td', line[2].gsub(/ /, '&nbsp;'), :class => 'code' + (line[3] ? " #{line[3]}" : ''))
       table_rows << content_tag('tr', pnum + cnum + code)
     end
     
