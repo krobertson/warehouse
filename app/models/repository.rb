@@ -12,9 +12,10 @@ class Repository < ActiveRecord::Base
   validates_presence_of :name, :path, :subdomain
   attr_accessible :name, :path, :subdomain
   
-  has_many :changesets, :order => 'revision desc', :dependent => :delete_all
-  has_many :changes, :through => :changesets, :order => 'changesets.revision desc', :dependent => :delete_all
+  has_many :changesets, :order => 'revision desc'
+  has_many :changes, :through => :changesets, :order => 'changesets.revision desc'
   has_one  :latest_changeset, :class_name => 'Changeset', :foreign_key => 'repository_id', :order => 'revision desc'
+  before_destroy :clear_changesets
   
   def path=(value)
     write_attribute(:path, value ? value.to_s.chomp('/') : nil)
@@ -52,4 +53,10 @@ class Repository < ActiveRecord::Base
   def backend
     @backend ||= Svn::Repos.open(path)
   end
+  
+  protected
+    def clear_changesets
+      Change.delete_all ['changeset_id in (select id from changesets where repository_id = ?)', id]
+      Changeset.delete_all ['repository_id = ?', id]
+    end
 end
