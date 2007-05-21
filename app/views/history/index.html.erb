@@ -5,6 +5,7 @@
     <p>
     <span class="change-number"><%= link_to changeset.revision, changeset %></span>
     <span class="author"><%=h changeset.author %>:</span> <%=h changeset.message %>
+    <span class="time">(<%= time_ago_in_words(changeset.changed_at) %> ago)</span>
     <%= link_to_node "@#{changeset.revision}", @node, changeset.revision, :class => 'file-history' %>
     </p>
   </li>

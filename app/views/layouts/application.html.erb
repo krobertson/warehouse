@@ -21,7 +21,9 @@
             <li id="admin"><%= link_to 'Admin', admin_path %></li>
             <% end %>
             <% if logged_in? -%>
+            <% if false %>
               <li id="profile"><%= link_to 'Profile', profile_path %></li>
+            <% end %>
               <li id="logout"><%= link_to 'Logout', logout_path %></li>
             <% else -%>
               <li id="login"><%= link_to_function 'Login', %($('login-form').toggle();) %></li>
@@ -60,8 +62,8 @@
                 <span class="active">Last active 5 days ago</span>
               </li>
               <li>
-                <h4><a href="#" title="">Attachment Fu</a></h4>
-                <span class="active">Last active 5 days ago</span>
+                <h4><a href="#" title="">Canvas Lab</a></h4>
+                <span class="active">Last active today</span>
               </li>
             </ul>
           </div>
