@@ -3,9 +3,12 @@
 <html>
   <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-    <title>Warehouse</title>
+    <title>Warehouse: <%= @title rescue '' %></title>
     <%= stylesheet_link_tag 'main' %>
+    <%= stylesheet_link_tag 'code' %>
     <%= javascript_include_tag 'prototype' %>
+    <%= javascript_include_tag 'lowpro-lite' %>
+    <%= yield :scripts %>
   </head>
   <body>
     <!-- container -->

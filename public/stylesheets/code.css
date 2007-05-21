@@ -1,0 +1,73 @@
+/* @override http://localhost:3000/stylesheets/code.css */
+
+div.viewsource code {
+  color: #f8f8f8;
+  font-family: Monaco, Courier, monospace;
+  font-size: 100%%;
+}
+
+div.viewsource ::selection {
+  background-color: #444;
+}
+
+span.regex { 
+  background: #D0F0FF; 
+  color: #27b;
+}
+
+/** RUBY / JAVASCRIPT **/
+
+span.comment {
+  color: #5F5A60;
+  font-style: italic;
+}
+
+code span.global {
+  color: #38D;
+}
+
+span.brackets {
+  color: #777;
+}
+
+span.string {
+  color: #8F9D6A;
+}
+
+span.rails {
+  color: #DAD085;
+}
+
+span.symbol, #content code span.selectors {
+  color: #CF6A4C;
+}
+
+span.properties {
+  color: #b41;
+}
+
+span.keywords {
+  color: #CDA869;
+}
+
+/** HTML **/
+
+code.html span.tag {
+  color: #b41;
+}
+
+code.html span.attribute {
+  color: #4b2;
+}
+
+code.html span.string {
+  color: #99FF00;
+}
+
+code.html span.comment {
+  color: #999;
+}
+
+code.html span.doctype {
+  color: #D7FF80;
+}

@@ -98,12 +98,12 @@ div.errorExplanation h2 {
 #main {
   float: left;
   padding: 20px;
-  width: 540px;
+  width: 580px;
 }
 
 #sbar {
   background: url(../images/app/sbar-bg.png) no-repeat;
-  margin-left: 600px;
+  margin-left: 640px;
   padding: 20px;
   min-height: 500px;
 }
@@ -509,13 +509,13 @@ li.prev a {
   background: #eee;
 }
 
-span.a, .m, .d {
+span.a, .m, .d, .mv, .cp {
   background: #7b0;
   color: #fff;
   font-size: 82%;
   border: 1px solid #fff;
   line-height: 100%;
-  padding: 1px;
+  padding: 2px;
   font-weight: bold;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
@@ -524,18 +524,34 @@ span.m {
   background-color: #06b;
 }
 
+span.mv {
+  color: #540;
+  background: #ca0;
+}
+
+span.d {
+  background: #c00;
+}
+
+span.cp {
+  background:#ccc;
+  color: #333;
+}
+
 
 /* @end */
 
 /* @group Diff and History */
 
-.diff {
+div.diff-table {
+  overflow: auto;
   margin-bottom: 20px;
-  font-family: monospace, "Courier New", Monaco, fixed !important;
 }
 
-.diff code {
-  font-family: "Courier New", Monaco, fixed !important;
+.diff {
+  font-family: Courier, Monaco, monospace !important;
+  overflow: auto;
+  width: 100%;
 }
 
 .diff td {
@@ -599,6 +615,8 @@ table.sourcecode {
 div.viewsource {
   width: 900px !important;
   overflow: auto;
+  padding: 10px;
+  background-color: #111;
 }
 
 td.viewsource pre {
@@ -711,33 +729,37 @@ p.btns {
 }
 
 .pagination {
-	padding: 3px;
-	margin: 3px;
+  padding: 3px;
+  margin: 10px auto;
 }
+
 .pagination a {
-	padding: 2px 5px 2px 5px;
-	margin: 2px;
-	border: 1px solid #aaaadd;
-	text-decoration: none;
-	color: #000099;
+  padding: 2px 5px 2px 5px;
+  margin: 2px;
+  border: 1px solid #92D7FF;
+  background: #E3F5FF;
+  color: #06A;
 }
+
 .pagination a:hover, .pagination a:active {
-	border: 1px solid #000099;
-	color: #000;
+  border: 1px solid #fff;
+  background: #D8E9F3;
 }
+
 .pagination span.current {
-	padding: 2px 5px 2px 5px;
-	margin: 2px;
-	border: 1px solid #000099;
-	font-weight: bold;
-	background-color: #000099;
-	color: #FFF;
+  padding: 2px 5px 2px 5px;
+  margin: 2px;
+  border: 1px solid #FFAB92;
+  font-weight: bold;
+  background-color: #FFE1D8;
+  color: #d30;
 }
+
 .pagination span.disabled {
-	padding: 2px 5px 2px 5px;
-	margin: 2px;
-	border: 1px solid #eee;
-	color: #ddd;
+  padding: 2px 5px 2px 5px;
+  margin: 2px;
+  border: 1px solid #eee;
+  color: #aaa;
 }
 
 

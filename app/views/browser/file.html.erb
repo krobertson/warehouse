@@ -1,4 +1,11 @@
 <% @fullscreen = true %>
+<% content_for :scripts do %>
+  <%= javascript_include_tag 'highlighter' %>
+  <%= javascript_include_tag 'code/css' %>
+  <%= javascript_include_tag 'code/javascript' %>
+  <%= javascript_include_tag 'code/ruby' %>
+  <%= javascript_include_tag 'code/html' %>
+<% end %>
 <div id="last-log">
     <p>
       <span class="change-number"><%= link_to(current_revision, changeset_path(current_revision)) %></span>
@@ -35,7 +42,7 @@
     </thead>
     <tr>
       <td>
-        <div class="viewsource"><pre><code><%=h @node.content %></code></pre></div>
+        <div class="viewsource"><pre><code class="<%= highlight_as(@node.path.split('/').last) %>"><%=h @node.content %></code></pre></div>
       </td>
     </tr>
   </table>
