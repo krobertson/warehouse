@@ -1,5 +1,3 @@
-require 'svn/repos'
-
 # creating a sample local repo
 #
 #   cd db
@@ -39,6 +37,7 @@ class Repository < ActiveRecord::Base
   
   def sync_revisions
     revisions_to_sync.collect do |rev|
+      puts "##{rev}"
       changesets.create(:revision => rev)
     end
   end

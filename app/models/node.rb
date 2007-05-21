@@ -94,10 +94,8 @@ class Node
   def content
     return if self.dir? || !self.exists?
     unless @content
-      content = root.file_contents(self.path) do |s| 
-        rs = s.read(); 
-        GC.start;
-        rs
+      content = root.file_contents(self.path) do |s|
+        returning(s.read) { |rs| GC.start }
       end      
       content_charset = 'utf-8'
       unless self.mime_type.blank?

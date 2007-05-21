@@ -11,8 +11,8 @@ class Change < ActiveRecord::Base
   before_save :process_orig_path_info
 
   def self.create_from_changeset(changeset)
-    root           = changeset.backend.fs.root(revision)
-    base_root      = changeset.backend.fs.root(revision-1)
+    root           = changeset.backend.fs.root(changeset.revision)
+    base_root      = changeset.backend.fs.root(changeset.revision-1)
     changed_editor = Svn::Delta::ChangedEditor.new(root, base_root)
     base_root.dir_delta('', '', root, '', changed_editor)
     

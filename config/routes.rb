@@ -18,5 +18,6 @@ ActionController::Routing::Routes.draw do |map|
   map.history 'history/*paths', :controller => 'history'
   map.admin   'admin',          :controller => 'repositories'
   
+  map.connect 'rock_out', :controller => "dashboard", :action => 'rock_out'
   map.root :controller => "dashboard"
 end

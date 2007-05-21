@@ -1,4 +1,3 @@
-require 'svn/delta'
 class Changeset < ActiveRecord::Base
   belongs_to :repository
   has_many :changes

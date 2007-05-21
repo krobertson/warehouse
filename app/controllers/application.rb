@@ -7,7 +7,7 @@ class ApplicationController < ActionController::Base
   
   # expiring_attr_reader :controller_path, %([controller_name, action_name] * '/')
   
-  before_filter { |c| c.current_repository.sync_revisions }
+  #before_filter { |c| c.current_repository.sync_revisions }
 
   def logged_in?
     current_user != :false
