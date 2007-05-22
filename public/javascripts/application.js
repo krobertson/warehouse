@@ -1,2 +1,14 @@
-// Place your application-specific JavaScript functions and classes here
-// This file is automatically included by javascript_include_tag :defaults
+Element.addMethods({
+  duplicate: function(element) {
+    element = $(element);
+    var clone = element.cloneNode(true);
+    element.parentNode.appendChild(clone);
+  }
+});
+
+Event.addBehavior({
+  'a.addpath:click': function() {
+    $('path').duplicate(); 
+    return false;
+  }
+});
