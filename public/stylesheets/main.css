@@ -869,14 +869,14 @@ p.btns {
 .pagination a {
   padding: 2px 5px 2px 5px;
   margin: 2px;
-  border: 1px solid #92D7FF;
-  background: #E3F5FF;
-  color: #06A;
+  border: 1px solid #ccc;
+  background: #f7f7f7;
+  color: #555;
 }
 
 .pagination a:hover, .pagination a:active {
-  border: 1px solid #fff;
-  background: #D8E9F3;
+  border: 1px solid #aaa;
+  color: #111;
 }
 
 .pagination span.current {
