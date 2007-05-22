@@ -14,12 +14,16 @@ class Permission < ActiveRecord::Base
     "/#{path}"
   end
 
-  def self.grant(repository, options = {})
-    returning repository.all_permissions.build do |m|
-      m.active     = true
-      m.attributes = options
-      yield m
-      m.save
+  def self.grant(repository, options = {}, &block)
+    if paths = options.delete(:paths)
+      permissions = paths.collect { |p| grant(repository, options.merge(p), &block) }
+      return permissions.reject(&:new_record?).first
     end
+    m = repository.all_permissions.build
+    m.active     = true
+    m.attributes = options
+    block.call(m) if block
+    m.save
+    m
   end
 end

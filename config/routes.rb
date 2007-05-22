@@ -2,8 +2,9 @@ ActionController::Routing::Routes.draw do |map|
   map.open_id_complete 'session', :controller => "sessions", :action => "create", :requirements => { :method => :get }
   map.logout 'logout', :controller => 'sessions', :action => 'destroy'
 
-  map.resources :repositories, :permissions
-  map.resources :users, :has_one => :avatar
+  map.resources :repositories
+  map.resources :permissions, :collection => { :anon => :post }
+  map.resources :users, :has_one => [:avatar, :permissions]
   map.resources :changesets, :has_many => :changes
   map.resource  :session, :controller => 'sessions'
   map.resource  :profile, :controller => 'users'
@@ -17,6 +18,6 @@ ActionController::Routing::Routes.draw do |map|
 
   map.history 'history/*paths', :controller => 'history'
   map.admin   'admin',          :controller => 'repositories'
-  
+
   map.root :controller => "dashboard"
 end

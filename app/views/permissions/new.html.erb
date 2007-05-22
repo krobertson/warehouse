@@ -4,8 +4,8 @@
 <%= error_messages_for :user %>
 <%= error_messages_for :permission %>
 <div class="form">
-    Invite Member
-    <% form_for :permission, :url => permissions_path do |f| -%>
+    <h3>Add a New Member</h3>
+    <% form_for :permission, @permission, :url => permissions_path do |f| -%>
       <p>
         <label for="email">Email:</label>
         <%= text_field_tag :email %>

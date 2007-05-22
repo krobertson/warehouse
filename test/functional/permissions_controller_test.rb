@@ -13,32 +13,58 @@ context "Permissions Controller" do
 
   specify "should grant new permission to repo" do
     assert_difference "Permission.count" do
-      post :create, :email => 'imagetic@wh.com', :permission => { :login => 'imagetic' }
-      assert_redirected_to permissions_path
+      assert_difference "User.count" do
+        post :create, :email => 'imagetic@wh.com', :permission => { :login => 'imagetic' }
+        assert_redirected_to permissions_path
+      end
     end
     
     assigns(:user).should.not.be.new_record
-    m = repositories(:sample).permissions.find_by_user_id(assigns(:user).id)
-    m.login.should == 'imagetic'
-    m.should.be.active
-    m.should.not.be.admin
+    p = repositories(:sample).permissions.find_by_user_id(assigns(:user).id)
+    p.login.should == 'imagetic'
+    p.should.be.active
+    p.should.not.be.admin
   end
 
   specify "should invite new member to repo" do
     assert_difference "Permission.count" do
-      post :create, :email => 'justin@wh.com', :permission => { :login => 'justin', :admin => true }
-      assert_redirected_to permissions_path
+      assert_no_difference "User.count" do
+        post :create, :email => 'justin@wh.com', :permission => { :login => 'justin', :admin => true }
+        assert_redirected_to permissions_path
+      end
     end
     
     assigns(:user).should.not.be.new_record
-    m = repositories(:sample).permissions.find_by_user_id(assigns(:user).id)
-    m.login.should == 'justin'
-    m.should.be.active
-    m.should.be.admin
+    p = repositories(:sample).permissions.find_by_user_id(assigns(:user).id)
+    p.login.should == 'justin'
+    p.should.be.active
+    p.should.be.admin
     u = repositories(:sample).members.find_by_id(assigns(:user).id)
     u.should.be.permission_admin
   end
-  
+
+  specify "should grant exiting member mulitple paths" do
+    assert_difference "Permission.count", 2 do
+      assert_no_difference "User.count" do
+        post :create, :email => 'justin@wh.com', :permission => { :login => 'justin', :admin => true, :paths => [{:path => 'foo'}, {:path => 'bar', :full_access => true}] }
+        assert_redirected_to permissions_path
+      end
+    end
+    
+    assigns(:user).should.not.be.new_record
+    perms = repositories(:sample).permissions.find_all_by_user_id(assigns(:user).id).sort_by(&:path)
+    perms[0].login.should == 'justin'
+    perms[0].should.be.active
+    perms[0].should.be.admin
+    perms[0].path.should == 'bar'
+    perms[0].should.be.full_access
+    perms[1].login.should == 'justin'
+    perms[1].should.be.active
+    perms[1].should.be.admin
+    perms[1].path.should == 'foo'
+    perms[1].should.not.be.full_access
+  end
+
   specify "should not invite new user with invalid email" do
     post :create, :email => 'foobar', :permission => { :login => 'foobar' }
     assert_template 'new'

@@ -1,3 +1,4 @@
+<% permissions = [] unless defined?(permissions) -%>
 <p>
   <label for="login">SVN Login:</label>
   <%= form.text_field :login %>
@@ -8,11 +9,12 @@
 </p>
 <dl id="svn-paths">
   <dt>This member can access the following paths (relative to repository root)</dt>
-  <dd id="path">
-    <select name="full_access">
-      <option value="0">Read access</option>
-      <option value="1">Read and write access</option>
-    </select> to 
-    <%= form.text_field :path %> <a href="#" class="addpath">(+)</a>
-  </dd>
+  <% if form.object.new_record? -%>
+  <%= path_permissions %>
+  <%= path_permissions %>
+  <% else -%>
+    <% permissions.each do |permission| -%>
+      <%= path_permissions(permission) %>
+    <% end -%>
+  <% end -%>
 </dl>
