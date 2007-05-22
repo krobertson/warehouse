@@ -1,11 +1,17 @@
 class MembersController < ApplicationController
   def index
-    @user = User.new
+    @membership = Membership.new
   end
   
   def create
-    @user = User.find_or_initialize_by_email(params[:email])
-    unless current_repository.invite(@user, :login => params[:login], :admin => params[:admin])
+    result = 
+      if params[:email].blank?
+        current_repository.grant(options)
+      else
+        @user = User.find_or_initialize_by_email(params[:email])
+        current_repository.invite(@user, params[:membership])
+      end
+    unless result
       render :action => 'new'
       return
     end

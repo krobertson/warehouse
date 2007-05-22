@@ -1,42 +1,32 @@
 <h2><%=h current_repository.name %> Members</h2>
 <ul id="members">
-<% current_repository.members.each do |user| -%>
-  <li class="user" id="<%= dom_id user %>">
-    <%=h user.name %>
+<% current_repository.memberships.each do |membership| -%>
+  <li class="membership" id="<%= dom_id membership %>">
+    <%=h membership.login %> has
+    <%= membership.full_access? ? 'read-write' : 'write' %> access to
+    <%=h membership.formatted_path %>
     <ul class="admin-controls">
-      <li class="edit"><%= link_to_function('Edit', %($('user_edit_#{user.id}').toggle())) %></li>
+      <li class="edit"><%= link_to_function('Edit', %($('membership_edit_#{membership.id}').toggle())) %></li>
       <li class="del"><a href="#" title="Delete">Delete</a></li>
     </ul>
   </li>
-  <li class="user useredit" id="user_edit_<%= user.id %>" style="display:none">
-    <% form_tag member_path(user.membership_id), :method => :put do |f| -%>
-      <p>
-        <label for="login">SVN Login:</label>
-        <%= text_field_tag :login %>
-      </p>
-      <p>
-        <label>Repository Admin?: <%= check_box_tag :membership_admin %></label>
-      </p>
+  <li class="membership membershipedit" id="membership_edit_<%= membership.id %>" style="display:none">
+    <% form_for :membership, membership, :url => member_path(membership), :method => :put do |f| -%>
+<%= render :partial => "form", :object => f %>
       <p class="btns">
-        <%= submit_tag 'Save', :disable_with => 'Saving...' %> or <%= link_to_function('cancel', %($('user_edit_{user.id}').toggle())) %>
+        <%= submit_tag 'Save', :disable_with => 'Saving...' %> or <%= link_to_function('cancel', %($('membership_edit_{membership.id}').toggle())) %>
       </p>
     <% end -%>
   </li>
 <% end -%>
-  <li class="member" id="<%= dom_id @user %>">
+  <li class="member" id="<%= dom_id @membership %>">
     Invite Member
-    <% form_tag members_path do |f| -%>
+    <% form_for :membership, @membership, :url => members_path do |f| -%>
       <p>
         <label for="email">Email:</label>
         <%= text_field_tag :email %>
       </p>
-      <p>
-        <label for="login">SVN Login:</label>
-        <%= text_field_tag :login %>
-      </p>
-      <p>
-        <label>Repository Admin?: <%= check_box_tag :admin %></label>
-      </p>
+<%= render :partial => "form", :object => f %>
       <p class="btns">
         <%= submit_tag 'Create', :disable_with => 'Creating...' %>
       </p>

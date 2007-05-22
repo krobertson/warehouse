@@ -13,7 +13,7 @@ context "Members Controller" do
 
   specify "should invite new member to repo" do
     assert_difference "Membership.count" do
-      post :create, :email => 'imagetic@wh.com', :login => 'imagetic'
+      post :create, :email => 'imagetic@wh.com', :membership => { :login => 'imagetic' }
       assert_redirected_to members_path
     end
     
@@ -26,7 +26,7 @@ context "Members Controller" do
 
   specify "should invite new member to repo" do
     assert_difference "Membership.count" do
-      post :create, :email => 'justin@wh.com', :login => 'justin', :admin => true
+      post :create, :email => 'justin@wh.com', :membership => { :login => 'justin', :admin => true }
       assert_redirected_to members_path
     end
     
@@ -40,7 +40,7 @@ context "Members Controller" do
   end
   
   specify "should not invite new user with invalid email" do
-    post :create, :email => 'foobar', :login => 'foobar'
+    post :create, :email => 'foobar', :membership => { :login => 'foobar' }
     assert_template 'new'
     assigns(:user).should.be.new_record
   end

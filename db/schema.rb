@@ -2,7 +2,7 @@
 # migrations feature of ActiveRecord to incrementally modify your database, and
 # then regenerate this schema definition.
 
-ActiveRecord::Schema.define(:version => 10) do
+ActiveRecord::Schema.define(:version => 11) do
 
   create_table "avatars", :force => true do |t|
     t.string  "content_type"
@@ -40,6 +40,8 @@ ActiveRecord::Schema.define(:version => 10) do
     t.boolean "active"
     t.boolean "admin"
     t.string  "login"
+    t.string  "path"
+    t.boolean "full_access"
   end
 
   create_table "open_id_authentication_associations", :force => true do |t|
@@ -59,14 +61,6 @@ ActiveRecord::Schema.define(:version => 10) do
   create_table "open_id_authentication_settings", :force => true do |t|
     t.string "setting"
     t.binary "value"
-  end
-
-  create_table "permissions", :force => true do |t|
-    t.integer "repository_id"
-    t.integer "user_id"
-    t.boolean "active"
-    t.boolean "full_access"
-    t.string  "path"
   end
 
   create_table "repositories", :force => true do |t|

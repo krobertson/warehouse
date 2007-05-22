@@ -1,8 +1,8 @@
 
 <h2>Administration</h2>
 <ul id="admin-nav" class="clearfix">
-  <li><a href="#" title="Repositories">Repositories</a></li>
-  <li><a href="#" title="Members">Members</a></li>
+  <li><%= link_to 'Repositories', admin_path %></li>
+  <li><%= link_to 'Members', members_path %></li>
 </ul>
 
 <div id="repository-admin">
@@ -11,7 +11,7 @@
     <% form_for @repository do |f| -%>
       <%= render :partial => "form", :object => f %>
       <p class="btns">
-        <%= submit_tag 'Add this Repository', :disable_with => 'Adding...' %> or <%= link_to_function('cancel', %($('repo-new').toggle())) %>
+        <%= submit_tag 'Add this Repository', :disable_with => 'Adding...' %>
       </p>
     <% end -%>
   </div>

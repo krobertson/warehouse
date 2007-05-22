@@ -3,18 +3,12 @@
 <ul id="members">
   <li class="member" id="<%= dom_id @user %>">
     Invite Member
-    <% form_tag members_path do -%>
+    <% form_for :membership, :url =>  members_path do |f| -%>
       <p>
         <label for="email">Email:</label>
         <%= text_field_tag :email %>
       </p>
-      <p>
-        <label for="login">SVN Login:</label>
-        <%= text_field_tag :login %>
-      </p>
-      <p>
-        <label>Repository Admin?: <%= check_box_tag :admin %></label>
-      </p>
+<%= render :partial => "form", :object => f %>
       <p class="btns">
         <%= submit_tag 'Create', :disable_with => 'Creating...' %>
       </p>
