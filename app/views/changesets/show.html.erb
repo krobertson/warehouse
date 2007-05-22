@@ -11,17 +11,30 @@
     </ul>
 </div>
 
+<div id="control-center">
+  <ul>
+    <% if @changeset.changes.select(&:diffable?).any? %>
+      <li id="cdiff"><%= link_to 'Complete Diff', formatted_changeset_path(@changeset, :diff) %></li>
+    <% end %>
+    <li>
+      <label>Style:</label> 
+      <select name="">
+        <option value="inline">Inline</option>
+        <option value="sbs">Side by side</option>
+      </select>
+    </li>
+  </ul>
+</div>
+
 <ul id="change-list">
 <% @changeset.changes.each do |change| -%>
   <li<%= cycle '', ' class="shade"' %>>
     <span class="<%=h change.name.downcase %>" title="<%= word_for_change(change.name) %>"><%= change.name %></span> 
-    <%= link_to_node change.path, change.path, @changeset.revision %> [<%= link_to 'view', "##{dom_id change}" %>]
+    <%= link_to_node change.path, change.path, @changeset.revision %> <% if modified?(change.name) %> <%= link_to 'view', "##{dom_id change}", :class => 'viewdiff' %><% end %>
   </li>
 <% end -%>
 </ul>
 
-<% if @changeset.changes.select(&:diffable?).each do |change| -%>
+<% @changeset.changes.select(&:diffable?).each do |change| -%>
   <%= diff_for change %>
-<% end.any? -%>
-<p><%= link_to 'Full diff', formatted_changeset_path(@changeset, :diff) %></p>
-<% end -%>
+<% end %>

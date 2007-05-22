@@ -24,6 +24,10 @@ module ApplicationHelper
     end
   end
   
+  def modified?(flag)
+    flag.downcase == 'm'
+  end
+  
   def title(ttl)
     @title = ttl || ' '
   end

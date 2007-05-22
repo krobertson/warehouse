@@ -89,7 +89,7 @@ div.errorExplanation h2 {
 }
 
 #content {
-  width: 900px;
+  width: 1000px;
   margin:  0 auto;
   text-align: left;
   padding-bottom: 40px;
@@ -98,12 +98,12 @@ div.errorExplanation h2 {
 #main {
   float: left;
   padding: 20px;
-  width: 580px;
+  width: 680px;
 }
 
 #sbar {
   background: url(../images/app/sbar-bg.png) no-repeat;
-  margin-left: 640px;
+  margin-left: 740px;
   padding: 20px;
   min-height: 500px;
 }
@@ -433,6 +433,10 @@ li.crumb-divide-last a {
   position: relative;
 }
 
+#last-log .change-number {
+  font-size: 180%;
+}
+
 .time {
   font-size: 82%;
   color: #777;
@@ -482,7 +486,7 @@ li.prev a {
 }
 
 .change-number a {
-  font-size: 200%;
+  font-size: 120%;
   font-weight: bold;
   color: green;
   display: block;
@@ -498,11 +502,24 @@ li.prev a {
 #change-list {
   list-style: none;
   margin-bottom: 20px;
+  margin-right: 240px;
 }
 
 #change-list li {
   padding: 5px;
   border-bottom: 1px solid #ddd;
+  position: relative;
+}
+
+.viewdiff {
+  display: block;
+  position: absolute;
+  right: 0;
+  top: 5px;
+  text-indent: -999px;
+  width: 14px;
+  height: 14px;
+  background: url(../images/app/icons/view-tiny.png) 0 50% no-repeat;
 }
 
 #change-list .shade {
@@ -538,14 +555,50 @@ span.cp {
   color: #333;
 }
 
+#control-center {
+  float: right;
+  background: #f1f1f1;
+  padding: 5px;
+  margin: 0 0 10px 10px;
+  width: 200px;
+  border: 1px solid #ccc;
+}
+
+#control-center ul {
+  list-style: none;
+}
+
+#control-center li {
+  border-bottom: 1px dotted #ccc;
+  display: block;
+  padding: 2px;
+  font-size: 92%;
+}
+
+#control-center label {
+  font-weight: bold;
+  color: #555;
+}
+
+#control-center li a {
+  display: block;
+  padding: 2px;
+  padding-left: 20px;
+}
+
+#cdiff a {
+  background: url(../images/app/icons/diff.png) 0 2px no-repeat;
+}
 
 /* @end */
 
 /* @group Diff and History */
 
 div.diff-table {
-  overflow: auto;
   margin-bottom: 20px;
+  clear: right;
+  overflow: auto;
+  padding: 1px;
 }
 
 .diff {
@@ -757,7 +810,7 @@ div.form {
   color: #333;
 }
 
-form input {
+form input, select {
   padding: 2px;
   border: 1px solid #ccc;
   border-bottom: 1px solid #eee;
