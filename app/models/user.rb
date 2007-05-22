@@ -9,8 +9,8 @@ class User < ActiveRecord::Base
   belongs_to :avatar
   before_save :save_avatar_data
 
-  def membership_admin?
-    membership_admin && column_for_attribute(:admin).type_cast(membership_admin)
+  def permission_admin?
+    permission_admin && column_for_attribute(:admin).type_cast(permission_admin)
   end
 
   def name

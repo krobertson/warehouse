@@ -1,9 +1,6 @@
 
 <h2>Administration</h2>
-<ul id="admin-nav" class="clearfix">
-  <li><%= link_to 'Repositories', admin_path %></li>
-  <li><%= link_to 'Permissions', permissions_path %></li>
-</ul>
+<%= render :partial => "admin/tabs" %>
 
 <div id="repository-admin">
   <div class="repo form">

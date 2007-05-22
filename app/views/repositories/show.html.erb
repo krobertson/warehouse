@@ -1,7 +1,9 @@
+<h2>Repository: <%=h @repository.name %></h2>
+<%= render :partial => "admin/tabs" %>
+
 <%= error_messages_for :repository %>
 <ul id="repos">
   <li class="repo" id="repo-<%= @repository.id %>">
-    <%=h @repository.name %>
     <span class="log"><%=h @repository.path %></span>
   </li>
   <li class="repo repoedit" id="repo-edit-<%= @repository.id %>">

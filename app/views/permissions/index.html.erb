@@ -1,4 +1,6 @@
-<h2><%=h current_repository.name %> Members</h2>
+<h2><%=h current_repository.name %> Permissions</h2>
+<%= render :partial => "admin/tabs" %>
+
 <ul id="permissions">
 <% current_repository.permissions.each do |permission| -%>
   <li class="permission" id="<%= dom_id permission %>">
@@ -21,7 +23,7 @@
 <% end -%>
   <li class="member" id="<%= dom_id @permission %>">
     Invite Member
-    <% form_for :permission, :url => members_path do |f| -%>
+    <% form_for :permission, :url => permissions_path do |f| -%>
       <p>
         <label for="email">Email:</label>
         <%= text_field_tag :email %>
