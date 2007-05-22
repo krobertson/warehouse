@@ -5,7 +5,7 @@ class MembersController < ApplicationController
   
   def create
     @user = User.find_or_initialize_by_email(params[:email])
-    unless @user.invite_to(current_repository, :login => params[:login], :admin => params[:admin])
+    unless current_repository.invite(@user, :login => params[:login], :admin => params[:admin])
       render :action => 'new'
       return
     end

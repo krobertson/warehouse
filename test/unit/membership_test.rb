@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/../test_helper'
 context "Membership" do
   specify "should invite user" do
     u = User.new(:email => 'imagetic@wh.com')
-    u.invite_to repositories(:sample), :login => 'imagetic'
+    repositories(:sample).invite u, :login => 'imagetic'
     assert_valid u
     u.should.not.be.new_record
     m = repositories(:sample).memberships.find_by_user_id(u.id)
@@ -14,7 +14,7 @@ context "Membership" do
 
   specify "should invite user as repo admin" do
     u = User.new(:email => 'imagetic@wh.com')
-    u.invite_to repositories(:sample), :login => 'imagetic', :admin => true
+    repositories(:sample).invite u, :login => 'imagetic', :admin => true
     assert_valid u
     u.should.not.be.new_record
     m = repositories(:sample).memberships.find_by_user_id(u.id)
@@ -26,7 +26,7 @@ context "Membership" do
   end
 
   specify "should invite existing user" do
-    users(:justin).invite_to repositories(:sample), :login => 'justin'
+    repositories(:sample).invite users(:justin), :login => 'justin'
     m = repositories(:sample).memberships.find_by_user_id(users(:justin).id)
     m.login.should == 'justin'
     m.should.be.active

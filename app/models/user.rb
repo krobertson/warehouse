@@ -9,16 +9,6 @@ class User < ActiveRecord::Base
   belongs_to :avatar
   before_save :save_avatar_data
 
-  def invite_to(repo, options = {})
-    self.identity_url = TokenGenerator.generate_simple
-    self.token        = TokenGenerator.generate_random(identity_url)
-    return nil unless save
-    m = repo.all_memberships.find_or_initialize_by_user_id(id)
-    m.user_id    = id
-    m.attributes = options
-    m.save
-  end
-
   def membership_admin?
     membership_admin && column_for_attribute(:admin).type_cast(membership_admin)
   end
