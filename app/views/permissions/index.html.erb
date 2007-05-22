@@ -21,17 +21,18 @@
     <% end -%>
   </li>
 <% end -%>
-  <li class="member" id="<%= dom_id @permission %>">
-    Invite Member
-    <% form_for :permission, :url => permissions_path do |f| -%>
-      <p>
-        <label for="email">Email:</label>
-        <%= text_field_tag :email %>
-      </p>
-<%= render :partial => "form", :object => f %>
-      <p class="btns">
-        <%= submit_tag 'Create', :disable_with => 'Creating...' %>
-      </p>
-    <% end -%>
-  </li>
 </ul>
+
+<div class="form">
+  <h3>Add a new Member</h3>
+  <% form_for :permission, :url => permissions_path do |f| -%>
+    <p>
+      <label for="email">Email:</label>
+      <%= text_field_tag :email, nil, :size => 30 %>
+    </p>
+    <%= render :partial => "form", :object => f %>
+    <p class="btns">
+      <%= submit_tag 'Create', :disable_with => 'Creating...' %>
+    </p>
+  <% end -%>
+</div>

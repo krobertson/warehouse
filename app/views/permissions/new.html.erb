@@ -3,18 +3,16 @@
 
 <%= error_messages_for :user %>
 <%= error_messages_for :permission %>
-<ul id="permissions">
-  <li class="permission" id="<%= dom_id @permission %>">
+<div class="form">
     Invite Member
     <% form_for :permission, :url => permissions_path do |f| -%>
       <p>
         <label for="email">Email:</label>
         <%= text_field_tag :email %>
       </p>
-<%= render :partial => "form", :object => f %>
+      <%= render :partial => "form", :object => f %>
       <p class="btns">
         <%= submit_tag 'Create', :disable_with => 'Creating...' %>
       </p>
     <% end -%>
-  </li>
-</ul>
+</div>

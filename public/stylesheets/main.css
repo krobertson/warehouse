@@ -472,7 +472,7 @@ li.prev a {
   background: url(../images/app/icons/back.png) no-repeat;
 }
 
-.changeset, .repo {
+.changeset, .repo, .form {
   padding: 10px;
   padding-left: 50px;
   background: #f7f7f7 url(../images/app/icons/terminal.png) 5px 3px no-repeat;
@@ -859,6 +859,26 @@ p.btns {
   margin: 0;
   background: #f2f2f2;
   border-top: 1px solid #ddd;
+}
+
+#svn-paths {
+  margin: 0;
+  padding: 0;
+}
+
+#svn-paths dt {
+  padding: 5px;
+  background: #eee;
+  display: block;
+  text-align: left;
+  font-size: 82%;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ddd;
+}
+
+#svn-paths dd {
+  margin-left: 10px;
+  padding: 5px;
 }
 
 .pagination {
