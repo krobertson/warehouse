@@ -6,9 +6,8 @@ module ChangesetsHelper
         
     original_revision_num = lines[0].scan(%r{(\d+)}).flatten.first
     current_revision_num = lines[1].scan(%r{(\d+)}).flatten.first
-    
-    original_revision = link_to_node(original_revision_num, change.path, original_revision)
-    current_revision  = link_to_node(current_revision_num, change.path, current_revision)
+    original_revision = link_to_node(original_revision_num, change.path, original_revision_num)
+    current_revision  = link_to_node(current_revision_num, change.path, current_revision_num)
     
     th_pnum = content_tag('th', original_revision, :class => 'csnum')
     th_cnum = content_tag('th', current_revision, :class => 'csnum')  
