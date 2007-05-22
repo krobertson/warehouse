@@ -1,9 +1,10 @@
-<h2>New <%=h current_repository.name %> Member</h2>
+<h2>New <%=h current_repository.name %> Permission</h2>
 <%= error_messages_for :user %>
-<ul id="members">
-  <li class="member" id="<%= dom_id @user %>">
+<%= error_messages_for :permission %>
+<ul id="permissions">
+  <li class="permission" id="<%= dom_id @permission %>">
     Invite Member
-    <% form_for :membership, :url =>  members_path do |f| -%>
+    <% form_for :permission, :url => permissions_path do |f| -%>
       <p>
         <label for="email">Email:</label>
         <%= text_field_tag :email %>

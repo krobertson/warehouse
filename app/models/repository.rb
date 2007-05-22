@@ -12,9 +12,9 @@ class Repository < ActiveRecord::Base
   validates_presence_of :name, :path, :subdomain
   attr_accessible :name, :path, :subdomain
   
-  has_many :memberships, :conditions => ['active = ?', true]
-  has_many :members, :through => :memberships, :source => :user, :select => 'users.*, memberships.login, memberships.id as membership_id, memberships.admin as membership_admin'
-  has_many :all_memberships, :class_name => 'Membership', :foreign_key => 'repository_id', :dependent => :delete_all
+  has_many :permissions, :conditions => ['active = ?', true]
+  has_many :members, :through => :permissions, :source => :user, :select => 'users.*, permissions.login, permissions.id as permission_id, permissions.admin as permission_admin'
+  has_many :all_permissions, :class_name => 'Permission', :foreign_key => 'repository_id', :dependent => :delete_all
   has_many :changesets, :order => 'revision desc'
   has_many :changes, :through => :changesets, :order => 'changesets.revision desc'
   has_one  :latest_changeset, :class_name => 'Changeset', :foreign_key => 'repository_id', :order => 'revision desc'
@@ -42,7 +42,7 @@ class Repository < ActiveRecord::Base
   end
   
   def grant(options = {}, &block)
-    Membership.grant(self, options, &block)
+    Permission.grant(self, options, &block)
   end
 
   def revisions_to_sync(refresh = false)

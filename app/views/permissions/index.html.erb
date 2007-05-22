@@ -1,0 +1,35 @@
+<h2><%=h current_repository.name %> Members</h2>
+<ul id="permissions">
+<% current_repository.permissions.each do |permission| -%>
+  <li class="permission" id="<%= dom_id permission %>">
+    <%=h permission.login %> has
+    <%= permission.full_access? ? 'read-write' : 'write' %> access to
+    <%=h permission.formatted_path %>
+    <ul class="admin-controls">
+      <li class="edit"><%= link_to_function('Edit', %($('permission_edit_#{permission.id}').toggle())) %></li>
+      <li class="del"><a href="#" title="Delete">Delete</a></li>
+    </ul>
+  </li>
+  <li class="permission permissionedit" id="permission_edit_<%= permission.id %>" style="display:none">
+    <% form_for :permission, permission, :url => permission_path(permission), :method => :put do |f| -%>
+<%= render :partial => "form", :object => f %>
+      <p class="btns">
+        <%= submit_tag 'Save', :disable_with => 'Saving...' %> or <%= link_to_function('cancel', %($('permission_edit_{permission.id}').toggle())) %>
+      </p>
+    <% end -%>
+  </li>
+<% end -%>
+  <li class="member" id="<%= dom_id @permission %>">
+    Invite Member
+    <% form_for :permission, :url => members_path do |f| -%>
+      <p>
+        <label for="email">Email:</label>
+        <%= text_field_tag :email %>
+      </p>
+<%= render :partial => "form", :object => f %>
+      <p class="btns">
+        <%= submit_tag 'Create', :disable_with => 'Creating...' %>
+      </p>
+    <% end -%>
+  </li>
+</ul>
