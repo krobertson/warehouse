@@ -12,9 +12,7 @@
 </p>
 
 <p style="border-bottom:0">
-  <label>Public? <%= form.check_box :public %></label>
+  <label>Public:</label> 
+  <%= form.check_box :public %> Yes, the public can browse this repository.
 </p>
 
-<% unless form.object.new_record? -%>
-<p><%= link_to "Members", members_path %> | <%= link_to 'Permissions', permissions_path %></p>
-<% end -%>
