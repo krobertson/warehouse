@@ -12,7 +12,11 @@ class Repository < ActiveRecord::Base
   validates_presence_of :name, :path, :subdomain
   attr_accessible :name, :path, :subdomain
   
-  has_many :permissions, :conditions => ['active = ?', true]
+  has_many :permissions, :conditions => ['active = ?', true] do
+    def set(user_id, options = {})
+      Permission.set(proxy_owner, user_id, options)
+    end
+  end
   has_many :members, :through => :permissions, :source => :user, :select => 'users.*, permissions.login, permissions.id as permission_id, permissions.admin as permission_admin'
   has_many :all_permissions, :class_name => 'Permission', :foreign_key => 'repository_id', :dependent => :delete_all
   has_many :changesets, :order => 'revision desc'

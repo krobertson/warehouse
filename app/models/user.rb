@@ -1,5 +1,9 @@
 class User < ActiveRecord::Base
   attr_accessor :avatar_data
+  
+  has_many :permissions, :dependent => :delete_all
+  has_many :repositories, :through => :permissions
+  
   validates_presence_of   :identity_url
   validates_format_of     :email, :with => /(\A(\s*)\Z)|(\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z)/i, :allow_nil => true
   validates_uniqueness_of :identity_url

@@ -11,7 +11,7 @@
     </ul>
   </li>
   <li class="permission permissionedit" id="permission_edit_<%= user ? user.id : :anon %>">
-    <% form_for :permission, permissions.first, :url => user ? user_permissions_path(user) : anon_permissions_path do |f| -%>
+    <% form_for :permission, permissions.first, :url => (user ? user_permissions_path(user) : anon_permissions_path), :html => { :method => :put } do |f| -%>
       <%= render :partial => "form", :object => f, :locals => { :permissions => permissions } %>
       <p class="btns">
         <%= submit_tag 'Save', :disable_with => 'Saving...' %>
@@ -23,10 +23,11 @@
 
 <div class="form">
   <h3>Add a new Member</h3>
-  <% form_for :permission, @permission, :url => permissions_path do |f| -%>
+  <% form_for @permission do |f| -%>
     <p>
       <label for="email">Email:</label>
-      <%= text_field_tag :email, nil, :size => 30 %>
+      <%= text_field_tag :email, nil, :size => 30 %><br />
+      (leave email and svn login info blank for anonymous access)
     </p>
     <%= render :partial => "form", :object => f %>
     <p class="btns">

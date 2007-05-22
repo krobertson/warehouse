@@ -5,3 +5,8 @@ rick_sample:
   admin: true
   login: rick
   active: true
+anon_sample:
+  id: 2
+  repository_id: 1
+  active: true
+  path: public

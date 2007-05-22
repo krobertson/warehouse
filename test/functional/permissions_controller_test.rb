@@ -15,7 +15,7 @@ context "Permissions Controller" do
     assert_difference "Permission.count" do
       assert_difference "User.count" do
         post :create, :email => 'imagetic@wh.com', :permission => { :login => 'imagetic' }
-        assert_redirected_to permissions_path
+        assert_template 'index'
       end
     end
     
@@ -30,7 +30,7 @@ context "Permissions Controller" do
     assert_difference "Permission.count" do
       assert_no_difference "User.count" do
         post :create, :email => 'justin@wh.com', :permission => { :login => 'justin', :admin => true }
-        assert_redirected_to permissions_path
+        assert_template 'index'
       end
     end
     
@@ -47,7 +47,7 @@ context "Permissions Controller" do
     assert_difference "Permission.count", 2 do
       assert_no_difference "User.count" do
         post :create, :email => 'justin@wh.com', :permission => { :login => 'justin', :admin => true, :paths => [{:path => 'foo'}, {:path => 'bar', :full_access => true}] }
-        assert_redirected_to permissions_path
+        assert_template 'index'
       end
     end
     
@@ -63,6 +63,28 @@ context "Permissions Controller" do
     perms[1].should.be.admin
     perms[1].path.should == 'foo'
     perms[1].should.not.be.full_access
+  end
+
+  specify "should update user permission" do
+    permissions(:rick_sample).should.be.admin
+    permissions(:rick_sample).path.should.be.nil
+
+    put :update, :user_id => 1, :permission => { :admin => false, :paths => [{:path => 'foo', :id => 1}] }
+    assert_redirected_to permissions_path
+    
+    permissions(:rick_sample).reload.should.not.be.admin
+    permissions(:rick_sample).path.should == 'foo'
+  end
+  
+  specify "should update anon permission" do
+    permissions(:anon_sample).reload.should.not.be.admin
+    permissions(:anon_sample).reload.should.not.be.full_access
+    
+    put :anon, :permission => { :admin => true, :paths => [{:id => 2, :full_access => true}] }
+    assert_redirected_to permissions_path
+    
+    permissions(:anon_sample).reload.should.be.admin
+    permissions(:anon_sample).reload.should.be.full_access
   end
 
   specify "should not invite new user with invalid email" do

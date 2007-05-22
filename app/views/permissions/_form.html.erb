@@ -1,17 +1,22 @@
 <% permissions = [] unless defined?(permissions) -%>
+
+<% if form.object.nil? || form.object.new_record? || !form.object.user_id.blank? -%>
 <p>
   <label for="login">SVN Login:</label>
   <%= form.text_field :login %>
 </p>
+<% end -%>
 <p style="border-bottom:0">
-  <label>Administrator?</label> 
-   <%= form.check_box :admin %> Yes, this user can add and delete members.
+  <label>Administrator?</label>
+    <%= form.object.inspect%>
+    <%= form.check_box :admin %> Yes, this user can add and delete members.
 </p>
 <dl id="svn-paths">
   <dt>This member can access the following paths (relative to repository root)</dt>
-  <% if form.object.new_record? -%>
-  <%= path_permissions %>
-  <%= path_permissions %>
+  <% if (form.object && form.object.new_record?) || permissions.blank? -%>
+    <% (params[:permission][:paths].size rescue 1).times do -%>
+      <%= path_permissions %>
+    <% end -%>
   <% else -%>
     <% permissions.each do |permission| -%>
       <%= path_permissions(permission) %>
