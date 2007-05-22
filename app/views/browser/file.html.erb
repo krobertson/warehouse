@@ -46,6 +46,9 @@
       </td>
     </tr>
   </table>
+<% elsif @node.image? -%>
+ <p>Viewing <%=h @node.path %></p>
+ <p><%= image_tag raw_path(:paths => @node.paths) %></p>
 <% else -%>
-  Not text!  <%= @node.mime_type %>
+  <p>Download <%= link_to h(@node.path), raw_path(:paths => @node.paths) %>.</p>
 <% end -%>

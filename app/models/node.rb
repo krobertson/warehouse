@@ -67,12 +67,12 @@ class Node
 
   def text?
     return false unless mime_type
-    @text_type ||= self.mime_type =~ /^text/i
+    @text_type ||= self.svn_mime_type != @@default_mime_type
   end
     
   def image?
     return false unless mime_type
-    @image_type ||= self.mime_type =~ /image\/(png|jpg|jpeg|gif)/i
+    @image_type ||= self.mime_type =~ /(png|jpg|jpeg|gif)/i
   end
 
   def svn_mime_type
@@ -83,9 +83,7 @@ class Node
     return nil if self.dir? || !self.exists?
   
     if svn_mime_type.blank? || svn_mime_type == @@default_mime_type
-      file_type = File.extname(self.name).gsub(/^\./, '')
-      file_type = self.name if file_type.blank?
-      file_type && MIME_TYPE_MAP[file_type] ? MIME_TYPE_MAP[file_type] : @@default_mime_type
+      File.extname(self.name).gsub(/^\./, '')
     else
       svn_mime_type
     end      
