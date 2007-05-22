@@ -586,8 +586,38 @@ span.cp {
   padding-left: 20px;
 }
 
+div.control {
+  position: relative;
+}
+
+a.csdiff {
+  position: absolute;
+  right: 5px;
+  top: 1px;
+  background: url(../images/app/icons/diff.png) 0 2px no-repeat;
+  display: block;
+  width: 16px;
+  height: 16px;
+  text-indent: -9999px;
+  border: none !important;
+}
+
 #cdiff a {
   background: url(../images/app/icons/diff.png) 0 2px no-repeat;
+}
+
+.csfile a {
+  font-size: 92%;
+  font-weight: bold;
+  color: #333;
+  text-shadow: 2px 2px #eee;
+  display: block;
+  padding-left: 20px;
+  background: url(../images/app/icons/arrow-small.png) 0 50% no-repeat;
+}
+
+.csfile a:hover {
+  color: #000;
 }
 
 /* @end */

@@ -47,8 +47,8 @@ module ChangesetsHelper
         <tr class="controls">
           <td colspan="3">
             <div class="control">
-              #{link_to_node change.path, change.node, current_revision_num}
-              [#{link_to 'diff', formatted_changeset_change_path(@changeset, change, :diff)}]
+              <span class="csfile">#{link_to_node change.path, change.node, current_revision_num}</span>
+              #{link_to 'diff', formatted_changeset_change_path(@changeset, change, :diff), :class => 'csdiff'}
             </div>
           </td>
         </tr>
