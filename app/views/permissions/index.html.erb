@@ -10,7 +10,7 @@
       <li class="del"><a href="#" title="Delete">Delete</a></li>
     </ul>
   </li>
-  <li class="permission permissionedit" id="permission_edit_<%= user ? user.id : :anon %>">
+  <li class="permission permissionedit form" id="permission_edit_<%= user ? user.id : :anon %>" style="display:none">
     <% form_for :permission, permissions.first, :url => (user ? user_permissions_path(user) : anon_permissions_path), :html => { :method => :put } do |f| -%>
       <%= render :partial => "form", :object => f, :locals => { :permissions => permissions } %>
       <p class="btns">

@@ -1,7 +1,9 @@
 class RepositoriesController < ApplicationController
+  skip_before_filter :check_for_repository
+
   def index
     @repository   = Repository.new
-    @repositories = Repository.find(:all)
+    @repositories = Warehouse.multiple_repositories ? Repository.find(:all) : [Repository.find(:first)]
   end
 
   def show

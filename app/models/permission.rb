@@ -16,6 +16,10 @@ class Permission < ActiveRecord::Base
     "/#{path}"
   end
 
+  def path=(value)
+    write_attribute :path, value.to_s.gsub(/^\/|\/$/, '')
+  end
+
   def self.grant(repository, options = {}, &block)
     options = options.dup
     if paths = options.delete(:paths)

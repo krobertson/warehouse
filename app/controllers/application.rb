@@ -4,9 +4,7 @@
 class ApplicationController < ActionController::Base
   helper :all # include all helpers, all the time
   helper_method :current_repository, :logged_in?, :current_user, :admin?, :controller_path
-  
-  # expiring_attr_reader :controller_path, %([controller_name, action_name] * '/')
-  
+  before_filter :check_for_repository
   #before_filter { |c| c.current_repository.sync_revisions }
 
   def logged_in?
@@ -14,21 +12,37 @@ class ApplicationController < ActionController::Base
   end
   
   def current_user
-    @current_user ||= User.find_by_id(1)
-    #@current_user ||= (session[:user_id] && User.find_by_id(session[:user_id])) || :false
+    @current_user ||= (session[:user_id] && User.find_by_id(session[:user_id])) || :false
   end
   
   def admin?
     logged_in? && current_user.admin?
   end
 
-  def access_denied(options = {})
-    flash[:error] = options[:error]
-    redirect_to options[:url] || root_path
-    false
-  end
-
   def current_repository
-    @current_repository ||= Repository.find(:first)
+    @current_repository ||= Warehouse.multiple_repositories ? subdomain_repository : default_repository
   end
+  
+  protected
+    def access_denied(options = {})
+      flash[:error] = options[:error] if options[:error]
+      redirect_to options[:url] || root_path
+      false
+    end
+
+    def repository_subdomain
+      request.subdomains.first
+    end
+  
+    def check_for_repository
+      current_repository || access_denied
+    end
+    
+    def default_repository
+      Repository.find(:first)
+    end
+    
+    def subdomain_repository
+      !repository_subdomain.blank? && Repository.find_by_subdomain(repository_subdomain)
+    end
 end

@@ -24,10 +24,6 @@ class Repository < ActiveRecord::Base
   has_one  :latest_changeset, :class_name => 'Changeset', :foreign_key => 'repository_id', :order => 'revision desc'
   before_destroy :clear_changesets
   
-  def path=(value)
-    write_attribute :path, value.to_s.gsub(/^\/|\/$/, '')
-  end
-  
   def latest_revision
     @latest_revision ||= backend.youngest_rev
   end

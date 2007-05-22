@@ -17,10 +17,12 @@
       <!-- header -->
       <div id="header">
         <div id="hdr-cnt">
-          <h1><%= link_to current_repository.name, root_path %></h1>
+          <h1><%= link_to current_repository ? current_repository.name : "Warehouse", root_path %></h1>
           <ul id="nav">
+            <% if current_repository -%>
             <li id="code"><%= link_to 'Browser', browser_path %></li>
             <li id="activity"><%= link_to 'Activity', changesets_path %></li>
+            <% end -%>
             <% if logged_in? && admin? %>
             <li id="admin"><%= link_to 'Admin', admin_path %></li>
             <% end %>
@@ -52,7 +54,7 @@
       <!-- content -->
       <div id="content" class="clearfix">
         <!-- main -->
-        <div id="main"<% if @fullscreen %> style="width:100%"<% end %>>
+        <div id="main"<% if @fullscreen -%> style="width:100%"<% end -%>>
           <%= yield %>
         </div>
         <!-- /main -->
