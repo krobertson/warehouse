@@ -6,20 +6,20 @@ module ApplicationHelper
   
   def word_for_change(change)
     case change.downcase
-      when 'a' then return 'Added'
-      when 'd' then return 'Deleted'
-      when 'm' then return 'Modified'
-      when 'mv' then return 'Moved'
-      when 'cp' then return 'Copied'
+      when 'a'  then  'Added'
+      when 'd'  then  'Deleted'
+      when 'm'  then  'Modified'
+      when 'mv' then  'Moved'
+      when 'cp' then  'Copied'
       else return change
     end
   end
   
   def highlight_as(filename)
     case filename.split('.').last.downcase
-      when 'js', 'as' then return 'javascript'
-      when 'rb', 'rakefile' then return 'ruby'
-      when 'rhtml', 'erb', 'html', 'xml' then return 'html'
+      when 'js', 'as' then 'javascript'
+      when 'rb', 'rakefile' then 'ruby'
+      when 'rhtml', 'erb', 'html', 'xml' then 'html'
       else 'plain'
     end
   end
