@@ -1,6 +1,38 @@
 require File.dirname(__FILE__) + '/../test_helper'
 
 context "Permission" do
+  specify "should accept user admin as repo member" do
+    u = User.new
+    u.stubs(:admin?).returns(true)
+    repositories(:sample).member?(u).should == true
+  end
+
+  specify "should recognize anonymous member" do
+    repositories(:sample).member?(nil).should == false
+    repositories(:sample).member?(nil, 'public').should == true
+    repositories(:sample).member?(nil, 'public/foo').should == true
+  end
+
+  specify "should recognize member" do
+    User.update_all ['admin = ?', false]
+    Permission.update_all ['admin = ?, path = ?', false, 'foo/bar']
+    repositories(:sample).member?(users(:rick)).should == false
+    repositories(:sample).member?(users(:rick), 'foo').should == false
+    repositories(:sample).member?(users(:rick), 'foo/bar').should == true
+    repositories(:sample).member?(users(:rick), 'foo/bar/baz').should == true
+  end
+
+  specify "should accept user admin as repo admin" do
+    u = User.new
+    u.stubs(:admin?).returns(true)
+    repositories(:sample).admin?(u).should == true
+  end
+  
+  specify "should recognize user admin" do
+    repositories(:sample).admin?(users(:rick)).should == true
+    repositories(:sample).admin?(users(:justin)).should == false
+  end
+  
   specify "should invite user" do
     u = User.new(:email => 'imagetic@wh.com')
     repositories(:sample).invite u, :login => 'imagetic'

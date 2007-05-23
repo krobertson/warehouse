@@ -23,13 +23,26 @@ class Repository < ActiveRecord::Base
   has_many :changes, :through => :changesets, :order => 'changesets.revision desc'
   has_one  :latest_changeset, :class_name => 'Changeset', :foreign_key => 'repository_id', :order => 'revision desc'
   before_destroy :clear_changesets
-  
+
+  def path=(value)
+    write_attribute :path, value.to_s.gsub(/^\/|\/$/, '')
+  end
+
   def latest_revision
     @latest_revision ||= backend.youngest_rev
   end
 
-  def node(path, rev = nil)
-    Node.new(self, path, rev)
+  def member?(user, path = nil)
+    return true if public? || (user.is_a?(User) && user.admin?)
+    paths = path.to_s.split('/').inject([]) { |m, p| m << (m.last.nil? ? p : "#{m.last}/#{p}") }
+    user_query = user ? 'user_id = ?' : "(user_id is null or user_id = ?)"
+    !permissions.count(:id, :conditions => ["#{user_query} and (path is null or path in (?))", user ? user.id : 0, paths]).zero?
+  end
+  
+  def admin?(user)
+    return nil unless user.is_a?(User)
+    return true if user.admin?
+    !permissions.count(:id, :conditions => ['user_id = ? and admin = ?', user.id, true]).zero?
   end
 
   def invite(user, options = {})
@@ -43,6 +56,10 @@ class Repository < ActiveRecord::Base
   
   def grant(options = {}, &block)
     Permission.grant(self, options, &block)
+  end
+
+  def node(path, rev = nil)
+    Node.new(self, path, rev)
   end
 
   def revisions_to_sync(refresh = false)

@@ -10,4 +10,11 @@ class Test::Unit::TestCase
   self.use_transactional_fixtures = true
   self.use_instantiated_fixtures  = false
   fixtures :all
+  
+  protected
+    def stub_node(*args)
+      options = args.last.is_a?(Hash) ? args.pop : {}
+      path    = args.first || ''
+      stub(options.merge(:path => path, :dir? => true))
+    end
 end

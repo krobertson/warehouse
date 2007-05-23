@@ -1,5 +1,6 @@
 class BrowserController < ApplicationController
   before_filter :find_node
+  before_filter :repository_member_required
   helper_method :current_revision, :current_changeset, :previous_changeset, :next_changeset
 
   def index
@@ -38,5 +39,10 @@ class BrowserController < ApplicationController
     
     def next_changeset
       @next_changeset ||= current_repository.changesets.find_by_path(@node.path, :conditions => ['revision > ?', current_revision])
+    end
+
+    def repository_path
+      return nil if @node.nil?
+      @node.dir? ? @node.path : File.dirname(@node.path)
     end
 end
