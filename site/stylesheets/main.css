@@ -1,0 +1,87 @@
+body {
+  margin: 0;
+  text-align: center;
+  padding: 0;
+  font: normal 12px/1.5em "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background: #e6e6e6;
+  color: #444;
+}
+
+ul, li, form, input, dt, dl, dd, ol, div, p, 
+blockquote, h1, h2, h3, h4, h5, h6, a, pre,
+code {
+  margin: 0;
+  padding: 0;
+}
+
+a { color: #333; text-decoration: none;}
+
+/* @group Structure */
+#container {
+  border-top: 8px solid #222;
+}
+
+#content {
+  width: 800px;
+  padding: 0 10px;
+  margin: 40px auto 20px auto;
+  text-align: left;
+}
+
+#header {
+  text-indent: -9999px;
+}
+
+#intro {
+  font-weight: normal;
+  font-size: 200%;
+  line-height: 120%;
+  text-align: center;
+  color: #555;
+}
+
+#intro span {
+  display: block;
+  color: #258;
+}
+
+
+/* @end */
+
+
+/* @group Screens */
+#screens {
+  margin-top: 40px;
+}
+
+#sshots {
+  list-style: none;
+}
+
+#sshots li {
+  position: relative;
+  height: 220px;
+}
+
+#sshots .screen {
+  position: absolute;
+  left: 0;
+  top: 0;
+  border: 1px solid #bbb;
+}
+
+#sshots h2 {
+  margin-left: 260px;
+  margin-bottom: 5px;
+}
+
+#sshots p {
+  margin-left: 260px;
+  font-size: 150%;
+  line-height: 130%;
+}
+
+
+/* @end */
+
+
