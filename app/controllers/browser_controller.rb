@@ -40,9 +40,4 @@ class BrowserController < ApplicationController
     def next_changeset
       @next_changeset ||= current_repository.changesets.find_by_path(@node.path, :conditions => ['revision > ?', current_revision])
     end
-
-    def repository_path
-      return nil if @node.nil?
-      @node.dir? ? @node.path : File.dirname(@node.path)
-    end
 end

@@ -35,9 +35,6 @@ class ApplicationController < ActionController::Base
     @current_repository ||= Warehouse.multiple_repositories ? subdomain_repository : default_repository
   end
   
-  def repository_path
-  end
-  
   protected
     def repository_member_required
       repository_member? || access_denied(:error => "You must be a member of this repository to visit this page.")
@@ -57,6 +54,11 @@ class ApplicationController < ActionController::Base
       flash[:error] = options[:error] if options[:error]
       redirect_to options[:url] || root_path
       false
+    end
+
+    def repository_path
+      return nil if @node.nil?
+      @node.dir? ? @node.path : File.dirname(@node.path)
     end
 
     def repository_subdomain
