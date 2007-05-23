@@ -1,4 +1,6 @@
 class PermissionsController < ApplicationController
+  before_filter :repository_admin_required
+
   def index
     @permission ||= Permission.new
     @members      = current_repository.permissions.group_by &:user

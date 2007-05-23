@@ -1,4 +1,5 @@
 class UsersController < ApplicationController
+  before_filter :profile_required
   before_filter :find_user, :except => :index
   
   def update
@@ -10,7 +11,11 @@ class UsersController < ApplicationController
   end
   
   protected
+    def profile_required
+      logged_in? && (params[:id].nil? || (params[:id] == current_user.id.to_s)) || access_denied(:error => "You can only access your own profile.")
+    end
+
     def find_user
-      @user = params[:id] ? User.find(params[:id]) : current_user
+      @user = current_user
     end
 end

@@ -1,5 +1,6 @@
 class RepositoriesController < ApplicationController
   skip_before_filter :check_for_repository
+  before_filter :admin_required
 
   def index
     @repository   = Repository.new
@@ -31,9 +32,4 @@ class RepositoriesController < ApplicationController
       render :action => 'show'
     end
   end
-  
-  protected
-    def admin_required
-      admin? || access_denied
-    end
 end

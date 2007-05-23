@@ -9,6 +9,7 @@ context "Permissions Controller" do
     @controller = PermissionsController.new
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
+    @controller.stubs(:current_user).returns(users(:rick))
   end
 
   specify "should grant new permission to repo" do
