@@ -53,15 +53,11 @@ span.keywords {
 /** HTML **/
 
 code.html span.tag {
-  color: #fff;
+  color: #AC885B;
 }
 
 code.html span.attribute {
-  color: #4b2;
-}
-
-code.html span.string {
-  color: #99FF00;
+  color: #AC885B;
 }
 
 code.html span.comment {
