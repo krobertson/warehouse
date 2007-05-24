@@ -1,7 +1,20 @@
 class User < ActiveRecord::Base
   attr_accessor :avatar_data
   
-  has_many :permissions, :dependent => :delete_all
+  has_many :permissions, :conditions => ['active = ?', true] do
+    def for_repository(repository)
+      find_all_by_repository_id(repository.id)
+    end
+    
+    def paths_for(repository)
+      return :all if proxy_owner.admin? || repository.public?
+      paths = for_repository(repository).collect! &:path
+      root_paths, all_paths = paths.partition(&:blank?)
+      root_paths.empty? ? all_paths : :all
+    end
+  end
+  
+  has_many :all_permissions, :class_name => 'Permission', :foreign_key => 'user_id', :dependent => :delete_all
   has_many :repositories, :through => :permissions
   
   validates_presence_of   :identity_url

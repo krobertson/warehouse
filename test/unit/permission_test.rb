@@ -117,4 +117,27 @@ context "Permission" do
     p.errors.should.be.any
     p.errors.on(:login).should.not.be.nil
   end
+  
+  specify "should find repository permissions" do
+    users(:rick).permissions.for_repository(repositories(:sample)).should == [permissions(:rick_sample)]
+  end
+  
+  specify "should find root repository permission paths" do
+    users(:rick).permissions.paths_for(repositories(:sample)).should == :all
+  end
+
+  specify "should not find inactive repository permission paths" do
+    Permission.update_all 'active = null'
+    User.update_all 'admin = null'
+    Repository.update_all 'public = null'
+    users(:rick).permissions.paths_for(repositories(:sample)).should == []
+  end
+
+  specify "should find repository permission sub paths" do
+    permissions(:rick_sample).update_attribute :path, 'bar'
+    Permission.update_all ['active = ?', true]
+    User.update_all 'admin = null'
+    Repository.update_all 'public = null'
+    users(:rick).permissions.paths_for(repositories(:sample)).sort.should == %w(bar foo)
+  end
 end

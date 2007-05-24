@@ -26,8 +26,7 @@ context "Changeset" do
   
   specify "should find by path" do
     repositories(:sample).changesets.find_all_by_path('moon/file.txt').should == [changesets(:two), changesets(:one)]
-    repositories(:sample).changesets.find_all_by_path('moon').should == [changesets(:one)]
-    repositories(:sample).changesets.find_by_path('moon').should == changesets(:one)
+    repositories(:sample).changesets.find_by_path('moon').should == changesets(:two)
   end
   
   specify "should seed svn info" do
@@ -45,5 +44,17 @@ context "Changeset" do
     ch.author.should == 'rick'
     ch.message.should == 'hello'
     ch.changed_at.should == changed_at
+  end
+  
+  specify "should find all changesets with root path" do
+    Changeset.find_all_by_paths(:all).size.should == 2
+  end
+  
+  specify "should find changesets in root path" do
+    Changeset.find_all_by_path('moon').size.should == 2
+  end
+  
+  specify "should hide changesets outside of given paths" do
+    Changeset.find_all_by_paths(%w(foo bar)).should.be.empty
   end
 end

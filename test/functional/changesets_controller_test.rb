@@ -4,7 +4,7 @@ require 'changesets_controller'
 # Re-raise errors caught by the controller.
 class ChangesetsController; def rescue_action(e) raise e end; end
 
-class ChangesetsControllerTest < Test::Unit::TestCase
+context "Changesets Controller" do
   def setup
     @controller = ChangesetsController.new
     @request    = ActionController::TestRequest.new

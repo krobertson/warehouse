@@ -10,3 +10,10 @@ anon_sample:
   repository_id: 1
   active: true
   path: public
+inactive_rick_sample:
+  id: 3
+  user_id: 1
+  repository_id: 1
+  login: rick
+  active: false
+  path: foo

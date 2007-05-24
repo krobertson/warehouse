@@ -9,12 +9,28 @@ class Changeset < ActiveRecord::Base
 
   delegate :backend, :to => :repository
 
+  def self.paginate_by_path(path, options = {})
+    with_paths([path]) { paginate(options) }
+  end
+
   def self.find_all_by_path(path, options = {})
-    with_path(path) { find :all, options }
+    with_paths([path]) { find :all, options }
   end
 
   def self.find_by_path(path, options = {})
-    with_path(path) { find :first, options }
+    with_paths([path]) { find :first, options }
+  end
+
+  def self.paginate_by_paths(paths, options = {})
+    with_paths(paths) { paginate(options) }
+  end
+
+  def self.find_all_by_paths(paths, options = {})
+    with_paths(paths) { find :all, options }
+  end
+
+  def self.find_by_paths(paths, options = {})
+    with_paths(paths) { find :first, options }
   end
 
   def to_param
@@ -22,8 +38,15 @@ class Changeset < ActiveRecord::Base
   end
 
   protected
-    def self.with_path(path, &block)
-      with_scope :find => { :select => 'changesets.*', :joins => 'inner join changes on changesets.id = changes.changeset_id', :conditions => ['changes.path = ?', path], :order => 'changesets.revision desc' }, &block
+    def self.with_paths(paths, &block)
+      if paths == :all
+        block.call
+      else
+        conditions = [Array.new(paths.size).fill('changes.path LIKE ?') * " or ", *paths.collect { |p| "#{p}/%" }]
+        conditions.first << " or changes.path IN (?)"
+        conditions       << paths
+        with_scope :find => { :select => 'distinct changesets.*', :joins => 'inner join changes on changesets.id = changes.changeset_id', :conditions => conditions, :order => 'changesets.revision desc' }, &block
+      end
     end
 
     def seed_svn_info

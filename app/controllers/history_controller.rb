@@ -4,7 +4,7 @@ class HistoryController < ApplicationController
 
   def index
     
-    @changesets = current_repository.changesets.find_all_by_path(@node.path)
+    @changesets = current_repository.changesets.paginate_by_path(@node.path, :page => params[:page])
   end
   
   protected
