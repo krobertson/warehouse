@@ -6,11 +6,11 @@
   <li class="permission" id="<%= user ? dom_id(user) : :user_anon %>">
     <%=h permissions.first.login %> (<%= permissions.size %>)
     <ul class="admin-controls">
-      <li class="edit"><%= link_to_function('Edit', %($('permission_edit_#{user ? user.id : :anon}').toggle())) %></li>
+      <li class="edit"><%= link_to_function('Edit', %($('permission-edit-#{user ? user.id : :anon}').toggle())) %></li>
       <li class="del"><a href="#" title="Delete">Delete</a></li>
     </ul>
   </li>
-  <li class="permission permissionedit form" id="permission_edit_<%= user ? user.id : :anon %>" style="display:none">
+  <li class="permission permissionedit form" id="permission-edit-<%= user ? user.id : :anon %>" style="display:none">
     <% form_for :permission, permissions.first, :url => (user ? user_permissions_path(user) : anon_permissions_path), :html => { :method => :put } do |f| -%>
       <%= render :partial => "form", :object => f, :locals => { :permissions => permissions } %>
       <p class="btns">

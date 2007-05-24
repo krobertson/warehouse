@@ -8,7 +8,7 @@ Element.addMethods({
 
 Event.addBehavior({
   'a.addpath:click': function() {
-    $('path').duplicate(); 
+    $(this.up()).duplicate(); 
     return false;
   }
 });
