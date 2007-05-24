@@ -879,7 +879,31 @@ p.btns {
 #svn-paths dd {
   margin-left: 10px;
   padding: 5px;
+  position: relative;
+  font-size: 92%;
+  border-bottom: 1px dotted #ddd;
 }
+
+a.addpath {
+  display: block;
+  position: absolute;
+  top: 5px;
+  left: 395px;
+  width: 16px;
+  height: 16px;
+  text-indent: -9999px;
+  background: url(../images/app/icons/plus-small.png) 0 50% no-repeat;
+}
+
+input.path {
+  width: 200px;
+}
+
+.sel {
+  width: 150px;
+}
+
+/* My Comment */
 
 .pagination {
   padding: 3px;
