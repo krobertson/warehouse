@@ -1,6 +1,7 @@
-// LowPro by Dan Webb (http://danwebb.net) Bloody Brit! Buy him a beer if you use his code.
+// LowPro by Dan Webb (http://danwebb.net)
 // I just ripped out the parts I don't need with the newer version of Protoype, feel free to 
-// steal this file for your own use.
+// steal this file for your own use.  
+// Extends Event to add onReady and addBehavior 
 //
 Object.extend(Event, {
   _domReady : function() {
@@ -103,44 +104,3 @@ Object.extend(Event.addBehavior, {
 });
 
 Event.observe(window, 'unload', Event.addBehavior.unload.bind(Event.addBehavior));
-
-Behavior = {
-  create : function(members) {
-    var behavior = function() { 
-      var behavior = arguments.callee;
-      if (this == window) {
-        var args = [];
-        for (var i = 0; i < arguments.length; i++) 
-          args.push(arguments[i]);
-          
-        return function(element) {
-          var initArgs = [this].concat(args);
-          behavior.attach.apply(behavior, initArgs);
-        };
-      } else {
-        var args = (arguments.length == 2 && arguments[1] instanceof Array) ? 
-                      arguments[1] : Array.prototype.slice.call(arguments, 1);
-
-        this.element = $(arguments[0]);
-        this.initialize.apply(this, args);
-        behavior._bindEvents(this);
-        behavior.instances.push(this);
-      }
-    };
-    behavior.prototype.initialize = Prototype.K;
-    Object.extend(behavior.prototype, members);
-    Object.extend(behavior, Behavior.ClassMethods);
-    behavior.instances = [];
-    return behavior;
-  },
-  ClassMethods : {
-    attach : function(element) {
-      return new this(element, Array.prototype.slice.call(arguments, 1));
-    },
-    _bindEvents : function(bound) {
-      for (var member in bound)
-        if (member.match(/^on(.+)/) && typeof bound[member] == 'function')
-          bound.element.observe(RegExp.$1, bound[member].bindAsEventListener(bound));
-    }
-  }
-};
