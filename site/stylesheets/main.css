@@ -18,7 +18,7 @@ a { color: #333; text-decoration: none;}
 
 /* @group Structure */
 #container {
-  border-top: 8px solid #222;
+  border-top: 8px solid #00070C;
 }
 
 #content {
@@ -38,6 +38,7 @@ a { color: #333; text-decoration: none;}
   line-height: 120%;
   text-align: center;
   color: #555;
+  text-shadow: 2px 2px #f7f7f7;
 }
 
 #intro span {
@@ -71,6 +72,9 @@ a { color: #333; text-decoration: none;}
 }
 
 #sshots h2 {
+  font-weight: normal;
+  font-size: 170%;
+  color: #270;
   margin-left: 260px;
   margin-bottom: 5px;
 }
@@ -83,5 +87,75 @@ a { color: #333; text-decoration: none;}
 
 
 /* @end */
+
+/* @group Footer */
+#footer {
+  background: #00070C;
+  clear: both;
+  padding: 20px;
+  height: 50px;
+  color: #6e8698;
+  font-size: 11px;
+  text-align: left;
+}
+
+#footer a {
+  color: #fff;
+}
+#ftr-cnt {
+  width: 758px;
+  margin: 0 auto;
+}
+
+#ftr-lh {
+  float: left;
+  width: 50%;
+}
+
+#ftr-lh p {
+  display: block;
+  border-bottom: 1px dotted #002139;
+  padding-bottom: 5px;
+}
+
+#ftr-lh ul {
+  list-style: none;
+  margin-top: 5px;
+}
+
+#ftr-lh li {
+  display: inline;
+  margin-right: 10px;
+}
+
+#ftr-lh li a {
+  border-bottom: 1px solid #002139;
+}
+
+li#ar-logo a {
+  border: none;
+}
+
+#ar-logo a img {
+  vertical-align: middle;
+}
+
+#ftr-ey {
+  margin-left: 55%;
+  text-align: right;
+}
+
+#ftr-ey p {
+}
+
+#ey-logo {
+  float: right;
+  margin-left: 5px;
+}
+
+
+
+/* @end */
+
 
 
