@@ -1,4 +1,5 @@
 <ul id="admin-nav" class="clearfix">
   <li><%= link_to Warehouse.multiple_repositories ? :Repositories : :Admin, admin_path %></li>
-  <li><%= link_to 'Members', permissions_path %></li>
+  <li><%= link_to 'Members', '/users' %></li>
+  <li><%= link_to 'SVN Permissions', permissions_path %></li>
 </ul>

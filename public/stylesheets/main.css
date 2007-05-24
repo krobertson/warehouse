@@ -207,6 +207,18 @@ li#admin a {
   background: #ddd;
 }
 
+.block {
+  margin: 0 0 20px 0;
+  padding: 10px;
+  background: #f7f7f7;
+  border-bottom: 1px solid #ddd;
+}
+
+.block h3 a {
+  color: #333;
+  text-shadow: 2px 2px #f7f7f7;
+}
+
 /* @end */
 
 /* @group Sidebar */
@@ -472,7 +484,7 @@ li.prev a {
   background: url(../images/app/icons/back.png) no-repeat;
 }
 
-.changeset, .repo, .form {
+.changeset, .repo, .form, .permission {
   padding: 10px;
   padding-left: 50px;
   background: #f7f7f7 url(../images/app/icons/terminal.png) 5px 3px no-repeat;
@@ -755,14 +767,18 @@ td.viewsource pre {
   border-top: 1px solid #fff;
 }
 
-#repos {
+#repos, #permissions {
   list-style: none;
 }
 
-li.repo {
+li.repo, li.permission {
   position: relative;
   background: #f7f7f7 url(../images/app/icons/repository.png) 3px 10px no-repeat;
   padding: 10px 45px;
+}
+
+li.permission {
+  
 }
 
 #repos span.log {
@@ -812,7 +828,7 @@ div.form {
   background: #f7f7f7 !important;
 }
 
-.form h3 {
+.form h3, .block h3 {
   border-top: 1px solid #f7f7f7;
   border-bottom: 1px solid #aaa;
   background: #eee url(../images/app/controls-bg.png) bottom left repeat-x;
@@ -939,6 +955,14 @@ input.path {
   color: #aaa;
 }
 
+
+/* @end */
+
+/* @group Users */
+
+#users {
+  list-style: none;
+}
 
 /* @end */
 
