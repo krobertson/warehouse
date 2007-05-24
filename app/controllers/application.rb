@@ -51,8 +51,8 @@ class ApplicationController < ActionController::Base
     end
 
     def access_denied(options = {})
-      flash[:error] = options[:error] if options[:error]
-      redirect_to options[:url] || root_path
+      @error = options[:error] || "A login is required to visit this page."
+      render :template => 'layouts/error'
       false
     end
 
