@@ -2,3 +2,14 @@
   <li><%= link_to Warehouse.multiple_repositories ? :Repositories : :Admin, admin_path %></li>
   <li><%= link_to 'Members', permissions_path %></li>
 </ul>
+<ul id="second-nav" class="clearfix">
+  <% if path?('permissions') %>
+    <li><%= link_to_function('Add member', %($('add-member').toggle(); return false;)) %></li>
+    <li id="jump"><label>Show members of:</label> 
+      <select name="repo">
+        <option value="somerepo">Mephisto's Repo</option>
+        <option value="lh">Lighthouse</option>
+      </select>
+    </li>
+  <% end %>
+</ul>

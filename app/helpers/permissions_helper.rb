@@ -10,6 +10,6 @@ module PermissionsHelper
       %(</select> to ) + 
       text_field_tag("permission_paths_#{@path_permission_index}_path", path_value, :name => "permission[paths][][path]", :class => 'path') + 
       (permission ? hidden_field_tag("permission_paths_#{@path_permission_index}_id", permission.id, :name => "permission[paths][][id]") : '') +
-      %( <a href="#add" class="addpath">(+)</a></dd>)
+      %( <a href="#add" class="addpath">(+)</a> <a class="delpath" href="#" title="Delete">Delete</a></dd>)
   end
 end

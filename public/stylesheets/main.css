@@ -350,7 +350,7 @@ a.txt, a.file {
   background: url(../images/app/icons/text-small.png) 0 50% no-repeat;
 }
 
-td span.log, #repos span.log {
+td span.log, #repos span.log, #permissions span.log {
   font-size: 92%;
   display: block;
   color: #888;
@@ -738,9 +738,9 @@ td.viewsource pre {
 
 #admin-nav {
   list-style: none;
-  margin-bottom: 10px;
+  margin-bottom: 0;
   margin-top: 20px;
-  border-bottom: 2px solid #aaa;
+  border-bottom: 1px solid #aaa;
   line-height: 100%;
 }
 
@@ -766,6 +766,47 @@ td.viewsource pre {
   border-top: 1px solid #fff;
 }
 
+#second-nav {
+  position: relative;
+  list-style: none;
+  margin-bottom: 10px;
+  background: #eee url(../images/app/controls-bg.png) bottom left repeat-x;  
+  border-top: 1px solid #f7f7f7;
+  padding: 5px;
+  border-bottom: 1px solid #aaa;
+  line-height: 160%;
+}
+
+#second-nav li {
+  display: block;
+  float: left;
+}
+
+#second-nav li a {
+  display: block;
+  padding: 0px 3px;
+  font-size: 92%;
+  font-weight: bold;
+  color: #e52;
+  text-shadow: 2px 2px #f7f7f7;
+}
+
+#second-nav li a:hover {
+  color: #333;
+}
+
+li#jump {
+  position: absolute;
+  right: 5px;
+  font-weight: bold;
+  font-size: 92%;
+}
+
+li#jump select {
+  font-size: 12px;
+  padding: 0;
+}
+
 #repos, #permissions {
   list-style: none;
 }
@@ -780,7 +821,7 @@ li.permission {
   background: #f7f7f7 url(../images/app/icons/member.png) 3px 2px no-repeat;
 }
 
-#repos span.log {
+#repos span.log, #permissions span.log {
   font-size: 92%;
   font-weight: normal;
 }
@@ -896,10 +937,9 @@ p.btns {
   padding: 5px;
   position: relative;
   font-size: 92%;
-  border-bottom: 1px dotted #ddd;
 }
 
-a.addpath {
+a.addpath, a.delpath {
   display: block;
   position: absolute;
   top: 5px;
@@ -910,6 +950,10 @@ a.addpath {
   background: url(../images/app/icons/plus-small.png) 0 50% no-repeat;
 }
 
+a.delpath {
+  left: 415px;
+  background: url(../images/app/icons/delete.png) 0 50% no-repeat;
+}
 input.path {
   width: 200px;
 }

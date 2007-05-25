@@ -10,5 +10,9 @@ Event.addBehavior({
   'a.addpath:click': function() {
     $(this.up()).duplicate(); 
     return false;
+  },
+  
+  'a.delpath:click': function() {
+    this.up().remove();
   }
 });
