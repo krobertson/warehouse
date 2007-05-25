@@ -2,7 +2,7 @@ class ChangesetsController < ApplicationController
   helper_method :previous_changeset, :next_changeset
 
   def index
-    @changesets = current_repository.changesets.paginate_by_paths(changeset_paths, :page => params[:page])
+    @changesets = current_repository.changesets.paginate_by_paths(changeset_paths, :page => params[:page], :order => 'changesets.revision desc')
   end
   
   def show
