@@ -777,7 +777,7 @@ li.repo, li.permission {
 }
 
 li.permission {
-  
+  background: #f7f7f7 url(../images/app/icons/member.png) 3px 2px no-repeat;
 }
 
 #repos span.log {
