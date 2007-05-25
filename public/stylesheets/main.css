@@ -29,10 +29,6 @@ body {
 .clearfix {display:block;}
 /* End hide from IE Mac */
 
-a {
-  outline: none;
-}
-
 a { outline: none; }
 a:link, a:visited {  color: #07b; text-decoration: none; }
 
@@ -115,6 +111,9 @@ div.errorExplanation h2 {
   width: 100%;
   padding: 10px;
   font-size: 92%;
+  z-index: 2;
+  opacity: 0.8;
+  border-top: 1px solid #ccc;
 }
 /* @end */
 

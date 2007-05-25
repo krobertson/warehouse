@@ -2,10 +2,6 @@ class UsersController < ApplicationController
   before_filter :profile_required
   before_filter :find_user, :except => :index
   
-  def index
-    @users = User.find(:all, :include => :permissions)
-  end
-  
   def update
     if @user.update_attributes(params[:user])
       redirect_to(@user != current_user ? user_path(@user) : profile_path)
