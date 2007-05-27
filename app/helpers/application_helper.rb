@@ -31,4 +31,8 @@ module ApplicationHelper
   def title(ttl)
     @title = ttl || ' '
   end
+  
+  def submit_image(img, options = {})
+    tag('input', { :type => 'image', :class => 'submit', :src => "/images/app/btns/#{img}" }.merge(options))
+  end
 end

@@ -72,56 +72,7 @@ div.errorExplanation h2 {
   padding: 0;
 }
 
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 99999;
-  height: 100%;
-  display: block;
-}
 
-.overlay-content {
-  margin: -452px auto 0 auto;
-  padding: 3px;
-  padding: 0 0 52px 0;
-  background: url(../images/app/sheet-bottom.png) bottom left no-repeat;
-  border-top: 0;
-  width: 418px;
-  color: #333;
-}
-
-.overlay-form {
-  background: url(../images/app/sheet.png) bottom left no-repeat;
-  padding: 0 7px 10px 6px;
-}
-
-.overlay-form h2 {
-  margin-right: 8px;
-  text-shadow: 2px 2px #fff;
-  border-bottom: 1px solid #bbb;
-}
-
-.overlay-form form {
-  padding: 0 20px;
-}
-
-div.oform p label {
-  display: block !important;
-  font-weight: bold;
-  margin-top:  10px;
-  text-shadow: 2px 2px #fff;
-}
-
-.oform textarea {
-  width: 99%;
-  border: 1px solid #ccc;
-}
-
-.oform fieldset {
-  border: none;
-}
 /* @end */
 
 
@@ -230,25 +181,6 @@ li#logout a {
 
 li#admin a {
   background: #eee url(../images/app/icons/admin.png) 5px 50% no-repeat;
-}
-
-#login-form {
-  position: absolute;
-  background: #333;
-  padding: 20px;
-  z-index: 9999;
-  top: 50px;
-  left: 30%;
-  border: 2px solid #fff;
-}
-
-#login-form label {
-  font-weight: bold;
-  color: #fff;
-}
-
-#login-form input {
-  border: 1px dotted #ccc;
 }
 
 .btn {
@@ -969,20 +901,6 @@ form input, select {
   border-right: 1px solid #eee;
 }
 
-p.btns input {
-  border: 1px solid #888;
-  color: #fff;
-  background: #aaa;
-}
-
-p.btns {
-  text-align: right;
-  border-bottom: 0;
-  margin: 0;
-  background: #f2f2f2;
-  border-top: 1px solid #ddd;
-}
-
 #svn-paths {
   margin: 0;
   padding: 0;
@@ -1071,6 +989,96 @@ input.path {
 
 #users {
   list-style: none;
+}
+
+/* @end */
+
+/* @group Sheets */
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 99999;
+  height: 100%;
+  display: block;
+}
+
+.overlay-content {
+  line-height: 100%;
+  margin: -452px auto 0 auto;
+  padding: 3px;
+  padding: 0 0 0 0;
+  background: url(../images/app/sheet-bottom.png) bottom left no-repeat;
+  border-top: 0;
+  width: 418px;
+  color: #333;
+}
+
+.overlay-form {
+  background: url(../images/app/sheet.png) bottom left no-repeat;
+  padding: 0 7px 10px 6px;
+}
+
+.overlay-form h2 {
+  margin-right: 8px;
+  text-shadow: 2px 2px #fff;
+  border-bottom: 1px solid #bbb;
+  padding: 10px;
+}
+
+.oform {
+  padding: 0 7px 20px 6px;
+}
+
+div.oform p label {
+  display: block !important;
+  font-weight: bold;
+  margin-top:  10px;
+  padding: 5px 0;
+  text-shadow: 2px 2px #fff;
+}
+
+.oform p {
+  padding: 0px 20px;
+}
+
+.oform textarea {
+  width: 99%;
+  border: 1px solid #ccc;
+}
+
+.oform form {
+  padding: 20px;
+}
+
+.oform fieldset {
+  border: none;
+}
+
+input.big {
+  font-size: 150%;
+  width: 95%;
+}
+
+p.btns {
+  padding: 10px 25px 14px 20px;
+  text-align: right;
+}
+
+input.submit {
+  border: 0;
+  padding: 1px 0 0 0;
+  margin: 0px 0 0 10px;
+}
+
+button {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  line-height: 100%;
 }
 
 /* @end */
