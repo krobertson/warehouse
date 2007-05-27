@@ -35,4 +35,8 @@ module ApplicationHelper
   def submit_image(img, options = {})
     tag('input', { :type => 'image', :class => 'submit', :src => "/images/app/btns/#{img}" }.merge(options))
   end
+  
+  def cancel_image(options = {})
+    image_tag('/images/app/btns/cancel.png', {:class => 'imgbtn'}.merge(options))
+  end
 end

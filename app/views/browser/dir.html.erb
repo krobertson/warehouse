@@ -48,9 +48,9 @@
 
 <div id="bookmark-form" class="overlay" style="display:none">
   <div id="bookmark-content" class="overlay-content">
-    <div class="overlay-form oform">
-      <h2>Create a new bookmark</h2>
     <% form_for :bookmark do |f| %>
+    <div class="overlay-form oform">
+      <h2>Bookmark this directory</h2>
     <p>
       <label for="bookmark_name">Label:</label> 
       <%= f.text_field :name %>
@@ -59,7 +59,11 @@
       <label for="bookmark_description">Description:</label>
       <%= f.text_area :description, :rows => 8 %>
     </p>
-    <% end %>
     </div>
+    <p class="btns">
+      <%= cancel_image :id => 'cancel-bookmark' %>
+      <%= submit_image 'save.png' %>
+    </p>
+    <% end %>
   </div>
 </div>

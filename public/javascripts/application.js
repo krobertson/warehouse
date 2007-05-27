@@ -6,6 +6,8 @@ Element.addMethods({
   }
 });
 
+var Sheet = Class.create();
+
 Event.addBehavior({
   'a.addpath:click': function() {
     $(this.up()).duplicate(); 

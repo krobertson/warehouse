@@ -1067,6 +1067,10 @@ p.btns {
   text-align: right;
 }
 
+.imgbtn {
+  cursor: pointer;
+}
+
 input.submit {
   border: 0;
   padding: 1px 0 0 0;
