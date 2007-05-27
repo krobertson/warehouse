@@ -1,6 +1,6 @@
 CodeHighlighter.addStyle("ruby",{
 	comment : {
-		exp  : /#[^\n]+/
+		exp  : /(#[^\n]+)|(#\s*\n)/
 	},
 	brackets : {
 		exp  : /\(|\)/

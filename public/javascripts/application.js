@@ -14,5 +14,13 @@ Event.addBehavior({
   
   'a.delpath:click': function() {
     this.up().remove();
+  },
+  
+  'a#bookmark:click': function(event) {
+    $('bookmark-form').show();
+    new Fx.Style('bookmark-content', 'margin-top', {
+      duration: 400, 
+      transition: Fx.Transitions.expoOut
+      })._start(-452, 0);
   }
 });

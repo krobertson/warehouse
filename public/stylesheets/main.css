@@ -72,6 +72,56 @@ div.errorExplanation h2 {
   padding: 0;
 }
 
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 99999;
+  height: 100%;
+  display: block;
+}
+
+.overlay-content {
+  margin: -452px auto 0 auto;
+  padding: 3px;
+  padding: 0 0 52px 0;
+  background: url(../images/app/sheet-bottom.png) bottom left no-repeat;
+  border-top: 0;
+  width: 418px;
+  color: #333;
+}
+
+.overlay-form {
+  background: url(../images/app/sheet.png) bottom left no-repeat;
+  padding: 0 7px 10px 6px;
+}
+
+.overlay-form h2 {
+  margin-right: 8px;
+  text-shadow: 2px 2px #fff;
+  border-bottom: 1px solid #bbb;
+}
+
+.overlay-form form {
+  padding: 0 20px;
+}
+
+div.oform p label {
+  display: block !important;
+  font-weight: bold;
+  margin-top:  10px;
+  text-shadow: 2px 2px #fff;
+}
+
+.oform textarea {
+  width: 99%;
+  border: 1px solid #ccc;
+}
+
+.oform fieldset {
+  border: none;
+}
 /* @end */
 
 
@@ -293,7 +343,7 @@ div.control-head {
   margin: 0;
   padding: 0 0 0 40px;
   position: relative;
-  height: 16px;
+  min-height: 25px;
 }
 
 p.controlblock {
@@ -423,6 +473,22 @@ li.crumb-divide-last a {
  padding: 4px 10px 7px 10px;
  border-right: 1px solid #999;
  font-weight: bold;
+}
+
+div p.rcontrols {
+  float: none;
+  position: absolute;
+  right: 5px;
+  top: 3px;
+}
+
+.rcontrols a.bookmark {
+  display: block;
+  width: 16px;
+  padding: 2px;
+  height: 16px;
+  text-indent: -9999px;
+  background: url(../images/app/icons/bookmark-small.png) 0 50% no-repeat;
 }
 
 /* @end */
