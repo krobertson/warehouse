@@ -34,6 +34,6 @@ class PermissionsController < ApplicationController
     flash[:notice] = "Permissions updated"
     redirect_to permissions_path
   end
-  
+    
   alias_method :anon, :update
 end

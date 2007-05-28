@@ -209,17 +209,25 @@ li#admin a {
 }
 
 #bookmarks li {
-  padding: 10px 5px 10px 40px;
-  background: url(../images/app/icons/box.png) 0 50% no-repeat;
-  border-bottom: 1px solid #bbb;
+  border-bottom: 1px solid #ccc;
+  border-top: 1px solid #fff;
 }
 
 #bookmarks ul li a {
+  background: url(../images/app/icons/box-small.png) 0 50% no-repeat;
+  padding: 5px 5px 5px 20px;
   color: #333;
+  text-shadow: 2px 2px #fff;
+  display: block;
 }
 
-#bookmarks h4 {
-  font-size: 120%;
+#bookmarks li a:hover {
+  color: #000;
+  background-color: #eee;
+}
+
+#bookmarks  {
+  font-size: 92%;
   display: block;
   font-weight: bold;
   font-family: "Helvetica Neue", Helvetica, Arial;
@@ -790,9 +798,8 @@ td.viewsource pre {
 }
 
 li#nrepo a { background: url(../images/app/icons/repository.png) 50% 0 no-repeat;}
-li#nmember a {
-  background: url(../images/app/icons/member.png) 50% 0 no-repeat;
-}
+li#nmember a { background: url(../images/app/icons/member.png) 50% 0 no-repeat;}
+li#nplugin a { background: url(../images/app/icons/plugins.png) 50% 0 no-repeat;}
 
 #admin-nav li a:hover {
   color: #555;
@@ -1126,6 +1133,46 @@ button {
   background: transparent;
   line-height: 100%;
 }
+
+/* @end */
+
+/* @group Temp */
+.sideblock {
+  margin: 20px 0;
+}
+
+.sideblock h3 {
+  background: #fff;
+  padding: 5px;
+  border: 1px solid #ddd;
+  border-bottom: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+}
+
+.sideblock ul {
+  list-style: none;
+  padding: 5px;
+  font-size: 92%;
+}
+
+#plugins li a {
+  display: block;
+  font-weight: bold;
+  border-bottom: 1px solid #ccc;
+  border-top: 1px solid #f7f7f7;
+  padding: 5px 0 5px 25px;
+  background-repeat: no-repeat;
+  background-position: 0 50%;
+}
+
+#pictures li {
+  list-style: none;
+  display: block;
+  float: left;
+  margin-right: 30px;
+  margin-bottom: 30px;
+}
+
 
 /* @end */
 

@@ -32,4 +32,8 @@ class RepositoriesController < ApplicationController
       render :action => 'show'
     end
   end
+  
+  def plugins
+    
+  end
 end

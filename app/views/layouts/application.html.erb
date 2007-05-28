@@ -75,16 +75,11 @@
         <div id="sbar">
           <div id="bookmarks">
             <ul>
-              <li>
-                <h4><a href="#" title="">Attachment Fu</a></h4>
-                <span class="active">Last active 5 days ago</span>
-              </li>
-              <li>
-                <h4><a href="#" title="">Canvas Lab</a></h4>
-                <span class="active">Last active today</span>
-              </li>
+              <li><a href="#" title="">Attachment Fu</a></li>
+              <li><a href="#" title="">Canvas Lab</a></li>
             </ul>
           </div>
+          <%= yield :sidebar %>
         </div>
         <!-- /sbar -->
         <% end %>

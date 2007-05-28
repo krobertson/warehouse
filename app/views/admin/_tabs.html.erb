@@ -1,6 +1,7 @@
 <ul id="admin-nav" class="clearfix">
   <li id="nrepo"<%= class_for(admin_path) %>><%= link_to Warehouse.multiple_repositories ? :Repos : :Repos, admin_path %></li>
   <li id="nmember"<%= class_for(permissions_path) %>><%= link_to 'Members', permissions_path %></li>
+  <li id="nplugin"<%= class_for('/permissions/omgwtf') %>><%= link_to 'Plugins', '/permissions/omgwtf' %></li>
 </ul>
 <ul id="second-nav" class="clearfix">
   <% if path?('permissions') %>
@@ -13,3 +14,14 @@
     </li>
   <% end %>
 </ul>
+
+<% content_for :sidebar do %>
+  <div class="sideblock" id="plugins">
+    <h3>Plugins</h3>
+    <ul>
+      <li><a style="background-image:url(../images/app/icons/gallery-small.png)" href="#">Photo Gallery</a></li>
+      <li><a style="background-image:url(../images/app/icons/stat-small.png)" href="#">Member Stats</a></li>
+      <li><a style="background-image:url(../images/app/icons/caution-small.png)" href="#">Continuous Integration</li>
+    </ul>
+  </div>
+<% end %>
