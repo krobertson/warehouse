@@ -16,6 +16,9 @@ code {
 
 a { color: #333; text-decoration: none;}
 
+h4 {margin-top: 10px;}
+h3 {margin: 20px 0 10px 0; border-bottom: 1px solid #ccc;}
+.red {background: #c00; color: #fff;}
 /* @group Structure */
 #container {
   border-top: 8px solid #00070C;
@@ -64,7 +67,13 @@ a { color: #333; text-decoration: none;}
   height: 220px;
 }
 
-#sshots .screen {
+.sshot {
+  padding: 5px;
+  background-color: #fff;
+  border: 1px solid #bbb;
+}
+
+#sshots .screen{
   position: absolute;
   left: 0;
   top: 0;
