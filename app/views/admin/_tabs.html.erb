@@ -3,17 +3,11 @@
   <li id="nmember"<%= class_for(permissions_path) %>><%= link_to 'Members', permissions_path %></li>
   <li id="nplugin"<%= class_for('/permissions/omgwtf') %>><%= link_to 'Plugins', '/permissions/omgwtf' %></li>
 </ul>
+<% unless @content_for_admin_tab.blank? -%>
 <ul id="second-nav" class="clearfix">
-  <% if path?('permissions') %>
-    <li><%= link_to_function('Add member', %($('add-member').toggle(); return false;)) %></li>
-    <li id="jump"><label>Show members of:</label> 
-      <select name="repo">
-        <option value="somerepo">Mephisto's Repo</option>
-        <option value="lh">Lighthouse</option>
-      </select>
-    </li>
-  <% end %>
+<%= yield :admin_tab %>
 </ul>
+<% end -%>
 
 <% content_for :sidebar do %>
   <div class="sideblock" id="plugins">

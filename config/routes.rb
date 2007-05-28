@@ -3,7 +3,7 @@ ActionController::Routing::Routes.draw do |map|
   map.logout 'logout', :controller => 'sessions', :action => 'destroy'
 
   map.resources :repositories
-  map.resources :permissions, :collection => { :anon => :put }
+  map.resources :permissions, :collection => { :anon => :any }
   map.resources :users, :has_one => [:avatar, :permissions]
   map.resources :changesets, :has_many => :changes
   map.resource  :session, :controller => 'sessions'

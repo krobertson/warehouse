@@ -1,4 +1,4 @@
-<%= render :partial => "admin/tabs" %>
+<%= render :partial => "admin_tab" %>
 <h2><%=h current_repository.name %> Members</h2>
 
 
@@ -6,12 +6,12 @@
 <% @members.each do |user, permissions| -%>
   <li class="permission" id="<%= user ? dom_id(user) : :user_anon %>">
     <%=h permissions.first.login %> (<%=h user.email %>)
-    <span class="log">Mephisto repo: /some/path/somebody/has/access/to</span>
-    <span class="log">Mephisto repo: /plugins/stuff</span>
-    <span class="log">Some Repo: /some/other/path</span>
+    <% permissions.each do |permission| -%>
+    <span class="log">Read<%= '-write' if permission.full_access? %>: <%=h permission.path %></span>
+    <% end -%>
     <ul class="admin-controls">
       <li class="edit"><%= link_to_function('Edit', %($('permission-edit-#{user ? user.id : :anon}').toggle())) %></li>
-      <li class="del"><a href="#" title="Delete">Delete</a></li>
+      <li class="del"><%= link_to_function('Delete', "Permissions.removeMember('#{user ? user.id : :anon}')") %></li>
     </ul>
   </li>
   <li class="permission permissionedit form" id="permission-edit-<%= user ? user.id : :anon %>" style="display:none">
@@ -39,3 +39,4 @@
     </p>
   <% end -%>
 </div>
+

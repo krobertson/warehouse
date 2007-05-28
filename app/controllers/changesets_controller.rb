@@ -25,6 +25,6 @@ class ChangesetsController < ApplicationController
     end
     
     def find_changeset_paths
-      logged_in? && current_user.permissions.paths_for(current_repository)
+      logged_in? && current_user.permissions.paths_for(current_repository) || []
     end
 end

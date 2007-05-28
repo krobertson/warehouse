@@ -69,19 +69,19 @@ context "Permission" do
   
   specify "should not duplicate permission rows" do
     assert_no_difference "Permission.count" do
-      repositories(:sample).invite users(:rick), :login => 'rick', :paths => [{}, {:path => ''}]
+      repositories(:sample).invite users(:rick), :login => 'rick', :paths => {'0' => {}, '1' => {:path => ''}}
     end
   end
   
   specify "should grant access to single path" do
-    repositories(:sample).invite users(:justin), :login => 'justin', :paths => [{:path => 'foo'}]
+    repositories(:sample).invite users(:justin), :login => 'justin', :paths => {'0' => {:path => 'foo'}}
     p = repositories(:sample).permissions.find_by_user_id(users(:justin).id)
     p.path.should == 'foo'
     p.should.not.be.full_access
   end
   
   specify "should grant access to single path" do
-    repositories(:sample).invite users(:justin), :login => 'justin', :paths => [{:path => 'foo'}, {:path => 'bar', :full_access => true}]
+    repositories(:sample).invite users(:justin), :login => 'justin', :paths => {'0' => {:path => 'foo'}, '1' => {:path => 'bar', :full_access => true}}
     perms = repositories(:sample).permissions.find_all_by_user_id(users(:justin).id).sort_by(&:path)
     perms[0].path.should == 'bar'
     perms[0].should.be.full_access
@@ -91,7 +91,7 @@ context "Permission" do
   
   specify "should update repository permissions" do
     assert_difference "Permission.count" do
-      repositories(:sample).permissions.set(users(:rick), :login => 'technoweenie', :paths => [{:path => 'foo', :id => 1}, {:full_access => true}])
+      repositories(:sample).permissions.set(users(:rick), :login => 'technoweenie', :paths => {'0' => {:path => 'foo', :id => 1}, '1' => {:full_access => true}})
     end
     permissions = repositories(:sample).permissions.find_all_by_user_id(users(:rick).id).sort_by { |p| p.path.to_s }
     permissions[0].path.should.be.nil

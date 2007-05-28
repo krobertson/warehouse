@@ -47,7 +47,7 @@ context "Permissions Controller" do
   specify "should grant exiting member mulitple paths" do
     assert_difference "Permission.count", 2 do
       assert_no_difference "User.count" do
-        post :create, :email => 'justin@wh.com', :permission => { :login => 'justin', :admin => true, :paths => [{:path => 'foo'}, {:path => 'bar', :full_access => true}] }
+        post :create, :email => 'justin@wh.com', :permission => { :login => 'justin', :admin => true, :paths => {'0' => {:path => 'foo'}, '1' => {:path => 'bar', :full_access => true}} }
         assert_template 'index'
       end
     end
@@ -70,7 +70,7 @@ context "Permissions Controller" do
     permissions(:rick_sample).should.be.admin
     permissions(:rick_sample).path.should.be.nil
 
-    put :update, :user_id => 1, :permission => { :admin => false, :paths => [{:path => 'foo', :id => 1}] }
+    put :update, :user_id => 1, :permission => { :admin => false, :paths => {'0' => {:path => 'foo', :id => 1}} }
     assert_redirected_to permissions_path
     
     permissions(:rick_sample).reload.should.not.be.admin
@@ -81,7 +81,7 @@ context "Permissions Controller" do
     permissions(:anon_sample).reload.should.not.be.admin
     permissions(:anon_sample).reload.should.not.be.full_access
     
-    put :anon, :permission => { :admin => true, :paths => [{:id => 2, :full_access => true}] }
+    put :anon, :permission => { :admin => true, :paths => {'0' => {:id => 2, :full_access => true}} }
     assert_redirected_to permissions_path
     
     permissions(:anon_sample).reload.should.be.admin

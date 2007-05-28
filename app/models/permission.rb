@@ -23,7 +23,7 @@ class Permission < ActiveRecord::Base
   def self.grant(repository, options = {}, &block)
     options = options.dup
     if paths = options.delete(:paths)
-      permissions = paths.collect { |p| grant(repository, options.merge(p), &block) }
+      permissions = paths.collect { |(index, p)| grant(repository, options.merge(p), &block) }
       first = permissions.first # return first failed permission if no permissions saved properly
       return permissions.reject(&:new_record?).first || first
     end
@@ -42,7 +42,7 @@ class Permission < ActiveRecord::Base
     transaction do
       update_all ['login = ?, admin = ?', options[:login], options[:admin]], ['id IN (?)', permissions.collect(&:id)]
       unless options[:paths].blank?
-        options[:paths].delete_if do |path_options|
+        options[:paths].delete_if do |(index, path_options)|
           if path_options[:id]
             update_all ['path = ?, full_access = ?', path_options[:path], path_options[:full_access]], ['id = ?', path_options[:id]]
           end
