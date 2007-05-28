@@ -39,4 +39,8 @@ module ApplicationHelper
   def cancel_image(options = {})
     image_tag('/images/app/btns/cancel.png', {:class => 'imgbtn'}.merge(options))
   end
+  
+  def class_for(options)
+    %(class="selected") if current_page?(options)
+  end
 end
