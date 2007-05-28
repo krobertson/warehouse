@@ -691,13 +691,40 @@ div.diff-table {
   border-right: 1px solid #d99;
 }
 
-p.formats {
+ul.formats {
   float: right;
-  right: 0;
-  top: 0;
-  margin: 0;
+  margin: 2px 0 0 0;
   padding: 0;
-  line-height: 100%
+  line-height: 100%;
+  list-style:none;
+  font-size: 82%;
+  background: #eee url(../images/app/cap-left.png) no-repeat;
+}
+
+ul.formats li {
+  display: block;
+  margin-right: 5px;
+  float: left;
+}
+
+ul.formats li a {
+  display: block;
+  padding: 3px 5px 4px 5px;
+  color: #777;
+  text-shadow: 2px 2px #fff;
+  font-weight: bold;
+}
+
+ul.formats li.end {
+  margin-right: 0;
+}
+
+ul.formats li.end a {
+  background: url(../images/app/cap-right.png) top right no-repeat;
+}
+
+ul.formats a:hover {
+  color: #333;
 }
 
 table.sourcecode {

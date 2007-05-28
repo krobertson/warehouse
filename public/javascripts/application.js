@@ -7,6 +7,12 @@ Element.addMethods({
 });
 
 var Sheet = Class.create();
+Sheet.prototype = {
+  initialzie: function(element, trigger, options) {
+    this.sheet = $(element);
+    this.trigger = $(trigger);
+  }
+}
 
 Event.addBehavior({
   'a.addpath:click': function() {
