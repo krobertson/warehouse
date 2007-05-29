@@ -20,6 +20,7 @@ class User < ActiveRecord::Base
   validates_presence_of   :identity_url
   validates_format_of     :email, :with => /(\A(\s*)\Z)|(\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z)/i, :allow_nil => true
   validates_uniqueness_of :identity_url
+  validates_uniqueness_of :email, :allow_nil => true
   before_create :set_admin_if_needed
   before_save   :sanitize_email
   attr_accessible :name, :identity_url, :avatar_data, :email
@@ -32,12 +33,26 @@ class User < ActiveRecord::Base
       :joins => 'inner join permissions on users.id = permissions.user_id')
   end
 
+  def reset_identity_url(url = nil)
+    if url.blank?
+      self.token = TokenGenerator.generate_random(TokenGenerator.generate_simple)
+    else
+      self.token = nil
+      self.identity_url = url
+    end
+    save
+  end
+
   def permission_admin?
     permission_admin && column_for_attribute(:admin).type_cast(permission_admin)
   end
 
   def name
     read_attribute(:name) || read_attribute(:login)
+  end
+
+  def email=(value)
+    self.email = value.blank? ? value : value.downcase
   end
 
   def avatar?

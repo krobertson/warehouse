@@ -12,6 +12,10 @@ class Test::Unit::TestCase
   fixtures :all
   
   protected
+    def login_as(user)
+      @controller.stubs(:current_user).returns(user ? users(user) : nil)
+    end
+
     def stub_node(*args)
       options = args.last.is_a?(Hash) ? args.pop : {}
       path    = args.first || ''

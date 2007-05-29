@@ -2,7 +2,7 @@
 # migrations feature of ActiveRecord to incrementally modify your database, and
 # then regenerate this schema definition.
 
-ActiveRecord::Schema.define(:version => 14) do
+ActiveRecord::Schema.define(:version => 15) do
 
   create_table "avatars", :force => true do |t|
     t.string  "content_type"
@@ -90,5 +90,8 @@ ActiveRecord::Schema.define(:version => 14) do
     t.string  "email"
     t.string  "token"
   end
+
+  add_index "users", ["token"], :name => "index_users_on_token"
+  add_index "users", ["email"], :name => "index_users_on_email"
 
 end

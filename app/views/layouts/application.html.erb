@@ -32,14 +32,14 @@
               <li id="profile"><%= link_to 'Profile', profile_path %></li>
               <li id="logout"><%= link_to 'Logout', logout_path %></li>
             <% else -%>
-              <li id="login"><%= link_to 'Login', new_session_path %></li>
+              <li id="login"><%= link_to 'Login', '#' %></li>
             <% end -%>
           </ul>
           </div>
-          <% unless logged_in? %>
+          <% unless logged_in? -%>
           <div id="login-form" class="overlay" style="display:none">
             <div id="login-content" class="overlay-content">
-              <% form_tag session_path do -%>
+              <% form_tag login_path do -%>
               <div class="overlay-form oform">
                 <h2>Login with OpenID</h2>
                 <% if flash[:error] -%>
@@ -47,14 +47,30 @@
                 <% end -%>
                   <p>
                     <label for="openid_url">OpenID:</label>
-                    <%= text_field_tag :openid_url, {}, :class => 'big' %> 
+                    <%= text_field_tag :openid_url, params[:openid_url], :class => 'big' %> 
                   </p>
               </div>
               <p class="btns">
                 <%= image_tag 'app/btns/cancel.png', :class => 'imgbtn', :id => 'cancel' %>
                 <%= submit_image 'login.png' %>
               </p>
-              <% end -%>  
+              <% end -%>
+              <% form_tag forget_path do -%>
+              <div class="overlay-form oform">
+                <h2>Reset your OpenID</h2>
+                <% if flash[:error] -%>
+                <p><%= flash[:error] %></p>
+                <% end -%>
+                  <p>
+                    <label for="email">Email:</label>
+                    <%= text_field_tag :email, params[:email], :class => 'big' %> 
+                  </p>
+              </div>
+              <p class="btns">
+                <%= image_tag 'app/btns/cancel.png', :class => 'imgbtn', :id => 'cancel' %>
+                <%= submit_image 'login.png' %>
+              </p>
+              <% end -%>
             </div>
           </div>
           <% end %>
