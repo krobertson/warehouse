@@ -29,9 +29,7 @@
             <li id="admin"><%= link_to 'Admin', admin_path %></li>
             <% end %>
             <% if logged_in? -%>
-            <% if false %>
               <li id="profile"><%= link_to 'Profile', profile_path %></li>
-            <% end %>
               <li id="logout"><%= link_to 'Logout', logout_path %></li>
             <% else -%>
               <li id="login"><%= link_to 'Login', new_session_path %></li>

@@ -38,6 +38,10 @@ class ApplicationController < ActionController::Base
       admin? || access_denied(:error => "You must be an administrator to visit this page.")
     end
 
+    def login_required
+      logged_in? || access_denied(:error => "You must be logged in to edit a profile.")
+    end
+
     def access_denied(options = {})
       @error = options[:error] || "A login is required to visit this page."
       render :template => 'layouts/error'

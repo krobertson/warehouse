@@ -7,6 +7,6 @@
   <%= form.text_field :email %>
 </p>
 <p>
-  <%= image_tag(@user.avatar_path) if @user.avatar? %>
+  <%= image_tag(form.object.avatar_path) if form.object.avatar? %>
   <%= form.file_field :avatar_data %>
 </p>
