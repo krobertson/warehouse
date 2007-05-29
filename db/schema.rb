@@ -2,7 +2,7 @@
 # migrations feature of ActiveRecord to incrementally modify your database, and
 # then regenerate this schema definition.
 
-ActiveRecord::Schema.define(:version => 12) do
+ActiveRecord::Schema.define(:version => 14) do
 
   create_table "avatars", :force => true do |t|
     t.string  "content_type"
@@ -13,6 +13,15 @@ ActiveRecord::Schema.define(:version => 12) do
     t.integer "width"
     t.integer "height"
   end
+
+  create_table "bookmarks", :force => true do |t|
+    t.integer "repository_id"
+    t.string  "path"
+    t.string  "label"
+    t.text    "description"
+  end
+
+  add_index "bookmarks", ["repository_id"], :name => "index_bookmarks_on_repository_id"
 
   create_table "changes", :force => true do |t|
     t.integer "changeset_id"

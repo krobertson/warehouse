@@ -3,32 +3,20 @@
 
 class ApplicationController < ActionController::Base
   helper :all # include all helpers, all the time
-  helper_method :current_repository, :logged_in?, :current_user, :admin?, :controller_path
+  helper_method :current_repository, :logged_in?, :current_user, :admin?, :controller_path, :repository_admin?, :repository_member?
   before_filter :check_for_repository
   #before_filter { |c| c.current_repository.sync_revisions }
 
+  expiring_attr_reader :current_user,       :retrieve_current_user
+  expiring_attr_reader :repository_member?, :retrieve_repository_member
+  expiring_attr_reader :repository_admin?,  :retrieve_repository_admin
+
   def logged_in?
-    current_user != :false
-  end
-  
-  def current_user
-    @current_user ||= (session[:user_id] && User.find_by_id(session[:user_id])) || :false
+    !!current_user
   end
   
   def admin?
     logged_in? && current_user.admin?
-  end
-
-  def repository_member?
-    return nil unless current_repository
-    return nil unless logged_in? || current_repository.public?
-    current_repository.member?(current_user, repository_path)
-  end
-
-  def repository_admin?
-    return nil unless current_repository
-    return nil unless logged_in? || current_repository.public?
-    current_repository.admin?(current_user)
   end
 
   def current_repository
@@ -59,6 +47,22 @@ class ApplicationController < ActionController::Base
     def repository_path
       return nil if @node.nil?
       @node.dir? ? @node.path : File.dirname(@node.path)
+    end
+    
+    def retrieve_repository_member
+      return nil unless current_repository
+      return nil unless logged_in? || current_repository.public?
+      current_repository.member?(current_user, repository_path)
+    end
+    
+    def retrieve_repository_admin
+      return nil unless current_repository
+      return nil unless logged_in? || current_repository.public?
+      current_repository.admin?(current_user)
+    end
+    
+    def retrieve_current_user
+      session[:user_id] && User.find_by_id(session[:user_id])
     end
 
     def repository_subdomain

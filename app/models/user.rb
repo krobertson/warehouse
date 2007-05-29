@@ -26,6 +26,12 @@ class User < ActiveRecord::Base
   belongs_to :avatar
   before_save :save_avatar_data
 
+  def self.find_all_by_logins(repository, logins)
+    find(:all, :select => 'DISTINCT users.*, permissions.login',
+      :conditions => ['permissions.repository_id = ? AND permissions.login IN (?) AND active = ?', repository.id, logins, true], 
+      :joins => 'inner join permissions on users.id = permissions.user_id')
+  end
+
   def permission_admin?
     permission_admin && column_for_attribute(:admin).type_cast(permission_admin)
   end

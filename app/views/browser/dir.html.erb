@@ -21,11 +21,11 @@
       <td colspan="2">
         <div class="control-head">
           &nbsp; <!-- Safari needs this? -->
-          <% if params[:paths].any? %>
+          <% if params[:paths].any? && repository_admin? -%>
           <p class="formats rcontrols">
             <a id="bookmark" class="bookmark" href="#" title="Bookmark this directory">Bookmark This</a>
           </p>
-          <% end %>
+          <% end -%>
         </div>
       </td>
     </tr>
@@ -46,14 +46,15 @@
   <% end -%>
 </table>
 
+<% if params[:paths].any? && repository_admin? -%>
 <div id="bookmark-form" class="overlay" style="display:none">
   <div id="bookmark-content" class="overlay-content">
-    <% form_for :bookmark do |f| %>
+    <% remote_form_for :bookmark, :url => bookmarks_path do |f| %>
     <div class="overlay-form oform">
       <h2>Bookmark this directory</h2>
     <p>
-      <label for="bookmark_name">Label:</label> 
-      <%= f.text_field :name %>
+      <label for="bookmark_label">Label:</label> 
+      <%= f.text_field :label %>
     </p>
     <p>
       <label for="bookmark_description">Description:</label>
@@ -61,9 +62,11 @@
     </p>
     </div>
     <p class="btns">
-      <%= cancel_image :id => 'cancel-bookmark' %>
+      <%= f.hidden_field :path %>
+      <%= link_to_function cancel_image(:id => 'cancel-bookmark'), "Bookmarks.toggle()" %>
       <%= submit_image 'save.png' %>
     </p>
     <% end %>
   </div>
 </div>
+<% end -%>

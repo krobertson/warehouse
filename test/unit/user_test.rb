@@ -1,10 +1,7 @@
 require File.dirname(__FILE__) + '/../test_helper'
 
-class UserTest < Test::Unit::TestCase
-  fixtures :users
-
-  # Replace this with your real tests.
-  def test_truth
-    assert true
+context "User" do
+  specify "should find users by login" do
+    User.find_all_by_logins(repositories(:sample), %w(rick)).should == [users(:rick)]
   end
 end

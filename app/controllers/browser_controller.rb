@@ -4,6 +4,7 @@ class BrowserController < ApplicationController
   helper_method :current_revision, :current_changeset, :previous_changeset, :next_changeset
 
   def index
+    @bookmark = Bookmark.new(:path => @node.path)
     render :action => @node.node_type.downcase
   end
   

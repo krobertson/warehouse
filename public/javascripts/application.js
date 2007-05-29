@@ -32,6 +32,37 @@ Permissions = {
   }
 };
 
+Bookmarks = {
+  show: function() {
+    $('bookmark-form').show();
+    new Fx.Style('bookmark-content', 'margin-top', {
+      duration: 400, 
+      transition: Fx.Transitions.expoOut,
+      onComplete: function() { $('bookmark_label').focus(); }
+      })._start(-452, 0);
+  },
+  
+  hide: function() {
+    new Fx.Style('bookmark-content', 'margin-top', {
+      duration: 400, 
+      transition: Fx.Transitions.expoOut,
+      onComplete: function() { $('bookmark-form').hide(); }
+      })._start(0, -452);
+  },
+  
+  clear: function() {
+    $$('#bookmark-form input').each(function(el) { if(el.type == 'text') el.value = '' });
+    Bookmarks.hide();
+  },
+  
+  toggle: function() {
+    if($('bookmark-form').visible())
+      Bookmarks.hide()
+    else
+      Bookmarks.show()
+  }
+}
+
 Element.addMethods({
   duplicate: function(element) {
     element = $(element);
@@ -60,11 +91,7 @@ Event.addBehavior({
   },
   
   'a#bookmark:click': function(event) {
-    $('bookmark-form').show();
-    new Fx.Style('bookmark-content', 'margin-top', {
-      duration: 400, 
-      transition: Fx.Transitions.expoOut
-      })._start(-452, 0);
+    Bookmarks.toggle();
   },
   
   '#login:click': function(event) {

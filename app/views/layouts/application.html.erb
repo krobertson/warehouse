@@ -70,14 +70,13 @@
           <%= yield %>
         </div>
         <!-- /main -->
-        <% unless @fullscreen %>
+        <% unless @fullscreen || current_repository.nil? %>
         <!-- sbar -->
         <div id="sbar">
-          <div id="bookmarks" class="sideblock">
+          <div id="bookmarks" class="sideblock"<%= %( style="display:none") if current_repository.bookmarks.empty? %>>
             <h3>Bookmarks</h3>
-            <ul>
-              <li><a href="#" title="">Attachment Fu</a></li>
-              <li><a href="#" title="">Canvas Lab</a></li>
+            <ul id="bookmark-list">
+<%= render :partial => "bookmarks/bookmark", :collection => current_repository.bookmarks %>
             </ul>
           </div>
           <%= yield :sidebar %>

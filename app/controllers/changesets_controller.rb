@@ -3,6 +3,7 @@ class ChangesetsController < ApplicationController
 
   def index
     @changesets = current_repository.changesets.paginate_by_paths(changeset_paths, :page => params[:page], :order => 'changesets.revision desc')
+    #@users = User.find_all_by_logins(current_repository, @changesets.collect(&:login).uniq).index_by(&:login)
   end
   
   def show

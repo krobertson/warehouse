@@ -8,6 +8,7 @@ class Changeset < ActiveRecord::Base
   after_save  :seed_svn_changes
 
   delegate :backend, :to => :repository
+  expiring_attr_reader :user, :retrieving_user
 
   def self.paginate_by_path(path, options = {})
     with_paths([path]) { paginate(options) }
@@ -57,5 +58,9 @@ class Changeset < ActiveRecord::Base
     
     def seed_svn_changes
       Change.create_from_changeset(self)
+    end
+
+    def retrieve_user
+      User.find_all_by_logins(repository, [author]).first
     end
 end
