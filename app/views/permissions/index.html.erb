@@ -7,7 +7,7 @@
   <li class="permission" id="<%= user ? dom_id(user) : :user_anon %>">
     <%=h permissions.first.login %> (<%=h user.email %>)
     <% permissions.each do |permission| -%>
-    <span class="log">Read<%= '-write' if permission.full_access? %>: <%=h permission.path %></span>
+    <span class="log">Read<%= '-write' if permission.full_access? %>: <%=h permission.formatted_path %></span>
     <% end -%>
     <ul class="admin-controls">
       <li class="edit"><%= link_to_function('Edit', %($('permission-edit-#{user ? user.id : :anon}').toggle())) %></li>

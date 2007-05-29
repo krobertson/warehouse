@@ -1,13 +1,14 @@
 <ul id="changesets">
-  <% @changesets.each do |changeset| %>
-  <li class="changeset" id="changeset-<%= changeset.revision %>">
+  <% @changesets.each do |changeset| -%>
+    <% user = @users[changeset.author] -%>
+  <li class="changeset" id="changeset-<%= changeset.revision %>"<%= %( style="background-image: url(#{user.avatar_path})") if user && user.avatar? %>>
     <p>
       <span class="change-number"><%= link_to(changeset.revision, changeset_path(changeset.revision)) %></span>
       <span class="author"><%= changeset.author %>:</span> <%=h changeset.message %>
       <span class="time">(<%= time_ago_in_words changeset.changed_at %> ago)</span>
     </p>
   </li>
-  <% end %>
+  <% end -%>
 </ul>
 
 <%= will_paginate @changesets %>
