@@ -183,6 +183,28 @@ li#admin a {
   background: #eee url(../images/app/icons/admin.png) 5px 50% no-repeat;
 }
 
+#utils {
+  position: absolute;
+  right: 20px;
+  top: 0;
+  list-style: none;
+}
+
+#utils li {
+  display: inline;
+  margin-right: 5px;
+  font-size: 92%;
+}
+
+#utils li a {
+  color: #cde;
+  border-bottom: 1px dotted #345;
+}
+
+#utils li a:hover {
+  color: #fff;
+}
+
 .btn {
   border: 1px solid #fff;
   background: #ddd;

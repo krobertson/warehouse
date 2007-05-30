@@ -42,6 +42,7 @@ Element.addMethods({
 });
 
 var Sheet = Class.create();
+Sheet.Cache = [];
 Sheet.prototype = {
   initialize: function(element, trigger, options) {
     console.log('wee')
@@ -59,10 +60,11 @@ Sheet.prototype = {
   },
   
   toggle: function() {
-    if(this.overlay.visible())
+    if(this.overlay.visible()) {
       this.hide();
-    else
+    } else {
       this.show();
+    }
   },
   
   hide: function() {
@@ -121,8 +123,4 @@ Event.addBehavior({
       onComplete: function() { $('login-form').hide(); }
       })._start(0, -162);
   }
-});
-
-Event.onReady(function() {
-  new Sheet('bookmark-sheet', 'bookmark');
 });

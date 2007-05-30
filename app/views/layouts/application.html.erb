@@ -33,9 +33,11 @@
             <% if logged_in? && admin? %>
             <li id="admin"><%= link_to 'Admin', admin_path %></li>
             <% end %>
+          </ul>
+          <ul id="utils">
             <% if logged_in? -%>
-              <li id="profile"><%= link_to 'Profile', profile_path %></li>
-              <li id="logout"><%= link_to 'Logout', logout_path %></li>
+              <li><%= link_to 'Profile', profile_path %></li>
+              <li><%= link_to 'Logout', logout_path %></li>
             <% else -%>
               <li id="login"><%= link_to 'Login', '#' %></li>
             <% end -%>
@@ -51,7 +53,7 @@
                 <p><%= flash[:error] %></p>
                 <% end -%>
                   <p>
-                    <label for="openid_url">OpenID:</label>
+                    <label for="openid_url">OpenID: (<a href="#reset" id="reset">reset</a>)</label>
                     <%= text_field_tag :openid_url, params[:openid_url], :class => 'big' %> 
                   </p>
               </div>
@@ -61,7 +63,7 @@
               </p>
               <% end -%>
               <% form_tag forget_path do -%>
-              <div class="overlay-form oform">
+              <div class="oform">
                 <h2>Reset your OpenID</h2>
                 <% if flash[:error] -%>
                 <p><%= flash[:error] %></p>
