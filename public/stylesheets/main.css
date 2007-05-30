@@ -171,14 +171,6 @@ li#activity a {
   background: #eee url(../images/app/icons/activity.png) 5px 50% no-repeat;
 }
 
-li#login a {
-  background: #eee url(../images/app/icons/login.png) 5px 50% no-repeat;
-}
-
-li#logout a {
-  background: #eee url(../images/app/icons/logout.png) 5px 50% no-repeat;
-}
-
 li#admin a {
   background: #eee url(../images/app/icons/admin.png) 5px 50% no-repeat;
 }
