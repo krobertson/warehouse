@@ -37,7 +37,7 @@ module ApplicationHelper
   end
   
   def cancel_image(options = {})
-    image_tag('/images/app/btns/cancel.png', {:class => 'imgbtn'}.merge(options))
+    image_tag('/images/app/btns/cancel.png', {:class => 'imgbtn cancelbtn'}.merge(options))
   end
   
   def class_for(options)

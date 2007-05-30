@@ -14,6 +14,7 @@
     <%= yield :scripts %>
     <script type="text/javascript" charset="utf-8">
       Event.onReady(function() {
+        new Sheet('login-form', 'login');
         <%= yield :onready %>
       });
     </script>
@@ -44,9 +45,7 @@
           </ul>
           </div>
           <% unless logged_in? -%>
-          <div id="login-form" class="overlay" style="display:none">
-            <div id="login-content" class="overlay-content">
-              <% form_tag login_path do -%>
+              <% form_tag login_path, :id => 'login-form' do -%>
               <div class="overlay-form oform">
                 <h2>Login with OpenID</h2>
                 <% if flash[:error] -%>
@@ -58,11 +57,11 @@
                   </p>
               </div>
               <p class="btns">
-                <%= image_tag 'app/btns/cancel.png', :class => 'imgbtn', :id => 'cancel' %>
+                <%= cancel_image %>
                 <%= submit_image 'login.png' %>
               </p>
               <% end -%>
-              <% form_tag forget_path do -%>
+              <!-- <% form_tag forget_path do -%>
               <div class="oform">
                 <h2>Reset your OpenID</h2>
                 <% if flash[:error] -%>
@@ -77,9 +76,7 @@
                 <%= image_tag 'app/btns/cancel.png', :class => 'imgbtn', :id => 'cancel' %>
                 <%= submit_image 'login.png' %>
               </p>
-              <% end -%>
-            </div>
-          </div>
+              <% end -%> -->
           <% end %>
         </div>
       </div>

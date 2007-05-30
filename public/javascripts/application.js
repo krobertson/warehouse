@@ -45,8 +45,8 @@ var Sheet = Class.create();
 Sheet.Cache = [];
 Sheet.prototype = {
   initialize: function(element, trigger, options) {
-    console.log('wee')
     this.sheet = $(element);
+    this.sheetHeight = this.sheet.getHeight();
     this.trigger = $(trigger);
     this.cancelBtn = $$('img.cancelbtn')[0];
     this.overlay;
@@ -69,18 +69,18 @@ Sheet.prototype = {
   
   hide: function() {
     new Fx.Style(this.sheetContent, 'margin-top', {
-      duration: 1200,
+      duration: (this.sheetHeight * 2) + 500,
       transition: Fx.Transitions.expoOut,
       onComplete: function() { this.overlay.hide(); }.bind(this)
-    })._start(0, -452);
+    })._start(0, -(this.sheetHeight));
   },
   
   show: function(event) {
     this.overlay.show();
     new Fx.Style(this.sheetContent, 'margin-top', {
-      duration: 400, 
+      duration: (this.sheetHeight * 2), 
       transition: Fx.Transitions.expoOut
-    })._start(-452, 0);
+    })._start(-(this.sheetHeight), 0);
   },
   
   build: function(namespace) {
@@ -103,24 +103,5 @@ Event.addBehavior({
   
   'a.delpath:click': function() {
     Permissions.remove(this.up());
-  },
-  
-  '#login:click': function(event) {
-    Event.stop(event);
-    $('login-form').show();
-    new Fx.Style('login-content', 'margin-top', {
-      duration: 700, 
-      transition: Fx.Transitions.expoOut
-      })._start(-162, 0);
-  },
-  
-  '#cancel:click': function(event) {
-    this.onclick = function() { return false; }
-    Event.stop(event);
-    new Fx.Style('login-content', 'margin-top', {
-      duration: 400, 
-      transition: Fx.Transitions.expoOut,
-      onComplete: function() { $('login-form').hide(); }
-      })._start(0, -162);
   }
 });
