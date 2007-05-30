@@ -47,26 +47,23 @@
 </table>
 
 <% if params[:paths].any? && repository_admin? -%>
-<div id="bookmark-form" class="overlay" style="display:none">
-  <div id="bookmark-content" class="overlay-content">
-    <% remote_form_for :bookmark, :url => bookmarks_path do |f| %>
-    <div class="overlay-form oform">
-      <h2>Bookmark this directory</h2>
-    <p>
-      <label for="bookmark_label">Label:</label> 
-      <%= f.text_field :label %>
-    </p>
-    <p>
-      <label for="bookmark_description">Description:</label>
-      <%= f.text_area :description, :rows => 8 %>
-    </p>
-    </div>
-    <p class="btns">
-      <%= f.hidden_field :path %>
-      <%= link_to_function cancel_image(:id => 'cancel-bookmark'), "Bookmarks.toggle()" %>
-      <%= submit_image 'save.png' %>
-    </p>
-    <% end %>
+  <% content_for :onready do %>new Sheet('bookmark-sheet', 'bookmark');<% end %>
+  <% remote_form_for :bookmark, :url => bookmarks_path, :html => {:id => 'bookmark-sheet'} do |f| %>
+  <div class="overlay-form oform">
+    <h2>Bookmark this directory</h2>
+  <p>
+    <label for="bookmark_label">Label:</label> 
+    <%= f.text_field :label %>
+  </p>
+  <p>
+    <label for="bookmark_description">Description:</label>
+    <%= f.text_area :description, :rows => 8 %>
+  </p>
   </div>
-</div>
+  <p class="btns">
+    <%= f.hidden_field :path %>
+    <%= cancel_image(:class => 'cancelbtn') %>
+    <%= submit_image 'save.png' %>
+  </p>
+  <% end %>
 <% end -%>

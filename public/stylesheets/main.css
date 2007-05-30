@@ -1051,6 +1051,7 @@ input.path {
   z-index: 99999;
   height: 100%;
   display: block;
+  text-align: left;
 }
 
 .overlay-content {
@@ -1115,8 +1116,9 @@ p.btns {
   text-align: right;
 }
 
-.imgbtn {
+.imgbtn, .cancelbtn {
   cursor: pointer;
+  border: none;
 }
 
 input.submit {

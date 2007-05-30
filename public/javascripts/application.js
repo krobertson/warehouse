@@ -32,37 +32,6 @@ Permissions = {
   }
 };
 
-Bookmarks = {
-  show: function() {
-    $('bookmark-form').show();
-    new Fx.Style('bookmark-content', 'margin-top', {
-      duration: 400, 
-      transition: Fx.Transitions.expoOut,
-      onComplete: function() { $('bookmark_label').focus(); }
-      })._start(-452, 0);
-  },
-  
-  hide: function() {
-    new Fx.Style('bookmark-content', 'margin-top', {
-      duration: 400, 
-      transition: Fx.Transitions.expoOut,
-      onComplete: function() { $('bookmark-form').hide(); }
-      })._start(0, -452);
-  },
-  
-  clear: function() {
-    $$('#bookmark-form input').each(function(el) { if(el.type == 'text') el.value = '' });
-    Bookmarks.hide();
-  },
-  
-  toggle: function() {
-    if($('bookmark-form').visible())
-      Bookmarks.hide()
-    else
-      Bookmarks.show()
-  }
-}
-
 Element.addMethods({
   duplicate: function(element) {
     element = $(element);
@@ -74,11 +43,55 @@ Element.addMethods({
 
 var Sheet = Class.create();
 Sheet.prototype = {
-  initialzie: function(element, trigger, options) {
+  initialize: function(element, trigger, options) {
+    console.log('wee')
     this.sheet = $(element);
     this.trigger = $(trigger);
+    this.cancelBtn = $$('img.cancelbtn')[0];
+    this.overlay;
+    this.build(this.sheet.id);
+    this.addObservers();
+  },
+  
+  addObservers: function() {
+    this.trigger.observe('click', this.toggle.bindAsEventListener(this));
+    this.cancelBtn.observe('click', this.hide.bindAsEventListener(this));
+  },
+  
+  toggle: function() {
+    if(this.overlay.visible())
+      this.hide();
+    else
+      this.show();
+  },
+  
+  hide: function() {
+    new Fx.Style(this.sheetContent, 'margin-top', {
+      duration: 1200,
+      transition: Fx.Transitions.expoOut,
+      onComplete: function() { this.overlay.hide(); }.bind(this)
+    })._start(0, -452);
+  },
+  
+  show: function(event) {
+    this.overlay.show();
+    new Fx.Style(this.sheetContent, 'margin-top', {
+      duration: 400, 
+      transition: Fx.Transitions.expoOut
+    })._start(-452, 0);
+  },
+  
+  build: function(namespace) {
+    this.overlay = new Element('div', {id: namespace + '-overlay'});
+    this.overlay.hide();
+    this.sheetContent = new Element('div', {id: namespace + '-content'});
+    this.overlay.addClassName('overlay');
+    this.sheetContent.addClassName('overlay-content');
+    this.sheetContent.appendChild(this.sheet);
+    this.overlay.appendChild(this.sheetContent);
+    $('container').appendChild(this.overlay);
   }
-}
+};
 
 Event.addBehavior({
   'a.addpath:click': function() {
@@ -88,10 +101,6 @@ Event.addBehavior({
   
   'a.delpath:click': function() {
     Permissions.remove(this.up());
-  },
-  
-  'a#bookmark:click': function(event) {
-    Bookmarks.toggle();
   },
   
   '#login:click': function(event) {
@@ -112,4 +121,8 @@ Event.addBehavior({
       onComplete: function() { $('login-form').hide(); }
       })._start(0, -162);
   }
+});
+
+Event.onReady(function() {
+  new Sheet('bookmark-sheet', 'bookmark');
 });

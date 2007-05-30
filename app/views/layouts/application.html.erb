@@ -12,6 +12,11 @@
     <%= javascript_include_tag 'moo.fx.transitions.js' %>
     <%= javascript_include_tag 'application' %>
     <%= yield :scripts %>
+    <script type="text/javascript" charset="utf-8">
+      Event.onReady(function() {
+        <%= yield :onready %>
+      });
+    </script>
   </head>
   <body>
     <!-- container -->
