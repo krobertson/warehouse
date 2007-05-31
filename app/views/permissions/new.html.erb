@@ -3,17 +3,19 @@
 
 <%= error_messages_for :user %>
 <%= error_messages_for :permission %>
-<div class="form">
-    <h3>Add a New Member</h3>
-    <% form_for @permission do |f| -%>
-      <p>
-        <label for="email">Email:</label>
-        <%= text_field_tag :email, params[:email], :size => 30 %><br />
-        (leave email and svn login info blank for anonymous access)
-      </p>
-      <%= render :partial => "form", :object => f %>
-      <p class="btns">
-        <%= submit_tag 'Create', :disable_with => 'Creating...' %>
-      </p>
-    <% end -%>
+<% content_for :onready do %>new Sheet('member-form', 'addmember')<% end %>
+<% form_for @permission, :id => 'member-form' do |f| -%>
+<div class="overlay-form oform">
+  <h2>Add a New Member</h2>
+    <p>
+      <label for="email">Email:</label>
+      <%= text_field_tag :email, params[:email], :size => 30 %><br />
+      (leave email and svn login info blank for anonymous access)
+    </p>
+    <%= render :partial => "form", :object => f %>
+    <p class="btns">
+      <%= submit_tag 'Create', :disable_with => 'Creating...' %>
+    </p>
 </div>
+<% end -%>
+

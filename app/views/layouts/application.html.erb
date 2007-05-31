@@ -13,7 +13,7 @@
     <%= javascript_include_tag 'application' %>
     <%= yield :scripts %>
     <script type="text/javascript" charset="utf-8">
-      Event.onReady(function() {
+      Event.onReady(function() {        
         new Sheet('login-form', 'login');
         <%= yield :onready %>
       });

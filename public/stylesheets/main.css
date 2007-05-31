@@ -938,7 +938,6 @@ div.form {
 
 .repoedit p, .form p {
   display: block;
-  border-bottom: 1px solid #ddd;
   padding: 8px;
   font-size: 92%;
   color: #555;

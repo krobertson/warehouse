@@ -42,10 +42,10 @@ Element.addMethods({
 });
 
 var Sheet = Class.create();
-Sheet.Cache = [];
 Sheet.prototype = {
   initialize: function(element, trigger, options) {
     this.sheet = $(element);
+    if(!this.sheet) return;
     this.sheetHeight = this.sheet.getHeight();
     this.trigger = $(trigger);
     this.cancelBtn = $$('img.cancelbtn')[0];

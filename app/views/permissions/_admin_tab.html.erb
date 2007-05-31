@@ -1,5 +1,5 @@
 <% content_for :admin_tab do -%>
-    <li><%= link_to_function('Add member', %($('add-member').toggle(); return false;)) %></li>
+    <li id="addmember"><%= link_to 'Add member' %></li>
     <% if @repositories.any? -%>
     <li id="jump"><label>Show members of:</label> 
       <select name="repo">
