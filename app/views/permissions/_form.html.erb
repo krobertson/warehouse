@@ -10,8 +10,7 @@
   <label>Administrator?</label>
     <%= form.check_box :admin %> Yes, this user can add and delete members.
 </p>
-<dl id="svn-paths">
-  <dt>This member can access the following paths (relative to repository root)</dt>
+<div id="svn-paths">
   <% if (form.object && form.object.new_record?) || permissions.blank? -%>
     <% (params[:permission][:paths].size rescue 1).times do -%>
       <%= path_permissions %>
@@ -21,4 +20,4 @@
       <%= path_permissions(permission) %>
     <% end -%>
   <% end -%>
-</dl>
+</div>

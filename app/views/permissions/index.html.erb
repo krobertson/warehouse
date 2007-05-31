@@ -25,18 +25,21 @@
 <% end -%>
 </ul>
 
-<div class="form" style="display:none" id="add-member">
-  <h3>Add a new Member</h3>
-  <% form_for @permission do |f| -%>
+  <% content_for :onready do %>new Sheet('add-member', 'addmember')<% end %>
+  <% form_for @permission, :html => { :id => 'add-member' } do |f| -%>
+  <div class="overlay-form oform">
+    <h2>Add a new Member</h2>
     <p>
       <label for="email">Email:</label>
       <%= text_field_tag :email, nil, :size => 30 %><br />
       (leave email and svn login info blank for anonymous access)
     </p>
     <%= render :partial => "form", :object => f %>
+    </div>
+    
     <p class="btns">
-      <%= submit_tag 'Create', :disable_with => 'Creating...' %>
+      <%= cancel_image(:class => 'cancelbtn') %>
+      <%= submit_image 'save.png' %>
     </p>
   <% end -%>
-</div>
 

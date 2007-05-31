@@ -1,5 +1,5 @@
 <% content_for :admin_tab do -%>
-    <li id="addmember"><%= link_to 'Add member' %></li>
+    <li><%= link_to 'Add member', {}, :id => 'addmember' %></li>
     <% if @repositories.any? -%>
     <li id="jump"><label>Show members of:</label> 
       <select name="repo">

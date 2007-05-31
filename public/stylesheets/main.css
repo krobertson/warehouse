@@ -16,6 +16,13 @@ body {
 }
 
 /* @group Utilities */
+img {
+  border: none;
+}
+
+* {
+  outline: none;
+}
 
 .clearfix:after {
   content:".";
@@ -967,40 +974,15 @@ form input, select {
   padding: 0;
 }
 
-#svn-paths dt {
-  padding: 5px;
-  background: #eee;
-  display: block;
-  text-align: left;
-  font-size: 82%;
-  border-top: 1px solid #ccc;
-  border-bottom: 1px solid #ddd;
-}
-
-#svn-paths dd {
+#svn-paths p {
   margin-left: 10px;
   padding: 5px;
   position: relative;
   font-size: 92%;
 }
 
-a.addpath, a.delpath {
-  display: block;
-  position: absolute;
-  top: 5px;
-  left: 395px;
-  width: 16px;
-  height: 16px;
-  text-indent: -9999px;
-  background: url(../images/app/icons/plus-small.png) 0 50% no-repeat;
-}
-
-a.delpath {
-  left: 415px;
-  background: url(../images/app/icons/delete.png) 0 50% no-repeat;
-}
 input.path {
-  width: 200px;
+  width: 150px;
 }
 
 .sel {
@@ -1079,7 +1061,7 @@ input.path {
 }
 
 .overlay-form {
-  background: url(../images/app/sheet.png) bottom left no-repeat;
+  background: #ECECEC url(../images/app/sheet.png) bottom left repeat-y;
   padding: 0 7px 10px 6px;
 }
 

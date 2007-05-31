@@ -5,11 +5,11 @@ module PermissionsHelper
     @path_permission_index = @path_permission_index.nil? ? 0 : @path_permission_index + 1
     access_value = permission ? (permission.full_access ? '1' : '0') : (params[:permission][:paths][@path_permission_index][:full_access] rescue nil)
     path_value   = permission ? permission.path : (params[:permission][:paths][@path_permission_index][:path] rescue nil)
-    %(<dd#{%( id="#{dom_id permission}") if permission}><select name="permission[paths][#{@path_permission_index}][full_access]" class="sel">) +
+    %(<p#{%( id="#{dom_id permission}") if permission}><select name="permission[paths][#{@path_permission_index}][full_access]" class="sel">) +
       options_for_select(@@permission_options, access_value) + 
       %(</select> to ) + 
       text_field_tag("permission_paths_#{@path_permission_index}_path", path_value, :name => "permission[paths][#{@path_permission_index}][path]", :class => 'path') + 
       (permission ? hidden_field_tag("permission_paths_#{@path_permission_index}_id", permission.id, :name => "permission[paths][#{@path_permission_index}][id]") : '') +
-      %( <a href="#add" class="addpath">(+)</a> <a class="delpath" href="#" title="Delete">Delete</a></dd>)
+      %( <a href="#add" class="addpath"><img src="/images/app/icons/plus-small.png" /></a> <a class="delpath" href="#" title="Delete"><img src="/images/app/icons/delete.png" /></a></p>)
   end
 end

@@ -3,7 +3,6 @@
 
 <%= error_messages_for :user %>
 <%= error_messages_for :permission %>
-<% content_for :onready do %>new Sheet('member-form', 'addmember')<% end %>
 <% form_for @permission, :id => 'member-form' do |f| -%>
 <div class="overlay-form oform">
   <h2>Add a New Member</h2>

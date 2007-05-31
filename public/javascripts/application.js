@@ -59,7 +59,8 @@ Sheet.prototype = {
     this.cancelBtn.observe('click', this.hide.bindAsEventListener(this));
   },
   
-  toggle: function() {
+  toggle: function(event) {
+    Event.stop(event);
     if(this.overlay.visible()) {
       this.hide();
     } else {
@@ -72,7 +73,7 @@ Sheet.prototype = {
       duration: (this.sheetHeight * 2) + 500,
       transition: Fx.Transitions.expoOut,
       onComplete: function() { this.overlay.hide(); }.bind(this)
-    })._start(0, -(this.sheetHeight));
+    })._start(0, -(this.sheet.getHeight()));
   },
   
   show: function(event) {
