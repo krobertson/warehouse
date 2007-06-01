@@ -11,8 +11,59 @@ context "Changesets Controller" do
     @response   = ActionController::TestResponse.new
   end
 
-  # Replace this with your real tests.
-  def test_truth
-    assert true
+  specify "should show 0 changesets for anonymous user" do
+    Repository.any_instance.stubs(:public?).returns(false)
+    get :index
+    assigns(:changesets).size.should.be.zero
+    assert_template 'index'
   end
+
+  specify "should show changesets for anonymous user on public repo" do
+    Repository.any_instance.stubs(:public?).returns(true)
+    expect_paginate
+    get :index
+    assert_template 'index'
+  end
+  
+  specify "should show changesets for admin user" do
+    Repository.any_instance.stubs(:public?).returns(false)
+    User.any_instance.stubs(:admin?).returns(true)
+    expect_paginate
+    login_as :rick
+    get :index
+    assert_template 'index'
+  end
+  
+  specify "should show all changesets for user with all paths" do
+    Repository.any_instance.stubs(:public?).returns(false)
+    User.any_instance.stubs(:admin?).returns(false)
+    User.any_instance.expects(:permissions).returns(stub(:paths_for => :all))
+    expect_paginate
+    login_as :rick
+    get :index
+    assert_template 'index'
+  end
+
+  specify "should show changesets for user" do
+    Repository.any_instance.stubs(:public?).returns(false)
+    User.any_instance.stubs(:admin?).returns(false)
+    User.any_instance.expects(:permissions).returns(stub(:paths_for => %w(foo)))
+    expect_paginate_by_paths [], %w(foo)
+    login_as :rick
+    get :index
+    assert_template 'index'
+  end
+
+  private
+    def expect_paginate(value = [])
+      changesets = stub
+      changesets.expects(:paginate).returns(value)
+      Repository.any_instance.expects(:changesets).returns(changesets)
+    end
+
+    def expect_paginate_by_paths(value = [], paths = [], page = nil)
+      changesets = stub
+      changesets.expects(:paginate_by_paths).with(paths, :page => page, :order => 'changesets.revision desc').returns(value)
+      Repository.any_instance.expects(:changesets).returns(changesets)
+    end
 end

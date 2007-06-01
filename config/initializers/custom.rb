@@ -1,5 +1,4 @@
-require 'dispatcher'
-Dispatcher.to_prepare do
+Warehouse.configure do |w|
   # turn on multiple repository support
-  # Warehouse.multiple_repositories = true
+  # w.multiple_repositories = true
 end

@@ -1,8 +1,13 @@
 class ChangesetsController < ApplicationController
   helper_method :previous_changeset, :next_changeset
+  expiring_attr_reader :changeset_paths, :find_changeset_paths
 
   def index
-    @changesets = current_repository.changesets.paginate_by_paths(changeset_paths, :page => params[:page], :order => 'changesets.revision desc')
+    @changesets = case changeset_paths
+      when :all then current_repository.changesets.paginate(:page => params[:page], :order => 'changesets.revision desc')
+      when []   then []
+      else current_repository.changesets.paginate_by_paths(changeset_paths, :page => params[:page], :order => 'changesets.revision desc')
+    end
     @users = User.find_all_by_logins(current_repository, @changesets.collect(&:author).uniq).index_by(&:login)
   end
   
@@ -26,6 +31,10 @@ class ChangesetsController < ApplicationController
     end
     
     def find_changeset_paths
-      logged_in? && current_user.permissions.paths_for(current_repository) || []
+      if current_repository.public? || (logged_in? && current_user.admin?)
+        :all
+      else
+        (logged_in? && current_user.permissions.paths_for(current_repository)) || []
+      end
     end
 end

@@ -55,7 +55,8 @@ class ApplicationController < ActionController::Base
     
     def retrieve_repository_member
       return nil unless current_repository
-      return nil unless logged_in? || current_repository.public?
+      return true if current_repository.public?
+      return nil unless logged_in?
       current_repository.member?(current_user, repository_path)
     end
     

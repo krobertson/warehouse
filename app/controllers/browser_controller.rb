@@ -21,6 +21,10 @@ class BrowserController < ApplicationController
   end
 
   protected
+    def access_denied(options = {})
+      @error = options[:error] || "A login is required to visit this page."
+    end
+
     def find_node
       @revision = params[:rev][1..-1].to_i if params[:rev]
       @node     = current_repository.node(params[:paths] * '/', @revision)

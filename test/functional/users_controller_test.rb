@@ -15,39 +15,30 @@ context "Users Controller" do
         false
       end
 
-      def profile_required_with_testing
-        profile_required_without_testing
-        find_user
+      def login_required_with_testing
+        login_required_without_testing
         render :text => 'passed' unless performed?
         false
       end
-      alias_method_chain :profile_required, :testing
+      alias_method_chain :login_required, :testing
     end
   end
 
   specify "should require logged_in user" do
-    @controller.stubs(:logged_in?).returns(false)
+    login_as nil
     get :show
-    assert_match /^error/, @response.body
-  end
-
-  specify "should require correct user" do
-    @controller.stubs(:current_user).returns(users(:rick))
-    get :show, :id => '234'
     assert_match /^error/, @response.body
   end
   
   specify "should accept valid user" do
-    @controller.stubs(:current_user).returns(users(:rick))
+    login_as :rick
     get :show, :id => users(:rick).id.to_s
-    assigns(:user).should == @controller.current_user
     assert_match /^passed/, @response.body
   end
   
   specify "should accept implicit user" do
-    @controller.stubs(:current_user).returns(users(:rick))
+    login_as :rick
     get :show
-    assigns(:user).should == @controller.current_user
     assert_match /^passed/, @response.body
   end
 end

@@ -11,4 +11,4 @@
   <% end -%>
 </ul>
 
-<%= will_paginate @changesets %>
+<%= will_paginate @changesets unless @changesets.empty? %>

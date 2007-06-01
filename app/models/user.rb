@@ -52,7 +52,7 @@ class User < ActiveRecord::Base
   end
 
   def email=(value)
-    self.email = value.blank? ? value : value.downcase
+    write_attribute :email, value.blank? ? value : value.downcase
   end
 
   def avatar?
