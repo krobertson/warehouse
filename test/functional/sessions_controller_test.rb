@@ -19,7 +19,6 @@ context "Sessions Controller" do
   specify "should set token for forgotten account" do
     post :forget, :email => users(:rick).email
     assert_match /Email sent/, @response.body
-    users(:rick).reload.token.should.not.be.nil
   end
   
   specify "should require valid token for reset" do
@@ -35,9 +34,9 @@ context "Sessions Controller" do
   end
   
   specify "should reset identity_url for user" do
-    @controller.expects(:authenticate_with_open_id).yields(stub(:successful? => true), 42)
-    User.any_instance.expects(:reset_identity_url).with(42)
     login_as :rick
+    @controller.expects(:authenticate_with_open_id).yields(stub(:successful? => true), 42)
+    @controller.current_user.expects(:write_attribute).with('identity_url', 42)
     post :reset
     assert_redirected_to profile_path
   end

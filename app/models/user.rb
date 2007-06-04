@@ -21,7 +21,7 @@ class User < ActiveRecord::Base
   validates_format_of     :email, :with => /(\A(\s*)\Z)|(\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z)/i, :allow_nil => true
   validates_uniqueness_of :identity_url
   validates_uniqueness_of :email, :allow_nil => true
-  before_create :set_admin_if_needed
+  before_create :set_default_attributes
   before_save   :sanitize_email
   attr_accessible :name, :identity_url, :avatar_data, :email
   belongs_to :avatar
@@ -31,16 +31,6 @@ class User < ActiveRecord::Base
     find(:all, :select => 'DISTINCT users.*, permissions.login',
       :conditions => ['permissions.repository_id = ? AND permissions.login IN (?) AND active = ?', repository.id, logins, true], 
       :joins => 'inner join permissions on users.id = permissions.user_id')
-  end
-
-  def reset_identity_url(url = nil)
-    if url.blank?
-      self.token = TokenGenerator.generate_random(TokenGenerator.generate_simple)
-    else
-      self.token = nil
-      self.identity_url = url
-    end
-    save
   end
 
   def permission_admin?
@@ -59,8 +49,13 @@ class User < ActiveRecord::Base
     !avatar_id.nil?
   end
 
+  def reset_token
+    write_attribute :token, TokenGenerator.generate_random(TokenGenerator.generate_simple)
+  end
+
   protected
-    def set_admin_if_needed
+    def set_default_attributes
+      self.token = TokenGenerator.generate_random(TokenGenerator.generate_simple)
       self.admin = true if User.count.zero?
       true
     end

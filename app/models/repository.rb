@@ -48,7 +48,7 @@ class Repository < ActiveRecord::Base
 
   def invite(user, options = {})
     user.identity_url = TokenGenerator.generate_simple
-    return nil unless user.reset_identity_url
+    return nil unless user.save
     grant options do |m|
       m.user_id = user.id 
     end
