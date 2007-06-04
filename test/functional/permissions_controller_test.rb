@@ -12,6 +12,21 @@ context "Permissions Controller" do
     @controller.stubs(:current_user).returns(users(:rick))
   end
 
+  specify "should ask for basic authentication on text requests" do
+    @controller.stubs(:current_repository).returns(repositories(:sample))
+    @controller.stubs(:current_user).returns(nil)
+    get :index, :format => 'text'
+    assert_response 401
+  end
+
+  specify "should login with basic authentication on text requests" do
+    @controller.stubs(:current_repository).returns(repositories(:sample))
+    @controller.stubs(:current_user).returns(nil)
+    @controller.expects(:authenticate_or_request_with_http_basic).yields(users(:rick).token, 'x').returns(users(:rick))
+    get :index, :format => 'text'
+    assert_response :success
+  end
+
   specify "should grant new permission to repo" do
     assert_difference "Permission.count" do
       assert_difference "User.count" do

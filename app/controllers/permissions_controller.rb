@@ -78,4 +78,14 @@ class PermissionsController < ApplicationController
         page[@permission].hide
       end
     end
+
+    # slight tweak that checks basic auth too
+    def repository_admin_required
+      if request.format.text?
+        @current_user = authenticate_or_request_with_http_basic { |u, p| user = User.find_by_token(u); repository_admin? && user } unless logged_in?
+        return false if performed?
+      else
+        repository_admin? || access_denied(:error => "You must be an administrator for this repository to visit this page.")
+      end
+    end
 end
