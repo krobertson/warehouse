@@ -1,0 +1,9 @@
+<% @repositories.each do |repo| -%>
+<% repo.permissions.group_by(&:path).each do |path, permissions| -%>
+[<%= repo.subdomain %>:/<%= path %>]
+<% permissions.each do |permission| -%>
+<%= permission.login %> = r<%= :w if permission.full_access? %>
+<% end -%>
+
+<% end -%>
+<% end -%>

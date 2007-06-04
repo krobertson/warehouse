@@ -3,9 +3,18 @@ class PermissionsController < ApplicationController
   before_filter :load_all_repositories
 
   def index
-    @permission ||= Permission.new
-    @members      = current_repository.permissions.group_by &:user
-    render :action => 'index'
+    respond_to do |format|
+      format.html do
+        @permission ||= Permission.new
+        @members      = current_repository.permissions.group_by &:user
+        render :action => 'index'
+      end
+
+      format.text do
+        @repositories = repository_subdomain.blank? && Warehouse.multiple_repositories ? Repository.find(:all) : [current_repository]
+        render :action => 'index', :layout => false
+      end
+    end
   end
   
   def create
