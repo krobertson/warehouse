@@ -64,7 +64,7 @@
 <% end -%>
 
 <% if params[:paths].any? && repository_admin? -%>
-  <% content_for :onready do %>new Sheet('bookmark-sheet', 'bookmark');<% end %>
+  <% content_for :onready do %>var BookmarkSheet = new Sheet('bookmark-sheet', 'bookmark');<% end %>
   <% remote_form_for :bookmark, :url => bookmarks_path, :html => {:id => 'bookmark-sheet'} do |f| %>
   <div class="overlay-form oform">
     <h2>Bookmark this directory</h2>
