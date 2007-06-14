@@ -67,7 +67,7 @@ class ApplicationController < ActionController::Base
     end
     
     def retrieve_current_user
-      session[:user_id] && User.find_by_id(session[:user_id])
+      authenticate_with_http_basic { |u, p | User.find_by_token(u) } || (session[:user_id] && User.find_by_id(session[:user_id]))
     end
 
     def repository_subdomain

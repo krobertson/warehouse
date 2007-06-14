@@ -37,6 +37,10 @@ class Changeset < ActiveRecord::Base
   def to_param
     revision.to_s
   end
+  
+  def created_at
+    read_attribute :changed_at
+  end
 
   protected
     def self.with_paths(paths, &block)

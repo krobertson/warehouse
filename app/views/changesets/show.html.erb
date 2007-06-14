@@ -28,12 +28,7 @@
 </div>
 
 <ul id="change-list">
-<% @changeset.changes.each do |change| -%>
-  <li<%= cycle '', ' class="shade"' %>>
-    <span class="<%=h change.name.downcase %>" title="<%= word_for_change(change.name) %>"><%= change.name %></span> 
-    <%= link_to_node change.path, change.path, @changeset.revision %> <% if modified?(change.name) %> <%= link_to 'view', "##{dom_id change}", :class => 'viewdiff' %><% end %>
-  </li>
-<% end -%>
+<%= render :partial => "changes", :locals => { :changeset => @changeset } %>
 </ul>
 
 <% @changeset.changes.select(&:diffable?).each do |change| -%>

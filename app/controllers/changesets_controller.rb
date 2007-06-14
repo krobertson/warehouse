@@ -8,7 +8,14 @@ class ChangesetsController < ApplicationController
       when []   then []
       else current_repository.changesets.paginate_by_paths(changeset_paths, :page => params[:page], :order => 'changesets.revision desc')
     end
-    @users = User.find_all_by_logins(current_repository, @changesets.collect(&:author).uniq).index_by(&:login)
+    respond_to do |format|
+      format.html do
+        @users = User.find_all_by_logins(current_repository, @changesets.collect(&:author).uniq).index_by(&:login)
+      end
+      format.atom do
+        render :layout => false, :action => 'index'
+      end
+    end
   end
   
   def show
