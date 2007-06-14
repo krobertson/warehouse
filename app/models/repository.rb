@@ -77,10 +77,12 @@ class Repository < ActiveRecord::Base
   end
   
   def sync_all_revisions!
-    Changeset.delete_all
-    Change.delete_all
+    clear_changesets
     @revisions_to_sync = nil
-    sync_revisions
+    revisions_to_sync.collect do |rev|
+      puts "##{rev}"
+      changesets.create(:revision => rev)
+    end
   end
 
   def backend

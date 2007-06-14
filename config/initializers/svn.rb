@@ -8,7 +8,8 @@ class Svn::Delta::ChangedEditor
     add_file_without_collection(*args)
   end
   
-  alias_method_chain :add_file, :collection
+  alias_method :add_file_without_collection, :add_file
+  alias_method :add_file, :add_file_with_collection
 end
 
 module Svn
