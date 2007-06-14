@@ -75,7 +75,12 @@ class ApplicationController < ActionController::Base
     end
   
     def check_for_repository
-      current_repository || access_denied
+      if current_repository
+        true
+      else
+        redirect_to install_path
+        false
+      end
     end
     
     def default_repository
