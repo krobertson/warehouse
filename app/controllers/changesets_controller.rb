@@ -23,11 +23,11 @@ class ChangesetsController < ApplicationController
     %w(previous_changeset next_changeset changeset_paths).each { |m| expiring_attr_reader m, "find_#{m}" }
     
     def find_previous_changeset
-      current_repository.changesets.find_by_paths(changeset_paths, :conditions => ['revision < ?', params[:id]])
+      current_repository.changesets.find_by_paths(changeset_paths, :conditions => ['revision < ?', params[:id]], :order => 'revision desc')
     end
     
     def find_next_changeset
-      current_repository.changesets.find_by_paths(changeset_paths, :conditions => ['revision > ?', params[:id]])
+      current_repository.changesets.find_by_paths(changeset_paths, :conditions => ['revision > ?', params[:id]], :order => 'revision desc')
     end
     
     def find_changeset_paths
