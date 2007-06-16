@@ -6,13 +6,25 @@
   <%= javascript_include_tag 'code/ruby' %>
   <%= javascript_include_tag 'code/html' %>
 <% end %>
-<div id="last-log">
+
+<% unless @error -%>
+<div class="changeset clearfix">
+  <div class="cs-meta">
+    <%= avatar_for(current_changeset.user) %>
     <p>
-      <span class="change-number"><%= link_to(current_revision, changeset_path(current_revision)) %></span>
-      <%=h current_changeset.message %>
-      <span class="message"><%= time_ago_in_words current_changeset.changed_at %> ago</span>
+      <span class="change-number"><%= link_to(current_changeset.revision, changeset_path(current_changeset.revision)) %></span>
     </p>
+  </div>
+  <div class="cs-log">      
+     <%=h current_changeset.message %>
+    <span class="timenauthor">by <%= current_changeset.author %>, <%= time_ago_in_words current_changeset.changed_at %> ago</span>
+  </div>
+  <ul class="changeset-nav">
+    <%= %(<li class="prev"> #{link_to_node('back', @node, previous_changeset.revision)}</li>) if previous_changeset %>
+    <%= %(<li class="next"> #{link_to_node('forward', @node, next_changeset.revision)}</li>) if @revision && next_changeset %>
+  </ul>
 </div>
+<% end -%>
 
 <% if @node.text? -%>
   <div id="crumbs">

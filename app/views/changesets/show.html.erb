@@ -1,16 +1,23 @@
 <% @fullscreen = true %>
 <% title "Changeset #{@changeset.revision}, #{h(@changeset.message)}" %>
-<div id="last-log" class="clearfix">
+<% unless @error -%>
+<div class="changeset clearfix" id="last-log">
+  <div class="cs-meta">
+    <%= avatar_for(@changeset.user) %>
     <p>
-      <span class="change-number"><%= link_to @changeset.revision, @changeset %></span>
-      <%=h @changeset.message %>
-      <span class="time">(<%= time_ago_in_words @changeset.changed_at %> ago)</span>
+      <span class="change-number"><%= link_to(@changeset.revision, changeset_path(@changeset.revision)) %></span>
     </p>
-    <ul class="changeset-nav">
-      <li class="prev"><%= link_to 'Previous Changeset', previous_changeset, :class => 'back' if previous_changeset %></li>
-      <li class="next"><%= link_to 'Next Changeset', next_changeset, :class => 'forward' if next_changeset %></li>
-    </ul>
+  </div>
+  <div class="cs-log">      
+     <%=h @changeset.message %>
+    <span class="timenauthor">by <%= @changeset.author %>, <%= time_ago_in_words @changeset.changed_at %> ago</span>
+  </div>
+  <ul class="changeset-nav">
+    <li class="prev"><%= link_to 'Previous Changeset', previous_changeset, :class => 'back' if previous_changeset %></li>
+    <li class="next"><%= link_to 'Next Changeset', next_changeset, :class => 'forward' if next_changeset %></li>
+  </ul>
 </div>
+<% end -%>
 
 <div id="control-center">
   <ul>

@@ -456,22 +456,7 @@ div p.rcontrols {
 /* @group Changesets */
 
 #last-log {
-  padding: 10px;
-  padding-left: 50px;
-  padding-right: 70px;
-  background: #f7f7f7 url(../images/app/icons/terminal.png) 5px 3px no-repeat;  
-  margin-bottom: 20px;
-  border: 1px solid #ddd;
-  border-bottom-color: #ccc;
-  border-right-color: #ccc;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 120%;
-  font-weight: bold;
   position: relative;
-}
-
-#last-log .change-number {
-  font-size: 180%;
 }
 
 .time {
