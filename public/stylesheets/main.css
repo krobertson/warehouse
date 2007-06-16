@@ -498,6 +498,7 @@ div p.rcontrols {
 
 .cs-log {
   padding: 5px;
+  padding-right: 50px;
   margin-left: 71px;
 }
 
@@ -1102,7 +1103,7 @@ input.path {
 }
 
 .overlay-form {
-  background: #ECECEC url(../images/app/sheet.png) bottom left repeat-y;
+  background: url(../images/app/sheet.png) bottom left repeat-y;
   padding: 0 7px 10px 6px;
 }
 

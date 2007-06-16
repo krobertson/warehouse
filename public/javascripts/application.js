@@ -41,7 +41,9 @@ Element.addMethods({
   }
 });
 
+// Create OSX-style Sheets  
 var Sheet = Class.create();
+Sheet.Cache = [];
 Sheet.prototype = {
   initialize: function(element, trigger, options) {
     this.sheet = $(element);
@@ -49,8 +51,10 @@ Sheet.prototype = {
     this.sheetHeight = this.sheet.getHeight();
     this.trigger = $(trigger);
     this.cancelBtn = $$('img.cancelbtn')[0];
+    console.log(this.cancelBtn);
+    
     this.overlay;
-    this.build(this.sheet.id);
+    this.build(element);
     this.addObservers();
   },
   

@@ -1,6 +1,6 @@
 <% title "#{@node.path.to_s}" %>
 <% unless @error -%>
-<div class="changeset clearfix">
+<div class="changeset clearfix" id="last-log">
   <div class="cs-meta">
     <%= avatar_for(current_changeset.user) %>
     <p>
@@ -69,7 +69,7 @@
 <% end -%>
 
 <% if params[:paths].any? && repository_admin? -%>
-  <% content_for :onready do %>var BookmarkSheet = new Sheet('bookmark-sheet', 'bookmark');<% end %>
+  <% content_for :onready do %>Sheet.Cache['bookmark-sheet'] = new Sheet('bookmark-sheet', 'bookmark');<% end %>
   <% remote_form_for :bookmark, :url => bookmarks_path, :html => {:id => 'bookmark-sheet'} do |f| %>
   <div class="overlay-form oform">
     <h2>Bookmark this directory</h2>

@@ -45,7 +45,7 @@ module ApplicationHelper
   end
   
   def avatar_for(user)
-    img = user && user.avatar? ? user.avatar_path : 'avatar.png'
+    img = user && user.avatar? ? user.avatar_path : '/images/app/icons/member.png'
     tag('img', :src => img, :class => 'avatar')
   end
 end

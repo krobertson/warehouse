@@ -6,7 +6,7 @@ class BookmarksController < ApplicationController
     render :update do |page|
       page['bookmarks'].show
       page.insert_html :bottom, 'bookmark-list', :partial => 'bookmark'
-      page.bookmark_sheet.hide
+      page['bookmark-sheet'].hide
     end
   end
 end

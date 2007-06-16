@@ -14,14 +14,24 @@
     <%= yield :scripts %>
     <script type="text/javascript" charset="utf-8">
       Event.onReady(function() {        
-        new Sheet('login-form', 'login');
+        Sheet.Cache['login-form'] = new Sheet('login-form', 'login');
+        <% if logged_in? %>Sheet.Cache['profile-form'] = new Sheet('profile-form', 'profile');<% end %>
         <%= yield :onready %>
       });
     </script>
   </head>
   <body>
+    <%= @onready %>
     <!-- container -->
     <div id="container">
+      <% if logged_in? %>
+        <% sheet_form_tag login_path, :id => 'profile-form' do |s| -%>
+          <h2>Edit your profile</h2>
+          <%= content_tag 'p', flash[:error] if flash[:error] %>
+          <%= s.text_field_tag 'Name:', :user, :name %>
+          <% s.submit 'save.png' %>
+        <% end -%>
+      <% end %>
       <!-- header -->
       <div id="header">
         <div id="hdr-cnt">
@@ -37,7 +47,7 @@
           </ul>
           <ul id="utils">
             <% if logged_in? -%>
-              <li><%= link_to 'Profile', profile_path %></li>
+              <li id="profile"><%= link_to 'Profile', profile_path %></li>
               <li><%= link_to 'Logout', logout_path %></li>
             <% else -%>
               <li id="login"><%= link_to 'Login', '#' %></li>
@@ -51,22 +61,6 @@
                 <%= s.text_field_tag %(OpenID: (<a href="#reset" id="reset">reset</a>)), :openid_url, params[:openid_url], :class => 'big' %>
                 <%  s.submit 'login.png' %>
               <% end -%>
-              <!-- <% form_tag forget_path do -%>
-              <div class="oform">
-                <h2>Reset your OpenID</h2>
-                <% if flash[:error] -%>
-                <p><%= flash[:error] %></p>
-                <% end -%>
-                  <p>
-                    <label for="email">Email:</label>
-                    <%= text_field_tag :email, params[:email], :class => 'big' %> 
-                  </p>
-              </div>
-              <p class="btns">
-                <%= image_tag 'app/btns/cancel.png', :class => 'imgbtn', :id => 'cancel' %>
-                <%= submit_image 'login.png' %>
-              </p>
-              <% end -%> -->
           <% end %>
         </div>
       </div>
@@ -84,7 +78,7 @@
           <div id="bookmarks" class="sideblock"<%= %( style="display:none") if current_repository.bookmarks.to_a.empty? %>>
             <h3>Bookmarks</h3>
             <ul id="bookmark-list">
-<%= render :partial => "bookmarks/bookmark", :collection => current_repository.bookmarks %>
+              <%= render :partial => "bookmarks/bookmark", :collection => current_repository.bookmarks %>
             </ul>
           </div>
           <%= yield :sidebar %>
