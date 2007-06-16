@@ -1,6 +1,6 @@
 /* @override http://localhost:3000/stylesheets/code.css */
 
-div.viewsource code {
+pre.viewsource code {
   color: #f8f8f8;
   font-family: Monaco, Courier, monospace;
   font-size: 100%%;

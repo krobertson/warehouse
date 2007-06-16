@@ -8,7 +8,7 @@
 <% end %>
 
 <% unless @error -%>
-<div class="changeset clearfix">
+<div class="changeset clearfix" id="last-log">
   <div class="cs-meta">
     <%= avatar_for(current_changeset.user) %>
     <p>
@@ -30,34 +30,30 @@
   <div id="crumbs">
     <ul class="clearfix"><%= link_to_crumbs @node.path %></ul>
   </div>
-  
-  <table class="diff sourcecode" cellspacing="0" cellpadding="0">
-    <thead>
-      <tr class="controls">
-        <td>
-          <div class="control-head">
-            <p class="controlblock">
-              <%= link_to_node 'back', @node, previous_changeset.revision, :class => 'back' if previous_changeset %>
-              <%= link_to_node 'forward', @node, next_changeset.revision, :class => 'forward' if @revision && next_changeset %>
-            </p>
-            <ul class="formats">
-              <li><%= link_to_history 'History', @node %></li>
-              <li<% unless @node.text? %>class="end"<% end %>><%= link_to 'Raw', raw_path(:paths => @node.paths) %></li>
-              <% if @node.text? -%><li class="end"><%= link_to 'Text', text_path(:paths => @node.paths) %></li><% end -%>
-            </ul>
-          </div>
-        </td>
-      </tr>
-      <tr>
-        <th><%= @node.path.split('/').last %></th>
-      </tr>
-    </thead>
-    <tr>
-      <td>
-        <div class="viewsource"><pre><code class="<%= highlight_as(@node.path.split('/').last) %>"><%=h @node.content %></code></pre></div>
-      </td>
-    </tr>
-  </table>
+    <table class="diff sourcecode file-source" cellspacing="0" cellpadding="0">
+      <thead>
+        <tr class="controls">
+          <td>
+            <div class="control-head">
+              <p class="controlblock">
+                <%= link_to_node 'back', @node, previous_changeset.revision, :class => 'back' if previous_changeset %>
+                <%= link_to_node 'forward', @node, next_changeset.revision, :class => 'forward' if @revision && next_changeset %>
+              </p>
+              <ul class="formats">
+                <li><%= link_to_history 'History', @node %></li>
+                <li<% unless @node.text? %>class="end"<% end %>><%= link_to 'Raw', raw_path(:paths => @node.paths) %></li>
+                <% if @node.text? -%><li class="end"><%= link_to 'Text', text_path(:paths => @node.paths) %></li><% end -%>
+              </ul>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th><%= @node.path.split('/').last %></th>
+        </tr>
+      </thead>
+    </table>
+    <pre class="viewsource"><code class="<%= highlight_as(@node.path.split('/').last) %>"><%=h @node.content %></code></pre>
+    
 <% elsif @node.image? -%>
  <p>Viewing <%=h @node.path %></p>
  <p><%= image_tag raw_path(:paths => @node.paths) %></p>

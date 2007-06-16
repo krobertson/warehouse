@@ -786,18 +786,29 @@ ul.formats a:hover {
 }
 
 table.sourcecode {
-  width: 900px !important;
+  width: 100%;
+  margin-bottom: 0 !important;
 }
 
-div.viewsource {
-  width: 900px !important;
-  overflow: auto;
+td.filesource {
   padding: 10px;
-  background-color: #111;
+  background-color: #111 !important;
 }
 
-td.viewsource pre {
-  overflow: scroll;
+pre.viewsource {
+  margin-top: 0 !important;
+  width: 100%;
+  background-color: #111;
+  white-space: pre-wrap; /* css-3 */
+  white-space: -moz-pre-wrap !important; /* Mozilla, since 1999 */
+  white-space: -pre-wrap; /* Opera 4-6 */
+  white-space: -o-pre-wrap; /* Opera 7 */
+  word-wrap: break-word; /* Internet Explorer 5.5+ */
+}
+
+pre.viewsource code {
+  padding: 20px;
+  display: block;
 }
 
 .history {

@@ -2,12 +2,11 @@
 <ul id="changesets">
 <% @changesets.each do |changeset| -%>
 <% user = @users[changeset.author] -%>
-<li class="changeset clearfix" id="changeset-<%= changeset.revision %>">
+<li class="changeset clearfix history" id="changeset-<%= changeset.revision %>">
+  <%= link_to_node "@#{changeset.revision}", @node, changeset.revision, :class => 'file-history' %>
   <div class="cs-meta">
     <%= avatar_for(user) %>
-    <p>
-      <span class="change-number"><%= link_to(changeset.revision, changeset_path(changeset.revision)) %></span>
-    </p>
+    <span class="change-number"><%= link_to(changeset.revision, changeset_path(changeset.revision)) %></span>
   </div>
   <div class="cs-log">      
      <%=h changeset.message %>
