@@ -45,21 +45,11 @@
           </ul>
           </div>
           <% unless logged_in? -%>
-              <% form_tag login_path, :id => 'login-form' do -%>
-              <div class="overlay-form oform">
+              <% sheet_form_tag login_path, :id => 'login-form' do |s| -%>
                 <h2>Login with OpenID</h2>
-                <% if flash[:error] -%>
-                <p><%= flash[:error] %></p>
-                <% end -%>
-                  <p>
-                    <label for="openid_url">OpenID: (<a href="#reset" id="reset">reset</a>)</label>
-                    <%= text_field_tag :openid_url, params[:openid_url], :class => 'big' %> 
-                  </p>
-              </div>
-              <p class="btns">
-                <%= cancel_image %>
-                <%= submit_image 'login.png' %>
-              </p>
+                <%= content_tag 'p', flash[:error] if flash[:error] %>
+                <%= s.text_field_tag %(OpenID: (<a href="#reset" id="reset">reset</a>)), :openid_url, params[:openid_url], :class => 'big' %>
+                <%  s.submit 'login.png' %>
               <% end -%>
               <!-- <% form_tag forget_path do -%>
               <div class="oform">
