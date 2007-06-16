@@ -43,4 +43,9 @@ module ApplicationHelper
   def class_for(options)
     %(class="selected") if current_page?(options)
   end
+  
+  def avatar_for(user)
+    img = user && user.avatar? ? user.avatar_path : 'avatar.png'
+    tag('img', :src => img, :class => 'avatar')
+  end
 end

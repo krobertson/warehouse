@@ -479,6 +479,43 @@ div p.rcontrols {
   color: #777;
 }
 
+.avatar {
+  padding: 2px;
+  background: #fff;
+  border: 1px solid #aaa;
+  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+}
+
+.cs-meta {
+  float: left;
+  width: 60px;
+  padding: 5px;
+  text-align: center;
+  background-image: url(../images/app/controls-bg.png);
+  border-right: 1px solid #bbb;
+  line-height: 100%;
+}
+
+.cs-meta .change-number {
+  font-size: 100%;
+  display: block;
+  text-align: center;
+}
+
+.cs-meta .change-number a {
+  color: #481;
+  text-shadow: 2px 2px #f7f7f7;
+  float: none;
+  padding-right: 0;
+  margin-top: 3px;
+}
+
+.cs-log {
+  padding: 5px;
+  margin-left: 71px;
+}
+
 #changesets {
   list-style: none;
 }
@@ -522,6 +559,11 @@ li.prev a {
   font-weight: bold;
 }
 
+.changeset {
+  padding: 0;
+  background-image: none;
+}
+
 .change-number a {
   font-size: 120%;
   font-weight: bold;
@@ -532,8 +574,11 @@ li.prev a {
   margin-bottom: 5px;
 }
 
-.changeset .author {
-  color: #555;
+.changeset .timenauthor {
+  color: #888;
+  font-weight: normal;
+  font-size: 92%;
+  display: block;
 }
 
 #change-list {

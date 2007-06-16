@@ -1,12 +1,17 @@
 <ul id="changesets">
   <% @changesets.each do |changeset| -%>
     <% user = @users[changeset.author] -%>
-  <li class="changeset" id="changeset-<%= changeset.revision %>"<%= %( style="background-image: url(#{user.avatar_path})") if user && user.avatar? %>>
-    <p>
-      <span class="change-number"><%= link_to(changeset.revision, changeset_path(changeset.revision)) %></span>
-      <span class="author"><%= changeset.author %>:</span> <%=h changeset.message %>
-      <span class="time">(<%= time_ago_in_words changeset.changed_at %> ago)</span>
-    </p>
+  <li class="changeset clearfix" id="changeset-<%= changeset.revision %>">
+    <div class="cs-meta">
+      <%= avatar_for(user) %>
+      <p>
+        <span class="change-number"><%= link_to(changeset.revision, changeset_path(changeset.revision)) %></span>
+      </p>
+    </div>
+    <div class="cs-log">      
+       <%=h changeset.message %>
+      <span class="timenauthor">by <%= changeset.author %>, <%= time_ago_in_words changeset.changed_at %> ago</span>
+    </div>
   </li>
   <% end -%>
 </ul>
