@@ -37,7 +37,7 @@ module ActiveReload
       end
       
       def cancel_image(img, options = {})
-        @template.image_tag("/images/app/btns/#{img}", {:class => 'imgbtn cancelbtn'}.merge(options))
+        @template.image_tag("/images/app/btns/#{img}", {:class => 'cancelbtn'}.merge(options))
       end
   end
 

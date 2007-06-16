@@ -1133,6 +1133,8 @@ input.path {
   padding: 0 7px 10px 6px;
 }
 
+/* My Comment */
+
 .overlay-form h2 {
   margin-right: 8px;
   text-shadow: 2px 2px #fff;
@@ -1175,7 +1177,7 @@ input.big {
 }
 
 p.btns {
-  padding: 10px 25px 14px 20px;
+  padding: 10px 25px 15px 20px;
   text-align: right;
 }
 

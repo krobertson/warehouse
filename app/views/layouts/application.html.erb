@@ -28,7 +28,12 @@
         <% sheet_form_tag login_path, :id => 'profile-form' do |s| -%>
           <h2>Edit your profile</h2>
           <%= content_tag 'p', flash[:error] if flash[:error] %>
-          <%= s.text_field_tag 'Name:', :user, :name %>
+          <%= s.text_field_tag 'Name:', :user, :name, :size => 30 %>
+          <%= s.text_field_tag 'Email:', :email, 'wtf', :size => 30 %>
+          <p>
+            <label for="avatar">Profile picture:</label>
+            Fix me
+          </p>
           <% s.submit 'save.png' %>
         <% end -%>
       <% end %>
