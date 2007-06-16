@@ -27,7 +27,7 @@ context "History Controller" do
   specify "should require valid repository" do
     @controller.stubs(:current_repository).returns(nil)
     get :index
-    assert_match /^error/, @response.body
+    assert_redirected_to install_path
   end
   
   specify "should accept anonymous public repo" do

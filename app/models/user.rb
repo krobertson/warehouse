@@ -29,7 +29,7 @@ class User < ActiveRecord::Base
 
   def self.find_all_by_logins(repository, logins)
     find(:all, :select => 'DISTINCT users.*, permissions.login',
-      :conditions => ['permissions.repository_id = ? AND permissions.login IN (?) AND active = ?', repository.id, logins, true], 
+      :conditions => ['permissions.repository_id = ? AND permissions.login IN (?)', repository.id, logins], 
       :joins => 'inner join permissions on users.id = permissions.user_id')
   end
 

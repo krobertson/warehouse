@@ -14,6 +14,6 @@ inactive_rick_sample:
   id: 3
   user_id: 1
   repository_id: 1
-  login: rick
+  login: rick2
   active: false
   path: foo

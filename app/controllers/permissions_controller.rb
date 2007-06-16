@@ -63,7 +63,9 @@ class PermissionsController < ApplicationController
     
     def destroy_user_permissions
       @user = User.find(params[:user_id])
-      @user.permissions.for_repository(current_repository).each &:destroy
+      Permission.transaction do
+        @user.permissions.for_repository(current_repository).each { |p| p.update_attribute :active, false }
+      end
       flash[:notice] = "#{@user.name} has been removed from this repository."
       render :update do |page|
         page[@user].hide
@@ -72,7 +74,7 @@ class PermissionsController < ApplicationController
     
     def destroy_single_permission
       @permission = current_repository.permissions.find(params[:id])
-      @permission.destroy
+      @permission.update_attribute :active, false
       flash[:notice] = "Read-#{'write' if @permission.full_access?} access for #{@permission.path} has been removed for #{@permission.login}."
       render :update do |page|
         page[@permission].hide
