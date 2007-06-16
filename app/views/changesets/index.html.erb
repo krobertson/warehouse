@@ -17,3 +17,18 @@
 </ul>
 
 <%= will_paginate @changesets unless @changesets.empty? %>
+
+<% content_for :sidebar do %>
+<div class="sideblock">
+  <h3>Active Members</h3>
+  <ul id="members">
+    <% @users.each do |usr| %>
+    <li>
+      <%= avatar_for(usr[1]) %>
+      <span class="author"><%= usr[0] %></span>
+      <span class="activity">45 commits, last one 3 days ago</span>
+    </li>
+    <% end %>
+  </ul>
+</div>
+<% end %> 

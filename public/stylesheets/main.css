@@ -258,6 +258,32 @@ span.active {
   font-size: 92%;
 }
 
+#members {
+  list-style: none;
+}
+
+#members li {
+  height: 38px;
+  padding: 5px 0;
+  border-bottom: 1px solid #ccc;
+}
+
+#members .avatar {
+  float: left;
+  margin-right: 5px;
+}
+
+#members .author {
+  font-weight: bold;
+  display: block;
+  font-size: 110%;
+}
+
+#members .activity {
+  color: #777;
+  font-size: 92%;
+}
+
 /* @end */
 
 /* @group Dashboard */
