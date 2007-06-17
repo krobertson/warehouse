@@ -34,7 +34,7 @@ class ChangesetsController < ApplicationController
     end
     
     def find_next_changeset
-      current_repository.changesets.find_by_paths(changeset_paths, :conditions => ['revision > ?', params[:id]], :order => 'revision desc')
+      current_repository.changesets.find_by_paths(changeset_paths, :conditions => ['revision > ?', params[:id]], :order => 'revision')
     end
     
     def find_changeset_paths
