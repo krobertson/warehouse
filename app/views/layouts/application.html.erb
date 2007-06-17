@@ -13,7 +13,8 @@
     <%= javascript_include_tag 'application' %>
     <%= yield :scripts %>
     <script type="text/javascript" charset="utf-8">
-      Event.onReady(function() {        
+      Event.onReady(function() {
+        <%= cache_current_sheets %>
         Sheet.Cache['login-form'] = new Sheet('login-form', 'login');
         <% if logged_in? %>Sheet.Cache['profile-form'] = new Sheet('profile-form', 'profile');<% end %>
         <%= yield :onready %>
