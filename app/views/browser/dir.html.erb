@@ -29,7 +29,7 @@
       <td colspan="2">
         <div class="control-head">
           &nbsp; <!-- Safari needs this? -->
-          <% if params[:paths].any? && repository_admin? -%>
+          <% if params[:paths].any? && repository_admin? && !current_repository.bookmarks.any? { |b| b.path == @node.path } -%>
           <p class="formats rcontrols">
             <a id="bookmark" class="bookmark" href="#" title="Bookmark this directory">Bookmark This</a>
           </p>
