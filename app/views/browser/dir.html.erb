@@ -68,7 +68,7 @@
 <% end -%>
 <% end -%>
 
-<% if params[:paths].any? && repository_admin? -%>
+<% if params[:paths].any? && repository_admin? && !current_repository.bookmarks.any? { |b| b.path == @node.path } -%>
   <% remote_sheet_form_for :bookmark, :url => bookmarks_path, :trigger => :bookmark, :html => {:id => 'bookmark-sheet'} do |s| -%>
     <h2>Bookmark this directory</h2>
     <%= s.text_field "Label:", :label %>

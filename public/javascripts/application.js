@@ -50,9 +50,7 @@ Sheet.prototype = {
     if(!this.sheet) return;
     this.sheetHeight = this.sheet.getHeight();
     this.trigger = $(trigger);
-    this.cancelBtn = $$('img.cancelbtn')[0];
-    console.log(this.cancelBtn);
-    
+    this.cancelBtn = $$('img.cancelbtn')[0];    
     this.overlay;
     this.build(element);
     this.addObservers();
@@ -73,6 +71,7 @@ Sheet.prototype = {
   },
   
   hide: function() {
+    console.log('hiding')
     new Fx.Style(this.sheetContent, 'margin-top', {
       duration: (this.sheetHeight * 2) + 500,
       transition: Fx.Transitions.expoOut,

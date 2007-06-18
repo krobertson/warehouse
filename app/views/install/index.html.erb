@@ -1,0 +1,24 @@
+<div id="installer">
+  <h1 id="splash">Install Warehouse</h1>
+  <div class="overlay-content">
+  
+  <div class="overlay-form oform">
+  <form action="/install">
+    
+    <p>
+      <label for="install_domain">Domain name your installing on <span class="help">(do not include subdomain)</span></label>
+      <input type="text" name="domain" size="40" value="<%= request.host %>" />
+    </p>
+    <p>
+      <label for="install_domain">Your license #</label>
+      <input type="text" name="license" size="40" />
+    </p>
+    </div>
+    <p class="btns">
+      <%= submit_image 'save.png' %>
+    </p>
+    </div>
+    
+  </form>
+  </div>
+</div>

@@ -1,0 +1,43 @@
+/* @override http://localhost:3000/stylesheets/installer.css */
+body {
+  background: url(../images/app/install/rock-tile.gif);
+}
+
+#container {
+  width: 500px;
+  margin: 0 auto;
+}
+
+#installer {
+  margin: 100px 0;
+}
+
+#installer h1 {
+  background: url(../images/app/install/splash.png)  no-repeat;
+  height: 88px;
+  text-indent: -9999px;
+  margin-bottom: 20px;
+}
+
+#installer form {
+  padding-left: 20px;
+}
+
+#installer .help {
+  display: block;
+  font-size: 92%;
+  color: #777;
+  text-shadow: none;
+  font-weight: normal;
+}
+
+#installer form p {
+  padding: 10px 0;
+}
+
+#installer label {
+  font-size: 120%;
+  display: block;
+  font-weight: bold;
+  text-shadow: 2px 2px #fff;
+}

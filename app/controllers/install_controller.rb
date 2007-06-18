@@ -1,6 +1,7 @@
 class InstallController < ApplicationController
   skip_before_filter :check_for_repository
   before_filter :check_installed
+  layout 'install'
 
   def index
   end

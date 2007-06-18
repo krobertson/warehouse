@@ -847,10 +847,10 @@ pre.viewsource code {
   position: absolute;
   right: 5px;
   top: 5px;
-  width: 16px;
-  height: 16px;
+  width: 33px;
+  height: 24px;
   text-indent: -9999px;
-  background: url(../images/app/icons/history-small.png) 0 50%;
+  background: url(../images/app/search.png) 0 0;
 }
 
 /* @end */
@@ -1119,7 +1119,7 @@ input.path {
 
 .overlay-content {
   line-height: 100%;
-  margin: -452px auto 0 auto;
+  margin: 0 auto 0 auto;
   padding: 3px;
   padding: 0 0 0 0;
   background: url(../images/app/sheet-bottom.png) bottom left no-repeat;
