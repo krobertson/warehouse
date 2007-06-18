@@ -30,7 +30,7 @@ Warehouse.configure do |w|
 end
 END
     File.open(File.join(RAILS_ROOT, 'config', 'initializers', 'warehouse.rb'), 'r') do |f|
-      f.write tmpl.strip.gsub(/:domain/, Warehouse.domain).gsub(/:multiple_repositories/, Warehouse.multiple_repositories ? 'true' : 'false')
+      f.write tmpl.strip.gsub(/:domain/, Digest::SHA1.hexdigest(Warehouse.domain)).gsub(/:multiple_repositories/, Warehouse.multiple_repositories ? 'true' : 'false')
     end
   rescue
     @error = $!.message

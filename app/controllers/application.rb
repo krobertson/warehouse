@@ -75,7 +75,7 @@ class ApplicationController < ActionController::Base
     end
   
     def check_for_repository
-      if request.domain != Warehouse.domain
+      if Digest::SHA1.hexdigest(request.domain) != Warehouse.domain
         @error = "Invalid domain '#{request.domain}'."
         render :template => 'layouts/error'
       end
