@@ -22,7 +22,8 @@ ActionController::Routing::Routes.draw do |map|
   map.history 'history/*paths', :controller => 'history'
   map.admin   'admin',          :controller => 'repositories'
 
-  map.install 'install', :controller => 'install', :action => 'index'
+  map.install 'install', :controller => 'install', :action => 'index',   :conditions => { :method => :get  }
+  map.connect 'install', :controller => 'install', :action => 'install', :conditions => { :method => :post }
 
   map.root :controller => "dashboard"
 end

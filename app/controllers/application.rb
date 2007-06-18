@@ -75,6 +75,11 @@ class ApplicationController < ActionController::Base
     end
   
     def check_for_repository
+      if request.domain != Warehouse.domain
+        @error = "Invalid domain '#{request.domain}'."
+        render :template => 'layouts/error'
+      end
+      
       if current_repository
         true
       else

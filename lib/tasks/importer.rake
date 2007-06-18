@@ -32,6 +32,10 @@ namespace :warehouse do
     Importer::MysqlAdapter.create config
   end
 
+  task :post_commit => :sync do
+    # eventually add other stuff here, like email
+  end
+
   task :sync => :find_repo do
     @repo.sync_revisions(@num)
   end
