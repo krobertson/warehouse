@@ -21,6 +21,10 @@ module Importer
       row ? new(row) : nil
     end
     
+    def self.find_all(conditions)
+      adapter.select("SELECT * FROM `#{table}` WHERE #{conditions}")
+    end
+    
     def self.delete(id)
       delete_all "id = #{quote_string id}"
     end
@@ -46,18 +50,13 @@ module Importer
       raise
     end
     
-    def transaction(&block)
-      self.class.transaction(&block)
-    end
-    
     def quote_string(string)
       self.class.adapter.quote_string string
     end
     
-    protected
-      def self.adapter
-        Importer::MysqlAdapter.instance
-      end
+    def self.adapter
+      Importer::MysqlAdapter.instance
+    end
   end
 end
 

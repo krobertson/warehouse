@@ -22,11 +22,14 @@
 <div class="sideblock">
   <h3>Active Members</h3>
   <ul id="members">
-    <% @users.each do |usr| %>
+    <% current_repository.members.each do |member| %>
     <li>
-      <%= avatar_for(usr[1]) %>
-      <span class="author"><%= usr[0] %></span>
-      <span class="activity">45 commits, last one 3 days ago</span>
+      <%= avatar_for(member) %>
+      <span class="author"><%= member.login %></span>
+      <span class="activity">
+        <%= pluralize member.changesets_count, 'commit' %>
+        <% if member.last_changed_at -%>, last one <%= time_ago_in_words member.last_changed_at %> ago<% end -%>
+      </span>
     </li>
     <% end %>
   </ul>

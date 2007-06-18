@@ -52,6 +52,15 @@ class User < ActiveRecord::Base
   def reset_token
     write_attribute :token, TokenGenerator.generate_random(TokenGenerator.generate_simple)
   end
+  
+  def changesets_count
+    read_attribute(:changesets_count).to_i
+  end
+  
+  def last_changed_at
+    l = read_attribute :last_changed_at
+    l ? Time.parse(l) : nil
+  end
 
   protected
     def set_default_attributes

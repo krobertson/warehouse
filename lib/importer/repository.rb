@@ -15,7 +15,8 @@ module Importer
     end
 
     def sync_revisions(num = 0)
-      transaction do
+      self.class.transaction do
+        authors = {}
         revisions = (recorded_revision..latest_revision).to_a
         if num > 0
           revisions = revisions[0..num-1]
@@ -23,7 +24,12 @@ module Importer
         puts "Syncing Revisions ##{revisions.first} - ##{revisions.last}"
         revisions.collect do |rev|
           puts "##{rev}" if rev > 1 && rev % 100 == 0
-          Changeset.create_from_repository(self, rev)
+          changeset = Changeset.create_from_repository(self, rev)
+          authors[changeset.attributes['author']] = Time.now.utc
+        end
+        
+        authors.each do |login, changed_at|
+          self.class.adapter.execute("UPDATE `permissions` SET changesets_count = (SELECT COUNT(id) FROM changesets WHERE repository_id = #{quote_string attributes['id']} AND author = #{quote_string login}), last_changed_at = #{changed_at.strftime("%Y-%m-%d %H:%M:%S").inspect} WHERE login = #{quote_string login} AND repository_id = #{quote_string attributes['id']}")
         end
       end
     end
