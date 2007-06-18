@@ -24,10 +24,7 @@ end
 namespace :warehouse do
   task :init do
     require 'config/initializers/svn'
-    require 'importer/mysql_adapter'
-    require 'importer/mysql_adapter/repository'
-    require 'importer/mysql_adapter/changeset'
-    require 'importer/mysql_adapter/change'
+    require 'importer/base'
     config = {}
     YAML.load_file("config/database.yml")[RAILS_ENV].each do |k, v|
       config[k.to_sym] = v
@@ -47,6 +44,7 @@ namespace :warehouse do
   task :find_repo => :init do
     @num  = (ENV['NUM'] || ENV['N']).to_i
     repo_id = ENV['REPO'].to_i
-    @repo = repo_id > 0 ?  Importer::MysqlAdapter::Repository.find_by_id(repo_id) : Importer::MysqlAdapter::Repository.find_first("name = '#{ENV['REPO']}'")
+    @repo = repo_id > 0 ?  Importer::Repository.find_by_id(repo_id) : Importer::Repository.find_first("name = '#{ENV['REPO']}'")
+    raise "Please select a repo with REPO=id or REPO=repository_name" if @repo.nil?
   end
 end

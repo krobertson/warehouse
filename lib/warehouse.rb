@@ -1,8 +1,8 @@
 module Warehouse
-  extend self
   mattr_accessor :multiple_repositories
+  mattr_accessor :domain
   
-  def configure(&block)
+  def self.configure(&block)
     require 'dispatcher'
     Dispatcher.to_prepare do
       block.call(self)
