@@ -5,11 +5,12 @@ body {
 
 #container {
   width: 500px;
-  margin: 0 auto;
+  margin: ;
 }
 
 #installer {
-  margin: 100px 0;
+  width: 400px;
+  margin: 100px auto 0 auto;
 }
 
 #installer h1 {
