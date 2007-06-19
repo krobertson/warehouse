@@ -21,6 +21,7 @@ module Importer
         if num > 0
           revisions = revisions[0..num-1]
         end
+        revisions.reverse!
         puts "Syncing Revisions ##{revisions.first} - ##{revisions.last}"
         revisions.collect do |rev|
           puts "##{rev}" if rev > 1 && rev % 100 == 0

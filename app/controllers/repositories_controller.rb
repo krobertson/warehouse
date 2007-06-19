@@ -4,7 +4,7 @@ class RepositoriesController < ApplicationController
 
   def index
     @repository   = Repository.new
-    @repositories = Warehouse.multiple_repositories ? Repository.find(:all) : [Repository.find(:first)]
+    @repositories = repository_subdomain.blank? ? Repository.find(:all) : [current_repository]
   end
 
   def show

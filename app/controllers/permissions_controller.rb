@@ -11,7 +11,7 @@ class PermissionsController < ApplicationController
       end
 
       format.text do
-        @repositories = repository_subdomain.blank? && Warehouse.multiple_repositories ? Repository.find(:all) : [current_repository]
+        @repositories = repository_subdomain.blank? ? Repository.find(:all) : [current_repository]
         render :action => 'index', :layout => false
       end
     end

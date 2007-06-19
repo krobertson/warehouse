@@ -3,7 +3,6 @@
 
 
 <div id="repository-admin">
-  <% if Warehouse.multiple_repositories -%>
   <div class="repo form">
     <h3>New Repository</h3>
     <% form_for @repository do |f| -%>
@@ -13,27 +12,22 @@
       </p>
     <% end -%>
   </div>
-  <% end -%>
 <ul id="repos">
 <% @repositories.each do |repo| -%>
   <li class="repo" id="repo-<%= repo.id %>">
     <%=h repo.name %>
     <span class="log"><%= repo.path %></span>
-    <% if Warehouse.multiple_repositories -%>
     <ul class="admin-controls">
       <li class="edit"><%= link_to_function('Edit', %($('repo-edit-#{repo.id}').toggle())) %></li>
       <li class="del"><a href="#" title="Delete">Delete</a></li>
     </ul>
-    <% end -%>
   </li>
-  <li class="repo repoedit" id="repo-edit-<%= repo.id %>"<%= %( style="display:none") if Warehouse.multiple_repositories %>>
+  <li class="repo repoedit" id="repo-edit-<%= repo.id %>" style="display:none">
     <% form_for repo do |f| -%>
       <%= render :partial => "form", :object => f %>
       <p class="btns">
         <%= submit_tag 'Update', :disable_with => 'Saving...' %>
-        <% if Warehouse.multiple_repositories -%>
-          or <%= link_to_function('cancel', %($('repo-edit-#{repo.id}').toggle())) %>
-        <% end -%>
+        or <%= link_to_function('cancel', %($('repo-edit-#{repo.id}').toggle())) %>
       </p>
     <% end -%>
   </li>

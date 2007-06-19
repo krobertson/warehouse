@@ -5,7 +5,6 @@ class ApplicationController < ActionController::Base
   helper :all # include all helpers, all the time
   helper_method :current_repository, :logged_in?, :current_user, :admin?, :controller_path, :repository_admin?, :repository_member?
   before_filter :check_for_repository
-  #before_filter { |c| c.current_repository.sync_revisions }
 
   expiring_attr_reader :current_user,       :retrieve_current_user
   expiring_attr_reader :repository_member?, :retrieve_repository_member
@@ -20,7 +19,7 @@ class ApplicationController < ActionController::Base
   end
 
   def current_repository
-    @current_repository ||= Warehouse.multiple_repositories ? subdomain_repository : default_repository
+    @current_repository ||= Repository.find_by_subdomain(repository_subdomain) || Repository.find(:first)
   end
   
   protected
@@ -75,24 +74,20 @@ class ApplicationController < ActionController::Base
     end
   
     def check_for_repository
-      if Digest::SHA1.hexdigest(request.domain) != Warehouse.domain
-        @error = "Invalid domain '#{request.domain}'."
-        render :template => 'layouts/error'
-      end
-      
       if current_repository
-        true
+        check_for_valid_domain
       else
         redirect_to install_path
         false
       end
     end
     
-    def default_repository
-      Repository.find(:first)
-    end
-    
-    def subdomain_repository
-      !repository_subdomain.blank? && Repository.find_by_subdomain(repository_subdomain)
+    def check_for_valid_domain
+      if Digest::SHA1.hexdigest(request.domain) != Warehouse.domain
+        @error = "Invalid domain '#{request.domain}'."
+        render :template => 'layouts/error'
+        return false
+      end
+      true
     end
 end
