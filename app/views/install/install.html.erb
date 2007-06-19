@@ -1,10 +1,16 @@
 <div id="installer">
   <h1 id="splash">Install Warehouse</h1>
   <div class="overlay-content">
-  <h2>Thanks for installing Warehouse, enjoy!</h2>
-  <div class="overlay-form oform">
-    <p>You may now complete configuring your <%=h @repository.name %> repository and start seeding the subversion changesets at:</p>
-    <p><%= link_to "http://#{admin_url(:host => "#{@repository.subdomain}.#{Warehouse.domain}")}", admin_url(:host => "#{@repository.subdomain}.#{Warehouse.domain}")%></p>
-  </div>
+    <h2>Thanks for installing Warehouse, enjoy!</h2>
+    <%= error_messages_for :repository %>
+    <%= form_tag %>
+      <div class="overlay-form oform">
+        <p>You may now complete configuring your <%=h @repository.name %> repository and start seeding the subversion changesets at:</p>
+        <p><%= link_to "http://#{admin_url(:host => "#{@repository.subdomain}.#{Warehouse.domain}")}", admin_url(:host => "#{@repository.subdomain}.#{Warehouse.domain}")%></p>
+        </div>
+        <p class="btns">
+          <%= submit_image 'install.png' %>
+        </p>
+      </form>
   </div>
 </div>

@@ -2,9 +2,9 @@
   <h1 id="splash">Install Warehouse</h1>
   <div class="overlay-content">
   <h2>Lets get started</h2>
-  <div class="overlay-form oform">
-  <%= error_messages_for :repository %>
   <% form_for @repository, :url => install_path do |f| -%>
+  <div class="overlay-form oform">
+    <%= error_messages_for :repository %>
     <p>
       <label for="domain">Domain name you're installing on 
         <span class="help">
@@ -31,7 +31,6 @@
     <p class="btns">
       <%= submit_image 'install.png' %>
     </p>
-    </div>
   <% end -%>
   </div>
 </div>

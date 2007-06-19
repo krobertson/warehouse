@@ -1,4 +1,4 @@
-/* @override http://mymac.com:3000/stylesheets/installer.css */
+/* @override http://svn.mymac.com:3000/stylesheets/installer.css */
 body {
   background: url(../images/app/install/rock-tile.gif);
 }
@@ -34,6 +34,10 @@ body {
   margin-bottom: 20px;
 }
 
+#installer form div.overlay-form {
+  padding: 10px;
+}
+
 #installer .help, #finaldomain {
   display: block;
   font-size: 92%;
@@ -42,14 +46,6 @@ body {
   text-shadow: none;
   font-weight: normal;
   padding: 5px 0;
-}
-
-#installer form {
-  padding: 0 20px;
-}
-
-#installer form p {
-  padding: 10px 0;
 }
 
 #installer label {
@@ -61,7 +57,7 @@ body {
 
 /* errors */
 #installer #errorExplanation {
-  margin: 0;
+  margin: 0 10px 0 0px;
   border-left: 0;
   border-right: 0;
   margin-right: 8px;
