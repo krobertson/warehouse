@@ -6,6 +6,13 @@
     <title>Warehouse: <%= @title rescue '' %></title>
     <%= stylesheet_link_tag 'main' %>
     <%= stylesheet_link_tag 'installer' %>
+    <%= javascript_include_tag 'prototype' %>
+    <%= javascript_include_tag 'lowpro-lite' %>
+    <script type="text/javascript" charset="utf-8">
+      Event.onReady(function() {
+        <%= yield :onready %>
+      });
+    </script>
   </head>
   <body>
     <!-- container -->

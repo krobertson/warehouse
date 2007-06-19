@@ -34,12 +34,14 @@ body {
   margin-bottom: 20px;
 }
 
-#installer .help {
+#installer .help, #finaldomain {
   display: block;
   font-size: 92%;
+  line-height: 140%;
   color: #777;
   text-shadow: none;
   font-weight: normal;
+  padding: 5px 0;
 }
 
 #installer form {
@@ -81,4 +83,12 @@ body {
 
 div#error p {
   margin-left: 0;
+}
+
+#finaldomain {
+  font-size: 100%;
+}
+
+#finaldomain span {
+  font-weight: bold;
 }

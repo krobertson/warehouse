@@ -6,16 +6,22 @@
   <%= error_messages_for :repository %>
   <% form_for @repository, :url => install_path do |f| -%>
     <p>
-      <label for="domain">Domain name you're installing on <span class="help">(do not include subdomain)</span></label>
-      <%= text_field_tag :domain, (params[:domain] || repository_domain), :size => 40 %>
-    </p>
-    <p>
-      <label for="license">Your license #</label>
-      <%= text_field_tag :license, params[:license], :size => 40 %>
+      <label for="domain">Domain name you're installing on 
+        <span class="help">
+          If you have installed something else at the root of this domain (a blog, website, etc.) this should 
+          include a subdomain (e.g. svn.domain.com)
+        </span>
+      </label>
+      <%= text_field_tag :domain, (params[:domain] || "#{repository_subdomain}.#{repository_domain}"), :size => 40 %>
     </p>
     <p>
       <label for="repository_name">Repository Name</label>
       <%= f.text_field :name, :size => 40 %>
+      <span id="finaldomain"><span>Your first repo will be located at:</span> </span>
+    </p>
+    <p>
+      <label for="license">Your license #</label>
+      <%= text_field_tag :license, params[:license], :size => 40 %>
     </p>
     <p>
       <label for="repository_path">Repository location (path)</label>
@@ -29,3 +35,11 @@
   <% end -%>
   </div>
 </div>
+
+<% content_for :onready do %>
+ var final = $('finaldomain');
+ var domain = $('domain');
+ new Form.Element.Observer('repository_name', 0.2, function(e, v) {
+   final.update("<span>Your first repo will be located at:</span> " + v.toLowerCase().strip().gsub(/\s+/, '-').dasherize() + "." + $F(domain));
+ });
+<% end %>
