@@ -19,8 +19,8 @@ class Repository < ActiveRecord::Base
   end
   has_many :members, :through => :permissions, :source => :user, :select => 'users.*, permissions.login, permissions.id as permission_id, permissions.admin as permission_admin, permissions.changesets_count, permissions.last_changed_at'
   has_many :all_permissions, :class_name => 'Permission', :foreign_key => 'repository_id', :dependent => :delete_all
-  has_many :changesets, :dependent => :delete_all
-  has_many :changes, :through => :changesets, :order => 'changesets.revision desc', :dependent => :delete_all
+  has_many :changesets, :dependent => :destroy
+  has_many :changes, :through => :changesets, :order => 'changesets.revision desc'
   has_many :bookmarks, :dependent => :delete_all
   has_one  :latest_changeset, :class_name => 'Changeset', :foreign_key => 'repository_id', :order => 'revision desc'
   before_destroy :clear_changesets
