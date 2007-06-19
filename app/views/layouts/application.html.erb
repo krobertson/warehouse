@@ -26,15 +26,12 @@
     <!-- container -->
     <div id="container">
       <% if logged_in? %>
-        <% sheet_form_tag login_path, :id => 'profile-form' do |s| -%>
+        <% remote_sheet_form_for current_user, :url => profile_path, :html => { :id => 'profile-form', :method => :put }, :trigger => 'profile' do |s| -%>
           <h2>Edit your profile</h2>
           <%= content_tag 'p', flash[:error] if flash[:error] %>
-          <%= s.text_field_tag 'Name:', :user, :name, :size => 30 %>
-          <%= s.text_field_tag 'Email:', :email, 'wtf', :size => 30 %>
-          <p>
-            <label for="avatar">Profile picture:</label>
-            Fix me
-          </p>
+          <%= s.text_field 'Email:', :email, :size => 30 %>
+          <%= s.file_field "Profile picture:", :avatar_path %>
+          <p><%= current_user.avatar_path %></p>
           <% s.submit 'save.png' %>
         <% end -%>
       <% end %>

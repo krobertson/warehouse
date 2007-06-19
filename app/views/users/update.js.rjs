@@ -1,0 +1,5 @@
+if current_user.errors.any?
+  page.alert("Errors with updating your profile.")
+else
+  page << "Sheet.Cache['profile-form'].hide()"
+end
