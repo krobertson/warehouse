@@ -112,3 +112,9 @@ div#error p {
   display: block;
   visibility: hidden;
 }
+
+#active-reload {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+}
