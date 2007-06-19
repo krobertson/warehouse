@@ -5,15 +5,14 @@
     <%= error_messages_for :repository %>
     <% form_for :user, :url => install_path do |f| %>
       <div class="overlay-form oform">
-        <p style="margin:5px 0">You're almost ready! Just add your OpenID and begin importing your repository.</p>
-        <p><%= link_to "http://#{admin_url(:host => "#{@repository.subdomain}.#{Warehouse.domain}")}", admin_url(:host => "#{@repository.subdomain}.#{Warehouse.domain}")%></p>
+        <p style="margin:5px 0;line-height:140%">You're almost ready! Just add your OpenID and begin importing your repository.</p>
         <p>
           <label for="openid_url">OpenID Url</label>
           <%= f.text_field :openid_url %>
         </p>
         <p>
           <label for="progress">Install progress</label>
-          <span id="import-progress">0%</span>
+          <span id="import-progress"><span class="pbar">2/5000</span></span>
         </p>
       </div>
         <p class="btns">

@@ -92,11 +92,19 @@ div#error p {
 #import-progress {
   margin: 0 0 5px 0;
   font-weight: bold;
-  color: #555;
+  color: #fff;
+  text-shadow: 2px 2px #452;
   display: block;
   border: 1px solid #aaa;
-  padding: 4px;
+  padding: 1px;
   width: 300px;
   text-align: center;
   background: #fff;
+}
+
+.pbar {
+  background: #683;
+  padding: 2px 0;
+  display: block;
+  visibility: hidden;
 }
