@@ -25,21 +25,17 @@
 <% end -%>
 </ul>
 
-  <% content_for :onready do %>new Sheet('add-member', 'addmember')<% end %>
-  <% form_for @permission, :html => { :id => 'add-member' } do |f| -%>
-  <div class="overlay-form oform">
+  <% sheet_form_for @permission, :html => { :id => 'add-member' }, :trigger => 'addmember' do |s| -%>
     <h2>Add a new Member</h2>
-    <p>
-      <label for="email">Email:</label>
-      <%= text_field_tag :email, nil, :size => 30 %><br />
-      (leave email and svn login info blank for anonymous access)
+    <%= s.text_field_tag "Email:", :email, params[:email], :size => 30 %>
+    <p>(leave email and svn login info blank for anonymous access)</p>
+    <%= s.text_field "SVN Login:", :login %>
+    <p style="border-bottom:0">
+      <label>Administrator?</label>
+        <%= s.check_box :admin %> Yes, this user can add and delete members.
     </p>
-    <%= render :partial => "form", :object => f %>
+    <div id="svn-paths">
+      <%= path_permissions %>
     </div>
-    
-    <p class="btns">
-      <%= cancel_image(:class => 'cancelbtn') %>
-      <%= submit_image 'save.png' %>
-    </p>
   <% end -%>
 
