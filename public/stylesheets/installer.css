@@ -99,18 +99,21 @@ div#error p {
   color: #fff;
   text-shadow: 2px 2px #452;
   display: block;
-  border: 1px solid #aaa;
+  border: 1px solid #eee;
+  border-top: 1px solid #444;
+  border-left: 1px solid #444;
   padding: 1px;
   width: 300px;
   text-align: center;
-  background: #fff;
+  background: #555;
 }
 
 .pbar {
-  background: #683;
+  background: #292929;
+  font-size: 92%;
   padding: 2px 0;
   display: block;
-  visibility: hidden;
+  width: 100px;
 }
 
 #active-reload {
