@@ -27,6 +27,10 @@ body {
   border: none;
 }
 
+div.overlay-form {
+  background: url(../images/app/sheet.png) bottom left no-repeat;
+}
+
 #installer h1 {
   background: url(../images/app/install/splash.png)  no-repeat;
   height: 88px;
