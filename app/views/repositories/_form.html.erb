@@ -16,3 +16,6 @@
   <%= form.check_box :public %> Yes, the public can browse this repository.
 </p>
 
+<% if form.object && !form.object.new_record? && form.object.sync? -%>
+<p>You have some revisions to sync: <%= form.object.revisions_to_sync.inspect %></p>
+<% end -%>

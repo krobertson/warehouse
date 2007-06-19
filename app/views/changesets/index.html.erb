@@ -1,3 +1,7 @@
+<% if current_repository.sync? -%>
+<p>You have some revisions to sync: <%= current_repository.revisions_to_sync.inspect %></p>
+<% end -%>
+
 <ul id="changesets">
   <% @changesets.each do |changeset| -%>
     <% user = @users[changeset.author] -%>

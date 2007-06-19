@@ -4,6 +4,7 @@ class InstallController < ApplicationController
   layout 'install'
 
   def index
+    @repository = Repository.new
   end
   
   def install
@@ -11,8 +12,14 @@ class InstallController < ApplicationController
       raise "bad domain!"
     end
 
+    @repository = Repository.new(params[:repository])
+    unless @repository.valid?
+      render :action => 'index'
+      return
+    end
+
     require 'net/http'
-    res = Net::HTTP.post_form(URI.parse(Warehouse.forum_url % params[:key]), 'install[domain]' => params[:domain])
+    res = Net::HTTP.post_form(URI.parse(Warehouse.forum_url % params[:license]), 'install[domain]' => params[:domain])
     if res.code != '200'
       raise res.body
     end
@@ -27,7 +34,11 @@ require 'warehouse'
 Warehouse.domain = ":domain"
 END
     File.open(File.join(RAILS_ROOT, 'config', 'initializers', 'warehouse.rb'), 'w') do |f|
-      f.write tmpl.strip.gsub(/:domain/, Digest::SHA1.hexdigest(Warehouse.domain))
+      f.write tmpl.strip.gsub(/:domain/, Warehouse.domain)
+    end
+    
+    unless @repository.save
+      render :action => 'index'
     end
   rescue
     @error = $!.message

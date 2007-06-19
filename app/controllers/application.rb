@@ -3,7 +3,7 @@
 
 class ApplicationController < ActionController::Base
   helper :all # include all helpers, all the time
-  helper_method :current_repository, :logged_in?, :current_user, :admin?, :controller_path, :repository_admin?, :repository_member?
+  helper_method :current_repository, :logged_in?, :current_user, :admin?, :controller_path, :repository_admin?, :repository_member?, :repository_domain, :repository_subdomain
   before_filter :check_for_repository
 
   expiring_attr_reader :current_user,       :retrieve_current_user
@@ -72,6 +72,10 @@ class ApplicationController < ActionController::Base
     def repository_subdomain
       request.subdomains.first
     end
+    
+    def repository_domain
+      request.subdomains.size < 2 ? request.domain : request.domain(request.subdomains.size)
+    end
   
     def check_for_repository
       if current_repository
@@ -83,8 +87,8 @@ class ApplicationController < ActionController::Base
     end
     
     def check_for_valid_domain
-      if Digest::SHA1.hexdigest(request.domain) != Warehouse.domain
-        @error = "Invalid domain '#{request.domain}'."
+      if repository_domain != Warehouse.domain
+        @error = "Invalid domain '#{repository_domain}'."
         render :template => 'layouts/error'
         return false
       end

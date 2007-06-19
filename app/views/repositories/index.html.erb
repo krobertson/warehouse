@@ -3,6 +3,7 @@
 
 
 <div id="repository-admin">
+  <% if repository_subdomain.blank? -%>
   <div class="repo form">
     <h3>New Repository</h3>
     <% form_for @repository do |f| -%>
@@ -12,6 +13,7 @@
       </p>
     <% end -%>
   </div>
+  <% end -%>
 <ul id="repos">
 <% @repositories.each do |repo| -%>
   <li class="repo" id="repo-<%= repo.id %>">
@@ -22,7 +24,7 @@
       <li class="del"><a href="#" title="Delete">Delete</a></li>
     </ul>
   </li>
-  <li class="repo repoedit" id="repo-edit-<%= repo.id %>" style="display:none">
+  <li class="repo repoedit" id="repo-edit-<%= repo.id %>"<%= %( style="display:none") if repository_subdomain.blank? %>>
     <% form_for repo do |f| -%>
       <%= render :partial => "form", :object => f %>
       <p class="btns">

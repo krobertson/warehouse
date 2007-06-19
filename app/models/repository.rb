@@ -19,14 +19,14 @@ class Repository < ActiveRecord::Base
   end
   has_many :members, :through => :permissions, :source => :user, :select => 'users.*, permissions.login, permissions.id as permission_id, permissions.admin as permission_admin, permissions.changesets_count, permissions.last_changed_at'
   has_many :all_permissions, :class_name => 'Permission', :foreign_key => 'repository_id', :dependent => :delete_all
-  has_many :changesets
-  has_many :changes, :through => :changesets, :order => 'changesets.revision desc'
-  has_many :bookmarks
+  has_many :changesets, :dependent => :delete_all
+  has_many :changes, :through => :changesets, :order => 'changesets.revision desc', :dependent => :delete_all
+  has_many :bookmarks, :dependent => :delete_all
   has_one  :latest_changeset, :class_name => 'Changeset', :foreign_key => 'repository_id', :order => 'revision desc'
   before_destroy :clear_changesets
 
   def path=(value)
-    write_attribute :path, value.to_s.gsub(/^\/|\/$/, '')
+    write_attribute :path, value.to_s.chomp('/')
   end
 
   def latest_revision
@@ -69,29 +69,11 @@ class Repository < ActiveRecord::Base
     @revisions_to_sync
   end
   
-  def sync_revisions
-    revisions_to_sync.collect do |rev|
-      puts "##{rev}"
-      changesets.create(:revision => rev)
-    end
-  end
-  
-  def sync_all_revisions!
-    clear_changesets
-    @revisions_to_sync = nil
-    revisions_to_sync.collect do |rev|
-      puts "##{rev}"
-      changesets.create(:revision => rev)
-    end
+  def sync?
+    revisions_to_sync.first < revisions_to_sync.last
   end
 
   def backend
     @backend ||= Svn::Repos.open(path)
   end
-  
-  protected
-    def clear_changesets
-      Change.delete_all ['changeset_id in (select id from changesets where repository_id = ?)', id]
-      Changeset.delete_all ['repository_id = ?', id]
-    end
 end

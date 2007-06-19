@@ -24,7 +24,11 @@ module Importer
         revisions.reverse!
         puts "Syncing Revisions ##{revisions.first} - ##{revisions.last}"
         revisions.collect do |rev|
-          puts "##{rev}" if rev > 1 && rev % 100 == 0
+          if rev > 1 && rev % 100 == 0
+            self.class.adapter.execute "COMMIT"
+            self.class.adapter.execute "BEGIN"
+            puts "##{rev}"
+          end
           changeset = Changeset.create_from_repository(self, rev)
           authors[changeset.attributes['author']] = Time.now.utc
         end
