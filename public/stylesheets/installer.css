@@ -1,4 +1,4 @@
-/* @override http://localhost:3000/stylesheets/installer.css */
+/* @override http://mymac.com:3000/stylesheets/installer.css */
 body {
   background: url(../images/app/install/rock-tile.gif);
 }
@@ -55,4 +55,30 @@ body {
   display: block;
   font-weight: bold;
   text-shadow: 2px 2px #fff;
+}
+
+/* errors */
+#installer #errorExplanation {
+  margin: 0;
+  border-left: 0;
+  border-right: 0;
+  margin-right: 8px;
+}
+
+#installer #errorExplanation h2 {
+  margin: 0;
+  padding: 0;
+  background: none;
+  text-indent: 0;
+}
+
+#installer #errorExplanation ul, div#error p {
+  line-height: 140%;
+  margin-left: 20px;
+  font-weight: bold;
+  color: #c00;
+}
+
+div#error p {
+  margin-left: 0;
 }
