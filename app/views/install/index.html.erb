@@ -17,7 +17,7 @@
     <p>
       <label for="repository_name">Repository Name</label>
       <%= f.text_field :name, :size => 40 %>
-      <span id="finaldomain"><span>Your first repo will be located at:</span> </span>
+      <span id="finaldomain"><span>Your first repo will be located at:</span> ... </span>
     </p>
     <p>
       <label for="license">Your license #</label>
@@ -37,9 +37,9 @@
 </div>
 
 <% content_for :onready do %>
- var final = $('finaldomain');
+ var finaldomain = $('finaldomain');
  var domain = $('domain');
  new Form.Element.Observer('repository_name', 0.2, function(e, v) {
-   final.update("<span>Your first repo will be located at:</span> " + v.toLowerCase().strip().gsub(/\s+/, '-').dasherize() + "." + $F(domain));
+   finaldomain.update("<span>Your first repo will be located at:</span> " + v.toLowerCase().strip().gsub(/\s+/, '-').dasherize() + "." + $F(domain));
  });
 <% end %>
