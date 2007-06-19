@@ -24,6 +24,10 @@ ActionController::Routing::Routes.draw do |map|
 
   map.install 'install', :controller => 'install', :action => 'index',   :conditions => { :method => :get  }
   map.connect 'install', :controller => 'install', :action => 'install', :conditions => { :method => :post }
+  
+  if RAILS_ENV == 'development'
+    map.connect 'test_install', :controller => 'install', :action => 'test_install'
+  end
 
   map.root :controller => "dashboard"
 end

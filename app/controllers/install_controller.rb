@@ -1,6 +1,6 @@
 class InstallController < ApplicationController
   skip_before_filter :check_for_repository
-  before_filter :check_installed
+  before_filter :check_installed, :except => :test_install
   layout 'install'
 
   def index
@@ -43,6 +43,13 @@ END
   rescue
     @error = $!.message
     render :template => 'layouts/error'
+  end
+  
+  if RAILS_ENV == 'development'
+    def test_install
+      @repository = Repository.new(:name => 'test', :path => '/foo/bar/baz')
+      render :action => 'install'
+    end
   end
   
   protected
