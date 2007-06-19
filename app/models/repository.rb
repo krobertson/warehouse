@@ -23,7 +23,6 @@ class Repository < ActiveRecord::Base
   has_many :changes, :through => :changesets, :order => 'changesets.revision desc'
   has_many :bookmarks, :dependent => :delete_all
   has_one  :latest_changeset, :class_name => 'Changeset', :foreign_key => 'repository_id', :order => 'revision desc'
-  before_destroy :clear_changesets
 
   def path=(value)
     write_attribute :path, value.to_s.chomp('/')
