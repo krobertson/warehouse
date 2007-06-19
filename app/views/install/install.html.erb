@@ -3,14 +3,22 @@
   <div class="overlay-content">
     <h2>Thanks for installing Warehouse, enjoy!</h2>
     <%= error_messages_for :repository %>
-    <%= form_tag %>
+    <% form_for :user, :url => install_path do |f| %>
       <div class="overlay-form oform">
-        <p>You may now complete configuring your <%=h @repository.name %> repository and start seeding the subversion changesets at:</p>
+        <p style="margin:5px 0">You're almost ready! Just add your OpenID and begin importing your repository.</p>
         <p><%= link_to "http://#{admin_url(:host => "#{@repository.subdomain}.#{Warehouse.domain}")}", admin_url(:host => "#{@repository.subdomain}.#{Warehouse.domain}")%></p>
-        </div>
+        <p>
+          <label for="openid_url">OpenID Url</label>
+          <%= f.text_field :openid_url %>
+        </p>
+        <p>
+          <label for="progress">Install progress</label>
+          <span id="import-progress">0%</span>
+        </p>
+      </div>
         <p class="btns">
           <%= submit_image 'install.png' %>
         </p>
-      </form>
+      <% end %>
   </div>
 </div>
