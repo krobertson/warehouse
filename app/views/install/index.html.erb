@@ -1,10 +1,9 @@
 <div id="installer">
   <h1 id="splash">Install Warehouse</h1>
   <div class="overlay-content">
-  
+  <h2>Lets get started</h2>
   <div class="overlay-form oform">
   <form action="/install">
-    
     <p>
       <label for="install_domain">Domain name your installing on <span class="help">(do not include subdomain)</span></label>
       <input type="text" name="domain" size="40" value="<%= request.host %>" />
@@ -12,6 +11,14 @@
     <p>
       <label for="install_domain">Your license #</label>
       <input type="text" name="license" size="40" />
+    </p>
+    <p>
+      <label for="install_subdomain">Subdomain</label>
+      <input type="text" name="subdomain" size="40" />
+    </p>
+    <p>
+      <label for="install_subdomain">Repository location (path)</label>
+      <input type="text" name="path" size="40" />
     </p>
     </div>
     <p class="btns">

@@ -3,14 +3,28 @@ body {
   background: url(../images/app/install/rock-tile.gif);
 }
 
-#container {
+#content {
   width: 500px;
-  margin: ;
+}
+
+#main {
+  float: none;
+  padding: 0;
 }
 
 #installer {
   width: 400px;
   margin: 100px auto 0 auto;
+}
+
+#installer h2 {
+  margin: 0;
+  padding: 0;
+  line-height: 100%;
+  text-indent: -9999px;
+  height: 20px;
+  background: url(../images/app/sheet-top.png) no-repeat;
+  border: none;
 }
 
 #installer h1 {
@@ -20,16 +34,16 @@ body {
   margin-bottom: 20px;
 }
 
-#installer form {
-  padding-left: 20px;
-}
-
 #installer .help {
   display: block;
   font-size: 92%;
   color: #777;
   text-shadow: none;
   font-weight: normal;
+}
+
+#installer form {
+  padding: 0 20px;
 }
 
 #installer form p {
