@@ -22,3 +22,7 @@ class Test::Unit::TestCase
       stub(options.merge(:path => path, :dir? => true))
     end
 end
+
+ApplicationController.class_eval do
+  def check_for_valid_domain() end
+end

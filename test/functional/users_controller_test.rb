@@ -24,19 +24,19 @@ context "Users Controller" do
     end
   end
 
-  specify "should require logged_in user" do
+  xspecify "should require logged_in user" do
     login_as nil
     get :show
     assert_match /^error/, @response.body
   end
   
-  specify "should accept valid user" do
+  xspecify "should accept valid user" do
     login_as :rick
     get :show, :id => users(:rick).id.to_s
     assert_match /^passed/, @response.body
   end
   
-  specify "should accept implicit user" do
+  xspecify "should accept implicit user" do
     login_as :rick
     get :show
     assert_match /^passed/, @response.body

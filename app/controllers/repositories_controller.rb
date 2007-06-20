@@ -4,7 +4,7 @@ class RepositoriesController < ApplicationController
 
   def index
     @repository   = Repository.new
-    @repositories = repository_subdomain.blank? ? Repository.find(:all) : [current_repository]
+    @repositories = Repository.find(:all)
   end
 
   def show
@@ -31,9 +31,5 @@ class RepositoriesController < ApplicationController
       flash[:error] = "Repository did not save."
       render :action => 'show'
     end
-  end
-  
-  def plugins
-    
   end
 end

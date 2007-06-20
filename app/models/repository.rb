@@ -23,13 +23,14 @@ class Repository < ActiveRecord::Base
   has_many :changes, :through => :changesets, :order => 'changesets.revision desc'
   has_many :bookmarks, :dependent => :delete_all
   has_one  :latest_changeset, :class_name => 'Changeset', :foreign_key => 'repository_id', :order => 'revision desc'
+  expiring_attr_reader :backend, :retrieve_svn_backend
 
   def path=(value)
     write_attribute :path, value.to_s.chomp('/')
   end
 
   def latest_revision
-    @latest_revision ||= backend.youngest_rev
+    @latest_revision ||= backend && backend.youngest_rev
   end
 
   def member?(user, path = nil)
@@ -62,6 +63,7 @@ class Repository < ActiveRecord::Base
   end
 
   def revisions_to_sync(refresh = false)
+    return nil if backend.nil?
     unless refresh || @revisions_to_sync
       @revisions_to_sync = (latest_changeset ? latest_changeset.revision + 1 : 1)..latest_revision
     end
@@ -69,10 +71,13 @@ class Repository < ActiveRecord::Base
   end
   
   def sync?
-    revisions_to_sync.first < revisions_to_sync.last
+    backend && revisions_to_sync.first < revisions_to_sync.last
   end
 
-  def backend
-    @backend ||= Svn::Repos.open(path)
+  def retrieve_svn_backend
+    Svn::Repos.open(path)
+  rescue Svn::Error
+    logger.warn $!.message
+    nil
   end
 end

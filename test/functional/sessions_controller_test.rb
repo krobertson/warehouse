@@ -5,7 +5,7 @@ require 'sessions_controller'
 class SessionsController; def rescue_action(e) raise e end; end
 
 context "Sessions Controller" do
-  def setup
+  setup do
     @controller = SessionsController.new
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
