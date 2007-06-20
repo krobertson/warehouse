@@ -7,7 +7,7 @@
   <%= javascript_include_tag 'code/html' %>
 <% end %>
 
-<% unless @error -%>
+<% unless @error || current_changeset.nil? -%>
 <div class="changeset clearfix" id="last-log">
   <div class="cs-meta">
     <%= avatar_for(current_changeset.user) %>
