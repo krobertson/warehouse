@@ -20,5 +20,20 @@
 </div>
 
 <% content_for :onready do -%>
-ProgressBar.mark('import-progress', 9);
+var Importer = {
+  step: function(progress) {
+    if(progress < 100) {
+      new Ajax.Request('/install', {
+        method: 'get',
+        params: { progress: progress }
+        onComplete: function() {
+          console.log(progress);
+        }
+      });
+    } else {
+      console.log('done');
+    }
+  }
+}
+// ProgressBar.mark('import-progress', 9);
 <% end -%>
