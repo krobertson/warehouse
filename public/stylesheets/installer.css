@@ -113,7 +113,7 @@ div#error p {
   font-size: 92%;
   padding: 2px 0;
   display: block;
-  width: 100px;
+  overflow: visible;
 }
 
 #active-reload {

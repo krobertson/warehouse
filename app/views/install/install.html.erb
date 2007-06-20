@@ -2,22 +2,23 @@
   <h1 id="splash">Install Warehouse</h1>
   <div class="overlay-content">
     <h2>Thanks for installing Warehouse, enjoy!</h2>
-    <%= error_messages_for :repository %>
-    <% form_for :user, :url => install_path do |f| %>
-      <div class="overlay-form oform">
-        <p style="margin:5px 0;line-height:140%">You're almost ready! Just add an OpenID to begin importing your repository.</p>
-        <p>
-          <label for="openid_url">OpenID Url</label>
-          <%= f.text_field :openid_url %>
-        </p>
-        <p>
-          <label for="progress">Install progress</label>
-          <span id="import-progress"><span class="pbar">2/5000</span></span>
-        </p>
-      </div>
-        <p class="btns">
-          <%= submit_image 'import.png' %>
-        </p>
-      <% end %>
+    
+    <div class="overlay-form oform">
+      <p>
+        Please wait while we sync the <%= pluralize @repository.latest_revision, 'revision' %> of the <%=h @repository.name %> repo.
+        This will import your repositories revision data into the Warehouse database, and may take a few minutes.  You can jump to
+        to <%= link_to 'your repository', root_url(:host => "#{@repository.subdomain}.#{Warehouse.domain}") %> at any time and continue
+        this process in the Repository admin.
+      </p>
+    
+      <p>
+        <label for="progress">Install progress</label>
+        <span id="import-progress"><span class="pbar"><span class="pbar-initial">0</span>/<span class="pbar-total"><%= @repository.latest_revision || 70 %></span></span></span>
+      </p>
+    </div>
   </div>
 </div>
+
+<% content_for :onready do -%>
+ProgressBar.mark('import-progress', 9);
+<% end -%>

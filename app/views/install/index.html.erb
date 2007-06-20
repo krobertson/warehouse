@@ -5,6 +5,7 @@
   <% form_for @repository, :url => install_path do |f| -%>
   <div class="overlay-form oform">
     <%= error_messages_for :repository %>
+    <% if @repository.new_record? -%>
     <p>
       <label for="domain">Domain name you're installing on 
         <span class="help">
@@ -26,6 +27,17 @@
     <p>
       <label for="repository_path">Repository location (path)</label>
       <%= f.text_field :path, :size => 40 %>
+    </p>
+    <% else -%>
+    <p><%=h @error %></p>
+    <% end -%>
+    <p>
+      <label for="openid_url">Open ID Address
+        <span class="help">
+          This will create your initial user account to administer your Warehouse repositories.
+        </span>
+      </label>
+      <%= text_field_tag :openid_url, params[:openid_url], :size => 40 %>
     </p>
     </div>
     <p class="btns">

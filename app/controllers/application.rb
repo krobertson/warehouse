@@ -81,6 +81,7 @@ class ApplicationController < ActionController::Base
       if current_repository
         check_for_valid_domain
       else
+        reset_session
         redirect_to install_path
         false
       end

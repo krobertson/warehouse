@@ -32,6 +32,18 @@ Permissions = {
   }
 };
 
+ProgressBar = {
+  mark: function(id, points) {
+    var container = $(id);
+    var pbar      = $$('#' + id + ' span.pbar')[0];
+    var initial   = $$('#' + id + ' span.pbar-initial')[0];
+    var total     = $$('#' + id + ' span.pbar-total')[0];
+    initial.innerHTML = points;
+    var finished  = Math.ceil((Number(initial.innerHTML) / Number(total.innerHTML)) * 100)
+    pbar.setStyle({'width': String(finished) + '%'});
+  }
+}
+
 Element.addMethods({
   duplicate: function(element) {
     element = $(element);

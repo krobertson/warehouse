@@ -4,7 +4,21 @@ class InstallController < ApplicationController
   layout 'install'
 
   def index
-    @repository = Repository.new
+    if session[:installing]
+      @repository = Repository.find(:first)
+      session[:installing] = nil
+      authenticate_with_open_id do |result, identity_url|
+        if result.successful? && @current_user = User.find_or_create_by_identity_url(identity_url)
+          session[:user_id] = @current_user.id
+          render :action => 'install'
+        else
+          @error = result.message || "Sorry, no user by that identity URL exists (#{identity_url})"
+          render :action => 'index'
+        end
+      end
+    else
+      @repository = Repository.new
+    end
   end
   
   def install
@@ -37,7 +51,10 @@ END
       f.write tmpl.strip.gsub(/:domain/, Warehouse.domain)
     end
     
-    unless @repository.save
+    if @repository.save
+      session[:installing] = true
+      authenticate_with_open_id
+    else
       render :action => 'index'
     end
   rescue
@@ -54,7 +71,7 @@ END
   
   protected
     def check_installed
-      if current_repository
+      if current_repository && session[:installing].nil?
         redirect_to root_path
         false
       else
