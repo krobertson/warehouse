@@ -1,4 +1,8 @@
-/* @override http://svn.mymac.com:3000/stylesheets/installer.css */
+/* @override 
+	http://svn.mymac.com:3000/stylesheets/installer.css
+	http://treasure.svn.mymac.com:3000/stylesheets/installer.css
+*/
+
 body {
   background: url(../images/app/install/rock-tile.gif);
 }

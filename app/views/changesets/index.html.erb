@@ -1,5 +1,5 @@
 <% if current_repository.sync? -%>
-<p>You have some revisions to sync: <%= current_repository.revisions_to_sync.inspect %></p>
+<div class="info">You have some revisions to sync: <%= current_repository.revisions_to_sync.inspect %></div>
 <% end -%>
 
 <ul id="changesets">

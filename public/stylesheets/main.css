@@ -1,4 +1,8 @@
-/* @override http://mymac.com:3000/stylesheets/main.css */
+/* @override 
+	http://mymac.com:3000/stylesheets/main.css
+	http://treasure.svn.mymac.com:3000/stylesheets/main.css
+*/
+
 html {
   margin: 0 0 1px 0; /* force FF to show scrollbar to prevent page jumping */
   padding: 0;
@@ -77,6 +81,14 @@ div.errorExplanation h2, div#error h2 {
   background: transparent;
   border: 0;
   padding: 0;
+}
+
+.info {
+  background: #efe;
+  padding: 10px;
+  border: 1px solid #6A2;
+  font-weight: bold;
+  color: #060;
 }
 
 

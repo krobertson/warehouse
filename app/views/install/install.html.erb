@@ -4,8 +4,8 @@
     <h2>Thanks for installing Warehouse, enjoy!</h2>
     
     <div class="overlay-form oform">
-      <p>
-        Please wait while we sync the <%= pluralize @repository.latest_revision, 'revision' %> of the <%=h @repository.name %> repo.
+      <p style="line-height:140%">
+        You're setup and ready to go.  We're now syncing <%= pluralize @repository.latest_revision, 'revision' %> of the <%=h @repository.name %> repo.
         This will import your repositories revision data into the Warehouse database, and may take a few minutes.  You can jump to
         to <%= link_to 'your repository', root_url(:host => "#{@repository.subdomain}.#{Warehouse.domain}") %> at any time and continue
         this process in the Repository admin.
