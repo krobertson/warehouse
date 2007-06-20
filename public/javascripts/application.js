@@ -44,6 +44,22 @@ ProgressBar = {
   }
 }
 
+var Importer = {
+  step: function(progress) {
+    if(progress < 100) {
+      new Ajax.Request('/repositories/<%= @repository.id %>/sync', {
+        method: 'post',
+        onComplete: function(transport) {
+          var prog = transport.responseText;
+          Importer.step(prog);
+        }
+      });
+    } else {
+      console.log('done');
+    }
+  }
+}
+
 Element.addMethods({
   duplicate: function(element) {
     element = $(element);

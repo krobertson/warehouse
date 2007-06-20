@@ -20,22 +20,5 @@
 </div>
 
 <% content_for :onready do -%>
-var Importer = {
-  step: function(progress) {
-    if(progress < 100) {
-      new Ajax.Request('/install', {
-        method: 'get',
-        params: { progress: progress },
-        onComplete: function(transport) {
-          var prog = transport.responseText;
-          Importer.step(prog);
-        }
-      });
-    } else {
-      console.log('done');
-    }
-  }
-}
-Importer.step(0);
-// ProgressBar.mark('import-progress', 9);
+Importer.step(<%= @repository.sync_progress %>);
 <% end -%>

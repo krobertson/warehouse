@@ -1,18 +1,13 @@
 class RepositoriesController < ApplicationController
   skip_before_filter :check_for_repository
   before_filter :admin_required
+  before_filter :find_or_initialize_repository
 
   def index
-    @repository   = Repository.new
     @repositories = Repository.find(:all)
-  end
-
-  def show
-    @repository = Repository.find(params[:id])
   end
   
   def create
-    @repository = Repository.new(params[:repository])
     if @repository.save
       flash[:notice] = "Repository: #{@repository.name} created successfully."
       redirect_to admin_path
@@ -23,8 +18,7 @@ class RepositoriesController < ApplicationController
   end
   
   def update
-    @repository = Repository.find(params[:id])
-    if @repository.update_attributes(params[:repository])
+    if @repository.save
       flash[:notice] = "Repository: #{@repository.name} saved successfully."
       redirect_to admin_path
     else
@@ -32,4 +26,19 @@ class RepositoriesController < ApplicationController
       render :action => 'show'
     end
   end
+  
+  def sync
+    progress, error = @repository.sync_revisions(100)
+    if error.blank?
+      render :text => ((progress.split("\n").last.to_f / @repository.latest_revision.to_f) * 100).ceil.to_s
+    else
+      render :text => error, :status => 500
+    end
+  end
+  
+  protected
+    def find_or_initialize_repository
+      @repository = params[:id] ? Repository.find(params[:id]) : Repository.new
+      @repository.attributes = params[:repository] unless params[:repository].blank?
+    end
 end

@@ -33,6 +33,14 @@ class Repository < ActiveRecord::Base
   def latest_revision
     @latest_revision ||= backend && backend.youngest_rev
   end
+  
+  def synced_revision
+    latest_changeset ? latest_changeset.revision + 1 : 1
+  end
+
+  def sync_progress
+    ((synced_revision.to_f / latest_revision.to_f) * 100).ceil
+  end
 
   def member?(user, path = nil)
     return true if public? || (user.is_a?(User) && user.admin?)
@@ -66,13 +74,27 @@ class Repository < ActiveRecord::Base
   def revisions_to_sync(refresh = false)
     return nil if backend.nil?
     unless refresh || @revisions_to_sync
-      @revisions_to_sync = (latest_changeset ? latest_changeset.revision + 1 : 1)..latest_revision
+      @revisions_to_sync = synced_revision..latest_revision
     end
     @revisions_to_sync
   end
   
   def sync?
     backend && revisions_to_sync.first < revisions_to_sync.last
+  end
+  
+  def sync_revisions(num)
+    cmd   = "rake warehouse:sync REPO=#{id} NUM=#{num} RAILS_ENV=#{RAILS_ENV}"
+    result = []
+    self.class.benchmark "Syncing revisions: #{cmd}" do
+      Open3.popen3 cmd do |stdin, stdout, stderr|
+        result << stdout.read.to_s.strip
+        result << stderr.read.to_s.strip
+        logger.debug "output: #{result.first}"
+        logger.debug "error: #{result.last}" unless result.last.blank?
+      end
+    end
+    result
   end
 
   protected
