@@ -25,9 +25,10 @@ var Importer = {
     if(progress < 100) {
       new Ajax.Request('/install', {
         method: 'get',
-        params: { progress: progress }
-        onComplete: function() {
-          console.log(progress);
+        params: { progress: progress },
+        onComplete: function(transport) {
+          var prog = transport.responseText;
+          Importer.step(prog);
         }
       });
     } else {
@@ -35,5 +36,6 @@ var Importer = {
     }
   }
 }
+Importer.step(0);
 // ProgressBar.mark('import-progress', 9);
 <% end -%>
