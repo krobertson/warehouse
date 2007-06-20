@@ -84,11 +84,11 @@ div.errorExplanation h2, div#error h2 {
 }
 
 .info {
-  background: #efe;
-  padding: 10px;
-  border: 1px solid #6A2;
+  background: #E3F1FF url(../images/app/icons/info.png) 5px 50% no-repeat;
+  padding: 20px 10px 20px 60px;
+  border: 1px solid #5D94CB;
   font-weight: bold;
-  color: #060;
+  color: #346;
 }
 
 
