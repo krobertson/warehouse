@@ -12,7 +12,7 @@ class Permission < ActiveRecord::Base
 
   def login
     l = read_attribute :login
-    l.blank? ? '*' : l
+    l.blank? ? 'Anonymous' : l
   end
   
   def formatted_path
