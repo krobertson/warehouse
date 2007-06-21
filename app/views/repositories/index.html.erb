@@ -24,14 +24,12 @@
       <li class="del"><a href="#" title="Delete">Delete</a></li>
     </ul>
   </li>
-  <li class="repo repoedit" id="repo-edit-<%= repo.id %>" style="display:none">
-    <% sheet_form_for repo, {:trigger => "repoedit-#{repo.id}"} do |s| %>
-      <h2>Edit this Repository</h2>
-      <%= s.text_field 'Name:', :name %>
-      <%= s.text_field 'Path:', :path %>
-      <%= s.text_field 'Subdomain:', :subdomain %>
-    <% end -%>
-  </li>
+  <% sheet_form_for repo, {:trigger => "repoedit-#{repo.id}"} do |s| %>
+    <h2>Edit this Repository</h2>
+    <%= s.text_field 'Name:', :name %>
+    <%= s.text_field 'Path:', :path %>
+    <%= s.text_field 'Subdomain:', :subdomain %>
+  <% end -%>
 <% end -%>
 </ul>
 </div>

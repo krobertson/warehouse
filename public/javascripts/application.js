@@ -118,6 +118,7 @@ Sheet.prototype = {
     this.sheetContent.addClassName('overlay-content');
     this.sheetContent.appendChild(this.sheet);
     this.overlay.appendChild(this.sheetContent);
+    this.sheetContent.setStyle({'margin-top': -(this.sheetHeight) + "px"});
     $('container').appendChild(this.overlay);
   }
 };
