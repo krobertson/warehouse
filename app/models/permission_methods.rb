@@ -9,6 +9,12 @@ module PermissionMethods
   end
 
   def permission_admin?
+    return true if has_attribute?(:admin) && admin?
     permission_admin && User.columns_hash['admin'].type_cast(permission_admin)
+  end
+  
+  def permission_path
+    return :all if permission_admin?
+    read_attribute(:permission_path).to_s
   end
 end

@@ -45,4 +45,9 @@ class RepositoriesController < ApplicationController
       @repository = params[:id] ? Repository.find(params[:id]) : Repository.new
       @repository.attributes = params[:repository] unless params[:repository].blank?
     end
+
+    def check_for_repository
+      return true if repository_subdomain.blank? && admin?
+      super
+    end
 end

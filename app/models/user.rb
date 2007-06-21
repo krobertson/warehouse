@@ -16,7 +16,18 @@ class User < ActiveRecord::Base
   end
   
   has_many :all_permissions, :class_name => 'Permission', :foreign_key => 'user_id', :dependent => :delete_all
-  has_many :repositories, :through => :permissions, :select => "repositories.*, #{Permission.join_fields}", :order => 'repositories.name'
+  has_many :repositories, :through => :permissions, :select => "repositories.*, #{Permission.join_fields}", :order => 'repositories.name, permissions.path' do
+    def paths
+      repo_paths = proxy_owner.repositories.inject({}) do |memo, repo|
+        (memo[repo.id] ||= []) << repo.permission_path
+        memo
+      end
+      repo_paths.each do |repo_id, paths|
+        repo_paths[repo_id] = :all if paths.include?(:all)
+      end
+      repo_paths
+    end
+  end
   
   validates_presence_of   :identity_url
   validates_format_of     :email, :with => /(\A(\s*)\Z)|(\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z)/i, :allow_nil => true
@@ -30,8 +41,14 @@ class User < ActiveRecord::Base
 
   def self.find_all_by_logins(repository, logins)
     find(:all, :select => 'DISTINCT users.*, permissions.login',
-      :conditions => ['permissions.repository_id = ? AND permissions.login IN (?)', repository.id, logins], 
+      :conditions => login_conditions_for_repositories(repository.id => logins),
       :joins => 'inner join permissions on users.id = permissions.user_id')
+  end
+  
+  def self.find_all_by_repositories(repositories)
+    find(:all, :select => 'DISTINCT users.*, permissions.repository_id, permissions.login',
+      :conditions => login_conditions_for_repositories(repositories),
+      :joins => 'inner join permissions on users.id = permissions.user_id').index_by { |u| u.repository_id.to_i }
   end
 
   def name
@@ -51,6 +68,17 @@ class User < ActiveRecord::Base
   end
 
   protected
+    # takes a hash of repo_id => %w(logins)
+    def self.login_conditions_for_repositories(repositories)
+      returning [[]] do |conditions|
+        repositories.each do |repo, logins|
+          conditions.first << "(permissions.repository_id = ? AND permissions.login IN (?))"
+          conditions << repo << logins
+        end
+        conditions[0] = conditions.first.join(" or ")
+      end
+    end
+
     def set_default_attributes
       self.token = TokenGenerator.generate_random(TokenGenerator.generate_simple)
       self.admin = true if User.count.zero?

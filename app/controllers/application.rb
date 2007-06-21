@@ -78,13 +78,9 @@ class ApplicationController < ActionController::Base
     end
   
     def check_for_repository
-      return true if current_repository || (is_a?(RepositoriesController) && repository_subdomain.blank? && admin?)
+      return true if current_repository
       if Repository.count > 0
-        if admin?
-          redirect_to admin_url(:host => Warehouse.domain, :port => request.port)
-        else
-          access_denied :error => (repository_subdomain.blank? ? "An administrator login is required." : "Invalid repository.")
-        end
+        redirect_to(logged_in? ? changesets_path : public_changesets_path)
       else
         reset_session
         redirect_to install_path

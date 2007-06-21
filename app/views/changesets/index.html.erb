@@ -5,12 +5,12 @@
 
 <ul id="changesets">
   <% @changesets.each do |changeset| -%>
-    <% user = @users[changeset.author] -%>
+    <% user = @users[changeset.repository_id] && @users[changeset.repository_id][changeset.author] -%>
   <li class="changeset clearfix" id="changeset-<%= changeset.revision %>">
     <div class="cs-meta">
       <%= avatar_for(user) %>
       <p>
-        <span class="change-number"><%= link_to(changeset.revision, changeset_path(changeset.revision)) %></span>
+        <span class="change-number"><%= link_to(changeset.revision, changeset_url(:id => changeset.revision, :host => changeset.repository.domain, :port => request.port)) %></span>
       </p>
     </div>
     <div class="cs-log">      
@@ -23,7 +23,8 @@
 
 <%= will_paginate @changesets unless @changesets.empty? %>
 
-<% content_for :sidebar do %>
+<% content_for :sidebar do -%>
+<% if current_repository && current_repository.members.any? -%>
 <div class="sideblock">
   <h3>Active Members</h3>
   <ul id="members">
@@ -39,4 +40,14 @@
     <% end %>
   </ul>
 </div>
-<% end if current_repository.members.any? %>
+<% elsif repository_subdomain.blank? -%>
+<div class="sideblock">
+  <h3><%= 'Public ' if controller.action_name == 'public' %>Repositories</h3>
+  <ul id="repositories">
+    <% @repositories.each do |repo| %>
+    <li><%= link_to h(repo.name), changesets_url(:host => repo.domain, :port => request.port) %></li>
+    <% end %>
+  </ul>
+</div>
+<% end -%>
+<% end -%>

@@ -43,9 +43,9 @@
           <ul id="nav">
             <% if current_repository -%>
             <li id="code"><%= link_to 'Browser', browser_path %></li>
-            <li id="activity"><%= link_to 'Activity', changesets_path %></li>
             <% end -%>
-            <% if logged_in? && admin? %>
+            <li id="activity"><%= link_to 'Activity', (current_repository || logged_in? ? changesets_path : public_changesets_path) %></li>
+            <% if admin? %>
             <li id="admin"><%= link_to 'Admin', admin_path %></li>
             <% end %>
           </ul>
@@ -76,16 +76,18 @@
           <%= yield %>
         </div>
         <!-- /main -->
-        <% unless @fullscreen || current_repository.nil? %>
+        <% unless @fullscreen %>
         <!-- sbar -->
         <div id="sbar">
           <%= yield :sidebar %>
+          <% if current_repository -%>
           <div id="bookmarks" class="sideblock"<%= %( style="display:none") if current_repository.bookmarks.to_a.empty? %>>
             <h3>Bookmarks</h3>
             <ul id="bookmark-list">
               <%= render :partial => "bookmarks/bookmark", :collection => current_repository.bookmarks %>
             </ul>
           </div>
+          <% end -%>
         </div>
         <!-- /sbar -->
         <% end %>

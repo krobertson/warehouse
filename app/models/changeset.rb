@@ -40,18 +40,33 @@ class Changeset < ActiveRecord::Base
   end
 
   protected
+    # scope changesets query by change paths.  
+    #
+    # with_paths :all # show all changesets
+    # with_paths nil  # no changesets
+    # with_paths []   # no changesets
+    # with_paths %w(foo bar) # changesets with changes starting w/ the given paths
+    #
+    # you can also scope for multiple repos by passing a hash of repo_id => paths
+    # with_paths 1 => :all, 2 => [], 3 => %w(foo bar) # skips repo 2
     def self.with_paths(paths, &block)
       if paths == :all
         block.call
       else
         conditions = conditions_for_paths(paths)
+        return [] if conditions.blank?
         with_scope :find => { :select => 'distinct changesets.*', :joins => 'inner join changes on changesets.id = changes.changeset_id', :conditions => conditions, :order => 'changesets.revision desc' }, &block
       end
     end
     
+    # build conditions for the given paths.  Follow the rules from #with_paths above.
     def self.conditions_for_paths(paths)
       returning [[]] do |conditions|
         if paths.is_a? Hash
+          paths.each do |repo, repo_paths|
+            paths.delete(repo) if repo_paths.blank?
+          end
+          return nil if paths.empty?
           paths.each do |repo, repo_paths|
             repository_conditions_for_paths repo, repo_paths, conditions
           end
@@ -62,7 +77,10 @@ class Changeset < ActiveRecord::Base
       end
     end
     
+    # create change path conditions for a given repository
+    # if repository is nil, assume it's being scoped elsewhere: @repository.changesets.find_by_paths...
     def self.repository_conditions_for_paths(repository, paths, conditions)
+      return if paths.blank?
       if repository
         conditions.first << ' or ' unless conditions.first.empty?
         conditions.first << '(changesets.repository_id = ?'

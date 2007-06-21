@@ -55,6 +55,10 @@ class Repository < ActiveRecord::Base
   def grant(options = {}, &block)
     Permission.grant(self, options, &block)
   end
+  
+  def domain
+    [subdomain, Warehouse.domain] * '.'
+  end
 
   def node(path, rev = nil)
     Node.new(self, path, rev)
