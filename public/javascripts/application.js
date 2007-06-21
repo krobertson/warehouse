@@ -32,25 +32,38 @@ Permissions = {
   }
 };
 
-var Importer = {
-  id: null,
-  repoURL: null,
+var Importer = Class.create();
+Importer.prototype = {
+  initialize: function(repoid, options) {
+    this.repoId = repoid;
+    this.options = $H({
+      onImported: Prototype.emptyFunction,
+      onStep: Prototype.emptyFunction,
+      startProgress: 0
+    }).merge(options || {});
+    this.firstRun = true;
+  },
+  
   step: function(progress) {
+    if(this.firstRun) progress = this.options.startProgress;
     if(progress < 100) {
-      new Ajax.Request('/repositories/' + Importer.id + '/sync', {
+      new Ajax.Request('/repositories/' + this.repoId + '/sync', {
         method: 'post',
         onSuccess: function(transport) {
+          this.firstRun = false;
           var prog = transport.responseText;
-          Importer.step(prog);
+          this.step(prog);
+          this.options.onStep.call(this, prog);
           $('pbar-percent').update(prog + "%");
           $('pbar').setStyle({width: prog + '%'});
-        },
+        }.bind(this),
+        
         on500: function() {
-         $('import-progress').update('A 500 error occurred, please check your logs');
+          $('import-progress').update('A 500 error occurred, please check your logs');
         }
       });
     } else {
-      document.location = Importer.repoURL;
+      this.options.onImported.call(this);
     }
   }
 }
@@ -131,11 +144,5 @@ Event.addBehavior({
   
   'a.delpath:click': function() {
     Permissions.remove(this.up());
-  },
-  
-  '#sync:click':function(e) {
-    alert(e);
-    
-    Importer.step(0);
   }
 });

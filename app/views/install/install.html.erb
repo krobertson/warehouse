@@ -30,7 +30,15 @@
   </div>
 </div>
 
-<% content_for :onready do -%>
-Importer.id = <%= @repository.id %>;
-Importer.repoURL = "<%= request.protocol %><%= repository_subdomain %>.<%= repository_domain %>";
+<% content_for :javascript do -%>
+Event.addBehavior({
+  '#sync:click':function(e) {
+    var initialImporter = new Importer(<%= @repository.id %>, {
+      onImported: function() {
+        document.location = "<%= request.protocol %><%= repository_subdomain %>.<%= repository_domain %>";
+      }
+    });
+    initialImporter.step();
+  }
+});
 <% end -%>

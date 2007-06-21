@@ -20,9 +20,12 @@
     <%=h repo.name %>
     <span class="log"><%= repo.path %></span>
     <ul class="admin-controls">
-      <li class="edit" id="repoedit-<%= repo.id %>"><%= link_to_function('Edit', %($('repo-edit-#{repo.id}').toggle())) %></li>
+      <li class="edit" id="repoedit-<%= repo.id %>"><a href="#">Edit</a></li>
       <li class="del"><a href="#" title="Delete">Delete</a></li>
     </ul>
+    <div class="sync">
+      
+    </div>
   </li>
   <% sheet_form_for repo, {:trigger => "repoedit-#{repo.id}"} do |s| %>
     <h2>Edit this Repository</h2>
