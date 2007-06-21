@@ -16,7 +16,7 @@ class User < ActiveRecord::Base
   end
   
   has_many :all_permissions, :class_name => 'Permission', :foreign_key => 'user_id', :dependent => :delete_all
-  has_many :repositories, :through => :permissions, :select => "repositories.*, #{Permission.join_fields}"
+  has_many :repositories, :through => :permissions, :select => "repositories.*, #{Permission.join_fields}", :order => 'repositories.name'
   
   validates_presence_of   :identity_url
   validates_format_of     :email, :with => /(\A(\s*)\Z)|(\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z)/i, :allow_nil => true

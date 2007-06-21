@@ -30,7 +30,11 @@ context "Changeset" do
   end
   
   specify "should find all changesets with root path" do
-    Changeset.find_all_by_paths(:all).size.should == 2
+    Changeset.find_all_by_paths(:all).size.should == 4
+  end
+  
+  specify "should find all changesets for multiple repositories" do
+    Changeset.find_all_by_paths(1 => :all, 2 => %w(foo)).size.should == 3
   end
   
   specify "should find changesets in root path" do
@@ -38,6 +42,6 @@ context "Changeset" do
   end
   
   specify "should hide changesets outside of given paths" do
-    Changeset.find_all_by_paths(%w(foo bar)).should.be.empty
+    Changeset.find_all_by_paths(%w(baz bar)).should.be.empty
   end
 end

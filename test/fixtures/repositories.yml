@@ -3,3 +3,8 @@ sample:
   name: Sample
   path: <%= File.expand_path(File.dirname(__FILE__)) %>/db/sample
   subdomain: sample
+example:
+  id: 2
+  name: Example
+  path: <%= File.expand_path(File.dirname(__FILE__)) %>/db/example
+  subdomain: example

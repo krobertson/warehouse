@@ -65,18 +65,19 @@ class Changeset < ActiveRecord::Base
     def self.repository_conditions_for_paths(repository, paths, conditions)
       if repository
         conditions.first << ' or ' unless conditions.first.empty?
-        conditions.first << '(changesets.repository_id = ? and '
+        conditions.first << '(changesets.repository_id = ?'
+        conditions.first << ' and ' unless paths == :all
         conditions << repository 
       end
-      
+
       unless paths == :all
         conditions.first << '(' \
           << Array.new(paths.size).fill('changes.path LIKE ?').join(" or ") \
           << " or changes.path IN (?)" \
           << ')'
-        conditions.push(*paths.collect { |p| "#{p}/%" }).push(paths)
+        conditions.push(*paths.collect { |p| "#{p}/%" })
+        conditions.push(paths)
       end
-      
       conditions.first << ')' if repository
     end
 

@@ -9,6 +9,6 @@ module PermissionMethods
   end
 
   def permission_admin?
-    permission_admin && column_for_attribute(:admin).type_cast(permission_admin)
+    permission_admin && User.columns_hash['admin'].type_cast(permission_admin)
   end
 end

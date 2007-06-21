@@ -10,8 +10,22 @@ anon_sample:
   repository_id: 1
   active: true
   path: public
-inactive_rick_sample:
+rick_example:
   id: 3
+  user_id: 1
+  repository_id: 2
+  active: true
+  path: home
+  login: rick
+rick_example_2:
+  id: 4
+  user_id: 1
+  repository_id: 2
+  active: true
+  path: public
+  login: rick
+inactive_rick_sample:
+  id: 5
   user_id: 1
   repository_id: 1
   login: rick2

@@ -14,3 +14,18 @@ two_moon_file:
   changeset_id: 2
   name: M
   path: moon/file.txt
+three_path_1:
+  id: 4
+  changeset_id: 3
+  name: A
+  path: home
+three_path_2:
+  id: 5
+  changeset_id: 3
+  name: A
+  path: foo
+four_file:
+  id: 6
+  changeset_id: 4
+  name: A
+  path: home/file.txt
