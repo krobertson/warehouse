@@ -32,7 +32,7 @@
       <%= avatar_for(member) %>
       <span class="author"><%= member.login %></span>
       <span class="activity">
-        <%= pluralize member.changesets_count, 'commit' %>
+        <%= pluralize member.permission_changesets_count, 'commit' %>
         <% if member.last_changed_at -%>, last one <%= time_ago_in_words member.last_changed_at %> ago<% end -%>
       </span>
     </li>

@@ -1,4 +1,7 @@
 class Permission < ActiveRecord::Base
+  @@join_fields = 'permissions.login, permissions.id as permission_id, permissions.admin as permission_admin, permissions.changesets_count as permission_changesets_count, permissions.last_changed_at'
+  cattr_reader :join_fields
+
   belongs_to :repository
   belongs_to :user
   before_create { |r| r.active = true }

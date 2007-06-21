@@ -1,4 +1,5 @@
 class User < ActiveRecord::Base
+  include PermissionMethods  
   attr_accessor :avatar_data
   
   has_many :permissions, :conditions => ['active = ?', true] do
@@ -15,7 +16,7 @@ class User < ActiveRecord::Base
   end
   
   has_many :all_permissions, :class_name => 'Permission', :foreign_key => 'user_id', :dependent => :delete_all
-  has_many :repositories, :through => :permissions
+  has_many :repositories, :through => :permissions, :select => "repositories.*, #{Permission.join_fields}"
   
   validates_presence_of   :identity_url
   validates_format_of     :email, :with => /(\A(\s*)\Z)|(\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z)/i, :allow_nil => true
@@ -33,10 +34,6 @@ class User < ActiveRecord::Base
       :joins => 'inner join permissions on users.id = permissions.user_id')
   end
 
-  def permission_admin?
-    permission_admin && column_for_attribute(:admin).type_cast(permission_admin)
-  end
-
   def name
     read_attribute(:name) || read_attribute(:login)
   end
@@ -51,15 +48,6 @@ class User < ActiveRecord::Base
 
   def reset_token
     write_attribute :token, TokenGenerator.generate_random(TokenGenerator.generate_simple)
-  end
-  
-  def changesets_count
-    read_attribute(:changesets_count).to_i
-  end
-  
-  def last_changed_at
-    l = read_attribute :last_changed_at
-    l ? Time.parse(l) : nil
   end
 
   protected

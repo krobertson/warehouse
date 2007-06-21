@@ -47,11 +47,40 @@ class Changeset < ActiveRecord::Base
       if paths == :all
         block.call
       else
-        conditions = [Array.new(paths.size).fill('changes.path LIKE ?') * " or ", *paths.collect { |p| "#{p}/%" }]
-        conditions.first << " or changes.path IN (?)"
-        conditions       << paths
+        conditions = conditions_for_paths(paths)
         with_scope :find => { :select => 'distinct changesets.*', :joins => 'inner join changes on changesets.id = changes.changeset_id', :conditions => conditions, :order => 'changesets.revision desc' }, &block
       end
+    end
+    
+    def self.conditions_for_paths(paths)
+      returning [[]] do |conditions|
+        if paths.is_a? Hash
+          paths.each do |repo, repo_paths|
+            repository_conditions_for_paths repo, repo_paths, conditions
+          end
+        else
+          repository_conditions_for_paths(nil, paths, conditions)
+        end
+        conditions[0] = conditions.first.join
+      end
+    end
+    
+    def self.repository_conditions_for_paths(repository, paths, conditions)
+      if repository
+        conditions.first << ' or ' unless conditions.first.empty?
+        conditions.first << '(changesets.repository_id = ? and '
+        conditions << repository 
+      end
+      
+      unless paths == :all
+        conditions.first << '(' \
+          << Array.new(paths.size).fill('changes.path LIKE ?').join(" or ") \
+          << " or changes.path IN (?)" \
+          << ')'
+        conditions.push(*paths.collect { |p| "#{p}/%" }).push(paths)
+      end
+      
+      conditions.first << ')' if repository
     end
 
     def seed_svn_info
