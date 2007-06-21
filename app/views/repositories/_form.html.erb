@@ -1,16 +1,7 @@
-<p>
-  <label for="repository_name">Name:</label>
-  <%= form.text_field :name %>
-</p>
-<p>
-  <label for="repository_path">Path:</label>
-  <%= form.text_field :path %>
-</p>
-<p>
-  <label for="repository_subdomain">Subdomain:</label>
-  <%= form.text_field :subdomain %>
-</p>
-
+  <%= form.text_field 'Name:', :name %>
+  <%= form.text_field 'Path:', :path %>
+  <%= form.text_field 'Subdomain:', :subdomain %>
+  
 <p style="border-bottom:0">
   <label>Public:</label> 
   <%= form.check_box :public %> Yes, the public can browse this repository.

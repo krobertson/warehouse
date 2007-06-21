@@ -1,6 +1,14 @@
-<%= render :partial => "admin/tabs" %>
-<h2>Administration</h2>
+<% content_for :admin_tab do %>
+  <li><%= link_to 'New Repository', 'wee' %></li>
+<% end if admin? %>
 
+<%= render :partial => "admin/tabs" %>
+
+<% sheet_form_for @repository do |s| %>
+  <<%= s.text_field 'Name:', :name %>
+  <%= s.text_field 'Path:', :path %>
+  <%= s.text_field 'Subdomain:', :subdomain %>
+<% end %>
 
 <div id="repository-admin">
   <% if admin? -%>
