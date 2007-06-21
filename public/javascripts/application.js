@@ -73,7 +73,7 @@ Sheet.prototype = {
     if(!this.sheet) return;
     this.sheetHeight = this.sheet.getHeight();
     this.trigger = $(trigger);
-    this.cancelBtn = $$('img.cancelbtn')[0];    
+    this.cancelBtn = document.getElementsByClassName('cancelbtn', this.sheet)[0];   
     this.overlay;
     this.build(element);
     this.addObservers();
@@ -93,8 +93,8 @@ Sheet.prototype = {
     }
   },
   
-  hide: function() {
-    console.log('hiding')
+  hide: function(event) {
+    if(event) Event.stop(event);
     new Fx.Style(this.sheetContent, 'margin-top', {
       duration: (this.sheetHeight * 2) + 500,
       transition: Fx.Transitions.expoOut,
@@ -132,7 +132,9 @@ Event.addBehavior({
     Permissions.remove(this.up());
   },
   
-  '#sync:click':function() {
+  '#sync:click':function(e) {
+    alert(e);
+    
     Importer.step(0);
   }
 });

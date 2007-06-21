@@ -13,7 +13,8 @@
       </p>
       <% else %>
       <p style="margin:10px 0">
-        Press the sync button now to get started syncing your repository.
+        Press the sync button now to get started syncing your repository.  Optionally, you can <%= link_to 'proceed on to your 
+        repository', browser_path %>.
       </p>
       <% end %>
       <p>
@@ -30,6 +31,6 @@
 </div>
 
 <% content_for :onready do -%>
-Importer.id = <%= @repository.id %>
+Importer.id = <%= @repository.id %>;
 Importer.repoURL = "<%= request.protocol %><%= repository_subdomain %>.<%= repository_domain %>";
 <% end -%>
