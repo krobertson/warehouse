@@ -46,6 +46,7 @@ Importer.prototype = {
   
   step: function(progress) {
     if(this.firstRun) progress = this.options.startProgress;
+    console.log(progress);
     if(progress < 100) {
       new Ajax.Request('/repositories/' + this.repoId + '/sync', {
         method: 'post',
@@ -54,8 +55,6 @@ Importer.prototype = {
           var prog = transport.responseText;
           this.step(prog);
           this.options.onStep.call(this, prog);
-          $('pbar-percent').update(prog + "%");
-          $('pbar').setStyle({width: prog + '%'});
         }.bind(this),
         
         on500: function() {

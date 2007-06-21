@@ -982,7 +982,7 @@ ul.admin-controls {
   height: 16px;
 }
 
-.edit, .del{
+.edit, .del, .sync {
   position: absolute;
   left: 0;
   top: 0;
@@ -992,7 +992,11 @@ ul.admin-controls {
   left: 20px;
 }
 
-.edit a, .del a {
+.sync {
+  left: -20px;
+}
+
+.edit a, .del a, .sync a {
   display: block;
   width: 16px;
   height: 16px;
@@ -1004,10 +1008,8 @@ ul.admin-controls {
   background: url(../images/app/icons/delete.png) 0 50% no-repeat;
 }
 
-.repoedit, .form {
-  margin-top:  -12px;
-  background: #f1f1f1 !important;
-  padding: 0 !important;
+.sync a {
+  background: url(../images/app/icons/sync.png) 0 50% no-repeat;
 }
 
 div.form {
@@ -1104,6 +1106,21 @@ input.path {
   margin: 2px;
   border: 1px solid #eee;
   color: #aaa;
+}
+
+.need-sync {
+  background: #eee;
+  padding: 2px 5px;
+  font-weight: normal;
+  color: #555;
+  font-size: 92%;
+}
+
+.sync-percent {
+  color: #333;
+  color: #47C;
+  font-weight: bold;
+  float: right;
 }
 
 

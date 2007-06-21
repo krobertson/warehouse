@@ -19,6 +19,7 @@
         <% if logged_in? %>Sheet.Cache['profile-form'] = new Sheet('profile-form', 'profile');<% end %>
         <%= yield :onready %>
       });
+      <%= yield :javascript %>
     </script>
   </head>
   <body>

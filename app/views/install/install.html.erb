@@ -36,6 +36,11 @@ Event.addBehavior({
     var initialImporter = new Importer(<%= @repository.id %>, {
       onImported: function() {
         document.location = "<%= request.protocol %><%= repository_subdomain %>.<%= repository_domain %>";
+      },
+      
+      onStep: function(progress) {
+        $('pbar-percent').update(progress + "%");
+        $('pbar').setStyle({width: progress + '%'});
       }
     });
     initialImporter.step();
