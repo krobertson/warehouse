@@ -22,7 +22,7 @@
     <% if admin? %>
       <% if repo.sync? %>
       <div class="need-sync" id="sync-<%= repo.id %>">
-        <span id="percent-<%= repo.id %>" class="sync-percent">0%</span>
+        <span id="percent-<%= repo.id %>" class="sync-percent"><%= repo.sync_progress %>%</span>
         
         The changesets <%= repo.revisions_to_sync.inspect.sub(/\.\./, '-') %> need to be synced.
         <img id="indicator-<%= repo.id %>" src="/images/app/progress.gif" style="display:none" />
