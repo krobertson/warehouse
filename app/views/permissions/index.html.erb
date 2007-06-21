@@ -1,5 +1,5 @@
 <%= render :partial => "admin_tab" %>
-<h2><%=h current_repository.name %> Members</h2>
+<h2><%=h current_repository.name %> Permissions</h2>
 
 
 <ul id="permissions">
@@ -26,7 +26,7 @@
 </ul>
 
   <% sheet_form_for @permission, :html => { :id => 'add-member' }, :trigger => 'addmember' do |s| -%>
-    <h2>Add a new Member</h2>
+    <h2>Add a new subversions permission</h2>
     <%= s.text_field_tag "Email:", :email, params[:email], :size => 30 %>
     <p>(leave email and svn login info blank for anonymous access)</p>
     <%= s.text_field "SVN Login:", :login %>

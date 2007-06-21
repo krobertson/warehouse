@@ -904,7 +904,7 @@ pre.viewsource code {
 }
 
 li#nrepo a { background: url(../images/app/icons/repository.png) 50% 0 no-repeat;}
-li#nmember a { background: url(../images/app/icons/member.png) 50% 0 no-repeat;}
+li#nmember a { background: url(../images/app/icons/lock.png) 50% 0 no-repeat;}
 li#nplugin a { background: url(../images/app/icons/plugins.png) 50% 0 no-repeat;}
 
 #admin-nav li a:hover {
