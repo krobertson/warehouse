@@ -29,23 +29,6 @@ context "Changeset" do
     repositories(:sample).changesets.find_by_path('moon').should == changesets(:two)
   end
   
-  specify "should seed svn info" do
-    changed_at = 5.minutes.ago.utc
-    fs_stub = stub
-    fs_stub.expects(:prop).with(Svn::Core::PROP_REVISION_AUTHOR, 3).returns('rick')
-    fs_stub.expects(:prop).with(Svn::Core::PROP_REVISION_LOG, 3).returns('hello')
-    fs_stub.expects(:prop).with(Svn::Core::PROP_REVISION_DATE, 3).returns(changed_at)
-    Changeset.any_instance.expects(:backend).times(3).returns(stub(:fs => fs_stub))
-    Change.expects(:create_from_changeset).returns(true)
-    
-    ch = Changeset.new(:revision => 3)
-    ch.repository_id = 1
-    ch.save.should.be true
-    ch.author.should == 'rick'
-    ch.message.should == 'hello'
-    ch.changed_at.should == changed_at
-  end
-  
   specify "should find all changesets with root path" do
     Changeset.find_all_by_paths(:all).size.should == 2
   end
