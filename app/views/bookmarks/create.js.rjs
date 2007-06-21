@@ -1,0 +1,8 @@
+if @bookmark.new_record?
+  page['bookmark-sheet-error'].show.replace_html error_messages_for(:bookmark)
+else
+  page['bookmarks'].show
+  page.insert_html :bottom, 'bookmark-list', :partial => 'bookmark'
+  page['bookmark-sheet-error'].hide
+  page['bookmark-sheet'].hide
+end

@@ -71,7 +71,9 @@
 <% if params[:paths].any? && repository_admin? && !current_repository.bookmarks.any? { |b| b.path == @node.path } -%>
   <% remote_sheet_form_for :bookmark, :url => bookmarks_path, :trigger => :bookmark, :html => {:id => 'bookmark-sheet'} do |s| -%>
     <h2>Bookmark this directory</h2>
+    <div id="bookmark-sheet-error" class="error" style="display:none"></div>
     <%= s.text_field "Label:", :label %>
     <%= s.text_area "Description:", :description, :rows => 8 %>
+    <%= s.hidden_field :path %>
   <% end -%>
 <% end -%>

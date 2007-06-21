@@ -3,10 +3,8 @@ class BookmarksController < ApplicationController
   
   def create
     @bookmark = current_repository.bookmarks.create(params[:bookmark])
-    render :update do |page|
-      page['bookmarks'].show
-      page.insert_html :bottom, 'bookmark-list', :partial => 'bookmark'
-      page['bookmark-sheet'].hide
+    respond_to do |format|
+      format.js
     end
   end
 end
