@@ -4,14 +4,18 @@
     <h2>Thanks for installing Warehouse, enjoy!</h2>
     
     <div class="overlay-form oform">
-      <h3>Sync your repository</h3>
-      <p style="line-height:140%;font-weight:bold">
-        You're setup and ready to go.  We're now syncing <%= pluralize @repository.latest_revision, 'revision' %> of the <%=h @repository.name %> repo.
-        This will import your repositories revision data into the Warehouse database, and may take a few minutes.  You can jump to
-        to <%= link_to 'your repository', root_url(:host => "#{@repository.subdomain}.#{Warehouse.domain}") %> at any time and continue
-        this process in the Repository admin.
+      <h3 style="padding:10px">Sync your repository</h3>
+      <p>In order to view the changesets of this repository you need to sync <%= pluralize @repository.latest_revision, 'revision' %>.</p>
+      <% if @repository.latest_revision >= 5000 %>
+      <p style="line-height:140%;">
+        It appears you have over 5000 changesets. Syncing from <code>rake</code> is much faster.
+        <pre><code>rake warehouse:sync REPO=<%= repository_subdomain %> RAILS_ENV=<%= RAILS_ENV %></code></pre> 
       </p>
-    
+      <% else %>
+      <p style="margin:10px 0">
+        Press the sync button now to get started syncing your repository.
+      </p>
+      <% end %>
       <p>
         <label for="progress">Sync progress</label>
         <span id="import-progress">
@@ -20,12 +24,11 @@
       </p>
     </div>
     <p class="btns">
-      <%= submit_image 'import.png' %>
+      <%= submit_image 'sync.png', :id => 'sync' %>
     </p>
   </div>
 </div>
 
 <% content_for :onready do -%>
-Importer.id = 4
-Importer.step(<%= @repository.sync_progress %>);
+Importer.id = <%= @repository.id %>
 <% end -%>

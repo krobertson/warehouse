@@ -129,5 +129,9 @@ Event.addBehavior({
   
   'a.delpath:click': function() {
     Permissions.remove(this.up());
+  },
+  
+  '#sync:click':function() {
+    Importer.step(0);
   }
 });

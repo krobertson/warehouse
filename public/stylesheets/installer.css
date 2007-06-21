@@ -56,6 +56,21 @@ div.overlay-form {
   padding: 5px 0;
 }
 
+#installer h4 {
+  color: #468;
+  margin: 15px 20px 5px 20px;
+}
+
+#installer pre {
+  margin: 10px 9px 10px 0;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-right: none;
+  border-left: none;
+  padding: 5px;
+  font-size: 92%;
+}
+
 #installer label {
   font-size: 110%;
   display: block;
