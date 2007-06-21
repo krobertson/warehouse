@@ -19,7 +19,7 @@ class ApplicationController < ActionController::Base
   end
 
   def current_repository
-    @current_repository ||= Repository.find_by_subdomain(repository_subdomain) || Repository.find(:first)
+    @current_repository ||= repository_subdomain.blank? ? nil : Repository.find_by_subdomain(repository_subdomain)
   end
   
   protected
@@ -78,13 +78,18 @@ class ApplicationController < ActionController::Base
     end
   
     def check_for_repository
-      if current_repository
-        check_for_valid_domain
+      return true if current_repository || (is_a?(RepositoriesController) && repository_subdomain.blank? && admin?)
+      if Repository.count > 0
+        if admin?
+          redirect_to admin_url(:host => Warehouse.domain, :port => request.port)
+        else
+          access_denied :error => (repository_subdomain.blank? ? "An administrator login is required." : "Invalid repository.")
+        end
       else
         reset_session
         redirect_to install_path
-        false
       end
+      false
     end
     
     def check_for_valid_domain

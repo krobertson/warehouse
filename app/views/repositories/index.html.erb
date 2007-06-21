@@ -3,7 +3,7 @@
 
 
 <div id="repository-admin">
-  <% if repository_subdomain.blank? -%>
+  <% if admin? -%>
   <div class="repo form">
     <h3>New Repository</h3>
     <% form_for @repository do |f| -%>
@@ -24,7 +24,7 @@
       <li class="del"><a href="#" title="Delete">Delete</a></li>
     </ul>
   </li>
-  <li class="repo repoedit" id="repo-edit-<%= repo.id %>"<%= %( style="display:none") if repository_subdomain.blank? %>>
+  <li class="repo repoedit" id="repo-edit-<%= repo.id %>"<%= %( style="display:none") unless repo == current_repository %>>
     <% form_for repo do |f| -%>
       <%= render :partial => "form", :object => f %>
       <p class="btns">

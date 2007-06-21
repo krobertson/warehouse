@@ -4,7 +4,11 @@ class RepositoriesController < ApplicationController
   before_filter :find_or_initialize_repository
 
   def index
-    @repositories = Repository.find(:all)
+    @repositories = admin? ? Repository.find(:all) : [current_repository]
+    if current_repository
+      @repositories.unshift current_repository
+      @repositories.uniq!
+    end
   end
   
   def create

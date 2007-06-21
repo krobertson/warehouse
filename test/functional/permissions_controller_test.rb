@@ -10,6 +10,7 @@ context "Permissions Controller" do
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
     @controller.stubs(:current_user).returns(users(:rick))
+    @request.host = "sample.test.host"
   end
 
   specify "should ask for basic authentication on text requests" do

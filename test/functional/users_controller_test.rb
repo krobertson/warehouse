@@ -9,6 +9,7 @@ context "Users Controller" do
     @controller = UsersController.new
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
+    @request.host = "sample.test.host"
     class << @controller
       def access_denied(options = {})
         render :text => "error: #{options[:error].inspect}, redirect to #{options[:url].inspect}"

@@ -1,4 +1,4 @@
-<% if current_repository.sync? -%>
+<% if repository_admin? && current_repository.sync? -%>
 <div class="info">Revisions <%= current_repository.revisions_to_sync.inspect.sub(/\.\./, '-') %> need to be synced.  You can do this from the command line or you can 
   do this in the administration user interface.  Command line syncing is much faster.</div>
 <% end -%>
@@ -39,4 +39,4 @@
     <% end %>
   </ul>
 </div>
-<% end %> 
+<% end if current_repository.members.any? %>

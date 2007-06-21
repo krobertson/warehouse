@@ -30,18 +30,6 @@ class Repository < ActiveRecord::Base
     write_attribute :path, value.to_s.chomp('/')
   end
 
-  def latest_revision
-    @latest_revision ||= backend && backend.youngest_rev
-  end
-  
-  def synced_revision
-    latest_changeset ? latest_changeset.revision + 1 : 1
-  end
-
-  def sync_progress
-    ((synced_revision.to_f / latest_revision.to_f) * 100).ceil
-  end
-
   def member?(user, path = nil)
     return true if public? || (user.is_a?(User) && user.admin?)
     paths = path.to_s.split('/').inject([]) { |m, p| m << (m.last.nil? ? p : "#{m.last}/#{p}") }
@@ -82,7 +70,19 @@ class Repository < ActiveRecord::Base
   def sync?
     backend && revisions_to_sync.first < revisions_to_sync.last
   end
+
+  def latest_revision
+    @latest_revision ||= backend && backend.youngest_rev
+  end
   
+  def synced_revision
+    latest_changeset ? latest_changeset.revision + 1 : 1
+  end
+
+  def sync_progress
+    ((synced_revision.to_f / latest_revision.to_f) * 100).ceil
+  end
+
   def sync_revisions(num)
     cmd   = "rake warehouse:sync REPO=#{id} NUM=#{num} RAILS_ENV=#{RAILS_ENV}"
     result = []
@@ -105,7 +105,7 @@ class Repository < ActiveRecord::Base
     end
 
     def retrieve_svn_backend
-      Svn::Repos.open(path)
+      path.blank? ? nil : Svn::Repos.open(path)
     rescue Svn::Error
       logger.warn $!.message
       nil

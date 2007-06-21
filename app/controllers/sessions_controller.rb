@@ -1,4 +1,5 @@
 class SessionsController < ApplicationController
+  skip_before_filter :check_for_repository
   def create
     authenticate_with_open_id do |result, identity_url|
       if result.successful? && @current_user = User.find_or_create_by_identity_url(identity_url)

@@ -9,6 +9,7 @@ context "Changesets Controller" do
     @controller = ChangesetsController.new
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
+    @request.host = "sample.test.host"
   end
 
   specify "should show 0 changesets for anonymous user" do

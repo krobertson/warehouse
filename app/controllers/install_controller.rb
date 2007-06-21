@@ -65,7 +65,7 @@ END
   if RAILS_ENV == 'development'
     def test_install
       # @repository = Repository.new(:name => 'test', :path => '/foo/bar/baz')
-      @repository = Repository.find(4)
+      @repository = Repository.find(6)
       render :action => 'install'
     end
   end

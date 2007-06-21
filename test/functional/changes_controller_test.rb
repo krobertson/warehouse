@@ -9,6 +9,7 @@ context "Changes Controller" do
     @controller = ChangesController.new
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
+    @request.host = "sample.test.host"
   end
   
   specify "should redirect index to changesets controller" do

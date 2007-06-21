@@ -9,6 +9,7 @@ context "Browser Controller Permissions" do
     @controller = BrowserController.new
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
+    @request.host = "sample.test.host"
     class << @controller
       def access_denied(options = {})
         render :text => "error: #{options[:error].inspect}, redirect to #{options[:url].inspect}"
@@ -22,12 +23,6 @@ context "Browser Controller Permissions" do
       end
       alias_method_chain :repository_member_required, :testing
     end
-  end
-
-  specify "should require valid repository" do
-    @controller.stubs(:current_repository).returns(nil)
-    get :index
-    assert_redirected_to install_path
   end
   
   specify "should accept anonymous public repo" do

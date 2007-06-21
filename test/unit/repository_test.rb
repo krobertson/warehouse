@@ -26,6 +26,7 @@ context "Repository" do
   
   specify "should get initial revisions to sync" do
     r = Repository.new
+    r.expects(:backend).returns(true)
     r.expects(:latest_changeset).returns(nil)
     r.expects(:latest_revision).returns(5)
     r.revisions_to_sync.should == (1..5)
@@ -33,6 +34,7 @@ context "Repository" do
   
   specify "should get new revisions to sync" do
     r = Repository.new
+    r.expects(:backend).returns(true)
     r.expects(:latest_changeset).times(2).returns(stub(:revision => 3))
     r.expects(:latest_revision).returns(5)
     r.revisions_to_sync.should == (4..5)
