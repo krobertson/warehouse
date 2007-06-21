@@ -84,7 +84,7 @@ module ActiveReload
           apply_form_for_options!(object, options)
           args.unshift object
       end
-      concat(form_remote_tag(options), block.binding)
+      concat(form_tag(options.delete(:url), options), block.binding)
       sheet_form_helper(options, SheetFormBuilder.new(object_name, object, self, options, block), &block)
     end
 

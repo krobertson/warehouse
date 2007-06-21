@@ -5,7 +5,7 @@
 <%= render :partial => "admin/tabs" %>
 
 <% sheet_form_for @repository do |s| %>
-  <<%= s.text_field 'Name:', :name %>
+  <%= s.text_field 'Name:', :name %>
   <%= s.text_field 'Path:', :path %>
   <%= s.text_field 'Subdomain:', :subdomain %>
 <% end %>
@@ -14,7 +14,7 @@
   <% if admin? -%>
   <div class="repo form">
     <h3>New Repository</h3>
-    <% form_for @repository do |f| -%>
+    <% form_for @repository, :builder => ActiveReload::SheetFormBuilder do |f| -%>
       <%= render :partial => "form", :object => f %>
       <p class="btns">
         <%= submit_tag 'Add this Repository', :disable_with => 'Adding...' %>
@@ -33,7 +33,7 @@
     </ul>
   </li>
   <li class="repo repoedit" id="repo-edit-<%= repo.id %>"<%= %( style="display:none") unless repo == current_repository %>>
-    <% form_for repo do |f| -%>
+    <% form_for repo, :builder => ActiveReload::SheetFormBuilder do |f| -%>
       <%= render :partial => "form", :object => f %>
       <p class="btns">
         <%= submit_tag 'Update', :disable_with => 'Saving...' %>
