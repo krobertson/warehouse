@@ -1,14 +1,5 @@
 <% content_for :admin_tab do -%>
     <li><%= link_to 'Add member', {}, :id => 'addmember' %></li>
-    <% if @repositories.any? -%>
-    <li id="jump"><label>Show members of:</label> 
-      <select name="repo">
-      <% @repositories.each do |repo| -%>
-        <option value="<%=h repo.subdomain %>"><%=h repo.name %></option>
-      <% end -%>
-      </select>
-    </li>
-    <% end -%>
 <% end if admin? -%>
 
 <%= render :partial => "admin/tabs" %>

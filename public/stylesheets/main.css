@@ -238,16 +238,16 @@ li#admin a {
 
 /* @group Sidebar */
 
-#bookmarks ul {
+#bookmarks ul, ul.slist {
   list-style: none;
 }
 
-#bookmarks li {
+#bookmarks li, ul.slist li {
   border-bottom: 1px solid #ccc;
   border-top: 1px solid #fff;
 }
 
-#bookmarks ul li a {
+#bookmarks ul li a, ul.slist li a {
   background: url(../images/app/icons/box-small.png) 0 50% no-repeat;
   padding: 5px 5px 5px 20px;
   color: #333;
@@ -255,9 +255,14 @@ li#admin a {
   display: block;
 }
 
-#bookmarks li a:hover {
+#bookmarks li a:hover, ul.slist a:hover {
   color: #000;
   background-color: #eee;
+}
+
+#repo-list li a {
+  font-weight: bold;
+  background: url(../images/app/icons/repository-small.png) 0 50% no-repeat;
 }
 
 #bookmarks  {
@@ -1118,7 +1123,7 @@ input.path {
 
 .sync-percent {
   color: #333;
-  color: #47C;
+  text-shadow: 2px 2px #fff;
   font-weight: bold;
   float: right;
 }

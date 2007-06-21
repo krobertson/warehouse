@@ -38,4 +38,16 @@
       <%= path_permissions %>
     </div>
   <% end -%>
-
+  
+<% content_for :sidebar do %>
+<% if @repositories.any? %>
+ <div class="sideblock">
+   <h3>Repositories</h3>
+   <ul id="repo-list" class="slist">
+    <% @repositories.each do |repo| %>
+    <li><%= link_to h(repo.name), repository_path(repo) %></li>
+    <% end %>
+   </ul>
+ </div>
+<% end %>
+<% end %>
