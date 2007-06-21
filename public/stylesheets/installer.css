@@ -98,6 +98,7 @@ div#error p {
 }
 
 #import-progress {
+  position: relative;
   margin: 0 0 5px 0;
   font-weight: bold;
   color: #fff;
@@ -112,12 +113,20 @@ div#error p {
   background: #555;
 }
 
-.pbar {
+#pbar {
   background: #292929;
   font-size: 92%;
   padding: 2px 0;
   display: block;
   overflow: visible;
+  height: 18px;
+  width: 0;
+}
+
+#pbar-percent {
+  position: absolute;
+  top: 5px;
+  left: 50%;
 }
 
 #active-reload {

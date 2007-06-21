@@ -32,26 +32,20 @@ Permissions = {
   }
 };
 
-ProgressBar = {
-  mark: function(id, points) {
-    var container = $(id);
-    var pbar      = $$('#' + id + ' span.pbar')[0];
-    var initial   = $$('#' + id + ' span.pbar-initial')[0];
-    var total     = $$('#' + id + ' span.pbar-total')[0];
-    initial.innerHTML = points;
-    var finished  = Math.ceil((Number(initial.innerHTML) / Number(total.innerHTML)) * 100)
-    pbar.setStyle({'width': String(finished) + '%'});
-  }
-}
-
 var Importer = {
+  id: null,
   step: function(progress) {
     if(progress < 100) {
-      new Ajax.Request('/repositories/<%= @repository.id %>/sync', {
+      new Ajax.Request('/repositories/' + Importer.id + '/sync', {
         method: 'post',
-        onComplete: function(transport) {
+        onSuccess: function(transport) {
           var prog = transport.responseText;
           Importer.step(prog);
+          $('pbar-percent').update(prog + "%");
+          $('pbar').setStyle({width: prog + '%'});
+        },
+        on500: function() {
+         $('import-progress').update('A 500 error occurred, please check your logs');
         }
       });
     } else {
