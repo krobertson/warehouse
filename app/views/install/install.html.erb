@@ -31,4 +31,5 @@
 
 <% content_for :onready do -%>
 Importer.id = <%= @repository.id %>
+Importer.repoURL = "<%= request.protocol %><%= repository_subdomain %>.<%= repository_domain %>";
 <% end -%>

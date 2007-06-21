@@ -34,6 +34,7 @@ Permissions = {
 
 var Importer = {
   id: null,
+  repoURL: null,
   step: function(progress) {
     if(progress < 100) {
       new Ajax.Request('/repositories/' + Importer.id + '/sync', {
@@ -49,7 +50,7 @@ var Importer = {
         }
       });
     } else {
-      console.log('done');
+      document.location = Importer.repoURL;
     }
   }
 }
