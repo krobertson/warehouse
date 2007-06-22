@@ -4,6 +4,8 @@
 class ApplicationController < ActionController::Base
   helper :all # include all helpers, all the time
   helper_method :current_repository, :logged_in?, :current_user, :admin?, :controller_path, :repository_admin?, :repository_member?, :repository_subdomain
+  around_filter :set_context
+
   before_filter :check_for_repository
 
   expiring_attr_reader :current_user,       :retrieve_current_user
@@ -94,5 +96,11 @@ class ApplicationController < ActionController::Base
         return false
       end
       true
+    end
+
+    def set_context
+      ActiveRecord::Base.with_context do
+        yield
+      end
     end
 end
