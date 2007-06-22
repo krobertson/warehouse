@@ -42,10 +42,7 @@ img {
 
 a { outline: none; }
 a:link, a:visited {  color: #07b; text-decoration: none; }
-
-a:hover {
-  color: #d30;
-}
+a:hover { color: #d30; }
 
 ul, li, form, input, dt, dl, dd, ol, div, p, 
 blockquote, h1, h2, h3, h4, h5, h6, a {
@@ -1080,46 +1077,6 @@ ul.admin-controls {
   background: url(../images/app/icons/sync.png) 0 50% no-repeat;
 }
 
-div.form {
-  margin: 0 0 20px 0 !important;
-  padding: 0 !important;
-  background: #f7f7f7 !important;
-}
-
-.form h3, .block h3 {
-  border-top: 1px solid #f7f7f7;
-  border-bottom: 1px solid #aaa;
-  background: #eee url(../images/app/controls-bg.png) bottom left repeat-x;
-  padding: 5px;
-  color: #333;
-}
-
-.repoedit p, .form p {
-  display: block;
-  padding: 8px;
-  font-size: 92%;
-  color: #555;
-  margin: 0 5px;
-}
-
-.repoedit label, .form label {
-  text-align: right;
-  padding-right: 5px;
-  display: block;
-  width: 100px;
-  font-size: 92%;
-  white-space: nowrap;
-  float: left;
-  color: #333;
-}
-
-form input, select {
-  padding: 2px;
-  border: 1px solid #ccc;
-  border-bottom: 1px solid #eee;
-  border-right: 1px solid #eee;
-}
-
 #svn-paths {
   margin: 0;
   padding: 0;
@@ -1189,6 +1146,35 @@ input.path {
   text-shadow: 2px 2px #fff;
   font-weight: bold;
   float: right;
+}
+
+#commands {
+  background: #f7f7f7;
+  margin: 5px 0;
+}
+
+#commands p {
+  padding: 10px;
+}
+
+.command {
+  padding: 10px 0 10px 25px;
+}
+
+.command label {
+  font-weight: bold;
+  display: block;
+}
+
+.command input[type=text] {
+  font-size: 150%;
+}
+
+.command span.help {
+  font-size: 92%;
+  font-weight: normal;
+  color: #555;
+  display: block;
 }
 
 

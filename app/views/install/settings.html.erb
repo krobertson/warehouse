@@ -1,18 +1,21 @@
 <%= render :partial => "admin/tabs" %>
 
-<div id="repository-admin">
+<div id="commands">
 <% form_tag install_path do -%>
-  <p>
-    <label for="permission_command">Permission Command</label>
-    <%= text_field_tag :permission_command, params[:permission_command] || Warehouse.permission_command %>
+  <p class="command">
+    <label for="permission_command">
+      Shell command to run when permissions are updated
+      <span class="help">When permissions are updated, this shell command is executed.</span>
+    </label>
+    <%= text_field_tag :permission_command, params[:permission_command] || Warehouse.permission_command, :size => 40 %>
   </p>
-  <p>
-    <label for="password_command">Password Command</label>
-    <%= text_field_tag :password_command, params[:password_command] || Warehouse.password_command %>
+  <p class="command">
+    <label for="password_command">
+      Shell command to run when someone's password is updated.
+      <span class="help">When you update a persons password, this command is executed. (e.g. htpasswd -m /path/to/permissions.htpasswd)</span>
+    </label>
+    <%= text_field_tag :password_command, params[:password_command] || Warehouse.password_command, :size => 40 %>
   </p>
-  
-  <p>
-    <%= submit_tag :Save %>
-  </p>
+  <p class="btns"><%= submit_image 'save.png' %></p>
 <% end -%>
 </div>
