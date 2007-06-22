@@ -9,6 +9,7 @@ class ApplicationController < ActionController::Base
   expiring_attr_reader :current_user,       :retrieve_current_user
   expiring_attr_reader :repository_member?, :retrieve_repository_member
   expiring_attr_reader :repository_admin?,  :retrieve_repository_admin
+  expiring_attr_reader :current_repository, :retrieve_current_repository
 
   def logged_in?
     !!current_user
@@ -16,10 +17,6 @@ class ApplicationController < ActionController::Base
   
   def admin?
     logged_in? && current_user.admin?
-  end
-
-  def current_repository
-    @current_repository ||= repository_subdomain.blank? ? nil : Repository.find_by_subdomain(repository_subdomain)
   end
   
   protected
@@ -67,6 +64,10 @@ class ApplicationController < ActionController::Base
     
     def retrieve_current_user
       authenticate_with_http_basic { |u, p | User.find_by_token(u) } || (session[:user_id] && User.find_by_id(session[:user_id]))
+    end
+    
+    def retrieve_current_repository
+      repository_subdomain.blank? ? nil : Repository.find_by_subdomain(repository_subdomain)
     end
 
     def repository_subdomain
