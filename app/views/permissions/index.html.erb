@@ -42,8 +42,8 @@
 <% content_for :sidebar do %>
 <% if @repositories.any? %>
  <div class="sideblock">
-   <h3>Repositories</h3>
-   <ul id="repo-list" class="slist">
+   <h3>Repository Access</h3>
+   <ul id="repo-list-perm" class="slist">
     <% @repositories.each do |repo| %>
     <li><%= link_to h(repo.name), permissions_url(:host => repo.domain, :port => request.port) %></li>
     <% end %>

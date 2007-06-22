@@ -1,8 +1,10 @@
 <ul id="admin-nav" class="clearfix">
   <li id="nrepo"<%= class_for(admin_path) %>><%= link_to 'Repos', admin_path %></li>
   <% unless repository_subdomain.blank? -%>
-  <li id="nmember"<%= class_for(permissions_path) %>><%= link_to 'Access', permissions_path %></li>
+  <li id="naccess"<%= class_for(permissions_path) %>><%= link_to 'Access', permissions_path %></li>
   <% end -%>
+  <li id="nmembers"<%= class_for({}) %>><%= link_to 'Members', permissions_path %></li>
+  <li id="nsettings"<%= class_for({}) %>><%= link_to 'Settings', permissions_path %></li>
 </ul>
 <% unless @content_for_admin_tab.blank? -%>
 <ul id="second-nav" class="clearfix">

@@ -301,13 +301,17 @@ li#admin a {
   display: block !important;
 }
 
-#repo-list li:first-child {
+#repo-list li:first-child, #repo-list-perm li:first-child {
   border-top: none;
 }
 
-#repo-list li a {
+#repo-list li a, #repo-list-perm li a {
   font-weight: bold;
   background: url(../images/app/icons/repository-small.png) 0 50% no-repeat;
+}
+
+#repo-list-perm li a {
+  background: url(../images/app/icons/lock-small.png) 0 50% no-repeat;
 }
 
 #bookmarks  {
@@ -960,9 +964,11 @@ pre.viewsource code {
   font-size: 92%;
 }
 
-li#nrepo a { background: url(../images/app/icons/repository.png) 50% 0 no-repeat;}
-li#nmember a { background: url(../images/app/icons/lock.png) 50% 0 no-repeat;}
-li#nplugin a { background: url(../images/app/icons/plugins.png) 50% 0 no-repeat;}
+li#nrepo 	 a { background: url(../images/app/icons/repository.png) 50% 0 no-repeat;}
+li#naccess   a { background: url(../images/app/icons/lock.png) 50% 0 no-repeat;}
+li#nplugin   a { background: url(../images/app/icons/plugins.png) 50% 0 no-repeat;}
+li#nsettings a { background: url(../images/app/icons/terminal-med.png) 50% 0 no-repeat;}
+li#nmembers  a { background: url(../images/app/icons/member.png) 50% 0 no-repeat;}
 
 #admin-nav li a:hover {
   color: #555;
