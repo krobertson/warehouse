@@ -126,7 +126,7 @@ Sheet.prototype = {
     this.overlay = new Element('div', {id: namespace + '-overlay'});
     this.overlay.hide();
     // Firefox wiggles the text if this is `fixed` so we make it absolute to prevent
-    // it from turning the page to water.
+    // it from turning the page into water.
     if(!Prototype.Browser.WebKit) this.overlay.setStyle({position: 'absolute'});
     this.sheetContent = new Element('div', {id: namespace + '-content'});
     this.overlay.addClassName('overlay');
@@ -146,5 +146,9 @@ Event.addBehavior({
   
   'a.delpath:click': function() {
     Permissions.remove(this.up());
+  },
+  
+  'a#reset:click': function() {
+    Sheet.Cache['login-form'].hide();
   }
 });
