@@ -284,6 +284,10 @@ li#admin a {
   border-top: none;
 }
 
+#repo-list li:first-child {
+  border-top: none;
+}
+
 #repo-list li a {
   font-weight: bold;
   background: url(../images/app/icons/repository-small.png) 0 50% no-repeat;
