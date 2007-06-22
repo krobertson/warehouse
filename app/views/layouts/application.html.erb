@@ -80,7 +80,7 @@
         <!-- sbar -->
         <div id="sbar">
           <%= yield :sidebar %>
-          <% if current_repository -%>
+          <% if current_repository && (current_repository.public? || logged_in?) -%>
           <div id="bookmarks" class="sideblock"<%= %( style="display:none") if current_repository.bookmarks.to_a.empty? %>>
             <h3>Bookmarks</h3>
             <ul id="bookmark-list">
