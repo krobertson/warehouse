@@ -285,8 +285,20 @@ li#admin a {
   background-color: #eee;
 }
 
+#bookmark-list li {
+  position: relative;
+}
+
 #bookmark-list li:first-child {
   border-top: none;
+}
+
+#bookmark-list li a.trash {
+  display: none !important;
+}
+
+#bookmark-list li:hover a.trash {
+  display: block !important;
 }
 
 #repo-list li:first-child {
@@ -333,6 +345,18 @@ span.active {
 #members .activity {
   color: #777;
   font-size: 92%;
+}
+
+ul a.list-del {
+  position: absolute;
+  text-indent: -9999px;
+  padding: 0 !important;
+  width: 16px;
+  height: 16px;
+  displaly: block;
+  left: -16px;
+  top: 6px;
+  background: url(../images/app/icons/delete.png) no-repeat !important;
 }
 
 /* @end */
