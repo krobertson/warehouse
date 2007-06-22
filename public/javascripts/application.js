@@ -125,6 +125,7 @@ Sheet.prototype = {
   build: function(namespace) {
     this.overlay = new Element('div', {id: namespace + '-overlay'});
     this.overlay.hide();
+    if(!Prototype.Browser.WebKit) this.overlay.setStyle({position: 'absolute'});
     this.sheetContent = new Element('div', {id: namespace + '-content'});
     this.overlay.addClassName('overlay');
     this.sheetContent.addClassName('overlay-content');
