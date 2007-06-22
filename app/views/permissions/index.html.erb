@@ -10,11 +10,11 @@
     <span class="log">Read<%= '-write' if permission.full_access? %>: <%=h permission.formatted_path %></span>
     <% end -%>
     <ul class="admin-controls">
-      <li class="edit"><%= link_to_function('Edit', %($('permission-edit-#{user ? user.id : :anon}').toggle())) %></li>
+      <li id="perm-<%= permissions.first.id %>" class="edit"><a href="#">Edit</a></li>
       <li class="del"><%= link_to_function('Delete', "Permissions.removeMember('#{user ? user.id : :anon}')") %></li>
     </ul>
   </li>
-  <% sheet_form_for :permission, permissions.first, :url => (user ? user_permissions_path(user) : anon_permissions_path), :html => {:method => :put} do |s| %>
+  <% sheet_form_for :permission, permissions.first, :url => (user ? user_permissions_path(user) : anon_permissions_path), :trigger => '', :html => {:method => :put} do |s| %>
   
   <% end %>
   <li class="permission permissionedit form" id="permission-edit-<%= user ? user.id : :anon %>" style="display:none">

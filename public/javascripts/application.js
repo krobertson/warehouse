@@ -145,14 +145,3 @@ Event.addBehavior({
     Permissions.remove(this.up());
   }
 });
-
-if(window.google) {
-  Event.onReady(function() {
-    var rules = $A(document.styleSheets[0].cssRules);
-    rules.each(function(rule) {
-      console.log(rule.selectorText, $$(rule.selectorText).size());
-    });
-  });
-} else {
-  alert('no gears');
-}
