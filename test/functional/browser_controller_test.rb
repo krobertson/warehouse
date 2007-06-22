@@ -2,7 +2,11 @@ require File.dirname(__FILE__) + '/../test_helper'
 require 'browser_controller'
 
 # Re-raise errors caught by the controller.
-class BrowserController; def rescue_action(e) raise e end; end
+class BrowserController
+  def rescue_action(e) raise e end
+  def check_for_valid_domain() end
+end
+
 
 context "Browser Controller Permissions" do
   def setup

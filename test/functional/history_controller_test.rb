@@ -2,7 +2,11 @@ require File.dirname(__FILE__) + '/../test_helper'
 require 'history_controller'
 
 # Re-raise errors caught by the controller.
-class HistoryController; def rescue_action(e) raise e end; end
+class HistoryController
+  def rescue_action(e) raise e end
+  def check_for_valid_domain() end
+end
+
 
 context "History Controller" do
   def setup

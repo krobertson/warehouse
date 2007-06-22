@@ -2,7 +2,11 @@ require File.dirname(__FILE__) + '/../test_helper'
 require 'changes_controller'
 
 # Re-raise errors caught by the controller.
-class ChangesController; def rescue_action(e) raise e end; end
+class ChangesController
+  def rescue_action(e) raise e end
+  def check_for_valid_domain() end
+end
+
 
 context "Changes Controller" do
   setup do

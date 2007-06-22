@@ -13,7 +13,7 @@
           include a subdomain (e.g. svn.domain.com)
         </span>
       </label>
-      <%= text_field_tag :domain, (params[:domain] || "#{repository_subdomain}.#{repository_domain}"), :size => 40 %>
+      <%= text_field_tag :domain, (params[:domain] || request.host), :size => 40 %>
     </p>
     <p>
       <label for="repository_name">Repository Name</label>

@@ -2,7 +2,11 @@ require File.dirname(__FILE__) + '/../test_helper'
 require 'bookmarks_controller'
 
 # Re-raise errors caught by the controller.
-class BookmarksController; def rescue_action(e) raise e end; end
+class BookmarksController
+  def rescue_action(e) raise e end
+  def check_for_valid_domain() end
+end
+
 
 class BookmarksControllerTest < Test::Unit::TestCase
   def setup

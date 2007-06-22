@@ -23,6 +23,4 @@ class Test::Unit::TestCase
     end
 end
 
-ApplicationController.class_eval do
-  def check_for_valid_domain() end
-end
+Warehouse.domain = 'test.host'

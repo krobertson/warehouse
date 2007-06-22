@@ -2,7 +2,11 @@ require File.dirname(__FILE__) + '/../test_helper'
 require 'sessions_controller'
 
 # Re-raise errors caught by the controller.
-class SessionsController; def rescue_action(e) raise e end; end
+class SessionsController
+  def rescue_action(e) raise e end
+  def check_for_valid_domain() end
+end
+
 
 context "Sessions Controller" do
   setup do

@@ -3,7 +3,7 @@
 
 class ApplicationController < ActionController::Base
   helper :all # include all helpers, all the time
-  helper_method :current_repository, :logged_in?, :current_user, :admin?, :controller_path, :repository_admin?, :repository_member?, :repository_domain, :repository_subdomain
+  helper_method :current_repository, :logged_in?, :current_user, :admin?, :controller_path, :repository_admin?, :repository_member?, :repository_subdomain
   before_filter :check_for_repository
 
   expiring_attr_reader :current_user,       :retrieve_current_user
@@ -70,14 +70,12 @@ class ApplicationController < ActionController::Base
     end
 
     def repository_subdomain
-      request.subdomains.first
-    end
-    
-    def repository_domain
-      request.subdomains.size < 2 ? request.domain : request.domain(request.subdomains.size)
+      request.host.gsub %r(\.?#{Regexp.escape(Warehouse.domain)}), ''
     end
   
     def check_for_repository
+      check_for_valid_domain
+      return false if performed?
       return true if current_repository
       if Repository.count > 0
         redirect_to(logged_in? ? changesets_path : public_changesets_path)
@@ -89,8 +87,8 @@ class ApplicationController < ActionController::Base
     end
     
     def check_for_valid_domain
-      if repository_domain != Warehouse.domain
-        @error = "Invalid domain '#{repository_domain}'."
+      if (Warehouse.domain.blank? && Repository.count > 0) || (!Warehouse.domain.blank? && request.host != Warehouse.domain && request.host.gsub(/^\w+\./, '') != Warehouse.domain)
+        @error = "Invalid domain '#{request.host}'."
         render :template => 'layouts/error'
         return false
       end

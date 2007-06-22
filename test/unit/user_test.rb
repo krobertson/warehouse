@@ -19,6 +19,6 @@ context "User" do
   specify "should find user repository paths" do
     paths = users(:rick).repositories.paths
     paths[repositories(:example).id].should == %w(home public)
-    paths[repositories(:sample).id].should  == [:all]
+    paths[repositories(:sample).id].should  == :all
   end
 end
