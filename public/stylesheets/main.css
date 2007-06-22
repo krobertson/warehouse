@@ -129,11 +129,16 @@ div.errorExplanation h2, div#error h2 {
   bottom: 0;
   background: #ddd;
   width: 100%;
-  padding: 10px;
+  padding: 10px 0;
   font-size: 92%;
   z-index: 2;
-  opacity: 0.8;
-  border-top: 1px solid #ccc;
+  opacity: 0.7;
+  border-top: 1px solid #bbb;
+  text-align: right;
+}
+
+#powered {
+  margin-right: 10px;
 }
 /* @end */
 

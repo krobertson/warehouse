@@ -14,7 +14,7 @@
       <li class="del"><%= link_to_function('Delete', "Permissions.removeMember('#{user ? user.id : :anon}')") %></li>
     </ul>
   </li>
-  <% sheet_form_for :permission, permissions.first, :url => (user ? user_permissions_path(user) : anon_permissions_path), :trigger => "perm-#{permissions.first.id}", :html => {:method => :put} do |s| %>
+  <% sheet_form_for permissions.first, :url => (user ? user_permissions_path(user) : anon_permissions_path), :trigger => "perm-#{permissions.first.id}", :html => {:method => :put} do |s| %>
   <h2>Edit <%= user ? "#{user.name}'s" : "anonymous'" %> permissions</h2>
     <% permissions = [] unless defined?(permissions) -%>
     <%= s.text_field 'SVN Login:', :login %>
