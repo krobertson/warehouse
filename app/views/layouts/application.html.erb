@@ -14,8 +14,7 @@
     <%= yield :scripts %>
     <script type="text/javascript" charset="utf-8">
       Event.onReady(function() {
-        <%= cache_current_sheets %>
-        Sheet.Cache['login-form'] = new Sheet('login-form', 'login');
+        <%= cache_current_sheets(%w(login-form login), %w(reset-form reset)) %>
         <% if logged_in? %>Sheet.Cache['profile-form'] = new Sheet('profile-form', 'profile');<% end %>
         <%= yield :onready %>
       });
@@ -65,11 +64,11 @@
               <%= s.text_field_tag %(OpenID: (<a href="#reset" id="reset">reset</a>)), :openid_url, params[:openid_url], :class => 'big' %>
               <%  s.submit 'login.png' %>
             <% end -%>
-          <% end %>
-          
-          <% sheet_form_tag reset_path, :id => 'reset-form', :triggger => 'reset' do |s| %>
-            <h2>Reset your openID</h2>
-            <%= s.text_field_tag 'Email you signed up with', :email, '' %>
+            
+            <% sheet_form_tag reset_path, :id => 'reset-form' do |s| %>
+              <h2>Reset your openID</h2>
+              <%= s.text_field_tag 'Email you signed up with', :email, '' %>
+            <% end %>
           <% end %>
         </div>
       </div>

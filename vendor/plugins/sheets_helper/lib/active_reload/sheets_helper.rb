@@ -66,9 +66,10 @@ module ActiveReload
   end
 
   module SheetsHelper
-    def cache_current_sheets
-      return if @current_sheets.blank?
-      @current_sheets.collect do |s| 
+    def cache_current_sheets(*default_sheets)
+      sheets = default_sheets + @current_sheets.to_a
+      return if sheets.blank?
+      sheets.collect do |s| 
         "Sheet.Cache['#{escape_javascript s.first}'] = new Sheet('#{escape_javascript s.first}', '#{escape_javascript s.last.to_s}');"
       end.join("\n")
     end
