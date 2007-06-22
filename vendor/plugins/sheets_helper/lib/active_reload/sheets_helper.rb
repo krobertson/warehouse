@@ -35,6 +35,13 @@ module ActiveReload
         @template.text_field_tag(id, value, options))
     end
     
+    def check_box(label, desc, method, options = {}, checked_value = "1", unchecked_value = "0")
+      @template.content_tag('p', 
+        @template.content_tag('label', label, :for => id) +
+        @template.check_box(method, options, checked_value, unchecked_value) +
+        desc)
+    end
+    
     def hidden_field(method, options = {})
       @hidden_fields << super
     end
