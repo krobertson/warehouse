@@ -82,11 +82,12 @@
 
 <% content_for :sidebar do %>
 <div class="sideblock">
- <h3>Recent Activity Here</h3>
- <ul id="recent-activity">
-  <li><a href="/changeset/#"><span class="author">technoweenie:</span> Fixed something dude.</a></li>
-  <li><a href="/changeset/#"><span class="author">caged:</span> Add something to the UI.  Making a really long line.</a></li>
-  <li><a href="/changeset/#"><span class="author">technoweenie:</span> Broke Justin's shit.</a></li>
+  <h3>Recent Activity Here</h3>
+  <ul id="recent-activity">
+  <% @changesets.each do |changeset| -%>
+  <li><%= link_to %(<span class="author">#{h changeset.author}:</span> #{truncate(strip_tags(changeset.message), 50)}), changeset_path(changeset), :title => "Changeset [#{changeset.revision}] @ #{changeset.changed_at.to_s(:short)}" %></li>
+  <% end -%>
+  <li><%= link_to 'More History', history_path(:paths => params[:paths]) %></li>
  </ul>
 </div>
-<% end %>
+<% end unless @changesets.blank? %>

@@ -4,7 +4,8 @@ class BrowserController < ApplicationController
   helper_method :current_revision, :current_changeset, :previous_changeset, :next_changeset
 
   def index
-    @bookmark = Bookmark.new(:path => @node.path)
+    @bookmark   = Bookmark.new(:path => @node.path)
+    @changesets = current_repository.changesets.find_all_by_path(@node.path, :limit => 5, :order => 'changesets.revision desc')
     render :action => @node.node_type.downcase
   end
   
