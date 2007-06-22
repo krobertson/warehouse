@@ -4,5 +4,5 @@ else
   page['bookmarks'].show
   page.insert_html :bottom, 'bookmark-list', :partial => 'bookmark'
   page['bookmark-sheet-error'].hide
-  page['bookmark-sheet'].hide
+  page << "Sheet.Cache['bookmark-sheet'].hide();"
 end

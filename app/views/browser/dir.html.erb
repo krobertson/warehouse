@@ -19,7 +19,9 @@
 <% end -%>
 
 <% if params[:paths].any? %>
-<div id="crumbs"><ul class="clearfix"><%= link_to_crumbs @node.path %></li></div>
+<div id="crumbs">
+  <ul class="clearfix"><%= link_to_crumbs @node.path %></ul>
+</div>
 <% end %>
 
 <% unless @error -%>
@@ -77,3 +79,14 @@
     <%= s.hidden_field :path %>
   <% end -%>
 <% end -%>
+
+<% content_for :sidebar do %>
+<div class="sideblock">
+ <h3>Recent Activity Here</h3>
+ <ul id="recent-activity">
+  <li><a href="/changeset/#"><span class="author">technoweenie:</span> Fixed something dude.</a></li>
+  <li><a href="/changeset/#"><span class="author">caged:</span> Add something to the UI.  Making a really long line.</a></li>
+  <li><a href="/changeset/#"><span class="author">technoweenie:</span> Broke Justin's shit.</a></li>
+ </ul>
+</div>
+<% end %>

@@ -119,7 +119,6 @@ div.errorExplanation h2, div#error h2 {
 }
 
 #sbar {
-  background: url(../images/app/sbar-bg.png) no-repeat;
   margin-left: 740px;
   padding: 20px;
   min-height: 500px;
@@ -237,6 +236,27 @@ li#admin a {
 /* @end */
 
 /* @group Sidebar */
+#recent-acitivy {
+  
+}
+
+#recent-activity li {
+  border-bottom: 1px dotted #bbb;
+  padding: 5px 0;
+}
+
+#recent-activity li:hover {
+  background: #eee;
+}
+
+#recent-activity .author {
+  font-weight: bold;
+  color: #555;
+}
+
+#sbar div.sideblock:first-child {
+  margin-top: 0;
+}
 
 #bookmarks ul, ul.slist {
   list-style: none;
@@ -258,6 +278,10 @@ li#admin a {
 #bookmarks li a:hover, ul.slist a:hover {
   color: #000;
   background-color: #eee;
+}
+
+#bookmark-list li:first-child {
+  border-top: none;
 }
 
 #repo-list li a {

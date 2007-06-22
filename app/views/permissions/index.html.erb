@@ -14,6 +14,9 @@
       <li class="del"><%= link_to_function('Delete', "Permissions.removeMember('#{user ? user.id : :anon}')") %></li>
     </ul>
   </li>
+  <% sheet_form_for :permission, permissions.first, :url => (user ? user_permissions_path(user) : anon_permissions_path), :html => {:method => :put} do |s| %>
+  
+  <% end %>
   <li class="permission permissionedit form" id="permission-edit-<%= user ? user.id : :anon %>" style="display:none">
     <% form_for :permission, permissions.first, :url => (user ? user_permissions_path(user) : anon_permissions_path), :html => { :method => :put } do |f| -%>
       <%= render :partial => "form", :object => f, :locals => { :permissions => permissions } %>
@@ -26,7 +29,7 @@
 </ul>
 
   <% sheet_form_for @permission, :html => { :id => 'add-member' }, :trigger => 'addmember' do |s| -%>
-    <h2>Add a new subversions permission</h2>
+    <h2>Add a new Subversion permission</h2>
     <%= s.text_field_tag "Email:", :email, params[:email], :size => 30 %>
     <p>(leave email and svn login info blank for anonymous access)</p>
     <%= s.text_field "SVN Login:", :login %>
