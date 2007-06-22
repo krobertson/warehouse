@@ -1,0 +1,18 @@
+<%= render :partial => "admin/tabs" %>
+
+<div id="repository-admin">
+<% form_tag install_path do -%>
+  <p>
+    <label for="permission_command">Permission Command</label>
+    <%= text_field_tag :permission_command, params[:permission_command] || Warehouse.permission_command %>
+  </p>
+  <p>
+    <label for="password_command">Password Command</label>
+    <%= text_field_tag :password_command, params[:password_command] || Warehouse.password_command %>
+  </p>
+  
+  <p>
+    <%= submit_tag :Save %>
+  </p>
+<% end -%>
+</div>

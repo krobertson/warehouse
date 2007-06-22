@@ -20,8 +20,9 @@ ActionController::Routing::Routes.draw do |map|
     s.reset   'reset/:token', :action => 'reset', :token => nil
   end
 
-  map.history 'history/*paths', :controller => 'history'
-  map.admin   'admin',          :controller => 'repositories'
+  map.history  'history/*paths', :controller => 'history'
+  map.admin    'admin',          :controller => 'repositories'
+  map.settings 'admin/settings', :controller => 'install', :action => 'settings'
 
   map.install 'install', :controller => 'install', :action => 'index',   :conditions => { :method => :get  }
   map.connect 'install', :controller => 'install', :action => 'install', :conditions => { :method => :post }

@@ -3,8 +3,10 @@
   <% unless repository_subdomain.blank? -%>
   <li id="naccess"<%= class_for(permissions_path) %>><%= link_to 'Access', permissions_path %></li>
   <% end -%>
-  <li id="nmembers"<%= class_for({}) %>><%= link_to 'Members', permissions_path %></li>
-  <li id="nsettings"<%= class_for({}) %>><%= link_to 'Settings', permissions_path %></li>
+  <% if admin? -%>
+  <li id="nmembers"<%= class_for(users_path) %>><%= link_to 'Members', users_path %></li>
+  <li id="nsettings"<%= class_for(settings_path) %>><%= link_to 'Settings', settings_path %></li>
+  <% end -%>
 </ul>
 <% unless @content_for_admin_tab.blank? -%>
 <ul id="second-nav" class="clearfix">
