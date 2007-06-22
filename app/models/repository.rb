@@ -18,7 +18,7 @@ class Repository < ActiveRecord::Base
       Permission.set(proxy_owner, user_id, options)
     end
   end
-  has_many :members, :through => :permissions, :source => :user, :select => "users.*, #{Permission.join_fields}"
+  has_many :members, :through => :permissions, :source => :user, :select => "users.*, #{Permission.join_fields}", :uniq => true
   has_many :all_permissions, :class_name => 'Permission', :foreign_key => 'repository_id', :dependent => :delete_all
   has_many :changesets
   has_many :changes, :through => :changesets, :order => 'changesets.revision desc'
