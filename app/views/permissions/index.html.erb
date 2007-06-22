@@ -45,7 +45,7 @@
    <h3>Repositories</h3>
    <ul id="repo-list" class="slist">
     <% @repositories.each do |repo| %>
-    <li><%= link_to h(repo.name), repository_path(repo) %></li>
+    <li><%= link_to h(repo.name), permissions_url(:host => repo.domain, :port => request.port) %></li>
     <% end %>
    </ul>
  </div>

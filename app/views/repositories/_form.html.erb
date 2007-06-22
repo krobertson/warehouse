@@ -2,7 +2,3 @@
   <%= form.text_field 'Path:', :path %>
   <%= form.text_field 'Subdomain:', :subdomain %>
   <%= form.check_box  'Public:', 'Yes, the public can browse this repository.', :public %>
-
-<% if form.object && !form.object.new_record? && form.object.sync? -%>
-<p>You have some revisions to sync: <%= form.object.revisions_to_sync.inspect %></p>
-<% end -%>
