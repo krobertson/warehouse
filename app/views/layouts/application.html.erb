@@ -59,12 +59,17 @@
           </ul>
           </div>
           <% unless logged_in? -%>
-              <% sheet_form_tag login_path, :id => 'login-form' do |s| -%>
-                <h2>Login with OpenID</h2>
-                <%= content_tag 'p', flash[:error] if flash[:error] %>
-                <%= s.text_field_tag %(OpenID: (<a href="#reset" id="reset">reset</a>)), :openid_url, params[:openid_url], :class => 'big' %>
-                <%  s.submit 'login.png' %>
-              <% end -%>
+            <% sheet_form_tag login_path, :id => 'login-form' do |s| -%>
+              <h2>Login with OpenID</h2>
+              <%= content_tag 'p', flash[:error] if flash[:error] %>
+              <%= s.text_field_tag %(OpenID: (<a href="#reset" id="reset">reset</a>)), :openid_url, params[:openid_url], :class => 'big' %>
+              <%  s.submit 'login.png' %>
+            <% end -%>
+          <% end %>
+          
+          <% sheet_form_tag reset_path, :id => 'reset-form', :triggger => 'reset' do |s| %>
+            <h2>Reset your openID</h2>
+            <%= s.text_field_tag 'Email you signed up with', :email, '' %>
           <% end %>
         </div>
       </div>
