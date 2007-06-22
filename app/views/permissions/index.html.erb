@@ -18,20 +18,13 @@
   <h2>Edit <%= user ? "#{user.name}'s" : "anonymous'" %> permissions</h2>
     <% permissions = [] unless defined?(permissions) -%>
     <%= s.text_field 'SVN Login:', :login %>
+    <%= s.check_box 'Administrator', 'Yes, this user can add and delete members.', :admin %>
     <div id="svn-paths">
       <% permissions.each do |permission| -%>
         <%= path_permissions(permission) %>
       <% end -%>
     </div>
   <% end %>
-  <li class="permission permissionedit form" id="permission-edit-<%= user ? user.id : :anon %>" style="display:none">
-    <% form_for :permission, permissions.first, :url => (user ? user_permissions_path(user) : anon_permissions_path), :html => { :method => :put } do |f| -%>
-      <%= render :partial => "form", :object => f, :locals => { :permissions => permissions } %>
-      <p class="btns">
-        <%= submit_tag 'Save', :disable_with => 'Saving...' %>
-      </p>
-    <% end -%>
-  </li>
 <% end -%>
 </ul>
 
@@ -40,10 +33,7 @@
     <%= s.text_field_tag "Email:", :email, params[:email], :size => 30 %>
     <p>(leave email and svn login info blank for anonymous access)</p>
     <%= s.text_field "SVN Login:", :login %>
-    <p style="border-bottom:0">
-      <label>Administrator?</label>
-        <%= s.check_box :admin %> Yes, this user can add and delete members.
-    </p>
+    <%= s.check_box 'Administrator', 'Yes, this user can add and delete members.', :admin %>
     <div id="svn-paths">
       <%= path_permissions %>
     </div>

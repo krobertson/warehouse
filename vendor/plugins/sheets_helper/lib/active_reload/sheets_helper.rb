@@ -37,8 +37,8 @@ module ActiveReload
     
     def check_box(label, desc, method, options = {}, checked_value = "1", unchecked_value = "0")
       @template.content_tag('p', 
-        @template.content_tag('label', label, :for => id) +
-        @template.check_box(method, options, checked_value, unchecked_value) +
+        @template.content_tag('label', label, :for => "\#{@object_name}_\#{method}") +
+        super(method, options, checked_value, unchecked_value) + ' ' + 
         desc)
     end
     
