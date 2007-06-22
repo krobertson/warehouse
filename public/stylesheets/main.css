@@ -967,8 +967,8 @@ pre.viewsource code {
 li#nrepo 	 a { background: url(../images/app/icons/repository.png) 50% 0 no-repeat;}
 li#naccess   a { background: url(../images/app/icons/lock.png) 50% 0 no-repeat;}
 li#nplugin   a { background: url(../images/app/icons/plugins.png) 50% 0 no-repeat;}
-li#nsettings a { background: url(../images/app/icons/terminal-med.png) 50% 0 no-repeat;}
-li#nmembers  a { background: url(../images/app/icons/member.png) 50% 0 no-repeat;}
+li#nsettings a { background: url(../images/app/icons/settings.png) 50% 0 no-repeat;}
+li#nmembers  a { background: url(../images/app/icons/members.png) 50% 0 no-repeat;}
 
 #admin-nav li a:hover {
   color: #555;
