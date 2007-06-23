@@ -24,3 +24,4 @@ class Test::Unit::TestCase
 end
 
 Warehouse.domain = 'test.host'
+Warehouse.permission_command = Warehouse.password_command = nil

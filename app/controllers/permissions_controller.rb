@@ -33,6 +33,7 @@ class PermissionsController < ApplicationController
         index
       end
     else
+      current_repository.rebuild_permissions
       flash.now[:notice] = params[:email].blank? ? "Anonymous permission was created successfully" : "#{params[:email]} was granted access."
       index
     end
@@ -41,6 +42,7 @@ class PermissionsController < ApplicationController
   def update
     @user = params[:user_id].blank? ? nil : User.find(params[:user_id])
     current_repository.permissions.set(@user, params[:permission])
+    current_repository.rebuild_permissions
     flash[:notice] = "Permissions updated"
     redirect_to permissions_path
   end
@@ -54,6 +56,7 @@ class PermissionsController < ApplicationController
   
   def destroy
     params[:user_id] ? destroy_user_permissions : destroy_single_permission
+    current_repository.rebuild_permissions
   end
   
   protected

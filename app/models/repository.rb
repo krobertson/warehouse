@@ -8,7 +8,7 @@
 #   rmdir foo
 #   svn co file:///Users/rick/p/xorn/trunk/db/sample wc
 class Repository < ActiveRecord::Base
-  include PermissionMethods
+  include PermissionMethods, CommandSanitizer
   has_permalink :name, :subdomain
   validates_presence_of :name, :path, :subdomain
   attr_accessible :name, :path, :subdomain
@@ -89,17 +89,12 @@ class Repository < ActiveRecord::Base
   end
 
   def sync_revisions(num)
-    cmd   = "rake warehouse:sync REPO=#{id} NUM=#{num} RAILS_ENV=#{RAILS_ENV}"
-    result = []
-    self.class.benchmark "Syncing revisions: #{cmd}" do
-      Open3.popen3 cmd do |stdin, stdout, stderr|
-        result << stdout.read.to_s.strip
-        result << stderr.read.to_s.strip
-        logger.debug "output: #{result.first}"
-        logger.debug "error: #{result.last}" unless result.last.blank?
-      end
-    end
-    result
+    execute_command "rake warehouse:sync REPO=#{id} NUM=#{num} RAILS_ENV=#{RAILS_ENV}"
+  end
+
+  def rebuild_permissions
+    return if Warehouse.permission_command.blank?
+    execute_command Warehouse.permission_command, self => %w(subdomain id)
   end
 
   protected
