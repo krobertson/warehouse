@@ -79,20 +79,14 @@ class InstallController < ApplicationController
     end
     
     def write_config_file(attributes = {})
-      tmpl = <<-END
-# This file is auto generated.  Visit /admin/settings to change it.
-#
-require 'warehouse'
-# set licensed domain name
-END
-
+      tmpl = ['# This file is auto generated.  Visit /admin/settings to change it.', '#', "require 'warehouse'", '# set licensed domain name']
       attributes.each do |key, value|
         Warehouse.send "#{key}=", (value.blank? ? nil : value)
-        tmpl << "\nWarehouse.#{key} = #{value.inspect}" unless value.blank?
+        tmpl << "Warehouse.#{key} = #{value.inspect}" unless value.blank?
       end
 
       File.open(File.join(RAILS_ROOT, 'config', 'initializers', 'warehouse.rb'), 'w') do |f|
-        f.write tmpl
+        f.write tmpl.join("\n")
       end
     end
 

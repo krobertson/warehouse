@@ -1,7 +1,11 @@
 <%= render :partial => "admin/tabs" %>
 
+<% if request.post? -%>
+<div class="notice">Your settings have been saved.</div>
+<% end -%>
+
 <div id="commands">
-<% form_tag install_path do -%>
+<% form_tag settings_path do -%>
   <p class="command">
     <label for="permission_command">
       Shell command to run when permissions are updated
