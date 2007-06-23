@@ -1,5 +1,5 @@
-if current_user.errors.any?
-  page.alert("Errors with updating your profile.")
+if @user.save
+  page << 'location.reload()'
 else
-  page << "Sheet.Cache['profile-form'].hide()"
+  page["error-#{dom_id @user}"].show.replace_html error_messages_for(:user)
 end

@@ -1,0 +1,23 @@
+<%= render :partial => "admin/tabs" %>
+<h2>All users</h2>
+
+<ul id="permissions">
+<% @users.each do |user| -%>
+  <li class="permission" id="<%= dom_id(user) %>">
+    <%=h user.identity_path %><% unless user.email.blank? -%> (<%=h user.email %>)<% end -%>
+    <ul class="admin-controls">
+      <li id="profile-<%= dom_id user %>" class="edit"><a href="#">Edit</a></li>
+      <li class="del"><%= link_to_remote('Delete', :url => user_path(user), :with => "'_method=delete'") %></li>
+    </ul>
+  </li>
+  <% remote_sheet_form_for user, :url => user_path(user), :trigger => "profile-#{dom_id user}", :html => {:method => :put, :id => "sheet-#{dom_id user}"} do |s| %>
+  <h2>Edit <%=h user.identity_path %></h2>
+  <div id="error-<%= dom_id user %>" class="error" style="display:none"></div>
+  <%= s.text_field "OpenID:", :identity_url %>
+  <%= s.text_field "Email:", :email %>
+  <%= s.check_box "Admin:", "Admin?", :admin %>
+  <% end %>
+<% end -%>
+</ul>
+
+<%= will_paginate @users %>

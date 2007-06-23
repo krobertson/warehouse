@@ -1,7 +1,7 @@
 class User < ActiveRecord::Base
   include PermissionMethods  
   attr_accessor :avatar_data
-  
+
   has_many :permissions, :conditions => ['active = ?', true] do
     def for_repository(repository)
       find_all_by_repository_id(repository.id)
@@ -65,6 +65,10 @@ class User < ActiveRecord::Base
 
   def reset_token
     write_attribute :token, TokenGenerator.generate_random(TokenGenerator.generate_simple)
+  end
+  
+  def identity_path
+    identity_url.gsub(/^[^\/]+\/+/, '').chomp('/')
   end
 
   protected
