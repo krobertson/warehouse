@@ -11,8 +11,8 @@ module CommandSanitizer
     end
     
     cmd.gsub /(^|\s):\w+/ do |arg|
-      arg = arg[1..-1]
-      args[arg] ? args[arg].send(arg).to_s : ''
+      arg.gsub! /[^:]*:/, ''
+      args[arg] ? ' ' + args[arg].send(arg).to_s : ''
     end.strip
   end
   
