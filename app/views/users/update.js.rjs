@@ -1,4 +1,4 @@
-if @user.save
+if @user.errors.empty?
   page << 'location.reload()'
 else
   page["error-#{dom_id @user}"].show.replace_html error_messages_for(:user)

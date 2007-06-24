@@ -19,7 +19,9 @@ class UsersController < ApplicationController
     if params[:id] && params[:user]
       @user.admin = params[:user][:admin] == '1'
     end
+    @user.save
     respond_to do |format|
+      format.html { redirect_to(params[:to] || root_path) }
       format.js
     end
   end

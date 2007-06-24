@@ -26,7 +26,7 @@
     <!-- container -->
     <div id="container">
       <% if logged_in? %>
-        <% remote_sheet_form_for current_user, :url => profile_path, :html => { :id => 'profile-form', :method => :put }, :trigger => 'profile' do |s| -%>
+        <% sheet_form_for current_user, :url => profile_path(:to => request.request_uri), :html => { :multipart => true, :id => 'profile-form', :method => :put }, :trigger => 'profile' do |s| -%>
           <h2>Edit your profile</h2>
           <%= content_tag 'p', flash[:error] if flash[:error] %>
           <%= s.text_field 'Email:', :email, :size => 30 %>
