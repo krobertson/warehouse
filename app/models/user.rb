@@ -71,6 +71,10 @@ class User < ActiveRecord::Base
     identity_url.gsub(/^[^\/]+\/+/, '').chomp('/')
   end
 
+  def identity_url=(value)
+    write_attribute :identity_url, OpenIdAuthentication.normalize_url(value)
+  end
+
   protected
     # takes a hash of repo_id => %w(logins)
     def self.login_conditions_for_repositories(repositories)
