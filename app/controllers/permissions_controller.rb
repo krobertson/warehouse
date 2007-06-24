@@ -1,10 +1,14 @@
 class PermissionsController < ApplicationController
+  skip_before_filter :check_for_repository
+  before_filter :check_for_repository, :except => :index
   before_filter :repository_admin_required
-  before_filter :load_all_repositories
+  before_filter :load_all_repositories, :except => :index
 
   def index
     respond_to do |format|
       format.html do
+        return unless check_for_repository
+        load_all_repositories
         @permission ||= Permission.new
         @members      = current_repository.permissions.group_by &:user
         render :action => 'index'

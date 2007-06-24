@@ -35,6 +35,21 @@ namespace :warehouse do
   task :post_commit => :sync do
     # eventually add other stuff here, like email
   end
+  
+  task :build_config do
+    require 'lib/warehouse'
+    require 'config/initializers/warehouse'
+    require 'open-uri'
+    raise "Pass a token with TOKEN=" unless ENV['TOKEN']
+    config_path = ENV['CONFIG'] || 'config/svn.conf'
+    domain = ENV['REPO'] ? "#{ENV['REPO']}.#{Warehouse.domain}" : Warehouse.domain
+    domain << ":#{ENV['PORT']}" if ENV['PORT']
+    open("http://#{domain}/permissions.txt", :http_basic_authentication => [ENV['TOKEN'], 'x']) do |conn|
+      open(config_path, 'w') do |file|
+        file.write conn.read
+      end
+    end
+  end
 
   task :sync => :find_repo do
     @repo.sync_revisions(@num)
