@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta name="keywords" content="subversion, browser, svn, repository, repo, svnbrowser" />
+  <meta name="description" content="Warehouse is a web-based subversion browser with a beautifuly simple design that lets you manage your subversion repositories and permissions on the web." />
+	<title>Warehouse &mdash; Subversion Browser</title>
+	<link rel="stylesheet" href="stylesheets/main.css" type="text/css" charset="utf-8" />
+	<script src="javascripts/prototype.js" type="text/javascript" charset="utf-8"></script>
+	<script src="javascripts/lowpro-lite.js" type="text/javascript" charset="utf-8"></script>
+	<script src="javascripts/qt_embed.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript" charset="utf-8">
+	var qtime = new QTEmbed('wee', 'images/movies/warehouse-browser.mov', {
+    width: 506,
+    height: 300
+  });
+	 Event.onReady(function() {
+     $('video').update(qtime.toString());
+	 });
+	</script>
+</head>
+
+<body>
+  <!-- container -->
+  <div id="container">
+    <!-- content -->
+    <div id="content">
+      <!-- header -->
+      <div id="header">
+        <div id="nav">
+          <ul>
+            <li id="btn-interface"><a href="#" title="Purchase It!">Purchase It!</a></li>
+            <li><a href="#" title="Blog">Our Blog</a></li>
+          </ul>
+        </div>
+      </div>
+      <!-- /header -->
+      <div id="main">
+        <h2>Warehouse&mdash;Finally, A Web-based subversion browser that doesn't suck.</h2>
+        <div id="movies">
+          <div id="choices">
+            <ul>
+              <li>
+                <a href="#" title="Browse your subversion repositories in style">Browse  you repositories in style</a>
+              </li>
+              <li>
+                <a href="#" title="Browse your subversion repositories in style">Browse  you repositories in style</a>
+              </li>
+            </ul>
+            <p class="important">
+              Never before has there been a web-based Subversion browser that is as beautiful as it is simple.  Imagine being able to 
+              quickly give users fine grain access to your repositories without the hassle of having to ssh into your server and run 
+              a bunch of commands.
+            </p>
+          </div>
+          <div id="video"></div>
+        </div>
+        <div id="scontent">
+          <div id="focuscontent">
+            <div class="block">
+              <h3>Multiple Repository support</h3>
+              <p>
+                <img src="images/icons/repo.png" class="icon" alt="Subversion Repository" />
+                Easily manage multiple repositories in a single convenient interface.  Import your changesets directly from the web or 
+                  you can quickly import them from the command line if your feeling like a true hacker.
+              </p>
+            </div>
+            <div class="block">
+              <h3>Easily add users and permissions</h3>
+              <p>
+                <img src="images/icons/members.png" class="icon" alt="Subversion Repository" />
+                Add users and permissions directly from Warehouse's interface.  No more procrastinating about giving someone commit access 
+                to your top secret project.  It's never been this easy.
+              </p>
+            </div>
+            <div class="block">
+              <h3>Convenient bookmarking</h3>
+              <p>
+                <img src="images/icons/bookmark.png" class="icon" alt="Subversion Repository" />
+                Easily manage multiple repositories in a single convenient interface.  Import your changesets directly from the web or 
+                  you can quickly import them from the command line if your feeling like a true hacker.
+              </p>
+            </div>
+          </div>
+          
+          <div id="sbar">
+            <div id="gallery">
+              <ul>
+                <li><a href="#" title=""><img src="images/screens/browser-thumb.png" /></a></li>
+                <li><a href="#" title=""><img src="images/screens/browser-thumb.png" /></a></li>
+                <li><a href="#" title=""><img src="images/screens/browser-thumb.png" /></a></li>
+                <li><a href="#" title=""><img src="images/screens/browser-thumb.png" /></a></li>
+              </ul>
+            </div>
+            <ul id="quotes">
+              <li>
+                <blockquote><p>This is the greatest piece of software ever!</p>&mdash;Jenny from the block</blockquote>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div id="mainbtm">
+      </div>
+  </div>
+  <!-- /container -->
+</body>
+</html>

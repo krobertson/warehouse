@@ -1,5 +1,7 @@
+<% content_for :admin_tab do %>
+<li><%= link_to 'New Member', {}, :id => 'addmember' %></li>
+<% end %>
 <%= render :partial => "admin/tabs" %>
-<h2>All users</h2>
 
 <ul id="permissions">
 <% @users.each do |user| -%>
@@ -15,9 +17,16 @@
   <div id="error-<%= dom_id user %>" class="error" style="display:none"></div>
   <%= s.text_field "OpenID:", :identity_url %>
   <%= s.text_field "Email:", :email %>
-  <%= s.check_box "Admin:", "Admin?", :admin %>
+  <%= s.check_box "Admin:", "Yes, this user can add and delete members and permissions", :admin %>
   <% end %>
 <% end -%>
 </ul>
+
+<% sheet_form_for :user, :html => { :id => 'add-user' }, :trigger => 'addmember' do |s| -%>
+  <h2>Add a new member</h2>
+  <%= s.text_field 'OpenID:', :open_id %>
+  <%= s.svn_login 'Subversion login', :svn_login %>
+  <%= s.check_box "Admin:", "Yes, this user can add and delete members and permissions" %>
+<% end -%>
 
 <%= will_paginate @users %>

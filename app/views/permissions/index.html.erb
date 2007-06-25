@@ -17,7 +17,6 @@
   <% sheet_form_for permissions.first, :url => (user ? user_permissions_path(user) : anon_permissions_path), :trigger => "perm-#{permissions.first.id}", :html => {:method => :put} do |s| %>
   <h2>Edit <%= user ? "#{user.name}'s" : "anonymous'" %> permissions</h2>
     <% permissions = [] unless defined?(permissions) -%>
-    <%= s.text_field 'SVN Login:', :login %>
     <%= s.check_box 'Administrator', 'Yes, this user can add and delete members.', :admin %>
     <div id="svn-paths">
       <% permissions.each do |permission| -%>
@@ -28,12 +27,16 @@
 <% end -%>
 </ul>
 
-  <% sheet_form_for @permission, :html => { :id => 'add-member' }, :trigger => 'addmember' do |s| -%>
+  <% sheet_form_for @permission, :html => { :id => 'add-member' }, :trigger => 'addperm' do |s| -%>
     <h2>Add a new Subversion permission</h2>
-    <%= s.text_field_tag "Email:", :email, params[:email], :size => 30 %>
-    <p>(leave email and svn login info blank for anonymous access)</p>
-    <%= s.text_field "SVN Login:", :login %>
-    <%= s.check_box 'Administrator', 'Yes, this user can add and delete members.', :admin %>
+    <p>
+      <label for="user">Permissions for</label>
+      <select name="user">
+        <option value="1">justin@encytemedia.com</option>
+        <option value="2">technoweenie@gmail.com</option>
+        <option value="anon">Anonymous</option>
+      </select>
+    </p>
     <div id="svn-paths">
       <%= path_permissions %>
     </div>

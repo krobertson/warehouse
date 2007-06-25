@@ -192,6 +192,18 @@ li#activity a {
   background: #eee url(../images/app/icons/activity.png) 5px 50% no-repeat;
 }
 
+li#all-history {
+  border: none !important;
+  font-weight: bold;
+}
+
+li#all-history a {
+  padding-left: 20px;
+  background: url(../images/app/icons/clock.png) 0 50% no-repeat;
+  display: block;
+  color: #555;
+}
+
 li#admin a {
   background: #eee url(../images/app/icons/admin.png) 5px 50% no-repeat;
 }
