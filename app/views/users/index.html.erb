@@ -11,20 +11,20 @@
       <li id="profile-<%= dom_id user %>" class="edit"><a href="#">Edit</a></li>
       <li class="del"><%= link_to_remote('Delete', :url => user_path(user), :with => "'_method=delete'") %></li>
     </ul>
-  </li>
-  <% remote_sheet_form_for user, :url => user_path(user), :trigger => "profile-#{dom_id user}", :html => {:method => :put, :id => "sheet-#{dom_id user}"} do |s| %>
-  <h2>Edit <%=h user.identity_path %></h2>
+  <% remote_sheet_form_for user, :url => user_path(user), :trigger => "profile-#{dom_id user}", :html => {:method => :put, :id => "sheet-#{dom_id user}"} do |s| -%>
+  <h2>Edit <%=h user.name %></h2>
   <div id="error-<%= dom_id user %>" class="error" style="display:none"></div>
-  <%= s.text_field "OpenID:", :identity_url %>
   <%= s.text_field 'Subversion login', :login %>
   <%= s.text_field "Email:", :email %>
   <%= s.check_box "Admin:", "Yes, this user can manage <strong>all</strong> repositories.", :admin %>
-  <% end %>
+  <% end -%>
+  </li>
 <% end -%>
 </ul>
 
-<% sheet_form_for :user, :url => users_path, :html => { :id => 'add-user' }, :trigger => 'addmember' do |s| -%>
+<% remote_sheet_form_for :user, :url => users_path, :html => { :id => 'add-user' }, :trigger => 'addmember' do |s| -%>
   <h2>Add a new member</h2>
+  <div id="error-<%= dom_id User.new %>" class="error" style="display:none"></div>
   <%= s.text_field 'Subversion login', :login %>
   <%= s.text_field "Email:", :email %>
   <%= s.check_box "Admin:", "Yes, this user can manage <strong>all</strong> repositories.", :admin %>

@@ -29,13 +29,12 @@ class User < ActiveRecord::Base
     end
   end
   
-  validates_presence_of   :identity_url
   validates_format_of     :email, :with => /(\A(\s*)\Z)|(\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z)/i, :allow_nil => true
-  validates_uniqueness_of :identity_url
-  validates_uniqueness_of :email, :allow_nil => true
+  validates_uniqueness_of :identity_url, :email, :allow_nil => true
+  validate :presence_of_identity_url_or_email
   before_create :set_default_attributes
   before_save   :sanitize_email
-  attr_accessible :name, :identity_url, :avatar_data, :email
+  attr_accessible :identity_url, :avatar_data, :email, :login
   belongs_to :avatar
   before_save :save_avatar_data
 
@@ -87,6 +86,12 @@ class User < ActiveRecord::Base
 
     def sanitize_email
       email.downcase! unless email.blank?
+    end
+    
+    def presence_of_identity_url_or_email
+      if identity_url.blank? && email.blank?
+        errors.add_to_base "Requires at least an email"
+      end
     end
 
     def save_avatar_data

@@ -6,6 +6,22 @@ class UsersController < ApplicationController
     @users = User.paginate :all, :page => params[:page], :order => 'identity_url'
   end
   
+  def create
+    @user = User.new(params[:user])
+    if params[:user]
+      @user.admin = params[:user][:admin] == '1'
+    end
+    
+    render :update do |page|
+      if @user.save
+        UserMailer.deliver_invitation(current_user, @user)
+        page.redirect_to users_path
+      else
+        page["error-#{dom_id @user}"].show.replace_html(error_messages_for(:user))
+      end
+    end
+  end
+  
   def update
     if params[:id].blank?
       @sheet = 'profile-form'
