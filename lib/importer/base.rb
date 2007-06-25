@@ -21,8 +21,8 @@ module Importer
       row ? new(row) : nil
     end
     
-    def self.find_all(conditions)
-      adapter.select("SELECT * FROM `#{table}` WHERE #{conditions}").collect! { |row| new(row) }
+    def self.find_all(conditions = nil)
+      adapter.select("SELECT * FROM `#{table}`#{%(WHERE #{conditions}) if conditions}").collect! { |row| new(row) }
     end
     
     def self.delete(id)
@@ -62,6 +62,7 @@ end
 
 require 'importer/mysql_adapter'
 require 'importer/repository'
+require 'importer/permission'
 require 'importer/changeset'
 require 'importer/change'
 require 'importer/user'

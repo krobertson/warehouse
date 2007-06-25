@@ -36,17 +36,47 @@ namespace :warehouse do
     # eventually add other stuff here, like email
   end
   
-  task :build_config do
+  task :build_config => :init do
     require 'lib/warehouse'
     require 'config/initializers/warehouse'
     require 'open-uri'
-    raise "Pass a token with TOKEN=" unless ENV['TOKEN']
     config_path = ENV['CONFIG'] || 'config/svn.conf'
-    domain = ENV['REPO'] ? "#{ENV['REPO']}.#{Warehouse.domain}" : Warehouse.domain
-    domain << ":#{ENV['PORT']}" if ENV['PORT']
-    open("http://#{domain}/permissions.txt", :http_basic_authentication => [ENV['TOKEN'], 'x']) do |conn|
-      open(config_path, 'w') do |file|
-        file.write conn.read
+    
+    repo_id = ENV['REPO'].to_i
+    repositories = 
+      if ENV['REPO'].nil?
+        Importer::Repository.find_all
+      else
+        [repo_id > 0 ?  Importer::Repository.find_by_id(repo_id) : Importer::Repository.find_first("name = '#{ENV['REPO']}'")]
+      end
+    permissions = Importer::Permission.find_all_by_repositories(repositories).inject({}) do |memo, perm| 
+      (memo[perm.attributes['repository_id'].to_s] ||= []) << perm; memo
+    end
+    users = Importer::User.find_all_by_permissions(permissions.values.flatten).inject({}) { |memo, user| memo.update(user.attributes['id'].to_s => user) }
+    permissions.each do |repo_id, perms|
+      permissions[repo_id] = perms.inject({}) do |memo, p|
+        (memo[p.attributes['path']] ||= []) << p; memo
+      end
+    end
+
+    open(config_path, 'w') do |file|
+      repositories.each do |repo|
+        perms_hash = permissions[repo.attributes['id'].to_s]
+        next if perms_hash.nil?
+        perms_hash.each do |path, perms|
+          file.write("[%s]:/%s\n" % [repo.attributes['subdomain'], path])
+          perms.each do |p|
+            if p.attributes['user_id'].nil?
+              file.write('*')
+            else
+              file.write(users[p.attributes['user_id'].to_s].attributes['login'])
+            end
+            file.write(' = r')
+            file.write('w') if p.attributes['full_access'] == '1'
+            file.write("\n")
+          end
+          file.write("\n")
+        end
       end
     end
   end
