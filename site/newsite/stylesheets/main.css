@@ -33,6 +33,7 @@ a {
 #nav {
   margin: 20px auto 0 auto;
   background: url(../images/navleft.png) no-repeat;
+  position: relative;
 }
 
 #nav ul {
@@ -57,6 +58,14 @@ a {
 #nav li#btn-interface a {
   background-image: url(../images/binterface-btn.png);
 }
+
+li#buynow a {
+  position: absolute;
+  background: url(../images/buynow-btn.png) no-repeat;
+  right: 22px;
+  top: 0;
+}
+
 
 
 /* @end */

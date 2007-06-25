@@ -11,6 +11,7 @@
     <%= javascript_include_tag 'moo.fx.js' %>
     <%= javascript_include_tag 'moo.fx.transitions.js' %>
     <%= javascript_include_tag 'application' %>
+    <script src="http://warehouseapp.com/javascripts/version_check.js" type="text/javascript" charset="utf-8"></script>
     <%= yield :scripts %>
     <script type="text/javascript" charset="utf-8">
       Event.onReady(function() {
@@ -20,6 +21,7 @@
       });
       <%= yield :javascript %>
     </script>
+    <%= auto_discovery_link_tag(:atom, changesets_url) %>
   </head>
   <body>
     <%= @onready %>
