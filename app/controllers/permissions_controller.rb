@@ -59,12 +59,18 @@ class PermissionsController < ApplicationController
   def anon
     case request.method
       when :put    then update
-      when :delete then destroy
+      when :delete then destroy(:anon)
     end
   end
   
-  def destroy
-    params[:user_id] ? destroy_user_permissions : destroy_single_permission
+  def destroy(anon = false)
+    if params[:user_id]
+      destroy_user_permissions
+    elsif anon
+      destroy_anon_permissions
+    else
+      destroy_single_permission
+    end
     current_repository.rebuild_permissions
   end
   
@@ -84,10 +90,20 @@ class PermissionsController < ApplicationController
       end
     end
     
+    def destroy_anon_permissions
+      Permission.transaction do
+        current_repository.permissions.find_all_by_user_id(nil).each { |p| p.update_attribute :active, false }
+      end
+      flash[:notice] = "Anonymous access has been removed for this repository."
+      render :update do |page|
+        page[:user_anon].hide
+      end
+    end
+    
     def destroy_single_permission
-      @permission = current_repository.permissions.find(params[:id])
+      @permission = current_repository.permissions.find params[:id]
       @permission.update_attribute :active, false
-      flash[:notice] = "Read-#{'write' if @permission.full_access?} access for #{@permission.path} has been removed for #{@permission.login}."
+      flash[:notice] = "Read-#{'write' if @permission.full_access?} access for #{@permission.path} has been removed for #{@permission.user_id ? @permission.user.name : "Anonymous"}."
       render :update do |page|
         page[@permission].hide
       end

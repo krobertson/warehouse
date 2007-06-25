@@ -3,6 +3,7 @@ rick_sample:
   user_id: 1
   repository_id: 1
   admin: true
+  path: ''
   active: true
 anon_sample:
   id: 2

@@ -35,7 +35,7 @@ class Repository < ActiveRecord::Base
     return true if public? || (user.is_a?(User) && user.admin?)
     paths = path.to_s.split('/').inject([]) { |m, p| m << (m.last.nil? ? p : "#{m.last}/#{p}") }
     paths = [''] if paths.empty?
-    !permissions.count(:id, :conditions => ["(user_id is null or user_id = ?) and (path is null or path in (?))", user ? user.id : 0, paths]).zero?
+    !permissions.count(:id, :conditions => ["(user_id is null or user_id = ?) and path in (?)", user ? user.id : 0, paths]).zero?
   end
   
   def admin?(user)

@@ -28,7 +28,9 @@ class Permission < ActiveRecord::Base
       first = permissions.first # return first failed permission if no permissions saved properly
       return permissions.reject(&:new_record?).first || first
     end
-    m = repository.all_permissions.find_or_initialize_by_user_id_and_path(options[:user] ? options[:user].id : options[:user_id], options[:path].to_s)
+    user_id = options[:user] ? options[:user].id : options[:user_id]
+    user_id = nil if user_id.blank?
+    m = repository.all_permissions.find_or_initialize_by_user_id_and_path(user_id, options[:path].to_s)
     m.active     = true
     m.attributes = options
     block.call(m) if block
@@ -56,7 +58,7 @@ class Permission < ActiveRecord::Base
   
   protected
     def uniqueness_of_user_paths
-      path_query = path.blank? ? "(path is null or path = ?)" : 'path = ?'
+      path_query = path.blank? ? "path = ?" : 'path = ?'
       user_query = user_id.blank? ? "(user_id is null or user_id = ?)" : 'user_id = ?'
       num = self.class.count(:all, :conditions => ["repository_id = ? and #{user_query} and #{path_query}", repository_id, user_id.to_i, path.to_s])
       errors.add_to_base("Can only have one permission rule for the given user and path.") if num > (new_record? ? 0 : 1)

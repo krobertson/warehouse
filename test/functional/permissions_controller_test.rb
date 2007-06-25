@@ -68,7 +68,7 @@ context "Permissions Controller" do
 
   specify "should update user permission" do
     permissions(:rick_sample).should.be.admin
-    permissions(:rick_sample).path.should.be.nil
+    permissions(:rick_sample).path.should == ''
 
     put :update, :user_id => 1, :permission => { :admin => false, :paths => {'0' => {:path => 'foo', :id => 1}} }
     assert_redirected_to permissions_path
@@ -86,5 +86,20 @@ context "Permissions Controller" do
     
     permissions(:anon_sample).reload.should.be.admin
     permissions(:anon_sample).reload.should.be.full_access
+  end
+  
+  specify "should delete user permissions" do
+    delete :destroy, :user_id => users(:rick).id
+    permissions(:rick_sample).active.should == false
+  end
+  
+  specify "should delete anon permissions" do
+    delete :anon
+    permissions(:anon_sample).active.should == false
+  end
+  
+  specify "should delete permission" do
+    delete :destroy, :id => permissions(:rick_sample).id
+    permissions(:rick_sample).reload.active.should == false
   end
 end
