@@ -96,6 +96,22 @@ a {
 #choices ul li {
   font-weight: bold;
   padding: 5px;
+  margin-left: 5px;
+  margin-bottom: 10px;
+}
+
+#choices li a {
+  font-size: 92%;
+  display: block;
+  background: url(../images/icons/quicktime.png) no-repeat;
+  padding-left: 42px;
+}
+
+.subttl {
+  font-size: 82%;
+  display: block;
+  font-weight: normal;
+  color: #999;
 }
 
 p.important {
