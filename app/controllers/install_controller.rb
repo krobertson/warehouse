@@ -12,8 +12,7 @@ class InstallController < ApplicationController
       @repository = Repository.find(:first)
       session[:installing] = nil
       authenticate_with_open_id do |result, identity_url|
-        if result.successful? && @current_user = User.find_or_create_by_identity_url(identity_url)
-          session[:user_id] = @current_user.id
+        if result.successful? && self.current_user = User.find_or_create_by_identity_url(identity_url)
           render :action => 'install'
         else
           @error = result.message || "Sorry, no user by that identity URL exists (#{identity_url})"

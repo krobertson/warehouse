@@ -2,8 +2,7 @@ class SessionsController < ApplicationController
   skip_before_filter :check_for_repository
   def create
     authenticate_with_open_id do |result, identity_url|
-      if result.successful? && @current_user = User.find_or_create_by_identity_url(identity_url)
-        session[:user_id] = @current_user.id
+      if result.successful? && self.current_user = User.find_or_create_by_identity_url(identity_url)
         redirect_to root_path
       else
         access_denied :error => result.message || "Sorry, no user by that identity URL exists (#{identity_url})"
@@ -18,7 +17,8 @@ class SessionsController < ApplicationController
   
   def forget
     if !params[:email].blank? && @user = User.find_by_email(params[:email].downcase)
-      access_denied :error => "Email sent to #{params[:email]}.  (#{@user.token})"
+      @user.reset_token!
+      access_denied :error => "Email sent to #{params[:email]}."
     else
       access_denied :error => "No user found for #{params[:email]}."
     end
@@ -30,7 +30,7 @@ class SessionsController < ApplicationController
       return
     end
     
-    @current_user = User.find_by_token(params[:token]) unless params[:token].blank?
+    self.current_user = User.find_by_token(params[:token]) unless params[:token].blank?
     return if request.get? && params[:open_id_complete].nil?
     authenticate_with_open_id do |result, identity_url|
       if result.successful?

@@ -65,6 +65,11 @@ class User < ActiveRecord::Base
     write_attribute :token, TokenGenerator.generate_random(TokenGenerator.generate_simple)
   end
   
+  def reset_token!
+    reset_token
+    save
+  end
+  
   def identity_path
     identity_url.gsub(/^[^\/]+\/+/, '').chomp('/')
   end

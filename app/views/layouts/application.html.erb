@@ -29,9 +29,15 @@
         <% sheet_form_for current_user, :url => profile_path(:to => request.request_uri), :html => { :multipart => true, :id => 'profile-form', :method => :put }, :trigger => 'profile' do |s| -%>
           <h2>Edit your profile</h2>
           <%= content_tag 'p', flash[:error] if flash[:error] %>
+          <%= s.text_field 'SVN Login:', :login, :size => 30 %>
           <%= s.text_field 'Email:', :email, :size => 30 %>
           <%= s.file_field "Profile picture:", :avatar_data %>
           <p><%= current_user.avatar_path %></p>
+          <p>
+            <label>Your token</label>
+            <%= link_to_function "Show", "", :id => 'profile-token-link' %>
+            <span id="profile-token" style="display:none"><%= current_user.token %></span>
+          </p>
           <% s.submit 'save.png' %>
         <% end -%>
       <% end %>
@@ -66,8 +72,8 @@
             <% end -%>
             
             <% sheet_form_tag reset_path, :id => 'reset-form' do |s| %>
-              <h2>Reset your openID</h2>
-              <%= s.text_field_tag 'Email you signed up with', :email, '' %>
+              <h2>Reset your OpenID</h2>
+              <%= s.text_field_tag 'Email you signed up with: (<a href="#login" id="openid-login">login</a>)', :email, '' %>
             <% end %>
           <% end %>
         </div>

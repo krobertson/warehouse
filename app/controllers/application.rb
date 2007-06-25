@@ -64,8 +64,13 @@ class ApplicationController < ActionController::Base
       current_repository.admin?(current_user)
     end
     
+    def current_user=(value)
+      session[:user_id] = value ? value.id : nil
+      @current_user     = value
+    end
+    
     def retrieve_current_user
-      authenticate_with_http_basic { |u, p | User.find_by_token(u) } || (session[:user_id] && User.find_by_id(session[:user_id]))
+      @current_user || authenticate_with_http_basic { |u, p | User.find_by_token(u) } || (session[:user_id] && User.find_by_id(session[:user_id]))
     end
     
     def retrieve_current_repository

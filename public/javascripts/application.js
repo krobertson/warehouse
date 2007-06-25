@@ -149,5 +149,15 @@ Event.addBehavior({
   
   'a#reset:click': function() {
     Sheet.Cache['login-form'].hide();
+  },
+  
+  'a#openid-login:click': function() {
+    Sheet.Cache['reset-form'].hide();
+    Sheet.Cache['login-form'].show();
+  },
+  
+  '#profile-token-link:click': function() {
+    $('profile-token').show();
+    $('profile-token-link').hide();
   }
 });
