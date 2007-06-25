@@ -10,24 +10,29 @@ class PermissionsController < ApplicationController
         return unless check_for_repository
         load_all_repositories
         @permission ||= Permission.new
+        @invitees     = User.find(:all, :order => 'login, email')
         @members      = current_repository.permissions.group_by &:user
+        @invitees.delete_if { |i| @members.keys.include?(i) }
         render :action => 'index'
       end
 
       format.text do
         @repositories = repository_subdomain.blank? ? Repository.find(:all) : [current_repository]
+        repo_hash = @repositories.index_by &:id
+        @permissions = # hash of repo => [perm, perm, perm]
+          if repository_subdomain.blank?
+            Permission.find(:all, :conditions => {:active => true}).group_by { |p| repo_hash[p.repository_id] }
+          else
+            {current_repository => current_repository.permissions}
+          end
+        User.find(:all, :conditions => ['id IN (?)', @permissions.values.flatten.collect(&:user_id).uniq])
         render :action => 'index', :layout => false
       end
     end
   end
   
   def create
-    if params[:email].blank?
-      @permission = current_repository.grant(params[:permission])
-    else
-      @user = User.find_or_initialize_by_email(params[:email])
-      @permission = current_repository.invite(@user, params[:permission])
-    end
+    @permission = current_repository.grant(params[:permission])
     if @permission.nil? || @permission.new_record?
       if (@user && @user.errors.any?) || (@permission && @permission.errors.any?)
         @permission ||= Permission.new

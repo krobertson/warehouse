@@ -40,7 +40,7 @@ context "Sessions Controller" do
   specify "should reset identity_url for user" do
     login_as :rick
     @controller.expects(:authenticate_with_open_id).yields(stub(:successful? => true), 42)
-    @controller.current_user.expects(:write_attribute).with('identity_url', 42)
+    @controller.current_user.expects(:identity_url=).with(42).returns(42)
     post :reset
     assert_redirected_to profile_path
   end
@@ -52,7 +52,7 @@ context "Sessions Controller" do
   end
   
   specify "should create user from new identity url" do
-    @controller.expects(:authenticate_with_open_id).yields(stub(:successful? => true), 'foo-bar')
+    @controller.expects(:authenticate_with_open_id).yields(stub(:successful? => true), 'foobar')
     assert_difference "User.count" do
       post :create
       assert_redirected_to root_path

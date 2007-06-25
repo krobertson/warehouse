@@ -1,13 +1,13 @@
 rick:
   id: 1
-  name: rick
+  login: rick
   email: rick@wh.com
   identity_url: rick.wh.com
   admin: true
   token: ricktoken
 justin:
   id: 2
-  name: justin
+  login: justin
   email: justin@wh.com
   identity_url: justin.wh.com
   token: justintoken

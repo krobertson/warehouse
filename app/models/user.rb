@@ -39,20 +39,18 @@ class User < ActiveRecord::Base
   belongs_to :avatar
   before_save :save_avatar_data
 
-  def self.find_all_by_logins(repository, logins)
-    find(:all, :select => 'DISTINCT users.*, permissions.login',
-      :conditions => login_conditions_for_repositories(repository.id => logins),
-      :joins => 'inner join permissions on users.id = permissions.user_id')
-  end
-  
-  def self.find_all_by_repositories(repositories)
-    find(:all, :select => 'DISTINCT users.*, permissions.repository_id, permissions.login',
-      :conditions => login_conditions_for_repositories(repositories),
-      :joins => 'inner join permissions on users.id = permissions.user_id').index_by { |u| u.repository_id.to_i }
+  def self.find_all_by_logins(logins)
+    find :all, :conditions => ['login IN (?)', logins]
   end
 
   def name
-    read_attribute(:name) || read_attribute(:login)
+    read_attribute(:login) || sanitized_email
+  end
+
+  def sanitized_email
+    if !email.blank? && email =~ /^([^@]+)@(.*?)(\.co)?\.\w+$/
+      "#{$1} (at #{$2})"
+    end
   end
 
   def email=(value)
@@ -76,17 +74,6 @@ class User < ActiveRecord::Base
   end
 
   protected
-    # takes a hash of repo_id => %w(logins)
-    def self.login_conditions_for_repositories(repositories)
-      returning [[]] do |conditions|
-        repositories.each do |repo, logins|
-          conditions.first << "(permissions.repository_id = ? AND permissions.login IN (?))"
-          conditions << repo << logins
-        end
-        conditions[0] = conditions.first.join(" or ")
-      end
-    end
-
     def set_default_attributes
       self.token = TokenGenerator.generate_random(TokenGenerator.generate_simple)
       self.admin = true if User.count.zero?

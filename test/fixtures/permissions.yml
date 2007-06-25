@@ -3,7 +3,6 @@ rick_sample:
   user_id: 1
   repository_id: 1
   admin: true
-  login: rick
   active: true
 anon_sample:
   id: 2
@@ -16,18 +15,15 @@ rick_example:
   repository_id: 2
   active: true
   path: home
-  login: rick
 rick_example_2:
   id: 4
   user_id: 1
   repository_id: 2
   active: true
   path: public
-  login: rick
 inactive_rick_sample:
   id: 5
   user_id: 1
   repository_id: 1
-  login: rick2
   active: false
   path: foo

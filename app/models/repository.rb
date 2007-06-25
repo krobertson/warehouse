@@ -43,17 +43,13 @@ class Repository < ActiveRecord::Base
     return true if user.admin?
     !permissions.count(:id, :conditions => ['user_id = ? and admin = ?', user.id, true]).zero?
   end
-
-  def invite(user, options = {})
-    user.identity_url = TokenGenerator.generate_simple
-    return nil unless user.save
-    grant options do |m|
-      m.user_id = user.id 
-    end
-  end
   
   def grant(options = {}, &block)
     Permission.grant(self, options, &block)
+  end
+  
+  def set(user, options = {})
+    Permission.set(self, user, options)
   end
   
   def domain

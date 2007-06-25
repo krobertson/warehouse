@@ -1,5 +1,5 @@
 <% content_for :admin_tab do -%>
     <li><%= link_to 'New Permission', {}, :id => 'addperm' %></li>
-<% end if admin? -%>
+<% end if show_new_permission_form? -%>
 
 <%= render :partial => "admin/tabs" %>

@@ -1,11 +1,10 @@
 <%= render :partial => "admin_tab" %>
 <h2><%=h current_repository.name %> Permissions</h2>
 
-
 <ul id="permissions">
 <% @members.each do |user, permissions| -%>
   <li class="permission" id="<%= user ? dom_id(user) : :user_anon %>">
-    <%=h permissions.first.login %><% if user -%> (<%=h user.email %>)<% end -%>
+    <%= user ? h(user.name) : "Anonymous" %>
     <% permissions.each do |permission| -%>
     <span class="log">Read<%= '/Write' if permission.full_access? %>: <%=h permission.formatted_path %></span>
     <% end -%>
@@ -29,18 +28,12 @@
 
   <% sheet_form_for @permission, :html => { :id => 'add-member' }, :trigger => 'addperm' do |s| -%>
     <h2>Add a new Subversion permission</h2>
-    <p>
-      <label for="user">Permissions for</label>
-      <select name="user">
-        <option value="1">justin@encytemedia.com</option>
-        <option value="2">technoweenie@gmail.com</option>
-        <option value="anon">Anonymous</option>
-      </select>
-    </p>
+    <%= s.select "Permissions for", :user_id, invitee_options_for(@invitees) %>
+    <%= s.check_box 'Administrator', 'Yes, this user can add and delete members.', :admin %>
     <div id="svn-paths">
       <%= path_permissions %>
     </div>
-  <% end -%>
+  <% end if show_new_permission_form? -%>
   
 <% content_for :sidebar do %>
 <% if @repositories.any? %>

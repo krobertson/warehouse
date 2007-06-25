@@ -5,7 +5,7 @@
 
 <ul id="changesets">
   <% @changesets.each do |changeset| -%>
-    <% user = @users[changeset.repository_id] && @users[changeset.repository_id][changeset.author] -%>
+    <% user = @users[changeset.author] -%>
   <li class="changeset clearfix" id="changeset-<%= changeset.revision %>">
     <div class="cs-meta">
       <%= avatar_for(user) %>

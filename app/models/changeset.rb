@@ -100,6 +100,6 @@ class Changeset < ActiveRecord::Base
     end
 
     def retrieve_user
-      User.find_all_by_logins(repository, [author]).first
+      User.find_by_login(author)
     end
 end

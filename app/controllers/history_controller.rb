@@ -4,7 +4,7 @@ class HistoryController < ApplicationController
 
   def index
     @changesets = current_repository.changesets.paginate_by_path(@node.path, :page => params[:page])
-    @users      = User.find_all_by_logins(current_repository, @changesets.collect(&:author).uniq).index_by(&:login)
+    @users      = User.find_all_by_logins(@changesets.collect(&:author).uniq).index_by(&:login)
   end
   
   protected

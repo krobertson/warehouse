@@ -1,20 +1,14 @@
 <%= render :partial => "admin_tab" %>
 <h2>New <%=h current_repository.name %> Permission</h2>
 
-<%= error_messages_for :user %>
 <%= error_messages_for :permission %>
-<% form_for @permission, :id => 'member-form' do |f| -%>
-<div class="overlay-form oform">
-  <h2>Add a New Member</h2>
-    <p>
-      <label for="email">Email:</label>
-      <%= text_field_tag :email, params[:email], :size => 30 %><br />
-      (leave email and svn login info blank for anonymous access)
-    </p>
-    <%= render :partial => "form", :object => f %>
-    <p class="btns">
-      <%= submit_tag 'Create', :disable_with => 'Creating...' %>
-    </p>
-</div>
+<% form_for @permission, :builder => ActiveReload::SheetFormBuilder, :id => 'member-form' do |s| -%>
+  <h2>New Subversion permission for <%= @permission.user_id ? h(@permission.user.name) : "Anonymous" %></h2>
+  <%= s.check_box 'Administrator', 'Yes, this user can add and delete members.', :admin %>
+  <div id="svn-paths">
+    <%= path_permissions %>
+  </div>
+  <%= s.hidden_field :user_id %>
+  <%= s.buttons %>
 <% end -%>
 

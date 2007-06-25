@@ -60,18 +60,7 @@ class ChangesetsController < ApplicationController
     def respond_for_changesets
       respond_to do |format|
         format.html do
-          @users = 
-            if @repositories
-              changesets_by_repo = @changesets.inject({}) do |memo, changeset|
-                (memo[changeset.repository_id] ||= []) << changeset.author
-                memo
-              end
-              changesets_by_repo.values.each &:uniq!
-              
-              User.find_all_by_repositories(changesets_by_repo)
-            else
-              {current_repository.id => User.find_all_by_logins(current_repository, @changesets.collect(&:author).uniq).index_by(&:login)}
-            end
+          @users = User.find_all_by_logins(@changesets.collect(&:author).uniq).index_by(&:login)
           render :action => 'index'
         end
         format.atom do

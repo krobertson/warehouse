@@ -42,6 +42,12 @@ module ActiveReload
         desc)
     end
     
+    def select(label, method, choices, options = {}, html_options = {})
+      @template.content_tag('p',
+        @template.content_tag('label', label, :for => "#{@object_name}_#{method}") +
+        super(method, choices, options, html_options))
+    end
+    
     def hidden_field(method, options = {})
       @hidden_fields << super
     end

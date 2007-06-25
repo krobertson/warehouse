@@ -17,12 +17,11 @@ Permissions = {
   },
   
   add: function(line) {
-    var index   = line.parentNode.getElementsByTagName('dd').length
+    var index   = line.parentNode.getElementsByTagName('p').length
     var newline = line.duplicate();
     var newsel  = newline.down('select');
     var newpath = newline.down('input');
     var newid   = newline.down('input', 1);
-    newline.setAttribute('id', '');
     newpath.value = '';
     newpath.setAttribute('id', 'permission_paths_' + index + '_path')
     newpath.setAttribute('name', 'permission[paths][' + index + '][path]')
