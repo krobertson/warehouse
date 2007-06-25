@@ -56,7 +56,7 @@ class InstallController < ApplicationController
 
   def settings
     return unless request.post?
-    write_config_file :domain => Warehouse.domain, :permission_command => params[:permission_command], :password_command => params[:password_command]
+    write_config_file :domain => Warehouse.domain, :permission_command => params[:permission_command], :password_command => params[:password_command], :mail_from => params[:mail_from]
   end
 
   if RAILS_ENV == 'development'

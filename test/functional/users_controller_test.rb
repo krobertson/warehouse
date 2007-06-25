@@ -15,8 +15,8 @@ context "Users Controller" do
     @response   = ActionController::TestResponse.new
     @request.host = "sample.test.host"
     class << @controller
-      def access_denied(options = {})
-        render :text => "error: #{options[:error].inspect}, redirect to #{options[:url].inspect}"
+      def status_message(type, message = nil)
+        render :text => "#{type}: #{message.inspect}"
         false
       end
 

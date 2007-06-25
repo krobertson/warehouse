@@ -71,9 +71,9 @@
               <%  s.submit 'login.png' %>
             <% end -%>
             
-            <% sheet_form_tag reset_path, :id => 'reset-form' do |s| %>
+            <% sheet_form_tag forget_path, :id => 'reset-form' do |s| %>
               <h2>Reset your OpenID</h2>
-              <%= s.text_field_tag 'Email you signed up with: (<a href="#login" id="openid-login">login</a>)', :email, '' %>
+              <%= s.text_field_tag 'Email you signed up with: (<a href="#login" id="openid-login">login</a>)', :email, '', :class => 'big' %>
             <% end %>
           <% end %>
         </div>

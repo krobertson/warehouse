@@ -23,26 +23,26 @@ class ApplicationController < ActionController::Base
   
   protected
     def repository_member_required
-      repository_member? || access_denied(:error => "You must be a member of this repository to visit this page.")
+      repository_member? || status_message(:error, "You must be a member of this repository to visit this page.")
     end
     
     # specifies a controller action where a repository admin is required.
     def repository_admin_required
-      repository_admin? || access_denied(:error => "You must be an administrator for this repository to visit this page.")
+      repository_admin? || status_message(:error, "You must be an administrator for this repository to visit this page.")
     end
     
     # specifies a controller action that only warehouse administrators are allowed
     def admin_required
-      admin? || access_denied(:error => "You must be an administrator to visit this page.")
+      admin? || status_message(:error, "You must be an administrator to visit this page.")
     end
 
     def login_required
-      logged_in? || access_denied(:error => "You must be logged in to edit a profile.")
+      logged_in? || status_message(:error, "You must be logged in to edit a profile.")
     end
 
-    def access_denied(options = {})
-      @error = options[:error] || "A login is required to visit this page."
-      render :template => 'layouts/error'
+    def status_message(type, message = nil)
+      @message = message || "A login is required to visit this page."
+      render :template => "layouts/#{type}"
       false
     end
 

@@ -42,7 +42,7 @@ context "Sessions Controller" do
     @controller.expects(:authenticate_with_open_id).yields(stub(:successful? => true), 42)
     @controller.current_user.expects(:identity_url=).with(42).returns(42)
     post :reset
-    assert_redirected_to profile_path
+    assert_redirected_to root_path
   end
   
   specify "should show error for invalid open id login attempt" do

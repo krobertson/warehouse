@@ -20,6 +20,12 @@
     </label>
     <%= text_field_tag :password_command, params[:password_command] || Warehouse.password_command, :size => 40 %>
   </p>
+  <p class="command">
+    <label for="mail_from">
+      Email address that email notifications are sent from.
+    </label>
+    <%= text_field_tag :mail_from, params[:mail_from] || Warehouse.mail_from, :size => 40 %>
+  </p>
   <p class="btns"><%= submit_image 'save.png' %></p>
 <% end -%>
 </div>
