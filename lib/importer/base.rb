@@ -22,7 +22,7 @@ module Importer
     end
     
     def self.find_all(conditions)
-      adapter.select("SELECT * FROM `#{table}` WHERE #{conditions}")
+      adapter.select("SELECT * FROM `#{table}` WHERE #{conditions}").collect! { |row| new(row) }
     end
     
     def self.delete(id)
@@ -64,3 +64,4 @@ require 'importer/mysql_adapter'
 require 'importer/repository'
 require 'importer/changeset'
 require 'importer/change'
+require 'importer/user'
