@@ -11,7 +11,7 @@ class Repository < ActiveRecord::Base
   include PermissionMethods, CommandSanitizer
   has_permalink :name, :subdomain
   validates_presence_of :name, :path, :subdomain
-  attr_accessible :name, :path, :subdomain
+  attr_accessible :name, :path, :subdomain, :public
   
   has_many :permissions, :conditions => ['active = ?', true] do
     def set(user_id, options = {})

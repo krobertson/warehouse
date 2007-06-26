@@ -1,0 +1,18 @@
+<div id="error">
+  <h2>Access Denied</h2>
+  <p><%= @message %></p>
+  
+  <% if logged_in? -%>
+    <% paths = current_user.permissions.paths_for(current_repository) -%>
+    <% if paths.any? -%>
+    <ul>
+    <% paths.each do |path| -%>
+      <li><%= link_to path, browser_path(path.split('/')) %></li>
+    <% end -%>
+    </ul>
+    <% end -%>
+  <p>Try contacting the owner of this subversion repository to get access.</p>
+  <% else -%>
+  <p>Try logging in with your OpenID or subversion credentials to access this repository.</p>
+  <% end -%>
+</div>

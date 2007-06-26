@@ -22,6 +22,9 @@ class BrowserController < ApplicationController
   end
 
   protected
+    def repository_member_required
+      repository_member? || status_message(:error, "You must be a member of this repository to visit this page.", "browser/error")
+    end
 
     def find_node
       @revision = params[:rev][1..-1].to_i if params[:rev]

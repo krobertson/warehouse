@@ -19,9 +19,14 @@ class User < ActiveRecord::Base
   has_many :repositories, :through => :permissions, :select => "repositories.*, #{Permission.join_fields}", :order => 'repositories.name, permissions.path' do
     def paths
       repo_paths = proxy_owner.repositories.inject({}) do |memo, repo|
-        (memo[repo.id] ||= []) << repo.permission_path
-        memo
+        if proxy_owner.admin?
+          memo.update repo.id => :all
+        else
+          (memo[repo.id] ||= []) << repo.permission_path
+          memo
+        end
       end
+      return repo_paths if proxy_owner.admin?
       repo_paths.each do |repo_id, paths|
         repo_paths[repo_id] = :all if paths.include?(:all)
       end

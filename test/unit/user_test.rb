@@ -17,9 +17,18 @@ context "User" do
   end
   
   specify "should find user repository paths" do
-    paths = users(:rick).repositories.paths
-    paths[repositories(:example).id].should == %w(home public)
-    paths[repositories(:sample).id].should  == :all
+    users(:rick).stubs(:admin?).returns(false)
+    users(:rick).repositories.paths[repositories(:example).id].should == %w(home public)
+  end
+  
+  specify "should show all paths for repository admin" do
+    users(:rick).stubs(:admin?).returns(false)
+    users(:rick).repositories.paths[repositories(:sample).id].should  == :all
+  end
+  
+  specify "should show all paths for global admin" do
+    Repository.any_instance.stubs(:permission_admin?).returns(false)
+    users(:rick).repositories.paths[repositories(:sample).id].should  == :all
   end
   
   specify "should authenticate with httpbasic auth" do

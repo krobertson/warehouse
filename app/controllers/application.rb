@@ -12,6 +12,7 @@ class ApplicationController < ActionController::Base
   expiring_attr_reader :repository_member?, :retrieve_repository_member
   expiring_attr_reader :repository_admin?,  :retrieve_repository_admin
   expiring_attr_reader :current_repository, :retrieve_current_repository
+  expiring_attr_reader :admin?,             :retrieve_admin
 
   def logged_in?
     !!current_user
@@ -40,9 +41,9 @@ class ApplicationController < ActionController::Base
       logged_in? || status_message(:error, "You must be logged in to edit a profile.")
     end
 
-    def status_message(type, message = nil)
+    def status_message(type, message = nil, template = nil)
       @message = message || "A login is required to visit this page."
-      render :template => "layouts/#{type}"
+      render :template => (template || "layouts/#{type}")
       false
     end
 
