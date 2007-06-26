@@ -4,9 +4,8 @@ module ApplicationHelper
     controller_path[0..path.length-1] == path
   end
   
-  def login_form_type
-    #cookies[:use_open_id] == '1' ? :openid : :login
-    :login
+  def use_login_form?
+    @use_login_form ||= !cookies['use_svn'].blank? && cookies['use_svn'].value.to_s == '1'
   end
   
   def word_for_change(change)

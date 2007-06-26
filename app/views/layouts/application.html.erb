@@ -15,9 +15,9 @@
         <% if logged_in? -%>
         Sheet.Cache['profile-form'] = new Sheet('profile-form', 'profile');
         <% else -%>
-        Sheet.Cache['reset-form'] = new Sheet('reset-form', ['reset-from-openid', 'reset-from-login']);
-        Sheet.Cache['openid-form'] = new Sheet('openid-form', ['openid-toggle'<%= %(, 'login-link', 'cancel-reset') if cookies[:use_open_id] == '1'%>]);
-        Sheet.Cache['login-form'] = new Sheet('login-form', ['login-toggle'<%= %(, 'login-link', 'cancel-reset') if cookies[:use_open_id] != '1'%>]);
+        Sheet.Cache['reset-form'] = new Sheet('reset-form', 'reset-from-openid');
+        Sheet.Cache['openid-form'] = new Sheet('openid-form', ['openid-toggle'<%= %(, 'login-link', 'cancel-reset') unless use_login_form? %>]);
+        Sheet.Cache['login-form'] = new Sheet('login-form', ['login-toggle'<%= %(, 'login-link', 'cancel-reset') if use_login_form? %>]);
         <% end -%>
         <%= yield :onready %>
       });
@@ -75,7 +75,7 @@
             <% sheet_form_tag login_path, :id => 'login-form' do |s| -%>
               <h2>Login (<%= link_to 'OpenID', '#', :id => 'openid-toggle' %>)</h2>
               <%= content_tag 'p', flash[:error] if flash[:error] %>
-              <%= s.text_field_tag     %(Login: (<a href="#" id="reset-from-login">reset</a>)), :login, params[:login], :class => 'big' %>
+              <%= s.text_field_tag     %(Login:),    :login,    params[:login], :class => 'big' %>
               <%= s.password_field_tag %(Password:), :password, params[:password], :class => 'big' %>
               <%  s.submit 'login.png' %>
             <% end -%>
