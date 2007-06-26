@@ -80,13 +80,19 @@ div.errorExplanation h2, div#error h2 {
   padding: 0;
 }
 
-.info {
+.info, .notice {
   background: #E3F1FF url(../images/app/icons/info.png) 5px 50% no-repeat;
   padding: 20px 10px 20px 60px;
   border: 1px solid #5D94CB;
   font-weight: bold;
   color: #346;
   margin: 10px 0;
+}
+
+.notice {
+  background: #DCF0C9 url(../images/app/icons/check.png) 5px 50% no-repeat;
+  border: 1px solid #582;
+  color: #460;
 }
 
 

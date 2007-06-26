@@ -42,7 +42,7 @@
 <% elsif repository_subdomain.blank? -%>
 <div class="sideblock">
   <h3><%= 'Public ' if controller.action_name == 'public' %>Repositories</h3>
-  <ul id="repositories">
+  <ul id="repo-list" class="slist">
     <% @repositories.each do |repo| %>
     <li><%= link_to h(repo.name), changesets_url(:host => repo.domain, :port => request.port) %></li>
     <% end %>

@@ -1,16 +1,18 @@
 <% content_for :admin_tab do %>
 <li><%= link_to 'New Member', {}, :id => 'addmember' %></li>
 <% end %>
+
 <%= render :partial => "admin/tabs" %>
 
 <ul id="permissions">
 <% @users.each do |user| -%>
   <li class="permission" id="<%= dom_id(user) %>">
-    <%=h user.name %>
+    <%=h user.name || user.identity_url %>
     <ul class="admin-controls">
       <li id="profile-<%= dom_id user %>" class="edit"><a href="#">Edit</a></li>
       <li class="del"><%= link_to_remote('Delete', :url => user_path(user), :with => "'_method=delete'") %></li>
     </ul>
+    
   <% remote_sheet_form_for user, :url => user_path(user), :trigger => "profile-#{dom_id user}", :html => {:method => :put, :id => "sheet-#{dom_id user}"} do |s| -%>
   <h2>Edit <%=h user.name %></h2>
   <div id="error-<%= dom_id user %>" class="error" style="display:none"></div>
