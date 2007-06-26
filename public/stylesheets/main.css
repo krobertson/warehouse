@@ -1264,6 +1264,10 @@ input.path {
   padding: 10px;
 }
 
+#profile-pic {
+ float: right;
+}
+
 .oform {
   padding: 0 7px 20px 6px;
 }
