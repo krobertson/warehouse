@@ -1,11 +1,21 @@
 class SessionsController < ApplicationController
   skip_before_filter :check_for_repository
   def create
-    authenticate_with_open_id do |result, identity_url|
-      if result.successful? && self.current_user = User.find_or_create_by_identity_url(identity_url)
+    if using_open_id?
+      cookies[:use_open_id] = {:value => '1', :expires => 1.year.from_now.utc, :domain => Warehouse.domain, :path => '/'}
+      authenticate_with_open_id do |result, identity_url|
+        if result.successful? && self.current_user = User.find_or_create_by_identity_url(identity_url)
+          redirect_to root_path
+        else
+          status_message :error, result.message || "Sorry, no user by that identity URL exists (#{identity_url})"
+        end
+      end
+    else
+      cookies.delete(:use_open_id)
+      if self.current_user = User.authenticate(params[:login], params[:password])
         redirect_to root_path
       else
-        status_message :error, result.message || "Sorry, no user by that identity URL exists (#{identity_url})"
+        status_message :error, "Invalid Password"
       end
     end
   end
@@ -33,14 +43,20 @@ class SessionsController < ApplicationController
     
     self.current_user = User.find_by_token(params[:token]) unless params[:token].blank?
     return if request.get? && params[:open_id_complete].nil?
-    authenticate_with_open_id do |result, identity_url|
-      if result.successful?
-        current_user.identity_url = identity_url
-        current_user.reset_token!
-        redirect_to root_path
-      else
-        status_message :error, result.message || "There were problems logging in with Open ID."
+    if using_open_id?
+      cookies[:use_open_id] = {:value => '1', :expires => 1.year.from_now.utc, :domain => Warehouse.domain, :path => '/'}
+      authenticate_with_open_id do |result, identity_url|
+        if result.successful?
+          current_user.identity_url = identity_url
+          current_user.reset_token!
+          redirect_to root_path
+        else
+          status_message :error, result.message || "There were problems logging in with Open ID."
+        end
       end
+    else
+      cookies.delete(:use_open_id)
+      redirect_to root_path
     end
   end
 end

@@ -14,7 +14,9 @@
   <% remote_sheet_form_for user, :url => user_path(user), :trigger => "profile-#{dom_id user}", :html => {:method => :put, :id => "sheet-#{dom_id user}"} do |s| -%>
   <h2>Edit <%=h user.name %></h2>
   <div id="error-<%= dom_id user %>" class="error" style="display:none"></div>
-  <%= s.text_field 'Subversion login', :login %>
+  <%= s.text_field 'SVN login', :login %>
+  <%= s.password_field 'SVN Password:', :password, :size => 30 %>
+  <%= s.password_field 'Confirm:', :password_confirmation, :size => 30 %>
   <%= s.text_field "Email:", :email %>
   <%= s.check_box "Admin:", "Yes, this user can manage <strong>all</strong> repositories.", :admin %>
   <% end -%>
@@ -25,7 +27,9 @@
 <% remote_sheet_form_for :user, :url => users_path, :html => { :id => 'add-user' }, :trigger => 'addmember' do |s| -%>
   <h2>Add a new member</h2>
   <div id="error-<%= dom_id User.new %>" class="error" style="display:none"></div>
-  <%= s.text_field 'Subversion login', :login %>
+  <%= s.text_field 'SVN login', :login %>
+  <%= s.password_field 'SVN Password:', :password, :size => 30 %>
+  <%= s.password_field 'Confirm:', :password_confirmation, :size => 30 %>
   <%= s.text_field "Email:", :email %>
   <%= s.check_box "Admin:", "Yes, this user can manage <strong>all</strong> repositories.", :admin %>
 <% end -%>

@@ -15,6 +15,6 @@ context "Command Sanitizer" do
   end
   
   specify "should ignore unknown args" do
-    sanitize_command("foo:bar :baz", @args).should == "foo:bar"
+    sanitize_command("foo:bar :baz", @args).should == "foo:bar :baz"
   end
 end

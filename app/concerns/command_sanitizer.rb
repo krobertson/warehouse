@@ -10,9 +10,9 @@ module CommandSanitizer
       memo
     end
     
-    cmd.gsub /(^|\s):\w+/ do |arg|
-      arg.gsub! /[^:]*:/, ''
-      args[arg] ? ' ' + args[arg].send(arg).to_s : ''
+    cmd.gsub /:\w+/ do |arg|
+      key = arg[1..-1]
+      args[key] ? args[key].send(key).to_s : arg
     end.strip
   end
   

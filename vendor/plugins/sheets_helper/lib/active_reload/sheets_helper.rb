@@ -34,6 +34,12 @@ module ActiveReload
         @template.content_tag('label', label, :for => id) +
         @template.text_field_tag(id, value, options))
     end
+
+    def password_field_tag(label, id, value, options = {})
+      @template.content_tag('p', 
+        @template.content_tag('label', label, :for => id) +
+        @template.password_field_tag(id, value, options))
+    end
     
     def check_box(label, desc, method, options = {}, checked_value = "1", unchecked_value = "0")
       @template.content_tag('p', 

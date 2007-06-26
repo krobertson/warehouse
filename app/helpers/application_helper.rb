@@ -4,6 +4,11 @@ module ApplicationHelper
     controller_path[0..path.length-1] == path
   end
   
+  def login_form_type
+    #cookies[:use_open_id] == '1' ? :openid : :login
+    :login
+  end
+  
   def word_for_change(change)
     case change.downcase
       when 'a'  then  'Added'

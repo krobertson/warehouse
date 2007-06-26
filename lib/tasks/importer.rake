@@ -36,10 +36,37 @@ namespace :warehouse do
     # eventually add other stuff here, like email
   end
   
+  task :build_htpasswd => :init do
+    require 'webrick'
+    write_users_to_htpasswd(Importer::User.find_all, ENV['CONFIG'] || 'config/svn.htpasswd')
+  end
+  
+  task :build_repo_htpasswd => :init do
+    require 'webrick'
+    raise "Need htpasswd config path with :repo variable.  CONFIG=/svn/:repo/.htaccess" unless ENV['CONFIG'].to_s[/:repo/]
+    raise "Need single user id. USER=234" unless ENV['USER']
+    user         = Importer::User.find_by_id(ENV['USER'])
+    repositories = user.repositories
+    repositories.each do |repo|
+      write_users_to_htpasswd(repo.users, ENV['CONFIG'].gsub(/:repo/, repo.attributes['subdomain']))
+    end
+  end
+  
+  def write_users_to_htpasswd(users, htpasswd_path)
+    htpasswd = WEBrick::HTTPAuth::Htpasswd.new(htpasswd_path)
+    htpasswd.each do |(user, passwd)|
+      htpasswd.delete_passwd(nil, user)
+    end
+    users.each do |user|
+      next if user.attributes['login'].to_s == '' || user.attributes['crypted_password'].to_s == ''
+      htpasswd.instance_variable_get("@passwd")[user.attributes['login']] = user.attributes['crypted_password']
+    end
+    htpasswd.flush
+  end
+  
   task :build_config => :init do
     require 'lib/warehouse'
     require 'config/initializers/warehouse'
-    require 'open-uri'
     config_path = ENV['CONFIG'] || 'config/svn.conf'
     
     repo_id = ENV['REPO'].to_i

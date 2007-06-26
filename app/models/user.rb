@@ -29,17 +29,24 @@ class User < ActiveRecord::Base
     end
   end
   
-  validates_format_of     :email, :with => /(\A(\s*)\Z)|(\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z)/i, :allow_nil => true
-  validates_uniqueness_of :identity_url, :email, :allow_nil => true
+  attr_accessor :password
+  validates_format_of       :email, :with => /(\A(\s*)\Z)|(\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z)/i, :allow_nil => true
+  validates_confirmation_of :password, :allow_nil => true
+  validates_uniqueness_of   :identity_url, :email, :allow_nil => true
   validate :presence_of_identity_url_or_email
   before_create :set_default_attributes
   before_save   :sanitize_email
-  attr_accessible :identity_url, :avatar_data, :email, :login
+  attr_accessible :identity_url, :avatar_data, :email, :login, :password, :password_confirmation
   belongs_to :avatar
   before_save :save_avatar_data
 
   def self.find_all_by_logins(logins)
     find :all, :conditions => ['login IN (?)', logins]
+  end
+
+  def self.authenticate(login, password)
+    user = find_by_login(login)
+    user && user.crypted_password == password.crypt(user.crypted_password[0,2]) ? user : nil
   end
 
   def name
@@ -85,6 +92,7 @@ class User < ActiveRecord::Base
     end
 
     def sanitize_email
+      write_attribute :crypted_password, password.crypt(TokenGenerator.generate_simple(2)) unless password.blank?
       email.downcase! unless email.blank?
     end
     

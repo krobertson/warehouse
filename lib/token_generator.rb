@@ -4,8 +4,8 @@ module TokenGenerator
   @@char_size = @@chars.size
   extend self
   
-  def generate_simple
-    (1..8).collect { |a| @@chars[rand(@@char_size)] }.join
+  def generate_simple(size = 8)
+    (1..size).collect { |a| @@chars[rand(@@char_size)] }.join
   end
   
   def generate_random(seed = generate_simple)

@@ -21,4 +21,20 @@ context "User" do
     paths[repositories(:example).id].should == %w(home public)
     paths[repositories(:sample).id].should  == :all
   end
+  
+  specify "should authenticate with httpbasic auth" do
+    u = User.new :password => 'monkey'
+    u.send :sanitize_email
+    u.crypted_password.should.not.be.nil
+    User.expects(:find_by_login).with('rick').returns(u)
+    User.authenticate('rick', 'monkey').should.not.be.nil
+  end
+  
+  specify "should require valid crypted pass" do
+    u = User.new :password => 'monkey'
+    u.send :sanitize_email
+    u.crypted_password.should.not.be.nil
+    User.expects(:find_by_login).with('rick').returns(u)
+    User.authenticate('rick', 'chicken').should.be.nil
+  end
 end

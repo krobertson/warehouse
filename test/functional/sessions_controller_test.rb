@@ -46,12 +46,21 @@ context "Sessions Controller" do
   end
   
   specify "should show error for invalid open id login attempt" do
+    @controller.expects(:using_open_id?).returns(true)
     @controller.expects(:authenticate_with_open_id).yields(stub(:successful? => false, :message => 'fubar'), nil)
     post :create
     assert_template 'error'
   end
   
+  specify "should show error for invalid login attempt" do
+    @controller.expects(:using_open_id?).returns(false)
+    User.expects(:authenticate).with('rick', 'monkey').returns(nil)
+    post :create, :login => 'rick', :password => 'monkey'
+    assert_template 'error'
+  end
+  
   specify "should create user from new identity url" do
+    @controller.expects(:using_open_id?).returns(true)
     @controller.expects(:authenticate_with_open_id).yields(stub(:successful? => true), 'foobar')
     assert_difference "User.count" do
       post :create
@@ -59,7 +68,17 @@ context "Sessions Controller" do
     end
   end
   
+  specify "should login user from with svn password" do
+    @controller.expects(:using_open_id?).returns(false)
+    User.expects(:authenticate).with('rick', 'monkey').returns(users(:rick))
+    assert_no_difference "User.count" do
+      post :create, :login => 'rick', :password => 'monkey'
+      assert_redirected_to root_path
+    end
+  end
+  
   specify "should login user from existing identity url" do
+    @controller.expects(:using_open_id?).returns(true)
     @controller.expects(:authenticate_with_open_id).yields(stub(:successful? => true), users(:rick).identity_url)
     assert_no_difference "User.count" do
       post :create

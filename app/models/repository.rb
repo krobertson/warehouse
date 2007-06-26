@@ -93,6 +93,11 @@ class Repository < ActiveRecord::Base
     execute_command Warehouse.permission_command, self => %w(subdomain id)
   end
 
+  def rebuild_htpasswd_for(user)
+    return if Warehouse.password_command.blank?
+    execute_command Warehouse.password_command, user => %w(id)
+  end
+
   protected
     # more efficient method of clearing out changesets and changes
     def clear_changesets

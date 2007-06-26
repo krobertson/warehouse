@@ -17,11 +17,12 @@ module BrowserHelper
     home_link = %(<li#{' class="crumb-divide-last"' if pieces.size == 0 && !name.nil?}>#{link_to '~', (rev ? rev_browser_path : browser_path)}</li>)
     return home_link unless name
     prefix = ''
-    pieces.collect! do |piece|
-      link = %(<li#{' class="crumb-divide-last"' if pieces.last == piece}>#{link_to_node(piece, "#{prefix}#{piece}", rev)}</li>)
+    crumbs = []
+    pieces.each_with_index do |piece, i|
+      crumbs << %(<li#{' class="crumb-divide-last"' if pieces.size == i+1}>#{link_to_node(piece, "#{prefix}#{piece}", rev)}</li>)
       prefix << piece << '/'
-      link
-    end.unshift(home_link).join << %(<li id="current">#{name}</li>)
+    end
+    crumbs.unshift(home_link).join << %(<li id="current">#{name}</li>)
   end
   
   def css_class_for(node)

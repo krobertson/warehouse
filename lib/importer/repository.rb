@@ -40,6 +40,10 @@ module Importer
         puts revisions.last
       end
     end
+    
+    def users
+      User.find_all("id IN (SELECT DISTINCT `user_id` FROM `permissions` WHERE `active` = 1 AND `repository_id` = #{quote_string attributes['id']})")
+    end
 
     def sync_all_revisions!
       clear_revisions!

@@ -15,6 +15,7 @@ class UsersController < ApplicationController
     render :update do |page|
       if @user.save
         UserMailer.deliver_invitation(current_user, @user)
+        current_repository.rebuild_htpasswd_for(@user)
         page.redirect_to users_path
       else
         page["error-#{dom_id @user}"].show.replace_html(error_messages_for(:user))
@@ -36,6 +37,7 @@ class UsersController < ApplicationController
       @user.admin = params[:user][:admin] == '1'
     end
     @user.save
+    current_repository.rebuild_htpasswd_for(@user)
     respond_to do |format|
       format.html { redirect_to(params[:to] || root_path) }
       format.js
@@ -45,6 +47,7 @@ class UsersController < ApplicationController
   def destroy
     @user = User.find params[:id]
     @user.destroy
+    current_repository.rebuild_htpasswd_for(@user)
     respond_to do |format|
       format.js
     end

@@ -78,20 +78,24 @@ Element.addMethods({
 // Create OSX-style Sheets  
 var Sheet = Class.create();
 Sheet.Cache = [];
+Sheet.Current = null;
 Sheet.prototype = {
   initialize: function(element, trigger, options) {
     this.sheet = $(element);
     if(!this.sheet) return;
     this.sheetHeight = this.sheet.getHeight();
-    this.trigger = $(trigger);
     this.cancelBtn = document.getElementsByClassName('cancelbtn', this.sheet)[0];   
+    this.trigger = trigger;
     this.overlay;
     this.build(element);
     this.addObservers();
   },
   
   addObservers: function() {
-    this.trigger.observe('click', this.toggle.bindAsEventListener(this));
+    var sheet = this;
+    [this.trigger].flatten().each(function(t) {
+      $(t).observe('click', sheet.toggle.bindAsEventListener(sheet));
+    });
     this.cancelBtn.observe('click', this.hide.bindAsEventListener(this));
   },
   
@@ -114,6 +118,8 @@ Sheet.prototype = {
   },
   
   show: function(event) {
+    if(Sheet.Current) Sheet.Current.hide()
+    Sheet.Current = this;
     this.overlay.show();
     new Fx.Style(this.sheetContent, 'margin-top', {
       duration: (this.sheetHeight * 2), 
@@ -145,19 +151,5 @@ Event.addBehavior({
   
   'a.delpath:click': function() {
     Permissions.remove(this.up());
-  },
-  
-  'a#reset:click': function() {
-    Sheet.Cache['login-form'].hide();
-  },
-  
-  'a#openid-login:click': function() {
-    Sheet.Cache['reset-form'].hide();
-    Sheet.Cache['login-form'].show();
-  },
-  
-  '#profile-token-link:click': function() {
-    $('profile-token').show();
-    $('profile-token-link').hide();
   }
 });
