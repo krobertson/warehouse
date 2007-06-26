@@ -82,6 +82,7 @@ Sheet.Current = null;
 Sheet.prototype = {
   initialize: function(element, trigger, options) {
     this.sheet = $(element);
+    console.log(element);
     if(!this.sheet) return;
     this.sheetHeight = this.sheet.getHeight();
     this.cancelBtn = document.getElementsByClassName('cancelbtn', this.sheet)[0];   
@@ -92,10 +93,9 @@ Sheet.prototype = {
   },
   
   addObservers: function() {
-    var sheet = this;
     [this.trigger].flatten().each(function(t) {
-      $(t).observe('click', sheet.toggle.bindAsEventListener(sheet));
-    });
+      $(t).observe('click', this.toggle.bindAsEventListener(this));
+    }.bind(this));
     this.cancelBtn.observe('click', this.hide.bindAsEventListener(this));
   },
   
