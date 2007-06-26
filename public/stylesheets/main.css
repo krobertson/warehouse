@@ -1067,7 +1067,7 @@ li.permission span.log {
   margin-left: 50px;
 }
 
-li .avatar {
+li.permission .avatar {
   float: left;
   margin-right: 10px;
 }
