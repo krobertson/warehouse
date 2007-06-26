@@ -23,7 +23,7 @@
       });
       <%= yield :javascript %>
     </script>
-    <%= auto_discovery_link_tag(:atom, changesets_url) %>
+    <%= auto_discovery_link_tag(:atom, formatted_changesets_path(:atom)) %>
   </head>
   <body>
     <%= @onready %>
