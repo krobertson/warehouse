@@ -1063,6 +1063,10 @@ li.permission {
   background: #f7f7f7;
 }
 
+li.permission span.log {
+  margin-left: 50px;
+}
+
 li .avatar {
   float: left;
   margin-right: 10px;

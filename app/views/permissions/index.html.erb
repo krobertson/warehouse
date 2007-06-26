@@ -4,6 +4,7 @@
 <ul id="permissions">
 <% @members.each do |user, permissions| -%>
   <li class="permission" id="<%= user ? dom_id(user) : :user_anon %>">
+    <%= avatar_for(user) rescue '' %>
     <%= user ? h(user.name) : "Anonymous" %>
     <% permissions.each do |permission| -%>
     <span class="log">Read<%= '/Write' if permission.full_access? %>: <%=h permission.formatted_path %></span>
