@@ -82,7 +82,6 @@ Sheet.Current = null;
 Sheet.prototype = {
   initialize: function(element, trigger, options) {
     this.sheet = $(element);
-    console.log(element);
     if(!this.sheet) return;
     this.sheetHeight = this.sheet.getHeight();
     this.cancelBtn = document.getElementsByClassName('cancelbtn', this.sheet)[0];   
@@ -114,11 +113,11 @@ Sheet.prototype = {
       duration: (this.sheetHeight * 2) + 500,
       transition: Fx.Transitions.expoOut,
       onComplete: function() { this.overlay.hide(); }.bind(this)
-    })._start(0, -(this.sheet.getHeight()));
+    })._start(0, -(this.sheet.getHeight()));    
   },
   
   show: function(event) {
-    if(Sheet.Current) Sheet.Current.hide()
+    if(Sheet.Current && Sheet.Current.overlay.visible()) Sheet.Current.hide()
     Sheet.Current = this;
     this.overlay.show();
     new Fx.Style(this.sheetContent, 'margin-top', {
