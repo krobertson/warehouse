@@ -2,7 +2,6 @@ class InstallController < ApplicationController
   skip_before_filter :check_for_repository
   before_filter :check_installed, :except => [:test_install, :settings]
   
-  before_filter :check_for_repository, :only => :settings
   before_filter :admin_required,       :only => :settings
   
   layout :choose_layout

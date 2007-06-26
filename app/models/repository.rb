@@ -97,6 +97,10 @@ class Repository < ActiveRecord::Base
     return if Warehouse.password_command.blank?
     execute_command Warehouse.password_command, user => %w(id)
   end
+  
+  def self.rebuild_htpasswd_for(user)
+    new.rebuild_htpasswd_for(user)
+  end
 
   protected
     # more efficient method of clearing out changesets and changes

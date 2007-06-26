@@ -29,6 +29,7 @@ namespace :warehouse do
     YAML.load_file("config/database.yml")[RAILS_ENV].each do |k, v|
       config[k.to_sym] = v
     end
+    @num  = (ENV['NUM'] || ENV['N']).to_i
     Importer::MysqlAdapter.create config
   end
 
@@ -116,17 +117,21 @@ namespace :warehouse do
     end
   end
 
-  task :sync => :find_repo do
-    @repo.sync_revisions(@num)
+  task :sync => :init do
+    (ENV['REPO'] ? [find_first_repo(ENV['REPO'])] : Importer::Repository.find_all).each do |repo|
+      puts "Syncing revisions for #{repo.attributes['name'].inspect}"
+      repo.sync_revisions(@num)
+    end
   end
 
-  task :clear => :find_repo do
-    @repo.clear_revisions!
-    puts "All repositories for #{@repo.attributes['name'].inspect} were cleared."
+  task :clear => :init do
+    (ENV['REPO'] ? [find_first_repo(ENV['REPO'])] : Importer::Repository.find_all).each do |repo|
+      repo.clear_revisions!
+      puts "All repositories for #{repo.attributes['name'].inspect} were cleared."
+    end
   end
 
   task :find_repo => :init do
-    @num  = (ENV['NUM'] || ENV['N']).to_i
     @repo = find_first_repo(ENV['REPO'])
     raise "Please select a repo with REPO=id or REPO=repository_name" if @repo.nil?
   end

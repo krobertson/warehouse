@@ -1,4 +1,5 @@
 class UsersController < ApplicationController
+  skip_before_filter :check_for_repository
   before_filter :login_required, :only   => :update
   before_filter :admin_required, :except => :update
   
@@ -37,7 +38,7 @@ class UsersController < ApplicationController
       @user.admin = params[:user][:admin] == '1'
     end
     @user.save
-    current_repository.rebuild_htpasswd_for(@user)
+    Repository.rebuild_htpasswd_for(@user)
     respond_to do |format|
       format.html { redirect_to(params[:to] || root_path) }
       format.js
