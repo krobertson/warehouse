@@ -39,10 +39,7 @@ class UsersController < ApplicationController
     end
     @user.save
     Repository.rebuild_htpasswd_for(@user)
-    respond_to do |format|
-      format.html { redirect_to(params[:to] || root_path) }
-      format.js
-    end
+    redirect_to(params[:to] || root_path)
   end
   
   def destroy
