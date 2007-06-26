@@ -29,6 +29,18 @@ a {
   text-align: left;
 }
 
+.clearfix:after {
+	content:".";
+	display:block;
+	height:0;
+	clear:both;
+	visibility:hidden;
+}
+.clearfix {display:inline-block;}
+/* Hide from IE Mac \*/
+.clearfix {display:block;}
+/* End hide from IE Mac */
+
 /* @group nav */
 #nav {
   margin: 20px auto 0 auto;
@@ -64,6 +76,7 @@ li#buynow a {
   background: url(../images/buynow-btn.png) no-repeat;
   right: 22px;
   top: 0;
+  padding-bottom: 20px;
 }
 
 
@@ -231,6 +244,37 @@ ul#quotes {
   font-weight: normal;
   color: #ccc;
 }
+
+/* @end */
+
+/* @group Footer */
+#footer {
+  margin: 0 5px;
+  border-top: 1px dotted #555;
+  font-size: 92%;
+  color: #888;
+}
+
+#footer h3 {
+  font-size: 100%;
+  color: #ccc;
+}
+
+#foot-left, #foot-mid {
+  border-right: 1px solid #444;
+}
+
+#foot-left, #foot-mid, #foot-right {
+  float: left;
+  width: 31%;
+  padding: 10px;
+}
+
+#footer .icon {
+  float: right;
+  margin-bottom: 20px;
+}
+
 
 /* @end */
 
