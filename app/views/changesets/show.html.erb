@@ -24,13 +24,6 @@
     <% if @changeset.changes.select(&:diffable?).any? %>
       <li id="cdiff"><%= link_to 'Complete Diff', formatted_changeset_path(@changeset, :diff) %></li>
     <% end %>
-    <li>
-      <label>Style:</label> 
-      <select name="">
-        <option value="inline">Inline</option>
-        <option value="sbs">Side by side</option>
-      </select>
-    </li>
   </ul>
 </div>
 

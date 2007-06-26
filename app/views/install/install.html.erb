@@ -18,7 +18,10 @@
       </p>
       <% end %>
       <p>
-        <label for="progress">Sync progress</label>
+        <label for="progress">
+          Sync progress
+          <img id="indicator" src="/images/app/progress.gif" style="display:none" />
+        </label>
         <span id="import-progress">
           <span id="pbar-percent">0%</span><span id="pbar"></span>
         </span>
@@ -43,6 +46,7 @@ Event.addBehavior({
         $('pbar').setStyle({width: progress + '%'});
       }
     });
+    $('indicator').show();
     initialImporter.step();
   }
 });
