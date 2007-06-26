@@ -31,6 +31,7 @@ context "Sessions Controller" do
   end
   
   specify "should not reset identity_url for user on invalid open id login" do
+    @controller.expects(:using_open_id?).returns(true)
     @controller.expects(:authenticate_with_open_id).yields(stub(:successful? => false, :message => 'fubar'), nil)
     login_as :rick
     post :reset
@@ -39,6 +40,7 @@ context "Sessions Controller" do
   
   specify "should reset identity_url for user" do
     login_as :rick
+    @controller.expects(:using_open_id?).returns(true)
     @controller.expects(:authenticate_with_open_id).yields(stub(:successful? => true), 42)
     @controller.current_user.expects(:identity_url=).with(42).returns(42)
     post :reset

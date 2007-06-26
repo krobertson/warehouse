@@ -48,14 +48,15 @@ class SessionsController < ApplicationController
       authenticate_with_open_id do |result, identity_url|
         if result.successful?
           current_user.identity_url = identity_url
-          current_user.reset_token!
-          redirect_to root_path
         else
           status_message :error, result.message || "There were problems logging in with Open ID."
         end
       end
     else
       cookies['use_svn'] = {:value => '1', :expires => 1.year.from_now.utc, :domain => Warehouse.domain, :path => '/'}
+    end
+    unless performed? 
+      current_user.reset_token!
       redirect_to root_path
     end
   end

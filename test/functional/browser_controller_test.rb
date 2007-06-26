@@ -15,7 +15,7 @@ context "Browser Controller Permissions" do
     @response   = ActionController::TestResponse.new
     @request.host = "sample.test.host"
     class << @controller
-      def status_message(type, message = nil)
+      def status_message(type, message = nil, template = nil)
         render :text => "#{type}: #{message.inspect}"
         false
       end
