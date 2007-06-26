@@ -457,13 +457,17 @@ td.item a {
   padding: 8px 5px 8px 25px;
 }
 
-.file, .folder, .script, .txt {
+.file, .folder, .script, .txt, .image {
   padding: 2px 0;
   padding-left: 25px;
 }
 
 a.folder {
   background: url(../images/app/icons/folder-small.png) 0 50% no-repeat;
+}
+
+a.image {
+  background: url(../images/app/icons/image.png) 0 50% no-repeat;
 }
 
 a.script {
@@ -563,6 +567,12 @@ div p.rcontrols {
   height: 16px;
   text-indent: -9999px;
   background: url(../images/app/icons/bookmark-small.png) 0 50% no-repeat;
+}
+
+#imagefile {
+  padding: 10px;
+  text-align: center;
+  vertical-align: center;
 }
 
 /* @end */

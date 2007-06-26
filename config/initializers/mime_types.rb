@@ -5,3 +5,4 @@ Mime::Type.register 'text/plain', :diff
 
 CSS_CLASSES = {}
 %w(.rb).each { |e| CSS_CLASSES[e] = :script }
+%w(.png .jpg .jpeg .gif .ico ).each { |e| CSS_CLASSES[e] = :image }
