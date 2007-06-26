@@ -22,6 +22,8 @@
   <%= s.password_field 'SVN Password:', :password, :size => 30 %>
   <%= s.password_field 'Confirm:', :password_confirmation, :size => 30 %>
   <%= s.text_field "Email:", :email %>
+  <p id="profile-pic"><%= avatar_for(user) %></p>
+  <%= s.file_field "Profile picture:", :avatar_data, :size => 25 %>
   <%= s.check_box "Admin:", "Yes, this user can manage <strong>all</strong> repositories.", :admin %>
   <% end -%>
   </li>
@@ -35,6 +37,8 @@
   <%= s.password_field 'SVN Password:', :password, :size => 30 %>
   <%= s.password_field 'Confirm:', :password_confirmation, :size => 30 %>
   <%= s.text_field "Email:", :email %>
+  <p id="profile-pic"><%= avatar_for(nil) %></p>
+  <%= s.file_field "Profile picture:", :avatar_data, :size => 25 %>
   <%= s.check_box "Admin:", "Yes, this user can manage <strong>all</strong> repositories.", :admin %>
 <% end -%>
 
