@@ -28,7 +28,7 @@ class User < ActiveRecord::Base
       end
       return repo_paths if proxy_owner.admin?
       repo_paths.each do |repo_id, paths|
-        repo_paths[repo_id] = :all if paths.include?(:all)
+        repo_paths[repo_id] = :all if paths.include?(:all) || paths.include?('')
       end
       repo_paths
     end

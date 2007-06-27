@@ -8,4 +8,4 @@
 * show extra debug info for invalid Warehouse.domain
 * remove email footer
 * require email and svn login at least, unless the account was created with open id.
-* fix bug relating to giving members access to the root of a repo
+* fix bugs relating to giving members access to the root of a repo
