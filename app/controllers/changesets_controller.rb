@@ -1,4 +1,5 @@
 class ChangesetsController < ApplicationController
+  before_filter :repository_member_required, :only => :show
   helper_method :previous_changeset, :next_changeset
   expiring_attr_reader :changeset_paths, :find_changeset_paths
 
@@ -19,6 +20,10 @@ class ChangesetsController < ApplicationController
   end
 
   def public
+    unless repository_subdomain.blank?
+      redirect_to changesets_path
+      return
+    end
     @repositories = Repository.find_all_by_public(true)
     @changesets   = Changeset.paginate(:conditions => ['repository_id in (?)', @repositories.collect(&:id)], :page => params[:page], :order => 'changesets.revision desc')
     respond_for_changesets

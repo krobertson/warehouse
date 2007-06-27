@@ -23,9 +23,14 @@ module Warehouse
     alias_method :inspect, :to_s
   end
 
-  class << self
-    attr_accessor :domain, :forum_url, :permission_command, :password_command, :mail_from, :version
+  def self.session_options
+    default_session_options.merge :session_domain => Warehouse.domain, :session_path => '/'
   end
+
+  class << self
+    attr_accessor :domain, :forum_url, :permission_command, :password_command, :mail_from, :version, :default_session_options
+  end
+  self.default_session_options = {:session_key => '_warehouse_session_id', :secret => 'asMb0bEBw6TXU'}
   self.domain    = ''
   self.forum_url = "http://forum.activereload.net/licenses/%s/installs"
   self.version   = Version.new(0, 9, 0)

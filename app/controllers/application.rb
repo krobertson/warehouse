@@ -4,8 +4,10 @@
 class ApplicationController < ActionController::Base
   helper :all # include all helpers, all the time
   helper_method :current_repository, :logged_in?, :current_user, :admin?, :controller_path, :repository_admin?, :repository_member?, :repository_subdomain
+  
+  session(Warehouse.session_options)
+  
   around_filter :set_context
-
   before_filter :check_for_repository
 
   expiring_attr_reader :current_user,       :retrieve_current_user
