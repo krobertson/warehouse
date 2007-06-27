@@ -16,7 +16,7 @@ class UsersController < ApplicationController
     render :update do |page|
       if @user.save
         UserMailer.deliver_invitation(current_user, @user)
-        current_repository.rebuild_htpasswd_for(@user)
+        Repository.rebuild_htpasswd_for(@user)
         page.redirect_to users_path
       else
         page["error-#{dom_id @user}"].show.replace_html(error_messages_for(:user))

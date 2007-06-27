@@ -102,8 +102,8 @@ class User < ActiveRecord::Base
     end
     
     def presence_of_identity_url_or_email
-      if identity_url.blank? && email.blank?
-        errors.add_to_base "Requires at least an email"
+      if identity_url.blank? && (email.blank? || login.blank?)
+        errors.add_to_base "Requires at least an email and login"
       end
     end
 
