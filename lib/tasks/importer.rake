@@ -23,6 +23,7 @@ end
 
 namespace :warehouse do
   task :init do
+    require 'yaml'
     require 'config/initializers/svn'
     require 'importer/base'
     config = {}
