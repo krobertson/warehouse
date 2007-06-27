@@ -1,5 +1,5 @@
 <% title "#{@node.path.to_s}" %>
-<% unless @error || current_changeset.nil? -%>
+<% unless @message || current_changeset.nil? -%>
 <div class="changeset clearfix" id="last-log">
   <div class="cs-meta">
     <%= avatar_for(current_changeset.user) %>
@@ -24,7 +24,7 @@
 </div>
 <% end %>
 
-<% unless @error -%>
+<% unless @message -%>
 <table id="browser" cellspacing="0" cellpadding="0">
   <thead>
     <tr id="controls">
@@ -56,7 +56,7 @@
   <% end -%>
 </table>
 <% else -%>
-<p><%=h @error %></p>
+<p><%=h @message %></p>
 <% if logged_in? -%>
   <% permissions = current_user.permissions.for_repository(current_repository) -%>
   <% if permissions.any? -%>

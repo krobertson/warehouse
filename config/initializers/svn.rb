@@ -1,6 +1,9 @@
 require 'svn/core'
 require 'svn/repos'
 require 'svn/delta'
+require 'svn/client'
+require 'svn/wc'
+
 class Svn::Delta::ChangedEditor
   def add_file_with_collection(*args)
     @dirty_run_count = @dirty_run_count ? @dirty_run_count + 1 : 0

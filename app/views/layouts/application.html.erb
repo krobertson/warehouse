@@ -6,7 +6,7 @@
     <title>Warehouse: <%= @title rescue '' %></title>
     <%= stylesheet_link_tag 'main' %>
     <%= stylesheet_link_tag 'code' %>
-    <%= javascript_include_tag 'prototype', 'lowpro-lite', 'moo.fx.js', 'moo.fx.transitions.js', 'application', :cache => :warehouse %>
+    <%= javascript_include_tag 'prototype', 'lowpro-lite', 'moo.fx.js', 'moo.fx.transitions.js', 'application', :cache => 'warehouse' %>
     <script src="http://warehouseapp.com/javascripts/version_check.js" type="text/javascript" charset="utf-8"></script>
     <%= yield :scripts %>
     <script type="text/javascript" charset="utf-8">

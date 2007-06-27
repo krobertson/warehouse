@@ -14,7 +14,7 @@ class InstallController < ApplicationController
         if result.successful? && self.current_user = User.find_or_create_by_identity_url(identity_url)
           render :action => 'install'
         else
-          @error = result.message || "Sorry, no user by that identity URL exists (#{identity_url})"
+          @message = result.message || "Sorry, no user by that identity URL exists (#{identity_url})"
           render :action => 'index'
         end
       end
@@ -49,7 +49,7 @@ class InstallController < ApplicationController
       render :action => 'index'
     end
   rescue
-    @error = $!.message
+    @message = $!.message
     render :template => 'layouts/error'
   end
 
