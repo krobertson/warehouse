@@ -1,0 +1,7 @@
+# quickie install directions
+cp config/database.sample.yml config/database.yml
+mkdir log 
+rake tmp:create
+rake db:schema:load
+
+start server, surf to /install
