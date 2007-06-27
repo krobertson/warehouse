@@ -35,7 +35,7 @@ context "Permissions Controller" do
   specify "should grant new permission to repo" do
     assert_difference "Permission.count" do
       assert_no_difference "User.count" do
-        post :create, :permission => {:user_id => 2}
+        post :create, :permission => {:user_id => 2, :path => 'blah'}
         assert_template 'index'
       end
     end
@@ -57,13 +57,17 @@ context "Permissions Controller" do
     assigns(:permission).user.should.not.be.new_record
     perms = repositories(:sample).permissions.find_all_by_user_id(assigns(:permission).user.id).sort_by(&:path)
     perms[0].should.be.active
-    perms[0].should.be.admin
-    perms[0].path.should == 'bar'
-    perms[0].should.be.full_access
+    perms[0].should.not.be.admin
+    perms[0].path.should == ''
+    perms[0].should.not.be.full_access
     perms[1].should.be.active
     perms[1].should.be.admin
-    perms[1].path.should == 'foo'
-    perms[1].should.not.be.full_access
+    perms[1].path.should == 'bar'
+    perms[1].should.be.full_access
+    perms[2].should.be.active
+    perms[2].should.be.admin
+    perms[2].path.should == 'foo'
+    perms[2].should.not.be.full_access
   end
 
   specify "should update user permission" do

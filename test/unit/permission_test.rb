@@ -21,6 +21,11 @@ context "Permission" do
     repositories(:sample).member?(users(:rick), 'foo/bar').should == true
     repositories(:sample).member?(users(:rick), 'foo/bar/baz').should == true
   end
+  
+  specify "should recognize member with empty path" do
+    repositories(:sample).member?(users(:justin)).should == true
+    repositories(:sample).member?(users(:justin), 'foo').should == true
+  end
 
   specify "should accept user admin as repo admin" do
     u = User.new
@@ -41,18 +46,22 @@ context "Permission" do
   
   specify "should grant access to single path" do
     repositories(:sample).grant :user => users(:justin), :paths => {'0' => {:path => 'foo'}}
-    p = repositories(:sample).permissions.find_by_user_id(users(:justin).id)
-    p.path.should == 'foo'
-    p.should.not.be.full_access
+    p = repositories(:sample).permissions.find_all_by_user_id(users(:justin).id).sort_by(&:path)
+    p[0].path.should == ''
+    p[0].should.not.be.full_access
+    p[1].path.should == 'foo'
+    p[1].should.not.be.full_access
   end
   
   specify "should grant access to single path" do
     repositories(:sample).grant :user => users(:justin), :paths => {'0' => {:path => 'foo'}, '1' => {:path => 'bar', :full_access => true}}
     perms = repositories(:sample).permissions.find_all_by_user_id(users(:justin).id).sort_by(&:path)
-    perms[0].path.should == 'bar'
-    perms[0].should.be.full_access
-    perms[1].path.should == 'foo'
-    perms[1].should.not.be.full_access
+    perms[0].path.should == ''
+    perms[0].should.not.be.full_access
+    perms[1].path.should == 'bar'
+    perms[1].should.be.full_access
+    perms[2].path.should == 'foo'
+    perms[2].should.not.be.full_access
   end
   
   specify "should update repository permissions" do

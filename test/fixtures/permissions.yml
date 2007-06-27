@@ -28,3 +28,9 @@ inactive_rick_sample:
   repository_id: 1
   active: false
   path: foo
+justin_sample:
+  id: 6
+  user_id: 2
+  repository_id: 1
+  path: ''
+  active: true

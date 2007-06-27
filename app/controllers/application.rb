@@ -98,8 +98,9 @@ class ApplicationController < ActionController::Base
     def check_for_valid_domain
       if (Warehouse.domain.blank? && Repository.count > 0) || (!Warehouse.domain.blank? && request.host != Warehouse.domain && request.host.gsub(/^\w+\./, '') != Warehouse.domain)
         status_message :error, "Invalid domain '#{request.host}'.", 'layouts/domain'
+      else
+        true
       end
-      true
     end
 
     def set_context
