@@ -34,7 +34,9 @@ namespace :warehouse do
     Importer::MysqlAdapter.create config
   end
 
-  task :post_commit => :sync do
+  task :post_commit do
+    ENV['REPO'] ||= ENV['REPO_PATH'].split('/').last if ENV['REPO_PATH']
+    Rake::Task['warehouse:sync'].invoke
     # eventually add other stuff here, like email
   end
   
@@ -120,15 +122,23 @@ namespace :warehouse do
 
   task :sync => :init do
     (ENV['REPO'] ? [find_first_repo(ENV['REPO'])] : Importer::Repository.find_all).each do |repo|
-      puts "Syncing revisions for #{repo.attributes['name'].inspect}"
-      repo.sync_revisions(@num)
+      if repo
+        puts "Syncing revisions for #{repo.attributes['name'].inspect}"
+        repo.sync_revisions(@num)
+      else
+        puts "No repo(s) found, REPO=#{ENV['REPO'].inspect} given."
+      end
     end
   end
 
   task :clear => :init do
     (ENV['REPO'] ? [find_first_repo(ENV['REPO'])] : Importer::Repository.find_all).each do |repo|
-      repo.clear_revisions!
-      puts "All repositories for #{repo.attributes['name'].inspect} were cleared."
+      if repo
+        repo.clear_revisions!
+        puts "All repositories for #{repo.attributes['name'].inspect} were cleared."
+      else
+        puts "No repo(s) found, REPO=#{ENV['REPO'].inspect} given."
+      end
     end
   end
 
