@@ -3,7 +3,7 @@
   <p><%= @message %></p>
 
   <p>Warehouse.domain: <%=h Warehouse.domain %></p>
-  <p>Sub Host: <%=h request.host %></p>
-  <p>Host: <%=h request.host.gsub(/^\w+\./, '') %></p>
+  <p>Full Host: <%=h request.host %></p>
+  <p>Host: <%=h request.host.gsub(/^[\w-]+\./, '') %></p>
 </div>
 

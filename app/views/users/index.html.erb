@@ -42,3 +42,10 @@
 <% end -%>
 
 <%= will_paginate @users %>
+
+<% content_for :sidebar do %>
+<div class="sideblock">
+  <h3>Members</h3>
+  <p>This lists all the users that have logged into Warehouse.  They may or may not have access to repositories.</p>
+</div>
+<% end -%>

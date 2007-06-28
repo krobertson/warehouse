@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
   helper :all # include all helpers, all the time
   helper_method :current_repository, :logged_in?, :current_user, :admin?, :controller_path, :repository_admin?, :repository_member?, :repository_subdomain
   
-  session(Warehouse.session_options)
+  session(Warehouse.session_options) unless Warehouse.domain.blank?
   
   around_filter :set_context
   before_filter :check_for_repository
@@ -98,7 +98,7 @@ class ApplicationController < ActionController::Base
     end
     
     def check_for_valid_domain
-      if (Warehouse.domain.blank? && Repository.count > 0) || (!Warehouse.domain.blank? && request.host != Warehouse.domain && request.host.gsub(/^\w+\./, '') != Warehouse.domain)
+      if (Warehouse.domain.blank? && Repository.count > 0) || (!Warehouse.domain.blank? && request.host != Warehouse.domain && request.host.gsub(/^[\w-]+\./, '') != Warehouse.domain)
         status_message :error, "Invalid domain '#{request.host}'.", 'layouts/domain'
       else
         true

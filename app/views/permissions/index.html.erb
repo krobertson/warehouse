@@ -38,7 +38,13 @@
   <% end if show_new_permission_form? -%>
   
 <% content_for :sidebar do %>
-<% if @repositories.any? %>
+<div class="sideblock">
+  <h3>Access Permissions</h3>
+  <p>This is where you can grant members access to your repository.  If a member doesn't show up in the dropdown, an administrator can invite them from the <%= link_to 'members', users_path %> area.  The user can also create an account with their OpenID credentials by logging into the site.</p>
+  <p>Warehouse makes no distinction with read or read/write, they are only for the subversion configuration.</p>
+</div>
+
+<% if @repositories.any? -%>
  <div class="sideblock">
    <h3>Repository Access</h3>
    <ul id="repo-list-perm" class="slist">
@@ -47,5 +53,5 @@
     <% end %>
    </ul>
  </div>
-<% end %>
-<% end %>
+<% end -%>
+<% end -%>

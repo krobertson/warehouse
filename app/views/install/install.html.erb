@@ -9,12 +9,12 @@
       <% if @repository.latest_revision >= 5000 %>
       <p style="line-height:140%;">
         It appears you have over 5000 changesets. Syncing from <code>rake</code> is much faster.
-        <pre><code>rake warehouse:sync REPO=<%= repository_subdomain %> RAILS_ENV=<%= RAILS_ENV %></code></pre> 
+        <pre><code>rake warehouse:sync REPO=<%=h @repository.subdomain %> RAILS_ENV=<%= RAILS_ENV %></code></pre> 
       </p>
       <% else %>
       <p style="margin:10px 0">
         Press the sync button now to get started syncing your repository.  Optionally, you can <%= link_to 'proceed on to your 
-        repository', browser_path %>.
+        repository', browser_url(:host => @repository.domain, :port => request.port) %>.
       </p>
       <% end %>
       <p>
@@ -38,7 +38,7 @@ Event.addBehavior({
   '#sync:click':function(e) {
     var initialImporter = new Importer(<%= @repository.id %>, {
       onImported: function() {
-        document.location = "<%= request.protocol %><%= request.host_with_port %>";
+        document.location = "<%= request.protocol %><%= @repository.domain %><%= request.port == 80 ? nil : ":#{request.port}" %>";
       },
       
       onStep: function(progress) {
