@@ -121,22 +121,22 @@ context "Permissions Controller on root domain" do
     @request.host = "test.host"
   end
 
-  specify "should grant access to admin" do
+  specify "should show administered repo list to admins" do
     login_as :rick
     get :index
     assert_template 'no_permissions'
   end
 
-  specify "should not grant access to repository admin" do
+  specify "should show administered repo list to repository admins" do
     User.any_instance.stubs(:admin?).returns(false)
     login_as :rick
     get :index
-    assert_redirect_to changesets_path
+    assert_template 'no_permissions'
   end
 
-  specify "should not grant access to repository member" do
+  specify "should show administered repo list to repository members" do
     login_as :justin
     get :index
-    assert_redirect_to changesets_path
+    assert_template 'no_permissions'
   end
 end
