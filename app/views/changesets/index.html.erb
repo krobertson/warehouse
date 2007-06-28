@@ -10,7 +10,7 @@
     <div class="cs-meta">
       <%= avatar_for(user) %>
       <p>
-        <span class="change-number"><%= link_to(changeset.revision, changeset_url(:id => changeset.revision, :host => changeset.repository.domain, :port => request.port)) %></span>
+        <span class="change-number"><%= link_to(changeset.revision, hosted_url(changeset.repository, :changeset, :id => changeset.revision)) %></span>
       </p>
     </div>
     <div class="cs-log">      
@@ -44,7 +44,7 @@
   <h3><%= 'Public ' if controller.action_name == 'public' %>Repositories</h3>
   <ul id="repo-list" class="slist">
     <% @repositories.each do |repo| %>
-    <li><%= link_to h(repo.name), changesets_url(:host => repo.domain, :port => request.port) %></li>
+    <li><%= link_to h(repo.name), hosted_url(repo, :changesets) %></li>
     <% end %>
   </ul>
 </div>

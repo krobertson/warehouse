@@ -18,7 +18,7 @@
 <ul id="repos">
 <% @repositories.each do |repo| -%>
   <li class="repo" id="repo-<%= repo.id %>">
-    <%= link_to h(repo.name), admin_url(:host => repo.domain, :port => request.port) %>
+    <%= link_to h(repo.name), hosted_url(repo, :admin) %>
     <span class="log"><%= repo.path %></span>
     <% if admin? || (repository_admin? && current_repository == repo) %>
       <% if repo.sync? %>

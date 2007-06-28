@@ -49,7 +49,7 @@
    <h3>Repository Access</h3>
    <ul id="repo-list-perm" class="slist">
     <% @repositories.each do |repo| %>
-    <li><%= link_to h(repo.name), permissions_url(:host => repo.domain, :port => request.port) %></li>
+    <li><%= link_to h(repo.name), hosted_url(repo, :permissions) %></li>
     <% end %>
    </ul>
  </div>

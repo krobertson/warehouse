@@ -9,7 +9,7 @@
 <ul id="repos">
 <% @repositories.each do |repo| -%>
   <li class="repo" id="repo-<%= repo.id %>">
-    <%= link_to h(repo.name), permissions_url(:host => repo.domain, :port => request.port) %>
+    <%= link_to h(repo.name), hosted_url(repo, :permissions) %>
     <span class="log"><%= repo.path %></span>
   </li>
 <% end -%>

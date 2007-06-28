@@ -14,7 +14,7 @@
       <% else %>
       <p style="margin:10px 0">
         Press the sync button now to get started syncing your repository.  Optionally, you can <%= link_to 'proceed on to your 
-        repository', browser_url(:host => @repository.domain, :port => request.port) %>.
+        repository', hosted_url(@repository, :browser) %>.
       </p>
       <% end %>
       <p>

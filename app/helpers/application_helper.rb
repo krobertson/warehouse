@@ -1,5 +1,11 @@
 # Methods added to this helper will be available to all templates in the application.
 module ApplicationHelper
+  def hosted_url(repository, name, options = {})
+    options[:host] = repository ? repository.domain : Warehouse.domain
+    options[:port] = request.port unless request.port == 80
+    send("#{name}_url", options)
+  end
+  
   def path?(path)
     controller_path[0..path.length-1] == path
   end
