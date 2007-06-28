@@ -103,7 +103,7 @@ class PermissionsController < ApplicationController
       return true if current_repository
       if logged_in? && repository_subdomain.blank?
         @repositories = admin? ? Repository.find(:all) : current_user.administered_repositories
-        render :action => 'no_permissions'
+        render :action => 'layouts/administered'
       elsif Repository.count > 0
         redirect_to(logged_in? ? changesets_path : public_changesets_path)
       else

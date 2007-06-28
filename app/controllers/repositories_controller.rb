@@ -42,7 +42,7 @@ class RepositoriesController < ApplicationController
   
   protected
     def find_or_initialize_repository
-      @repository = params[:id] ? (repository_admin? ? current_repository : Repository.find(params[:id])) : Repository.new
+      @repository = params[:id] ? (admin? ? Repository : current_user.administered_repositories).find(params[:id]) : Repository.new
       @repository.attributes = params[:repository] unless params[:repository].blank?
     end
 
