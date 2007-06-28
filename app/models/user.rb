@@ -34,6 +34,9 @@ class User < ActiveRecord::Base
     end
   end
   
+  has_many :administered_repositories, :through => :permissions, :source => :repository, :conditions => ['permissions.admin = ?', true],
+    :select => "repositories.*, #{Permission.join_fields}", :order => 'repositories.name, permissions.path'
+  
   attr_accessor :password
   validates_format_of       :email, :with => /(\A(\s*)\Z)|(\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z)/i, :allow_nil => true
   validates_confirmation_of :password, :allow_nil => true
@@ -55,7 +58,7 @@ class User < ActiveRecord::Base
   end
 
   def name
-    read_attribute(:login) || sanitized_email
+    (login.blank? ? nil : login) || sanitized_email || identity_path
   end
 
   def sanitized_email

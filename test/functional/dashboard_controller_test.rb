@@ -71,8 +71,7 @@ context "Dashboard Controller" do
   specify "should get check valid domain for invalid domain" do
     Warehouse.domain = 'foo.test.host'
     @request.host = 'test.host'
-    @controller.expects(:render).returns(true)
     get :index
-    @controller.send(:check_for_valid_domain).should == false
+    assert_template 'layouts/domain'
   end
 end

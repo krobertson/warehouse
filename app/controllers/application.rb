@@ -8,6 +8,8 @@ class ApplicationController < ActionController::Base
   session(Warehouse.session_options) unless Warehouse.domain.blank?
   
   around_filter :set_context
+  
+  before_filter :check_for_valid_domain
   before_filter :check_for_repository
 
   expiring_attr_reader :current_user,       :retrieve_current_user
@@ -85,8 +87,6 @@ class ApplicationController < ActionController::Base
     end
   
     def check_for_repository
-      check_for_valid_domain
-      return false if performed?
       return true if current_repository
       if Repository.count > 0
         redirect_to(logged_in? ? changesets_path : public_changesets_path)

@@ -1,11 +1,10 @@
 class RepositoriesController < ApplicationController
-  skip_before_filter :check_for_repository
   before_filter :admin_required,            :only   => :create
   before_filter :repository_admin_required, :except => :create
   before_filter :find_or_initialize_repository
 
   def index
-    @repositories = admin? ? Repository.find(:all) : [current_repository]
+    @repositories = admin? ? Repository.find(:all) : current_user.administered_repositories
     if current_repository
       @repositories.unshift current_repository
       @repositories.uniq!
@@ -48,7 +47,10 @@ class RepositoriesController < ApplicationController
     end
 
     def check_for_repository
-      return true if repository_subdomain.blank? && admin?
-      super
+      (repository_subdomain.blank? && admin?) || super
+    end
+    
+    def repository_admin_required
+      (repository_subdomain.blank? && admin?) || super
     end
 end

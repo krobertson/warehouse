@@ -34,3 +34,10 @@ justin_sample:
   repository_id: 1
   path: ''
   active: true
+inactive_rick_example:
+  id: 7
+  user_id: 1
+  repository_id: 2
+  active: false
+  admin: true
+  path: 

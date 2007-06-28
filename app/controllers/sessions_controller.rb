@@ -1,5 +1,6 @@
 class SessionsController < ApplicationController
   skip_before_filter :check_for_repository
+
   def create
     if using_open_id?
       cookies['use_svn'] = {:value => '0', :expires => 1.year.ago.utc, :domain => Warehouse.domain, :path => '/'}

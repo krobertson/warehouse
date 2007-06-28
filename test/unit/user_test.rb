@@ -52,4 +52,8 @@ context "User" do
     User.expects(:find_by_login).with('rick').returns(u)
     User.authenticate('rick', 'chicken').should.be.nil
   end
+  
+  specify "should find administered repositories" do
+    users(:rick).administered_repositories.should == [repositories(:sample)]
+  end
 end

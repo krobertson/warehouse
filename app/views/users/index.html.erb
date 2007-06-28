@@ -8,8 +8,8 @@
 <% @users.each do |user| -%>
   <li class="permission" id="<%= dom_id(user) %>">
     <%= avatar_for(user) %>
-    <%=h user.name || user.identity_url %>
-    <span class="log"><%= user.email %></span>
+    <%=h user.name %>
+    <span class="log"><%= user.sanitized_email || "No email set." %></span>
     <ul class="admin-controls">
       <li id="profile-<%= dom_id user %>" class="edit"><a href="#">Edit</a></li>
       <li class="del"><%= link_to_remote('Delete', :url => user_path(user), :with => "'_method=delete'") %></li>

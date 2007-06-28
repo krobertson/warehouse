@@ -1,4 +1,5 @@
 class InstallController < ApplicationController
+  skip_before_filter :check_for_valid_domain
   skip_before_filter :check_for_repository
   before_filter :check_installed, :except => [:test_install, :settings]
   

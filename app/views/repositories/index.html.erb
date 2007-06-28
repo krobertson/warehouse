@@ -18,9 +18,9 @@
 <ul id="repos">
 <% @repositories.each do |repo| -%>
   <li class="repo" id="repo-<%= repo.id %>">
-    <%= link_to h(repo.name), root_url(:host => repo.domain, :port => request.port) %>
+    <%= link_to h(repo.name), admin_url(:host => repo.domain, :port => request.port) %>
     <span class="log"><%= repo.path %></span>
-    <% if admin? %>
+    <% if admin? || (repository_admin? && current_repository == repo) %>
       <% if repo.sync? %>
       <div class="need-sync" id="sync-<%= repo.id %>">
         <span id="percent-<%= repo.id %>" class="sync-percent"><%= repo.sync_progress %>%</span>

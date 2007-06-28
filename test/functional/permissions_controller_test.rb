@@ -9,7 +9,7 @@ end
 
 
 context "Permissions Controller" do
-  def setup
+  setup do
     @controller = PermissionsController.new
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
@@ -17,19 +17,23 @@ context "Permissions Controller" do
     @request.host = "sample.test.host"
   end
 
-  specify "should ask for basic authentication on text requests" do
-    @controller.stubs(:current_repository).returns(repositories(:sample))
-    @controller.stubs(:current_user).returns(nil)
-    get :index, :format => 'text'
-    assert_response 401
+  specify "should grant access to admin" do
+    login_as :rick
+    get :index
+    assert_template 'index'
   end
 
-  specify "should login with basic authentication on text requests" do
-    @controller.stubs(:current_repository).returns(repositories(:sample))
-    @controller.stubs(:current_user).returns(nil)
-    @controller.expects(:authenticate_or_request_with_http_basic).yields(users(:rick).token, 'x').returns(users(:rick))
-    get :index, :format => 'text'
-    assert_response :success
+  specify "should grant access to repository admin" do
+    User.any_instance.stubs(:admin?).returns(false)
+    login_as :rick
+    get :index
+    assert_template 'index'
+  end
+
+  specify "should not grant access to repository member" do
+    login_as :justin
+    get :index
+    assert_template 'layouts/error'
   end
 
   specify "should grant new permission to repo" do
@@ -105,5 +109,34 @@ context "Permissions Controller" do
   specify "should delete permission" do
     delete :destroy, :id => permissions(:rick_sample).id
     permissions(:rick_sample).reload.active.should == false
+  end
+end
+
+context "Permissions Controller on root domain" do
+  setup do
+    @controller = PermissionsController.new
+    @request    = ActionController::TestRequest.new
+    @response   = ActionController::TestResponse.new
+    @controller.stubs(:current_user).returns(users(:rick))
+    @request.host = "test.host"
+  end
+
+  specify "should grant access to admin" do
+    login_as :rick
+    get :index
+    assert_template 'no_permissions'
+  end
+
+  specify "should not grant access to repository admin" do
+    User.any_instance.stubs(:admin?).returns(false)
+    login_as :rick
+    get :index
+    assert_redirect_to changesets_path
+  end
+
+  specify "should not grant access to repository member" do
+    login_as :justin
+    get :index
+    assert_redirect_to changesets_path
   end
 end

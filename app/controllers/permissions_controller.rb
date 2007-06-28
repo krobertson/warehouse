@@ -1,6 +1,7 @@
 class PermissionsController < ApplicationController
   skip_before_filter :check_for_repository
-  before_filter :check_for_repository
+  before_filter :check_for_repository, :except => :index
+  before_filter :check_for_repository_or_show_repos, :only => :index
   before_filter :repository_admin_required
   before_filter :load_all_repositories
 
@@ -57,7 +58,13 @@ class PermissionsController < ApplicationController
   
   protected
     def load_all_repositories
-      @repositories = Repository.find(:all, :conditions => ['id != ?', current_repository.id]) if admin?
+      @repositories = if admin?
+        Repository.find(:all, :conditions => ['id != ?', current_repository.id])
+      elsif repository_admin?
+        current_user.administered_repositories.find(:all, :conditions => ['repositories.id != ?', current_repository.id])
+      else
+        []
+      end
     end
     
     def destroy_user_permissions
@@ -90,13 +97,19 @@ class PermissionsController < ApplicationController
       end
     end
 
-    # slight tweak that checks basic auth too
-    def repository_admin_required
-      if request.format.text?
-        @current_user = authenticate_or_request_with_http_basic { |u, p| user = User.find_by_token(u); repository_admin? && user } unless logged_in?
-        return false if performed?
+    def check_for_repository_or_show_repos
+      check_for_valid_domain
+      return false if performed?
+      return true if current_repository
+      if logged_in? && repository_subdomain.blank?
+        @repositories = admin? ? Repository.find(:all) : current_user.administered_repositories
+        render :action => 'no_permissions'
+      elsif Repository.count > 0
+        redirect_to(logged_in? ? changesets_path : public_changesets_path)
       else
-        repository_admin? || status_message(:error, "You must be an administrator for this repository to visit this page.")
+        reset_session
+        redirect_to install_path
       end
+      false
     end
 end

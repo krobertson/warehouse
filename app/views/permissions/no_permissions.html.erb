@@ -1,0 +1,22 @@
+<%= render :partial => "admin_tab" %>
+
+<h2>Access Permissions</h2>
+
+<% if @repositories.any? -%>
+<p>You have access to these repositories:</p>
+
+<div id="repository-admin">
+<ul id="repos">
+<% @repositories.each do |repo| -%>
+  <li class="repo" id="repo-<%= repo.id %>">
+    <%= link_to h(repo.name), permissions_url(:host => repo.domain, :port => request.port) %>
+    <span class="log"><%= repo.path %></span>
+  </li>
+<% end -%>
+</ul>
+</div>
+
+<% else -%>
+<p>You do not have administrative access to any repositories.</p>
+<% end -%>
+
