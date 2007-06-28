@@ -26,8 +26,13 @@ namespace :warehouse do
     require 'yaml'
     require 'config/initializers/svn'
     require 'importer/base'
+    ENV['DB_CONFIG'] ||= "config/database.yml"
+    raise "No database config at #{ENV['DB_CONFIG'].inspect}" unless File.exist?(ENV['DB_CONFIG'])
     config = {}
-    YAML.load_file("config/database.yml")[RAILS_ENV].each do |k, v|
+    yaml_config = YAML.load_file(ENV['DB_CONFIG'])
+    raise "Empty database config at #{ENV['DB_CONFIG'].inspect}" if yaml_config.nil? || yaml_config.empty?
+    raise "No database config for #{RAILS_ENV} environment at #{ENV['DB_CONFIG'].inspect}" if yaml_config[RAILS_ENV].nil? || yaml_config[RAILS_ENV].empty?
+    yaml_config[RAILS_ENV].each do |k, v|
       config[k.to_sym] = v
     end
     @num  = (ENV['NUM'] || ENV['N']).to_i

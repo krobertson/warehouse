@@ -3,6 +3,8 @@
 * fix changeset/public reloading issues
 * allow configurable session options
 * lots of tweaks for repo admins accessing admin functions
+* allow repo admins to add access permissions
+* better error messages for db config errors in import and post-commit tasks
 
 * 0.9.1 (beta)
 

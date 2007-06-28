@@ -2,7 +2,7 @@ module PermissionsHelper
   @@permission_options = [['Read access', '0'], ['Read and write access', '1']]
 
   def show_new_permission_form?
-    admin? && (!@invitees.blank? || (@members && !@members.keys.include?(nil)))
+    repository_admin? && (!@invitees.blank? || (@members && !@members.keys.include?(nil)))
   end
 
   def path_permissions(permission = nil)
