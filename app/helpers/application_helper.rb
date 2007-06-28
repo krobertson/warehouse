@@ -23,7 +23,8 @@ module ApplicationHelper
     case filename.split('.').last.downcase
       when 'js', 'as' then 'javascript'
       when 'rb', 'rakefile' then 'ruby'
-      when 'rhtml', 'erb', 'html', 'xml', 'rxml' then 'html'
+      when 'css' then 'css'
+      when 'rhtml', 'erb', 'html', 'xml', 'rxml', 'plist' then 'html'
       else 'plain'
     end
   end
