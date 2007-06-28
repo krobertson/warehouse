@@ -1,6 +1,7 @@
 class RepositoriesController < ApplicationController
   skip_before_filter :check_for_repository
-  before_filter :admin_required
+  before_filter :admin_required,            :only   => :create
+  before_filter :repository_admin_required, :except => :create
   before_filter :find_or_initialize_repository
 
   def index
@@ -42,7 +43,7 @@ class RepositoriesController < ApplicationController
   
   protected
     def find_or_initialize_repository
-      @repository = params[:id] ? Repository.find(params[:id]) : Repository.new
+      @repository = params[:id] ? (repository_admin? ? current_repository : Repository.find(params[:id])) : Repository.new
       @repository.attributes = params[:repository] unless params[:repository].blank?
     end
 

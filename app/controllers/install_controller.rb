@@ -2,7 +2,7 @@ class InstallController < ApplicationController
   skip_before_filter :check_for_repository
   before_filter :check_installed, :except => [:test_install, :settings]
   
-  before_filter :admin_required,       :only => :settings
+  before_filter :admin_required, :only => :settings
   
   layout :choose_layout
 
@@ -77,6 +77,7 @@ class InstallController < ApplicationController
     end
     
     def write_config_file(attributes = {})
+      domain_is_blank = Warehouse.domain.blank?
       tmpl = ['# This file is auto generated.  Visit /admin/settings to change it.', '#', "require 'warehouse' unless Object.const_defined?(:Warehouse)", '# set licensed domain name']
       attributes.each do |key, value|
         Warehouse.send "#{key}=", (value.blank? ? nil : value)
@@ -86,6 +87,8 @@ class InstallController < ApplicationController
       File.open(File.join(RAILS_ROOT, 'config', 'initializers', 'warehouse.rb'), 'w') do |f|
         f.write tmpl.join("\n")
       end
+      
+      session(Warehouse.session_options) if domain_is_blank && !attributes[:domain].blank?
     end
 
     def choose_layout

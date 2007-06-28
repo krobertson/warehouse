@@ -8,15 +8,33 @@ class RepositoriesController
 end
 
 
-class RepositoriesControllerTest < Test::Unit::TestCase
-  def setup
+context "Repositories Controller" do
+  setup do
     @controller = RepositoriesController.new
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
+    @request.host = 'sample.test.host'
   end
 
-  # Replace this with your real tests.
-  def test_truth
-    assert true
+  specify "should grant access to admin" do
+    login_as :rick
+    get :index
+    assert_template 'index'
+    assigns(:repositories).size.should == 2
+  end
+
+  specify "should grant access to repository admin" do
+    User.any_instance.stubs(:admin?).returns(false)
+    login_as :rick
+    get :index
+    assert_template 'index'
+    assigns(:repositories).size.should == 1
+  end
+
+  specify "should not grant access to repository member" do
+    login_as :justin
+    get :index
+    assert_template 'layouts/error'
+    assigns(:repositories).should.be.nil
   end
 end

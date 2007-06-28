@@ -25,7 +25,8 @@ class ChangesetsController < ApplicationController
       return
     end
     @repositories = Repository.find_all_by_public(true)
-    @changesets   = Changeset.paginate(:conditions => ['repository_id in (?)', @repositories.collect(&:id)], :page => params[:page], :order => 'changesets.revision desc')
+    @changesets   = @repositories.empty? ? [] :
+      Changeset.paginate(:conditions => ['repository_id in (?)', @repositories.collect(&:id)], :page => params[:page], :order => 'changesets.revision desc')
     respond_for_changesets
   end
   
