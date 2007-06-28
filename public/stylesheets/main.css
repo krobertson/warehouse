@@ -95,6 +95,11 @@ div.errorExplanation h2, div#error h2 {
   color: #460;
 }
 
+.avatar {
+  width: 32px;
+  height: 32px;
+}
+
 
 /* @end */
 
