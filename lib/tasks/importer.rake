@@ -81,6 +81,11 @@ namespace :warehouse do
     htpasswd.flush
   end
   
+  # CONFIG
+  # EMAIL_PREFIX
+  # REPO
+  # REPO_PATH
+  # REPO_ACCESS r/rw
   task :import_users => :environment do
     require 'webrick'
     raise "Need an htpasswd file to import.  CONFIG=/svn/foo/bar/htpasswd" unless ENV['CONFIG']
@@ -92,6 +97,10 @@ namespace :warehouse do
         i = 1
         user.login = "#{login}_#{i+=1}" until user.valid?
         user.save!
+        
+        next if ENV['REPO'].blank?
+        repo = Repository.find(ENV['REPO'])
+        repo.grant(:path => ENV['REPO_PATH'].to_s, :user => user, :full_access => ENV['REPO_ACCESS'] == 'rw')
       end
     end
   end
