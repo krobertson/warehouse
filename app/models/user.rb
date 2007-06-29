@@ -40,7 +40,7 @@ class User < ActiveRecord::Base
   attr_accessor :password
   validates_format_of       :email, :with => /(\A(\s*)\Z)|(\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z)/i, :allow_nil => true
   validates_confirmation_of :password, :allow_nil => true
-  validates_uniqueness_of   :identity_url, :email, :allow_nil => true
+  validates_uniqueness_of   :identity_url, :email, :login, :allow_nil => true
   validate :presence_of_identity_url_or_email
   before_create :set_default_attributes
   before_save   :sanitize_email

@@ -81,6 +81,21 @@ namespace :warehouse do
     htpasswd.flush
   end
   
+  task :import_users => :environment do
+    require 'webrick'
+    raise "Need an htpasswd file to import.  CONFIG=/svn/foo/bar/htpasswd" unless ENV['CONFIG']
+    User.transaction do
+      WEBrick::HTTPAuth::Htpasswd.new(ENV['CONFIG']).each do |(login, passwd)|
+        user = User.new(:login => login)
+        user.crypted_password = passwd
+        user.email = "#{user}@#{ENV['EMAIL_PREFIX'] || :unknown}.net"
+        i = 1
+        user.login = "#{login}_#{i+=1}" until user.valid?
+        user.save!
+      end
+    end
+  end
+  
   task :build_config => :init do
     require 'lib/warehouse'
     require 'config/initializers/warehouse'
