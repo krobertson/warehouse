@@ -55,16 +55,3 @@
 <% end -%>
 </ul>
 </div>
-
-<% content_for :sidebar do %>
-<% if @repositories && @repositories.size > 1 -%>
- <div class="sideblock">
-   <h3>Repository Access</h3>
-   <ul id="repo-list-perm" class="slist">
-    <% @repositories[1..-1].each do |repo| %>
-    <li><%= link_to h(repo.name), hosted_url(repo, :admin) %></li>
-    <% end %>
-   </ul>
- </div>
-<% end -%>
-<% end -%>
