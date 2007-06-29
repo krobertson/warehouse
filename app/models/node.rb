@@ -1,4 +1,5 @@
 class Node
+  include PathAccessibility
   @@default_mime_type = 'application/octet-stream'
   attr_reader :base_revision
   attr_reader :path

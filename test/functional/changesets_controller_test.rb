@@ -42,7 +42,6 @@ context "Changesets Controller" do
   specify "should show all changesets for user with all paths" do
     Repository.any_instance.stubs(:public?).returns(false)
     User.any_instance.stubs(:admin?).returns(false)
-    User.any_instance.expects(:permissions).returns(stub(:paths_for => :all))
     expect_paginate
     login_as :rick
     get :index
@@ -52,7 +51,7 @@ context "Changesets Controller" do
   specify "should show changesets for user" do
     Repository.any_instance.stubs(:public?).returns(false)
     User.any_instance.stubs(:admin?).returns(false)
-    User.any_instance.expects(:permissions).returns(stub(:paths_for => %w(foo)))
+    @controller.stubs(:changeset_paths).returns %w(foo)
     expect_paginate_by_paths [], %w(foo)
     login_as :rick
     get :index

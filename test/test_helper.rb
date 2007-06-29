@@ -19,7 +19,9 @@ class Test::Unit::TestCase
     def stub_node(*args)
       options = args.last.is_a?(Hash) ? args.pop : {}
       path    = args.first || ''
-      stub(options.merge(:path => path, :dir? => true))
+      returning stub(options.merge(:path => path, :dir? => true)) do |stub|
+        stub.stubs(:accessible_by?).returns(true)
+      end
     end
 end
 
