@@ -105,7 +105,7 @@ class ActionContentFilter
         
         # render the cached fragments
         controller.rendered_action_cache = true
-        controller.response.content_type = controller.request.format
+        controller.response.content_type = controller.request.format.all? ? Mime::HTML : controller.request.format
         controller.send(:render, :text => data['@content_for_layout'], :layout => controller.action_caching_layout)
         
         # NO WORKIE, due to some rails filter rewrite
