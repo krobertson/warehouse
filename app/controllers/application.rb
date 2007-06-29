@@ -105,6 +105,18 @@ class ApplicationController < ActionController::Base
       end
     end
 
+    # stores cache fragments that have already been read by
+    # #cached_in?
+    def current_cache
+      @cache ||= {}
+    end
+    
+    # checks if the given name has been cached.  If so,
+    # read into #current_cache
+    def cached_in?(name, options = nil)
+      name && current_cache[name] ||= read_fragment(name, options)
+    end
+
     def set_context
       ActiveRecord::Base.with_context do
         yield

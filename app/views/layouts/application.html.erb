@@ -98,14 +98,14 @@
         <!-- sbar -->
         <div id="sbar">
           <%= yield :sidebar %>
-          <% if current_repository && (current_repository.public? || logged_in?) -%>
+          <% cache CacheKey.bookmarks_for(current_repository) do -%>
           <div id="bookmarks" class="sideblock"<%= %( style="display:none") if current_repository.bookmarks.to_a.empty? %>>
             <h3>Bookmarks</h3>
             <ul id="bookmark-list">
               <%= render :partial => "bookmarks/bookmark", :collection => current_repository.bookmarks %>
             </ul>
           </div>
-          <% end -%>
+          <% end if current_repository && (current_repository.public? || repository_member?) -%>
         </div>
         <!-- /sbar -->
         <% end -%>

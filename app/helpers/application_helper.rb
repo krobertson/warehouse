@@ -59,4 +59,17 @@ module ApplicationHelper
     img = user && user.avatar? ? user.avatar_path : '/images/app/icons/member.png'
     tag('img', :src => img, :class => 'avatar')
   end
+
+  # simple wrapper around #cache that checks the current_cache hash 
+  # for cached data before reading the fragment.  See #current_cache
+  # and #cached_in? in ApplicationController
+  def cache_or_show(name, use_cache = true, &block)
+    if name.nil? || !use_cache
+      block.call
+    elsif current_cache[name]
+      concat current_cache[name], block.binding
+    else
+      cache(name, &block)
+    end
+  end
 end

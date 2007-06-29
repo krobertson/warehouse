@@ -1,6 +1,7 @@
 class BookmarksController < ApplicationController
   before_filter :repository_admin_required
-  
+  cache_sweeper :bookmark_sweeper
+
   def create
     @bookmark = current_repository.bookmarks.create(params[:bookmark])
     respond_to do |format|
