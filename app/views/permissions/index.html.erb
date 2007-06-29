@@ -1,7 +1,7 @@
 <%= render :partial => "admin_tab" %>
-<% if @repositories.size > 1 %>
+<% if current_repository -%>
 <h2><%=h current_repository.name %> Permissions</h2>
-<% end %>
+<% end -%>
 <ul id="permissions">
 <% @members.each do |user, permissions| -%>
   <li class="permission" id="<%= user ? dom_id(user) : :user_anon %>">

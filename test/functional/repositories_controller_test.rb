@@ -34,7 +34,7 @@ context "Repositories Controller" do
   specify "should not grant access to repository member" do
     login_as :justin
     get :index
-    assert_template 'layouts/error'
+    assert_template 'shared/error'
     assigns(:repositories).should.be.nil
   end
 end

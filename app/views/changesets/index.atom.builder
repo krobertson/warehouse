@@ -5,7 +5,8 @@ atom_feed(:url => formatted_changesets_url(:atom)) do |feed|
   @changesets.each do |changeset|
     feed.entry(changeset) do |entry|
       entry.title("##{changeset.revision}: #{truncate(changeset.message, 50)} by #{changeset.author}")
-      entry.content("<p>#{changeset.message}</p><ul>#{render :partial => "changes", :locals => { :changeset => changeset }}</ul>", :type => 'html')
+      entry.summary(simple_format(h(changeset.message)))
+      entry.content("<ul>#{render :partial => "changes", :locals => { :changeset => changeset }}</ul>", :type => 'html')
       entry.author do |author|
         author.name(changeset.author)
       end

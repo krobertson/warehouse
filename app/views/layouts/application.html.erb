@@ -47,11 +47,11 @@
         <div id="hdr-cnt">
           <h1><%= link_to current_repository ? current_repository.name : "Warehouse", root_path %></h1>
           <ul id="nav">
-            <% if current_repository -%>
+            <% unless repository_subdomain.blank? -%>
             <li id="code"><%= link_to 'Browser', browser_path %></li>
             <% end -%>
-            <li id="activity"><%= link_to 'Activity', (current_repository || logged_in? ? changesets_path : public_changesets_path) %></li>
-            <% if admin? || (current_repository && repository_admin?) %>
+            <li id="activity"><%= link_to 'Activity', (!repository_subdomain.blank? || logged_in? ? changesets_path : public_changesets_path) %></li>
+            <% if admin? || repository_admin? %>
             <li id="admin"><%= link_to 'Admin', admin_path %></li>
             <% end %>
           </ul>
@@ -94,7 +94,7 @@
           <%= yield %>
         </div>
         <!-- /main -->
-        <% unless @fullscreen %>
+        <% unless @fullscreen -%>
         <!-- sbar -->
         <div id="sbar">
           <%= yield :sidebar %>
@@ -108,7 +108,7 @@
           <% end -%>
         </div>
         <!-- /sbar -->
-        <% end %>
+        <% end -%>
       </div>
       <!-- /content -->
       <!-- footer -->

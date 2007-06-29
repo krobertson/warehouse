@@ -31,6 +31,6 @@ context "Changes Controller" do
   specify "should not allow inaccessible to view change" do
     Change.any_instance.expects(:accessible_by?).returns(false)
     get :show, :changeset_id => 1, :id => 2
-    assert_template 'layouts/error'
+    assert_template 'shared/error'
   end
 end

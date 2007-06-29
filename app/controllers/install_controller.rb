@@ -51,7 +51,7 @@ class InstallController < ApplicationController
     end
   rescue
     @message = $!.message
-    render :template => 'layouts/error'
+    render :template => 'shared/error'
   end
 
   def settings

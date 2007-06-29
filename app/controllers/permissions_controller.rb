@@ -3,7 +3,7 @@ class PermissionsController < ApplicationController
   before_filter :check_for_repository, :except => :index
   before_filter :check_for_repository_or_show_repos, :only => :index
   before_filter :repository_admin_required
-  before_filter :load_all_repositories
+  before_filter :load_all_repositories, :only => [:index, :create]
 
   def index
     @permission ||= Permission.new
@@ -58,13 +58,7 @@ class PermissionsController < ApplicationController
   
   protected
     def load_all_repositories
-      @repositories = if admin?
-        Repository.find(:all, :conditions => ['id != ?', current_repository.id])
-      elsif repository_admin?
-        current_user.administered_repositories.find(:all, :conditions => ['repositories.id != ?', current_repository.id])
-      else
-        []
-      end
+      @repositories = (admin? ? Repository : current_user.administered_repositories).find(:all, :conditions => ['repositories.id != ?', current_repository.id])
     end
     
     def destroy_user_permissions
@@ -103,7 +97,7 @@ class PermissionsController < ApplicationController
       return true if current_repository
       if logged_in? && repository_subdomain.blank?
         @repositories = admin? ? Repository.find(:all) : current_user.administered_repositories
-        render :action => 'layouts/administered'
+        render :template => 'shared/administered'
       elsif Repository.count > 0
         redirect_to(logged_in? ? changesets_path : public_changesets_path)
       else

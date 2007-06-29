@@ -33,7 +33,7 @@ context "Permissions Controller" do
   specify "should not grant access to repository member" do
     login_as :justin
     get :index
-    assert_template 'layouts/error'
+    assert_template 'shared/error'
   end
 
   specify "should grant new permission to repo" do
@@ -124,19 +124,19 @@ context "Permissions Controller on root domain" do
   specify "should show administered repo list to admins" do
     login_as :rick
     get :index
-    assert_template 'no_permissions'
+    assert_template 'shared/administered'
   end
 
   specify "should show administered repo list to repository admins" do
     User.any_instance.stubs(:admin?).returns(false)
     login_as :rick
     get :index
-    assert_template 'no_permissions'
+    assert_template 'shared/administered'
   end
 
   specify "should show administered repo list to repository members" do
     login_as :justin
     get :index
-    assert_template 'no_permissions'
+    assert_template 'shared/administered'
   end
 end

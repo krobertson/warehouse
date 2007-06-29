@@ -47,7 +47,7 @@ class ApplicationController < ActionController::Base
 
     def status_message(type, message = nil, template = nil)
       @message = message || "A login is required to visit this page."
-      render :template => (template || "layouts/#{type}")
+      render :template => (template || "shared/#{type}")
       false
     end
 
@@ -99,7 +99,7 @@ class ApplicationController < ActionController::Base
     
     def check_for_valid_domain
       if (Warehouse.domain.blank? && Repository.count > 0) || (!Warehouse.domain.blank? && request.host != Warehouse.domain && request.host.gsub(/^[\w-]+\./, '') != Warehouse.domain)
-        status_message :error, "Invalid domain '#{request.host}'.", 'layouts/domain'
+        status_message :error, "Invalid domain '#{request.host}'.", 'shared/domain'
       else
         true
       end

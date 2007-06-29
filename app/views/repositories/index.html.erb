@@ -20,40 +20,51 @@
   <li class="repo" id="repo-<%= repo.id %>">
     <%= link_to h(repo.name), hosted_url(repo, :admin) %>
     <span class="log"><%= repo.path %></span>
-    <% if admin? || (repository_admin? && current_repository == repo) %>
+  <% if repo.sync? %>
+    <div class="need-sync" id="sync-<%= repo.id %>">
+      <span id="percent-<%= repo.id %>" class="sync-percent"><%= repo.sync_progress %>%</span>
+
+      The changesets <%= repo.revisions_to_sync.inspect.sub(/\.\./, '-') %> need to be synced.
+      <img id="indicator-<%= repo.id %>" src="/images/app/progress.gif" style="display:none" />
+      <% v = "importer#{repo.id}" %>
+      <% content_for :javascript do %>
+        var <%= v %> = new Importer(<%= repo.id %>, {
+          onStep: function(progress) {
+            $("percent-<%= repo.id %>").update(progress + "%");
+          },
+
+          onImported: function() {
+            $('sync-<%= repo.id %>').update('Finished importing!  You\'re ready to roll.');
+          }
+        });
+      <% end -%>
+    </div>
+  <% end -%>
+    <ul class="admin-controls">
       <% if repo.sync? %>
-      <div class="need-sync" id="sync-<%= repo.id %>">
-        <span id="percent-<%= repo.id %>" class="sync-percent"><%= repo.sync_progress %>%</span>
-        
-        The changesets <%= repo.revisions_to_sync.inspect.sub(/\.\./, '-') %> need to be synced.
-        <img id="indicator-<%= repo.id %>" src="/images/app/progress.gif" style="display:none" />
-        <% v = "importer#{repo.id}" %>
-        <% content_for :javascript do %>
-          var <%= v %> = new Importer(<%= repo.id %>, {
-            onStep: function(progress) {
-              $("percent-<%= repo.id %>").update(progress + "%");
-            },
-            
-            onImported: function() {
-              $('sync-<%= repo.id %>').update('Finished importing!  You\'re ready to roll.');
-            }
-          });
-        <% end %>
-        </div>
-        <% end %>
-        <ul class="admin-controls">
-          <% if repo.sync? %>
-          <li class="sync"><a href="#" title="Begin syncing" onclick="<%= v %>.step(); $('indicator-<%= repo.id %>').show(); return false;">Sync</a></li>
-          <% end %>
-          <li class="edit" id="repoedit-<%= repo.id %>"><a href="#">Edit</a></li>
-          <li class="del"><a href="#" title="Delete">Delete</a></li>
-        </ul>
+      <li class="sync"><a href="#" title="Begin syncing" onclick="<%= v %>.step(); $('indicator-<%= repo.id %>').show(); return false;">Sync</a></li>
       <% end %>
-      <% sheet_form_for repo, {:trigger => "repoedit-#{repo.id}"} do |s| %>
-        <h2>Edit this Repository</h2>
-        <%= render :partial => "form", :object => s %>
-    <% end %>
+      <li class="edit" id="repoedit-<%= repo.id %>"><a href="#">Edit</a></li>
+      <li class="del"><a href="#" title="Delete">Delete</a></li>
+    </ul>
+    <% sheet_form_for repo, {:trigger => "repoedit-#{repo.id}"} do |s| -%>
+      <h2>Edit this Repository</h2>
+      <%= render :partial => "form", :object => s %>
+    <% end -%>
   </li>
 <% end -%>
 </ul>
 </div>
+
+<% content_for :sidebar do %>
+<% if @repositories && @repositories.size > 1 -%>
+ <div class="sideblock">
+   <h3>Repository Access</h3>
+   <ul id="repo-list-perm" class="slist">
+    <% @repositories[1..-1].each do |repo| %>
+    <li><%= link_to h(repo.name), hosted_url(repo, :admin) %></li>
+    <% end %>
+   </ul>
+ </div>
+<% end -%>
+<% end -%>

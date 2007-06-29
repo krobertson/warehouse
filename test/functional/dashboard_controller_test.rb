@@ -72,6 +72,6 @@ context "Dashboard Controller" do
     Warehouse.domain = 'foo.test.host'
     @request.host = 'test.host'
     get :index
-    assert_template 'layouts/domain'
+    assert_template 'shared/domain'
   end
 end
