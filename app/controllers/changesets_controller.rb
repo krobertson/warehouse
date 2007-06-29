@@ -1,16 +1,16 @@
 class ChangesetsController < ApplicationController
+  before_filter :repository_subdomain_or_login_required, :only => :index
   before_filter :repository_member_required, :only => :show
+  before_filter :root_domain_required, :only => :public
+
+  caches_action_content :index, :show, :public
+  
   helper_method :previous_changeset, :next_changeset
   expiring_attr_reader :changeset_paths, :find_changeset_paths
 
   def index
-    if repository_subdomain.blank?
-      if logged_in? 
-        return global_index
-      else
-        return redirect_to(public_changesets_path)
-      end
-    end
+    return global_index if repository_subdomain.blank? && logged_in?
+
     @changesets = case changeset_paths
       when :all then current_repository.changesets.paginate(:page => params[:page], :order => 'changesets.revision desc')
       when []   then []
@@ -20,10 +20,6 @@ class ChangesetsController < ApplicationController
   end
 
   def public
-    unless repository_subdomain.blank?
-      redirect_to changesets_path
-      return
-    end
     @repositories = Repository.find_all_by_public(true)
     @changesets   = @repositories.empty? ? [] :
       Changeset.paginate(:conditions => ['repository_id in (?)', @repositories.collect(&:id)], :page => params[:page], :order => 'changesets.revision desc')
@@ -40,8 +36,21 @@ class ChangesetsController < ApplicationController
     @changeset = current_repository.changesets.find_by_paths(changeset_paths, :conditions => ['revision = ?', params[:id]])
     respond_to do |format|
       format.html
-      format.diff { render :layout => false }
+      format.diff { render :action => 'show', :layout => false }
     end
+  end
+
+  def action_url_to_id
+    super + 
+      if (action_name == 'index' && repository_subdomain.blank? && logged_in?) || (action_name != 'public' && changeset_paths != :all)
+        "_user_#{current_user.id}"
+      else
+        ''
+      end
+  end
+
+  def action_caching_layout
+    !(request.format.atom? || request.format.diff?)
   end
 
   protected
@@ -56,7 +65,7 @@ class ChangesetsController < ApplicationController
     end
     
     def find_changeset_paths
-      if current_repository.public? || (logged_in? && current_user.admin?)
+      if current_repository.public? || admin? || repository_admin?
         :all
       else
         (logged_in? && current_user.permissions.paths_for(current_repository)) || []
@@ -72,6 +81,24 @@ class ChangesetsController < ApplicationController
         format.atom do
           render :layout => false, :action => 'index'
         end
+      end
+    end
+
+    def repository_subdomain_or_login_required
+      if repository_subdomain.blank? && !logged_in?
+        redirect_to(public_changesets_path)
+        false
+      else
+        true
+      end
+    end
+    
+    def root_domain_required
+      if repository_subdomain.blank?
+        true
+      else
+        redirect_to changesets_path
+        false
       end
     end
 

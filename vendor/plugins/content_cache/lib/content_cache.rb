@@ -50,6 +50,15 @@ module ContentCache
     def expire_action_content(path)
       expire_fragment(/#{Regexp.escape(path[1..-1])}.*/)
     end
+
+    # allow controllers to override
+    def action_url_to_id
+      "#{request.host_with_port}#{request.request_uri}"
+    end
+    
+    def action_caching_layout
+      true
+    end
   end
   
   module ClassMethods
@@ -70,10 +79,6 @@ class ActionContentFilter
   cattr_accessor :preserved_instance_variables
   @@preserved_instance_variables = ['@page_title', '@page_breadcrumbs']
 
-  def action_url_to_id(controller, tag="content_only")  #:nodoc:
-    controller.url_for.split("://").last+'_'+tag
-  end
-
   def initialize(*actions)  #:nodoc:
     @actions = actions
   end
@@ -81,13 +86,13 @@ class ActionContentFilter
   def before(controller)  #:nodoc:
     return unless @actions.include?(controller.action_name.intern) && controller.perform_caching
     return if controller.request.post?
-    if cache = controller.read_fragment(action_url_to_id(controller))
+    if cache = controller.read_fragment(controller.action_url_to_id)
+      data = YAML.load(cache)
+
       # Load preserved instance variables
       if template = controller.instance_variable_get('@template')
         for preserved_instance_variable in @@preserved_instance_variables
-          if preserved_instance_variable_value = controller.read_fragment(action_url_to_id(controller,preserved_instance_variable.gsub('@','')))
-            template.instance_variable_set(preserved_instance_variable, preserved_instance_variable_value)
-          end
+          template.instance_variable_set(preserved_instance_variable, data[preserved_instance_variable])
         end
       else
         logger.error('Template not found!')
@@ -100,10 +105,15 @@ class ActionContentFilter
         
         # render the cached fragments
         controller.rendered_action_cache = true
-        controller.render :text => cache, :layout => true
+        controller.response.content_type = controller.request.format
+        controller.send(:render, :text => data['@content_for_layout'], :layout => controller.action_caching_layout)
         
+        # NO WORKIE, due to some rails filter rewrite
+        # i see no way to call after filters, and WH doesn't use them
+        # anyway, so w/e
+        #
         # sweep the cache, call any necessary after filters
-        controller.after_action
+        # controller.send(:after_action)
       ensure
         controller.logger.level = old_logger_level
       end
@@ -114,27 +124,20 @@ class ActionContentFilter
     return if !@actions.include?(controller.action_name.intern) || controller.rendered_action_cache
     template = controller.instance_variable_get('@template')
     if template
+      data = {}
       # Save the action content to a fragment.
-      content_for_layout = template.instance_variable_get('@content_for_layout')
-      if content_for_layout
-        controller.write_fragment(action_url_to_id(controller), content_for_layout)
-      end
+      data['@content_for_layout'] = template.instance_variable_get('@content_for_layout') || template.controller.response.body
       
       # Save preserved instance variables
       if template = controller.instance_variable_get('@template')
         for preserved_instance_variable in @@preserved_instance_variables
-          if preserved_instance_variable_value = template.instance_variable_get(preserved_instance_variable)
-            controller.write_fragment(action_url_to_id(controller,preserved_instance_variable.gsub('@','')),preserved_instance_variable_value)
-          end
+          data[preserved_instance_variable] = template.instance_variable_get(preserved_instance_variable)
         end
       else
         logger.error('Template not found!')
       end
       
+      controller.write_fragment(controller.action_url_to_id, data.to_yaml)
     end
   end
-end
-
-class ActionController::Base #:nodoc:
-  include ContentCache
 end

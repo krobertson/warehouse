@@ -1,1 +1,1 @@
-require 'content_cache'
+ActionController::Base.send :include, ContentCache

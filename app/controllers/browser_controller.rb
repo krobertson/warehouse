@@ -1,6 +1,9 @@
 class BrowserController < ApplicationController
   before_filter :find_node
   before_filter :repository_member_required
+  
+  caches_action_content :index
+  
   helper_method :current_revision, :current_changeset, :previous_changeset, :next_changeset
 
   def index
