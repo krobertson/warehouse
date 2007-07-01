@@ -28,7 +28,7 @@ module ApplicationHelper
   def highlight_as(filename)
     case filename.split('.').last.downcase
       when 'js', 'as' then 'javascript'
-      when 'rb', 'rakefile' then 'ruby'
+      when 'rb', 'rakefile', 'rake' then 'ruby'
       when 'css' then 'css'
       when 'rhtml', 'erb', 'html', 'xml', 'rxml', 'plist' then 'html'
       else 'plain'

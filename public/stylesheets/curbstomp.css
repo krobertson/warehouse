@@ -1,0 +1,8 @@
+/* weird line height bug */
+#bookmarks li, ul.slist li {
+  height: 29px;
+}
+
+.viewsource code, .sourcecode th {
+  font-family: Consolas, "Lucida Console" !important;
+}

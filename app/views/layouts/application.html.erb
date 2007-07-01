@@ -24,6 +24,9 @@
       <%= yield :javascript %>
     </script>
     <%= auto_discovery_link_tag(:atom, formatted_changesets_path(:atom)) %>
+    <!--[if lt IE 8]>
+      <%= stylesheet_link_tag 'curbstomp' %>
+    <![endif]-->
   </head>
   <body>
     <%= @onready %>

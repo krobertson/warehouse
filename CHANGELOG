@@ -1,5 +1,8 @@
 * SVN
 
+* Fix footer in IE 7 to align to left side of page
+* Fix bookmark line height in IE 7, add ie specific style sheet curbstomp.css
+* Fix permission form in IE 7.  Do not allow it to duplicate events on the add/subtract buttons.
 * fix changeset/public reloading issues
 * allow configurable session options
 * lots of tweaks for repo admins accessing admin functions

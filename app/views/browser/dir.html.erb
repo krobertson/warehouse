@@ -82,7 +82,7 @@
 
 <% content_for :sidebar do %>
 <div class="sideblock">
-  <h3>Activity in <%= @node.path.split('/').last %></h3>
+  <h3>Activity in <%= @node.path.split('/').last || '~' %></h3>
   <ul id="recent-activity">
   <% @changesets.each do |changeset| -%>
   <li><%= link_to %(<span class="author">#{h changeset.author}:</span> #{truncate(strip_tags(changeset.message), 50)}), changeset_path(changeset), :title => "Changeset [#{changeset.revision}] @ #{changeset.changed_at.to_s(:short)}" %></li>

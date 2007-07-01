@@ -18,7 +18,7 @@ Permissions = {
   
   add: function(line) {
     var index   = line.parentNode.getElementsByTagName('p').length
-    var newline = line.duplicate();
+    var newline = $(line).duplicate();
     var newsel  = newline.down('select');
     var newpath = newline.down('input');
     var newid   = newline.down('input', 1);
@@ -27,7 +27,11 @@ Permissions = {
     newpath.setAttribute('name', 'permission[paths][' + index + '][path]')
     newsel.setAttribute('name', 'permission[paths][' + index + '][full_access]')
     if(newid) newid.remove();
-    Event.addBehavior.unload(); Event.addBehavior.load(Event.addBehavior.rules)
+    
+    if(!Prototype.Browser.IE) {
+      Event.addBehavior.unload(); 
+      Event.addBehavior.load(Event.addBehavior.rules)
+    }
   }
 };
 
@@ -68,7 +72,7 @@ Importer.prototype = {
 
 Element.addMethods({
   duplicate: function(element) {
-    element = $(element);
+    element = $(element);    
     var clone = element.cloneNode(true);
     element.parentNode.appendChild(clone);
     return clone;
@@ -143,8 +147,9 @@ Sheet.prototype = {
 };
 
 Event.addBehavior({
-  'a.addpath:click': function() {
-    Permissions.add(this.up());
+  'a.addpath:click': function(event) {
+    var a = Event.findElement(event, 'a');
+    Permissions.add(a.up());
     return false;
   },
   
