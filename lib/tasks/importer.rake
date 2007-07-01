@@ -89,6 +89,7 @@ namespace :warehouse do
   task :import_users => :environment do
     require 'webrick'
     raise "Need an htpasswd file to import.  CONFIG=/svn/foo/bar/htpasswd" unless ENV['CONFIG']
+    repo = ENV['REPO'].blank? ? nil : Repository.find_by_subdomain(ENV['REPO'])
     User.transaction do
       WEBrick::HTTPAuth::Htpasswd.new(ENV['CONFIG']).each do |(login, passwd)|
         user = User.new(:login => login)
@@ -98,8 +99,7 @@ namespace :warehouse do
         user.login = "#{login}_#{i+=1}" until user.valid?
         user.save!
         
-        next if ENV['REPO'].blank?
-        repo = Repository.find(ENV['REPO'])
+        next if repo.nil?
         repo.grant(:path => ENV['REPO_PATH'].to_s, :user => user, :full_access => ENV['REPO_ACCESS'] == 'rw')
       end
     end
