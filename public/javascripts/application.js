@@ -134,8 +134,12 @@ Sheet.prototype = {
     this.overlay = new Element('div', {id: namespace + '-overlay'});
     this.overlay.hide();
     // Firefox wiggles the text if this is `fixed` so we make it absolute to prevent
-    // it from turning the page into water.
-    if(!Prototype.Browser.WebKit) this.overlay.setStyle({position: 'absolute'});
+    // it from turning the page into water.  Not as useful as Safari and IE 7, but it 
+    // works good.
+    var IE7 = navigator.userAgent.indexOf('MSIE 7') > -1
+    if(!Prototype.Browser.WebKit && !IE7)
+      this.overlay.setStyle({position: 'absolute'});
+
     this.sheetContent = new Element('div', {id: namespace + '-content'});
     this.overlay.addClassName('overlay');
     this.sheetContent.addClassName('overlay-content');
