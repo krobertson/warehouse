@@ -55,7 +55,7 @@ class Changeset < ActiveRecord::Base
       else
         conditions = conditions_for_paths(paths)
         return [] if conditions.blank?
-        with_scope :find => { :select => 'distinct changesets.*', :joins => 'inner join changes on changesets.id = changes.changeset_id', :conditions => conditions, :order => 'changesets.revision desc' }, &block
+        with_scope :find => { :select => 'distinct changesets.*', :joins => 'inner join changes on changesets.id = changes.changeset_id', :conditions => conditions, :order => 'changesets.changed_at desc' }, &block
       end
     end
     

@@ -23,7 +23,7 @@ class Repository < ActiveRecord::Base
   has_many :changesets
   has_many :changes, :through => :changesets, :order => 'changesets.revision desc'
   has_many :bookmarks, :dependent => :destroy
-  has_one  :latest_changeset, :class_name => 'Changeset', :foreign_key => 'repository_id', :order => 'revision desc'
+  has_one  :latest_changeset, :class_name => 'Changeset', :foreign_key => 'repository_id', :order => 'changed_at desc'
   before_destroy :clear_changesets
   expiring_attr_reader :backend, :retrieve_svn_backend
 
