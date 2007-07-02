@@ -39,10 +39,10 @@ class BrowserController < ApplicationController
     end
 
     def previous_changeset
-      @previous_changeset ||= current_repository.changesets.find_by_path(@node.path, :conditions => ['changed_at < ?', current_changeset.latest_changed_at], :order => 'changesets.changed_at desc')
+      @previous_changeset ||= current_repository.changesets.find_by_path(@node.path, :conditions => ['changed_at < ?', current_changeset.changed_at], :order => 'changesets.changed_at desc')
     end
     
     def next_changeset
-      @next_changeset ||= current_repository.changesets.find_by_path(@node.path, :conditions => ['changed_at > ?', current_changeset.latest_changed_at], :order => 'changesets.changed_at')
+      @next_changeset ||= current_repository.changesets.find_by_path(@node.path, :conditions => ['changed_at > ?', current_changeset.changed_at], :order => 'changesets.changed_at')
     end
 end

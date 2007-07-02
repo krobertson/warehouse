@@ -67,7 +67,7 @@ context "Changesets Controller" do
 
     def expect_paginate_by_paths(value = [], paths = [], page = nil)
       changesets = stub
-      changesets.expects(:paginate_by_paths).with(paths, :page => page, :order => 'changesets.revision desc').returns(value)
+      changesets.expects(:paginate_by_paths).with(paths, :page => page, :order => 'changesets.changed_at desc').returns(value)
       Repository.any_instance.expects(:changesets).returns(changesets)
     end
 end
