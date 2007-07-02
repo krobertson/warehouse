@@ -68,7 +68,7 @@ class Repository < ActiveRecord::Base
   end
   
   def sync?
-    backend && revisions_to_sync.first < revisions_to_sync.last
+    backend && revisions_to_sync.first <= revisions_to_sync.last
   end
 
   def latest_revision

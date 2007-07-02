@@ -39,4 +39,25 @@ context "Repository" do
     r.expects(:latest_revision).returns(5)
     r.revisions_to_sync.should == (4..5)
   end
+  
+  specify "should want to sync with revisions to sync" do
+    repo = Repository.new
+    repo.stubs(:backend).returns(true)
+    repo.stubs(:revisions_to_sync).returns(1..5)
+    repo.should.be.sync
+  end
+  
+  specify "should want to sync with 1 revision to sync" do
+    repo = Repository.new
+    repo.stubs(:backend).returns(true)
+    repo.stubs(:revisions_to_sync).returns(1..1)
+    repo.should.be.sync
+  end
+  
+  specify "should want to sync with no revisions to sync" do
+    repo = Repository.new
+    repo.stubs(:backend).returns(true)
+    repo.stubs(:revisions_to_sync).returns(6..5)
+    repo.should.not.be.sync
+  end
 end

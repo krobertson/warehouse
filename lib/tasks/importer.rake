@@ -115,7 +115,7 @@ namespace :warehouse do
       if ENV['REPO'].nil?
         Importer::Repository.find_all
       else
-        [repo_id > 0 ?  Importer::Repository.find_by_id(repo_id) : Importer::Repository.find_first("name = '#{ENV['REPO']}'")]
+        [repo_id > 0 ?  Importer::Repository.find_by_id(repo_id) : Importer::Repository.find_first("subdomain = '#{ENV['REPO']}'")]
       end
     permissions = Importer::Permission.find_all_by_repositories(repositories).inject({}) do |memo, perm| 
       (memo[perm.attributes['repository_id'].to_s] ||= []) << perm; memo
@@ -174,11 +174,11 @@ namespace :warehouse do
 
   task :find_repo => :init do
     @repo = find_first_repo(ENV['REPO'])
-    raise "Please select a repo with REPO=id or REPO=repository_name" if @repo.nil?
+    raise "Please select a repo with REPO=id or REPO=repository_subdomain" if @repo.nil?
   end
   
   def find_first_repo(value)
     repo_id = value.to_i
-    repo_id > 0 ?  Importer::Repository.find_by_id(repo_id) : Importer::Repository.find_first("name = '#{value}'")
+    repo_id > 0 ?  Importer::Repository.find_by_id(repo_id) : Importer::Repository.find_first("subdomain = '#{value}'")
   end
 end

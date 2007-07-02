@@ -4,7 +4,7 @@ module Importer
     
     def recorded_revision(refresh = false)
       if @recorded_revision == nil || refresh
-        changeset = Changeset.find_first("repository_id = #{quote_string attributes['id']} ORDER BY changesets.revision desc")
+        changeset = Changeset.find_first("repository_id = #{quote_string attributes['id']} ORDER BY changesets.changed_at desc")
         @recorded_revision = (changeset ? changeset.attributes['revision'] : 0).to_i + 1
       end
       @recorded_revision
