@@ -88,7 +88,9 @@ class Repository < ActiveRecord::Base
   end
 
   def sync_revisions(num)
-    execute_command "rake warehouse:sync REPO=#{id} NUM=#{num} RAILS_ENV=#{RAILS_ENV}"
+    stdout, stderr = execute_command "rake warehouse:sync REPO=#{id} NUM=#{num} RAILS_ENV=#{RAILS_ENV}"
+    stderr = stderr.split("\n").delete_if { |e| e.split =~ /^rm -rf/ }.join("\n")
+    [stdout, stderr]
   end
 
   def rebuild_permissions

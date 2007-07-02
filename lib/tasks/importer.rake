@@ -158,7 +158,7 @@ namespace :warehouse do
         puts "No repo(s) found, REPO=#{ENV['REPO'].inspect} given."
       end
     end
-    rm_rf File.join(RAILS_ROOT, 'tmp', 'cache')
+    rm_rf File.join(RAILS_ROOT, 'tmp', 'cache') if File.exist?(File.join(RAILS_ROOT, 'tmp', 'cache'))
   end
 
   task :clear => :init do
