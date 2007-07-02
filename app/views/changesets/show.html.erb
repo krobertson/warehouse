@@ -21,9 +21,9 @@
 
 <div id="control-center">
   <ul>
-    <% if @changeset.changes.select(&:diffable?).any? %>
+    <% if @changeset.changes.select(&:diffable?).any? -%>
       <li id="cdiff"><%= link_to 'Complete Diff', formatted_changeset_path(@changeset, :diff) %></li>
-    <% end %>
+    <% end -%>
   </ul>
 </div>
 
@@ -33,4 +33,4 @@
 
 <% @changeset.changes.select(&:diffable?).each do |change| -%>
   <%= diff_for change %>
-<% end %>
+<% end -%>

@@ -40,6 +40,13 @@ class RepositoriesController < ApplicationController
     end
   end
   
+  def destroy
+    @repository.destroy
+    respond_to do |format|
+      format.js
+    end
+  end
+  
   protected
     def find_or_initialize_repository
       @repository = params[:id] ? (admin? ? Repository : current_user.administered_repositories).find(params[:id]) : Repository.new

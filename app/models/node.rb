@@ -9,7 +9,7 @@ class Node
   def initialize(repository, path, rev = nil)
     @repository    = repository
     @path          = path
-    @base_revision = rev || repository.latest_revision
+    @base_revision = rev.nil? ? repository.latest_revision : rev.to_i
   end
 
   def changeset
