@@ -1,4 +1,6 @@
+require 'digest/sha1'
 class InstallController < ApplicationController
+  @@install_path = File.join(RAILS_ROOT, 'config', 'installs')
   skip_before_filter :check_for_valid_domain
   skip_before_filter :check_for_repository
   before_filter :check_installed, :except => [:test_install, :settings]
@@ -8,50 +10,62 @@ class InstallController < ApplicationController
   layout :choose_layout
 
   def index
-    if session[:installing]
-      @repository = Repository.find(:first)
-      session[:installing] = nil
+    if using_open_id?
       authenticate_with_open_id do |result, identity_url|
-        if result.successful? && self.current_user = User.find_or_create_by_identity_url(identity_url)
-          render :action => 'install'
+        if result.successful?
+          @install_file = File.join(@@install_path, "#{Digest::SHA1.hexdigest(identity_url)}.yml")
+          if @install_data = @install_file && File.exist?(@install_file) && YAML.load_file(@install_file)
+            params[:domain]     = @install_data[:domain]
+            params[:license]    = @install_data[:license]
+            params[:repository] = @install_data[:repository]
+
+            @repository = Repository.new(params[:repository])
+            unless @repository.valid?
+              render :action => 'index'
+              return
+            end
+    
+            require 'net/http'
+            res = Net::HTTP.post_form(URI.parse(Warehouse.forum_url % params[:license]), 'install[domain]' => params[:domain])
+            if res.code != '200'
+              raise res.body
+            end
+
+            write_config_file :domain => params[:domain]
+
+            User.transaction do
+              @repository.save!
+              User.find_or_initialize_by_identity_url(identity_url).save!
+              render :action => 'install'
+            end
+          else
+            raise "No install file found"
+          end
         else
-          @message = result.message || "Sorry, no user by that identity URL exists (#{identity_url})"
-          render :action => 'index'
+          raise result.message || "Sorry, cannot create user by that identity URL exists (#{identity_url})"
         end
       end
     else
       @repository = Repository.new
     end
+  rescue
+    @message = $!.message
+    logger.warn $!.message
+    $!.backtrace.each { |b| logger.warn "> #{b}" }
+    render :action => 'index'
+  ensure
+    FileUtils.rm @install_file if @install_data
   end
   
   def install
-    unless !params[:domain].blank? && params[:domain] =~ evil_regex
-      raise "bad domain!"
+    FileUtils.mkdir_p @@install_path
+    data = {:domain => params[:domain], 
+      :license => params[:license],
+      :repository => params[:repository]}
+    File.open(File.join(@@install_path, "#{Digest::SHA1.hexdigest(OpenIdAuthentication.normalize_url(params[:openid_url]))}.yml"), 'w') do |f|
+      f.write data.to_yaml
     end
-
-    @repository = Repository.new(params[:repository])
-    unless @repository.valid?
-      render :action => 'index'
-      return
-    end
-
-    require 'net/http'
-    res = Net::HTTP.post_form(URI.parse(Warehouse.forum_url % params[:license]), 'install[domain]' => params[:domain])
-    if res.code != '200'
-      raise res.body
-    end
-
-    write_config_file :domain => params[:domain]
-    
-    if @repository.save
-      session[:installing] = true
-      authenticate_with_open_id
-    else
-      render :action => 'index'
-    end
-  rescue
-    @message = $!.message
-    render :template => 'shared/error'
+    authenticate_with_open_id
   end
 
   def settings
@@ -89,7 +103,7 @@ class InstallController < ApplicationController
         f.write tmpl.join("\n")
       end
       
-      session(Warehouse.session_options) if domain_is_blank && !attributes[:domain].blank?
+      self.class.session(Warehouse.session_options) if domain_is_blank && !attributes[:domain].blank?
     end
 
     def choose_layout

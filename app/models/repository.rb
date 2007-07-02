@@ -74,13 +74,17 @@ class Repository < ActiveRecord::Base
   def latest_revision
     @latest_revision ||= backend && backend.youngest_rev
   end
+
+  def latest_changed_at
+    latest_changeset ? latest_changeset.changed_at : nil
+  end
   
   def synced_revision
     latest_changeset ? latest_changeset.revision + 1 : 1
   end
 
   def sync_progress
-    ((synced_revision.to_f / latest_revision.to_f) * 100).ceil
+    ((synced_revision.to_f / latest_revision.to_f) * 100).floor
   end
 
   def sync_revisions(num)

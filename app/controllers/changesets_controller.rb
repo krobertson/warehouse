@@ -12,9 +12,9 @@ class ChangesetsController < ApplicationController
     return global_index if repository_subdomain.blank? && logged_in?
 
     @changesets = case changeset_paths
-      when :all then current_repository.changesets.paginate(:page => params[:page], :order => 'changesets.revision desc')
+      when :all then current_repository.changesets.paginate(:page => params[:page], :order => 'changesets.changed_at desc')
       when []   then []
-      else current_repository.changesets.paginate_by_paths(changeset_paths, :page => params[:page], :order => 'changesets.revision desc')
+      else current_repository.changesets.paginate_by_paths(changeset_paths, :page => params[:page], :order => 'changesets.changed_at desc')
     end
     respond_for_changesets
   end
@@ -22,13 +22,13 @@ class ChangesetsController < ApplicationController
   def public
     @repositories = Repository.find_all_by_public(true)
     @changesets   = @repositories.empty? ? [] :
-      Changeset.paginate(:conditions => ['repository_id in (?)', @repositories.collect(&:id)], :page => params[:page], :order => 'changesets.revision desc')
+      Changeset.paginate(:conditions => ['repository_id in (?)', @repositories.collect(&:id)], :page => params[:page], :order => 'changesets.changed_at desc')
     respond_for_changesets
   end
   
   def global_index
     @repositories = current_user.repositories
-    @changesets   = Changeset.paginate_by_paths(current_user.repositories.paths, :page => params[:page], :order => 'changesets.revision desc')
+    @changesets   = Changeset.paginate_by_paths(current_user.repositories.paths, :page => params[:page], :order => 'changesets.changed_at desc')
     respond_for_changesets
   end
   
@@ -57,11 +57,11 @@ class ChangesetsController < ApplicationController
     %w(previous_changeset next_changeset changeset_paths).each { |m| expiring_attr_reader m, "find_#{m}" }
     
     def find_previous_changeset
-      current_repository.changesets.find_by_paths(changeset_paths, :conditions => ['revision < ?', params[:id]], :order => 'revision desc')
+      current_repository.changesets.find_by_paths(changeset_paths, :conditions => ['changed_at < ?', @changeset.changed_at], :order => 'changed_at desc')
     end
     
     def find_next_changeset
-      current_repository.changesets.find_by_paths(changeset_paths, :conditions => ['revision > ?', params[:id]], :order => 'revision')
+      current_repository.changesets.find_by_paths(changeset_paths, :conditions => ['changed_at > ?', @changeset.changed_at], :order => 'changed_at')
     end
     
     def find_changeset_paths
