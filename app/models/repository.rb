@@ -80,7 +80,7 @@ class Repository < ActiveRecord::Base
   end
   
   def synced_revision
-    latest_changeset ? latest_changeset.revision + 1 : 1
+    latest_changeset ? latest_changeset.revision.to_i + 1 : 1
   end
 
   def sync_progress
