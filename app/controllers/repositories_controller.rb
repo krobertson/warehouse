@@ -36,6 +36,7 @@ class RepositoriesController < ApplicationController
     if error.blank?
       render :text => ((progress.split("\n").last.to_f / @repository.latest_revision.to_f) * 100).ceil.to_s
     else
+      logger.warn "Error syncing #{@repository.name.inspect} -- #{error}"
       render :text => error, :status => 500
     end
   end

@@ -88,8 +88,8 @@ class ApplicationController < ActionController::Base
   
     def check_for_repository
       return true if current_repository
-      if Repository.count > 0
-        redirect_to(logged_in? ? changesets_path : public_changesets_path)
+      if !Warehouse.domain.blank? && Repository.count > 0
+        redirect_to(logged_in? ? hosted_url(:changesets) : hosted_url(:public_changesets))
       else
         reset_session
         redirect_to install_path

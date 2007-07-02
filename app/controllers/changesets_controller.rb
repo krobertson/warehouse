@@ -22,13 +22,15 @@ class ChangesetsController < ApplicationController
   def public
     @repositories = Repository.find_all_by_public(true)
     @changesets   = @repositories.empty? ? [] :
-      Changeset.paginate(:conditions => ['repository_id in (?)', @repositories.collect(&:id)], :page => params[:page], :order => 'changesets.changed_at desc')
+      Changeset.paginate(:conditions => ['repository_id in (?)', @repositories.collect(&:id)], :page => params[:page], :order => 'changesets.changed_at desc',
+        :count => 'distinct changesets.id')
     respond_for_changesets
   end
   
   def global_index
     @repositories = current_user.repositories
-    @changesets   = Changeset.paginate_by_paths(current_user.repositories.paths, :page => params[:page], :order => 'changesets.changed_at desc')
+    @changesets   = Changeset.paginate_by_paths(current_user.repositories.paths, :page => params[:page], :order => 'changesets.changed_at desc',
+      :count => 'distinct changesets.id')
     respond_for_changesets
   end
   
@@ -86,7 +88,7 @@ class ChangesetsController < ApplicationController
 
     def repository_subdomain_or_login_required
       if repository_subdomain.blank? && !logged_in?
-        redirect_to(public_changesets_path)
+        redirect_to hosted_url(:public_changesets)
         false
       else
         true
