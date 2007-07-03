@@ -3,7 +3,7 @@
 
 class ApplicationController < ActionController::Base
   helper :all # include all helpers, all the time
-  helper_method :current_repository, :logged_in?, :current_user, :admin?, :controller_path, :repository_admin?, :repository_member?, :repository_subdomain
+  helper_method :current_repository, :logged_in?, :current_user, :admin?, :controller_path, :repository_admin?, :repository_member?, :repository_subdomain, :hosted_url
   
   session(Warehouse.session_options) unless Warehouse.domain.blank?
   
@@ -103,6 +103,15 @@ class ApplicationController < ActionController::Base
       else
         true
       end
+    end
+
+    def hosted_url(*args)
+      options    = args.last.is_a?(Hash) ? args.pop : {}
+      name       = args.pop
+      repository = args.pop
+      options[:host] = repository ? repository.domain : Warehouse.domain
+      options[:port] = request.port unless request.port == 80
+      send("#{name}_url", options)
     end
 
     # stores cache fragments that have already been read by
