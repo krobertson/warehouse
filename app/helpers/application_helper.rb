@@ -30,9 +30,9 @@ module ApplicationHelper
   
   def highlight_as(filename)
     case filename.split('.').last.downcase
-      when 'js', 'as' then 'javascript'
+      when 'js', 'as'               then 'javascript'
       when 'rb', 'rakefile', 'rake' then 'ruby'
-      when 'css' then 'css'
+      when 'css'                    then 'css'
       when 'rhtml', 'erb', 'html', 'xml', 'rxml', 'plist' then 'html'
       else 'plain'
     end
@@ -61,6 +61,30 @@ module ApplicationHelper
   def avatar_for(user)
     img = user && user.avatar? ? user.avatar_path : '/images/app/icons/member.png'
     tag('img', :src => img, :class => 'avatar')
+  end
+
+  def distance_of_time_in_words(from_time, to_time = 0, format = :short)
+    from_time = from_time.to_time if from_time.respond_to?(:to_time)
+    to_time   = to_time.to_time   if to_time.respond_to?(:to_time)
+    distance_in_minutes = (((to_time - from_time).abs)/60).round
+
+    case distance_in_minutes
+      when 0..1            then (distance_in_minutes == 0) ? 'less than a minute ago' : '1 minute ago'
+      when 2..44           then "#{distance_in_minutes} minutes ago"
+      when 45..89          then 'about 1 hour ago'
+      when 90..1439        then "about #{(distance_in_minutes.to_f / 60.0).round} hours ago"
+      when 1440..2879      then '1 day ago'
+      else jstime(from_time, format)
+    end
+  end
+
+  def jstime(time, format = :short)
+    content_tag 'span', time.to_s(format), :class => 'time'
+  end
+
+  # UTC FTW
+  def time_ago_in_words(from_time, include_seconds = false)
+    distance_of_time_in_words(from_time, Time.now.utc, include_seconds)
   end
 
   # simple wrapper around #cache that checks the current_cache hash 

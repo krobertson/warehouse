@@ -9,7 +9,7 @@
   </div>
   <div class="cs-log">      
      <%=h current_changeset.message %>
-    <span class="timenauthor">by <%= current_changeset.author %>, <%= time_ago_in_words current_changeset.changed_at %> ago</span>
+    <span class="timenauthor">by <%= current_changeset.author %>, <%= time_ago_in_words current_changeset.changed_at %></span>
   </div>
   <ul class="changeset-nav">
     <%= %(<li class="prev"> #{link_to_node('back', @node, previous_changeset.revision)}</li>) if previous_changeset %>
@@ -49,7 +49,7 @@
     <td class="item"><%= link_to h(node.name), url_for_node(node), :class => css_class_for(node) %></td>
     <td>
       <span class="rev<% if current_repository.latest_revision == node.revision %> changed<% end %>"><%= node.revision %></span>
-      Updated by <%=h node.author %> <%= time_ago_in_words node.changed_at %> ago
+      Updated by <%=h node.author %> <%= time_ago_in_words node.changed_at %>
       <span class="log"><%= node.message %></span>
     </td>
   </tr>

@@ -15,7 +15,7 @@
     </div>
     <div class="cs-log">      
        <%=h changeset.message %>
-      <span class="timenauthor">by <%= changeset.author %>, <%= time_ago_in_words changeset.changed_at %> ago</span>
+      <span class="timenauthor">by <%= changeset.author %>, <%= time_ago_in_words changeset.changed_at %></span>
     </div>
   </li>
   <% end -%>
@@ -33,7 +33,7 @@
       <%= avatar_for(member) %>
       <span class="author"><%= member.login %></span>
       <span class="activity">
-        <% if member.last_changed_at -%>Last commit <%= time_ago_in_words member.last_changed_at %> ago<% end -%>
+        <% if member.last_changed_at -%>Last commit <%= time_ago_in_words member.last_changed_at %><% end -%>
       </span>
     </li>
     <% end %>
