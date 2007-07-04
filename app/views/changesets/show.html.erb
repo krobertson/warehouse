@@ -19,13 +19,13 @@
 </div>
 <% end -%>
 
+<% if @changeset.changes.select(&:diffable?).any? -%>
 <div id="control-center">
   <ul>
-    <% if @changeset.changes.select(&:diffable?).any? -%>
       <li id="cdiff"><%= link_to 'Complete Diff', formatted_changeset_path(@changeset, :diff) %></li>
-    <% end -%>
   </ul>
 </div>
+<% end -%>
 
 <ul id="change-list">
 <%= render :partial => "changes", :locals => { :changeset => @changeset } %>
