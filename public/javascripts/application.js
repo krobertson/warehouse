@@ -192,9 +192,9 @@ Event.addBehavior({
     Permissions.remove(this.up());
   },
   'span.time': function() {
-    var date = new Date(this.innerText);
+    var date = new Date(this.innerHTML);
     var fmt  = '%d %b %I:%M %p'
     if(date.getYear() != (new Date()).getYear()) { fmt += ', %Y' }
-    this.innerText = date.strftime(fmt)
+    this.innerHTML = date.strftime(fmt)
   }
 });
