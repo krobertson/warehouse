@@ -31,7 +31,7 @@
     <% current_repository.members.each do |member| %>
     <li>
       <%= avatar_for(member) %>
-      <span class="author"><%= member.login %></span>
+      <span class="author"><%= member.name %></span>
       <span class="activity">
         <% if member.last_changed_at -%>Last commit <%= time_ago_in_words member.last_changed_at %><% end -%>
       </span>
