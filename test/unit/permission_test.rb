@@ -47,20 +47,20 @@ context "Permission" do
   specify "should grant access to single path" do
     repositories(:sample).grant :user => users(:justin), :paths => {'0' => {:path => 'foo'}}
     p = repositories(:sample).permissions.find_all_by_user_id(users(:justin).id).sort_by(&:path)
-    p[0].path.should == ''
+    p[0].path.should == '/'
     p[0].should.not.be.full_access
-    p[1].path.should == 'foo'
+    p[1].path.should == '/foo'
     p[1].should.not.be.full_access
   end
   
   specify "should grant access to single path" do
     repositories(:sample).grant :user => users(:justin), :paths => {'0' => {:path => 'foo'}, '1' => {:path => 'bar', :full_access => true}}
     perms = repositories(:sample).permissions.find_all_by_user_id(users(:justin).id).sort_by(&:path)
-    perms[0].path.should == ''
+    perms[0].path.should == '/'
     perms[0].should.not.be.full_access
-    perms[1].path.should == 'bar'
+    perms[1].path.should == '/bar'
     perms[1].should.be.full_access
-    perms[2].path.should == 'foo'
+    perms[2].path.should == '/foo'
     perms[2].should.not.be.full_access
   end
   
@@ -69,10 +69,10 @@ context "Permission" do
       repositories(:sample).permissions.set(users(:rick), :paths => {'0' => {:path => 'foo', :id => 1}, '1' => {:full_access => true}})
     end
     permissions = repositories(:sample).permissions.find_all_by_user_id(users(:rick).id).sort_by { |p| p.path.to_s }
-    permissions[0].path.should == ''
+    permissions[0].path.should == '/'
     permissions[0].should.be.full_access
     permissions[1].should == permissions(:rick_sample)
-    permissions[1].path.should == 'foo'
+    permissions[1].path.should == '/foo'
   end
   
   specify "should select permission properties" do

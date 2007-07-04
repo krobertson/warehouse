@@ -9,12 +9,20 @@ class Permission < ActiveRecord::Base
   attr_accessible :admin, :path, :full_access, :user, :user_id
   validate :uniqueness_of_user_paths
   
-  def formatted_path
-    "/#{path}"
+  def self.clean_path(path)
+    path.to_s.gsub(/^\/|\/$/, '')
+  end
+  
+  def clean_path
+    read_attribute(:path)
+  end
+  
+  def path
+    "/#{clean_path}"
   end
 
   def path=(value)
-    write_attribute :path, value.to_s.gsub(/^\/|\/$/, '')
+    write_attribute :path, self.class.clean_path(value)
   end
 
   def paths
@@ -30,7 +38,7 @@ class Permission < ActiveRecord::Base
     end
     user_id = options[:user] ? options[:user].id : options[:user_id]
     user_id = nil if user_id.blank?
-    m = repository.all_permissions.find_or_initialize_by_user_id_and_path(user_id, options[:path].to_s)
+    m = repository.all_permissions.find_or_initialize_by_user_id_and_path(user_id, clean_path(options[:path]))
     m.active     = true
     m.attributes = options
     block.call(m) if block
@@ -48,7 +56,7 @@ class Permission < ActiveRecord::Base
       unless options[:paths].blank?
         options[:paths].delete_if do |(index, path_options)|
           if path_options[:id]
-            update_all ['path = ?, full_access = ?', path_options[:path], path_options[:full_access]], ['id = ?', path_options[:id]]
+            update_all ['path = ?, full_access = ?', clean_path(path_options[:path]), path_options[:full_access]], ['id = ?', path_options[:id]]
           end
         end
       end

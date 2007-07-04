@@ -9,7 +9,7 @@ class User < ActiveRecord::Base
     
     def paths_for(repository)
       return :all if proxy_owner.admin? || repository.public?
-      paths = for_repository(repository).collect! &:path
+      paths = for_repository(repository).collect! &:clean_path
       root_paths, all_paths = paths.partition(&:blank?)
       root_paths.empty? ? all_paths : :all
     end

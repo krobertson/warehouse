@@ -27,7 +27,7 @@ context "User" do
   end
   
   specify "should show all paths for user with root access" do
-    users(:justin).permissions.for_repository(repositories(:sample)).first.path.should == ''
+    users(:justin).permissions.for_repository(repositories(:sample)).first.path.should == '/'
     users(:justin).permissions.paths_for(repositories(:sample)).should == :all
     users(:justin).repositories.paths[repositories(:sample).id].should == :all
   end

@@ -8,7 +8,7 @@
     <%= avatar_for(user) rescue '' %>
     <%= user ? h(user.name) : "Anonymous" %>
     <% permissions.each do |permission| -%>
-    <span class="log">Read<%= '/Write' if permission.full_access? %>: <%=h permission.formatted_path %></span>
+    <span class="log">Read<%= '/Write' if permission.full_access? %>: <%=h permission.path %></span>
     <% end -%>
     <ul class="admin-controls">
       <li id="perm-<%= permissions.first.id %>" class="edit"><a href="#">Edit</a></li>

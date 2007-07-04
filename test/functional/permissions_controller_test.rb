@@ -62,27 +62,29 @@ context "Permissions Controller" do
     perms = repositories(:sample).permissions.find_all_by_user_id(assigns(:permission).user.id).sort_by(&:path)
     perms[0].should.be.active
     perms[0].should.not.be.admin
-    perms[0].path.should == ''
+    perms[0].path.should == '/'
     perms[0].should.not.be.full_access
     perms[1].should.be.active
     perms[1].should.be.admin
-    perms[1].path.should == 'bar'
+    perms[1].path.should == '/bar'
     perms[1].should.be.full_access
     perms[2].should.be.active
     perms[2].should.be.admin
-    perms[2].path.should == 'foo'
+    perms[2].path.should == '/foo'
     perms[2].should.not.be.full_access
   end
 
   specify "should update user permission" do
     permissions(:rick_sample).should.be.admin
-    permissions(:rick_sample).path.should == ''
+    permissions(:rick_sample).path.should == '/'
+    permissions(:rick_sample).clean_path.should == ''
 
     put :update, :user_id => 1, :permission => { :admin => false, :paths => {'0' => {:path => 'foo', :id => 1}} }
     assert_redirected_to permissions_path
     
     permissions(:rick_sample).reload.should.not.be.admin
-    permissions(:rick_sample).path.should == 'foo'
+    permissions(:rick_sample).path.should == '/foo'
+    permissions(:rick_sample).clean_path.should == 'foo'
   end
   
   specify "should update anon permission" do
