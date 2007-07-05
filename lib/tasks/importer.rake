@@ -47,12 +47,12 @@ namespace :warehouse do
   
   task :build_htpasswd => :init do
     require 'webrick'
-    write_users_to_htpasswd(Importer::User.find_all, ENV['CONFIG'] || 'config/svn.htpasswd')
+    write_users_to_htpasswd(Importer::User.find_all, ENV['CONFIG'] || 'config/htpasswd.conf')
   end
   
   task :build_repo_htpasswd => :find_repo do
     require 'webrick'
-    write_repo_users_to_htpasswd(@repo, ENV['CONFIG'] || 'config/svn.htpasswd')
+    write_repo_users_to_htpasswd(@repo, ENV['CONFIG'] || 'config/htpasswd.conf')
   end
   
   task :build_user_htpasswd => :init do
@@ -82,19 +82,19 @@ namespace :warehouse do
   end
   
   # CONFIG
-  # EMAIL_PREFIX
+  # EMAIL
   # REPO
   # REPO_PATH
   # REPO_ACCESS r/rw
   task :import_users => :environment do
     require 'webrick'
-    raise "Need an htpasswd file to import.  CONFIG=/svn/foo/bar/htpasswd" unless ENV['CONFIG']
+    raise "Need an htpasswd file to import.  CONFIG=/path/to/htpasswd" unless ENV['CONFIG']
     repo = ENV['REPO'].blank? ? nil : Repository.find_by_subdomain(ENV['REPO'])
     User.transaction do
       WEBrick::HTTPAuth::Htpasswd.new(ENV['CONFIG']).each do |(login, passwd)|
         user = User.new(:login => login)
         user.crypted_password = passwd
-        user.email = "#{user}@#{ENV['EMAIL_PREFIX'] || :unknown}.net"
+        user.email = "#{login}@#{ENV['EMAIL'] || 'unknown.net'}"
         i = 1
         user.login = "#{login}_#{i+=1}" until user.valid?
         user.save!
@@ -108,7 +108,7 @@ namespace :warehouse do
   task :build_config => :init do
     require 'lib/warehouse'
     require 'config/initializers/warehouse'
-    config_path = ENV['CONFIG'] || 'config/svn.conf'
+    config_path = ENV['CONFIG'] || 'config/access.conf'
     
     repo_id = ENV['REPO'].to_i
     repositories = 

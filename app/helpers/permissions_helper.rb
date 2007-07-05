@@ -6,7 +6,7 @@ module PermissionsHelper
   end
 
   def path_permissions(permission = nil)
-    @path_permission_index = @path_permission_index.nil? ? 0 : @path_permission_index + 1
+    @path_permission_index = (@path_permission_index.nil? || @path_permission_index.zero?) ? 0 : @path_permission_index + 1
     access_value = permission ? (permission.full_access ? '1' : '0') : (params[:permission][:paths][@path_permission_index][:full_access] rescue nil)
     path_value   = permission ? permission.path : (params[:permission][:paths][@path_permission_index][:path] rescue nil)
     %(<p#{%( id="#{dom_id permission}") if permission}><select name="permission[paths][#{@path_permission_index}][full_access]" class="sel">) +
