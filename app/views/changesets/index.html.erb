@@ -29,7 +29,7 @@
 <div class="sideblock">
   <h3>Active Members</h3>
   <ul id="members">
-    <% current_repository.members.each do |member| %>
+    <% current_repository.members.sort_by { |m| m.last_changed_at || Time.utc(1970, 1, 1) }.reverse.each do |member| %>
     <li>
       <%= avatar_for(member) %>
       <span class="author"><%= member.name %></span>
