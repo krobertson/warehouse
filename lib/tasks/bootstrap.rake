@@ -22,7 +22,7 @@ namespace :warehouse do
         require 'erb'
         erb = ERB.new(IO.read(File.join(RAILS_ROOT, 'config', 'database.erb')), nil, '<>')
         File.open File.join(RAILS_ROOT, 'config', 'database.yml'), 'w' do |f|
-          f.write erb.run(options.get_binding)
+          f.write erb.result(options.get_binding)
         end
       else
         say "I have copied database.sample.yml over.  Now, edit config/database.yml with your correct database settings."
@@ -59,7 +59,8 @@ namespace :warehouse do
     say "  The Active Reload Forum - http://forum.activereload.net"
     say "  ActiveReload on IRC (Freenode): #activereload"
     
-    rm 'config/initializers/warehouse.rb' if File.exist?('config/initializers/warehouse.rb')
+    warehouse_path = File.join(RAILS_ROOT, 'config', 'initializers', 'warehouse.rb')
+    rm warehouse_path if File.exist?(warehouse_path)
     mkdir_p File.join(RAILS_ROOT, 'log')
   end
   

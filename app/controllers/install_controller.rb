@@ -36,8 +36,8 @@ class InstallController < ApplicationController
             User.transaction do
               @repository.save!
               User.find_or_initialize_by_identity_url(identity_url).save!
-              render :action => 'install'
             end
+            render :action => 'install'
           else
             raise "No install file found"
           end

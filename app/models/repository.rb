@@ -56,7 +56,7 @@ class Repository < ActiveRecord::Base
   end
 
   def node(path, rev = nil)
-    Node.new(self, path, rev)
+    backend ? Node.new(self, path, rev) : nil
   end
 
   def revisions_to_sync(refresh = false)

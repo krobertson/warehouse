@@ -3,6 +3,7 @@
   <div class="overlay-content">
     <h2>Thanks for installing Warehouse, enjoy!</h2>
     
+    <% if @repository.backend -%>
     <div class="overlay-form oform">
       <h3 style="padding:10px">Sync your repository</h3>
       <p>In order to view the changesets of this repository you need to sync <%= pluralize @repository.latest_revision, 'revision' %>.</p>
@@ -30,6 +31,12 @@
     <p class="btns">
       <%= submit_image 'sync.png', :id => 'sync' %>
     </p>
+    <% else -%>
+    <div class="overlay-form oform">
+      <h3 style="padding:10px">Your Repository Path is Invalid</h3>
+      <p>I was unable to access your repository at <%=h @repository.path %>.  Visit the <%= link_to 'Repository Admin', hosted_url(@repository, :admin) %> to fix this.</p>
+    </div>
+    <% end -%>
   </div>
 </div>
 
@@ -38,7 +45,7 @@ Event.addBehavior({
   '#sync:click':function(e) {
     var initialImporter = new Importer(<%= @repository.id %>, {
       onImported: function() {
-        document.location = "<%= request.protocol %><%= @repository.domain %><%= request.port == 80 ? nil : ":#{request.port}" %>";
+        document.location = "<%= hosted_url(@repository, :browser) %>";
       },
       
       onStep: function(progress) {

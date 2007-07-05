@@ -60,7 +60,7 @@ class ApplicationController < ActionController::Base
       return nil unless current_repository
       return true if current_repository.public?
       return nil unless logged_in?
-      current_repository.member?(current_user, repository_path)
+      current_repository.backend && current_repository.member?(current_user, repository_path)
     end
     
     def retrieve_repository_admin

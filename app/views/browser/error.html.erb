@@ -2,7 +2,9 @@
   <h2>Access Denied</h2>
   <p><%= @message %></p>
   
-  <% if logged_in? -%>
+  <% if current_repository.backend.nil? -%>
+    <p>The Repository Path is invalid and needs to be fixed in the <%= link_to 'Repository Admin', admin_path %></p>
+  <% elsif logged_in? -%>
     <% paths = current_user.permissions.paths_for(current_repository) -%>
     <% if paths.any? -%>
     <ul>
