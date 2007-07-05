@@ -4,8 +4,7 @@ module PermissionMethods
   end
   
   def last_changed_at
-    l = read_attribute :last_changed_at
-    l ? Time.parse(l) : nil
+    ActiveRecord::ConnectionAdapters::Column.string_to_time(read_attribute(:last_changed_at))
   end
 
   def permission_admin?

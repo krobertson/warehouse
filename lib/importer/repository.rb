@@ -33,10 +33,16 @@ module Importer
           authors[changeset.attributes['author']] = Time.now.utc
         end
         
+        puts authors.inspect
+        
         users = User.find_all_by_logins(authors.keys).inject({}) { |memo, user| memo.update(user.attributes['login'] => user.attributes['id']) }
+        
+        puts users.inspect
+        
         authors.each do |login, changed_at|
           next unless users[login]
-          self.class.adapter.execute("UPDATE `permissions` SET changesets_count = (SELECT COUNT(id) FROM changesets WHERE repository_id = #{quote_string attributes['id']} AND author = #{quote_string login}), last_changed_at = #{changed_at.strftime("%Y-%m-%d %H:%M:%S").inspect} WHERE user_id = #{quote_string users[login]} AND repository_id = #{quote_string attributes['id']}")
+          puts "#{login} - #{users[login]} #{changed_at.inspect}"
+          self.class.adapter.execute("UPDATE `permissions` SET changesets_count = (SELECT COUNT(id) FROM changesets WHERE repository_id = #{quote_string attributes['id']} AND author = #{quote_string login}), last_changed_at = #{changed_at.strftime("%Y-%m-%d %H:%M:%S %Z").inspect} WHERE user_id = #{quote_string users[login]} AND repository_id = #{quote_string attributes['id']}")
         end
         puts revisions.last
       end
