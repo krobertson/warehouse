@@ -24,8 +24,8 @@
 <%= will_paginate @changesets unless @changesets.empty? %>
 
 <% content_for :sidebar do -%>
+<%= link_to 'Subscribe to Changesets', (controller.action_name == 'index' ? formatted_changesets_path(:atom) : formatted_public_changesets_path(:atom)), :id => 'subscribe-btn' %>
 <% if current_repository && current_repository.members.any? -%>
-<a id="subscribe-btn" href="#">Subscribe to Changesets</a>
 <div class="sideblock">
   <h3>Active Members</h3>
   <ul id="members">
@@ -44,9 +44,16 @@
 <div class="sideblock">
   <h3><%= 'Public ' if controller.action_name == 'public' %>Repositories</h3>
   <ul id="repo-list" class="slist">
-    <% @repositories.each do |repo| %>
+    <% if @repositories.each do |repo| -%>
     <li><%= link_to h(repo.name), hosted_url(repo, :changesets) %></li>
-    <% end %>
+    <% end.empty? -%>
+    <li><a>No Repositories.</a></li>
+    <% end -%>
+    <% if controller.action_name == 'public' -%>
+    <li><%= link_to 'View Your Repository Activity', changesets_path %></li>
+    <% elsif logged_in? -%>
+    <li><%= link_to 'View Public Repository Activity', public_changesets_path %></li>
+    <% end -%>
   </ul>
 </div>
 <% end -%>
