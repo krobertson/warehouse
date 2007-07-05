@@ -3,7 +3,7 @@
 <html>
   <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-    <title>Warehouse: <%= @title rescue '' %></title>
+    <title><%= current_repository.name rescue 'Warehouse: ' %> <%= @title rescue '' %></title>
     <%= stylesheet_link_tag 'main' %>
     <%= stylesheet_link_tag 'code' %>
     <%= javascript_include_tag 'prototype', 'lowpro-lite', 'moo.fx.js', 'moo.fx.transitions.js', 'application', :cache => 'warehouse' %>

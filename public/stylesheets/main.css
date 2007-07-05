@@ -382,6 +382,13 @@ ul a.list-del {
   background: url(../images/app/icons/delete.png) no-repeat !important;
 }
 
+#subscribe-btn, #subscribe-history {
+  display: block;
+  text-indent: -9999px;
+  background: url(../images/app/subscribe-btn.png) no-repeat;
+  padding: 7px 0;
+}
+
 /* @end */
 
 /* @group Dashboard */
@@ -1337,6 +1344,10 @@ button {
   margin: 20px 0;
 }
 
+.sideblock p {
+  padding: 5px;
+}
+
 .sideblock h3 {
   background: #fff;
   padding: 5px;
@@ -1371,4 +1382,5 @@ button {
 
 
 /* @end */
+
 
