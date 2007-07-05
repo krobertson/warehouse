@@ -47,6 +47,10 @@ namespace :warehouse do
       raise "Cancelled"
     end
 
+    mkdir_p File.join(RAILS_ROOT, 'log')
+    warehouse_path = File.join(RAILS_ROOT, 'config', 'initializers', 'warehouse.rb')
+    rm warehouse_path if File.exist?(warehouse_path)
+    
     %w(environment db:schema:load tmp:create).each { |t| Rake::Task[t].execute }
     
     say '=' * 80
@@ -58,10 +62,6 @@ namespace :warehouse do
     say "  Official Warehouse Site - http://warehouseapp.com"
     say "  The Active Reload Forum - http://forum.activereload.net"
     say "  ActiveReload on IRC (Freenode): #activereload"
-    
-    warehouse_path = File.join(RAILS_ROOT, 'config', 'initializers', 'warehouse.rb')
-    rm warehouse_path if File.exist?(warehouse_path)
-    mkdir_p File.join(RAILS_ROOT, 'log')
   end
   
   task :init_highline do
