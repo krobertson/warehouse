@@ -29,9 +29,9 @@
   <thead>
     <tr id="controls">
       <td colspan="2">
-        <div class="control-head">
+        <div id="bookmark-control" class="control-head" style="display:none">
           &nbsp; <!-- Safari needs this? -->
-          <% if params[:paths].any? && repository_admin? && !current_repository.bookmarks.any? { |b| b.path == @node.path } -%>
+          <% if params[:paths].any? && !current_repository.bookmarks.any? { |b| b.path == @node.path } -%>
           <p class="formats rcontrols">
             <a id="bookmark" class="bookmark" href="#" title="Bookmark this directory">Bookmark This</a>
           </p>
@@ -70,7 +70,7 @@
 <% end -%>
 <% end -%>
 
-<% if params[:paths].any? && repository_admin? && !current_repository.bookmarks.any? { |b| b.path == @node.path } -%>
+<% if params[:paths].any? && !current_repository.bookmarks.any? { |b| b.path == @node.path } -%>
   <% remote_sheet_form_for :bookmark, :url => bookmarks_path, :trigger => :bookmark, :html => {:id => 'bookmark-sheet'} do |s| -%>
     <h2>Bookmark this directory</h2>
     <div id="bookmark-sheet-error" class="error" style="display:none"></div>
@@ -91,3 +91,7 @@
  </ul>
 </div>
 <% end unless @changesets.blank? %>
+
+<% content_for :onready do -%>
+$('bookmark-control').show();
+<% end if repository_admin? -%>
