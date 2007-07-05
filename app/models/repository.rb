@@ -89,7 +89,7 @@ class Repository < ActiveRecord::Base
 
   def sync_revisions(num)
     stdout, stderr = execute_command "rake warehouse:sync REPO=#{id} NUM=#{num} RAILS_ENV=#{RAILS_ENV}"
-    stderr = stderr.split("\n").delete_if { |e| e.split =~ /^rm -rf/ }.join("\n")
+    stderr = stderr.split("\n").delete_if { |e| e =~ /^rm -rf/ }.join("\n")
     [stdout, stderr]
   end
 

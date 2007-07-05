@@ -60,4 +60,10 @@ context "Repository" do
     repo.stubs(:revisions_to_sync).returns(6..5)
     repo.should.not.be.sync
   end
+  
+  specify "should ignore rm -rf stderr message in #sync_revisions" do
+    repo = Repository.new
+    repo.expects(:execute_command).returns([nil, 'rm -rf /data/warehouse/releases/20070704061415/tmp/cache'])
+    repo.sync_revisions(5).should == [nil, '']
+  end
 end
