@@ -1,6 +1,6 @@
 class ChangesetsController < ApplicationController
   before_filter :repository_subdomain_or_login_required, :only => :index
-  before_filter :repository_member_required, :only => :show
+  before_filter :repository_member_required, :except => :public
   before_filter :root_domain_required, :only => :public
 
   caches_action_content :index, :show, :public
