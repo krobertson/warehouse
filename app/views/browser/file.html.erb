@@ -81,6 +81,8 @@
     </tr>
   </tbody>
 </table>
-<% else -%>
+<% elsif @node.exists? %>
   <p>Download <%= link_to h(@node.path), raw_path(:paths => @node.paths) %>.</p>
+<% else -%>
+  <p>This file does not exist.</p>
 <% end -%>
