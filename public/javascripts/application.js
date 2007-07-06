@@ -181,6 +181,39 @@ Date.prototype.strftime = function (fmt) {
     return fmt;
 };
 
+// http://twitter.pbwiki.com/RelativeTimeScripts
+Date.distanceOfTimeInWords = function(fromTime, toTime) {
+  var delta = parseInt((toTime.getTime() - fromTime.getTime()) / 1000);
+  if(delta < 60) {
+      return 'less than a minute ago';
+  } else if(delta < 120) {
+      return 'about a minute ago';
+  } else if(delta < (45*60)) {
+      return (parseInt(delta / 60)).toString() + ' minutes ago';
+  } else if(delta < (90*60)) {
+      return 'about an hour ago';
+  } else if(delta < (24*60*60)) {
+      return 'about ' + (parseInt(delta / 3600)).toString() + ' hours ago';
+  } else if(delta < (48*60*60)) {
+      return '1 day ago';
+  } else {
+    var fmt  = '%d %b %I:%M %p'
+    if(fromTime.getYear() != fromTime.getYear()) { fmt += ', %Y' }
+    return fromTime.strftime(fmt);
+  }
+}
+
+Date.prototype.timeAgoInWords = function() {
+  var relative_to = (arguments.length > 0) ? arguments[1] : new Date();
+  return Date.distanceOfTimeInWords(this, relative_to);
+}
+
+Date.parseUTC = function(value) {
+  var localDate = new Date(value);
+  var utcSeconds = Date.UTC(localDate.getFullYear(), localDate.getMonth(), localDate.getDate(), localDate.getHours(), localDate.getMinutes(), localDate.getSeconds())
+  return new Date(utcSeconds);
+}
+
 Event.addBehavior({
   'a.addpath:click': function(event) {
     var a = Event.findElement(event, 'a');
@@ -192,9 +225,6 @@ Event.addBehavior({
     Permissions.remove(this.up());
   },
   'span.time': function() {
-    var date = new Date(this.innerHTML);
-    var fmt  = '%d %b %I:%M %p'
-    if(date.getYear() != (new Date()).getYear()) { fmt += ', %Y' }
-    this.innerHTML = date.strftime(fmt)
+    this.innerHTML = Date.parseUTC(this.innerHTML).timeAgoInWords();
   }
 });

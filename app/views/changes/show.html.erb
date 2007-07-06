@@ -2,7 +2,7 @@
     <p>
       <span class="change-number"><%= link_to @changeset.revision, @changeset %></span>
       <%=h @changeset.message %>
-      <span class="message">(<%= time_ago_in_words @changeset.changed_at %>)</span>
+      <span class="message">(<%= jstime @changeset.changed_at %>)</span>
     </p>
 </div>
 
