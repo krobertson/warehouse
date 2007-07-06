@@ -84,7 +84,7 @@ class Repository < ActiveRecord::Base
   end
 
   def sync_progress
-    ((synced_revision.to_f / latest_revision.to_f) * 100).floor
+    (((synced_revision - 1).to_f / latest_revision.to_f) * 100).floor
   end
 
   def sync_revisions(num)
