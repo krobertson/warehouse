@@ -33,19 +33,19 @@ class Node
   end
 
   def revision
-    @revision ||= root.node_created_rev(path)
+    @revision ||= exists? ? root.node_created_rev(path) : 0
   end
 
   def author
-    @author ||= prop(Svn::Core::PROP_REVISION_AUTHOR).to_s
+    @author ||= exists? ? prop(Svn::Core::PROP_REVISION_AUTHOR).to_s : ''
   end
   
   def changed_at
-    @changed_at ||= prop(Svn::Core::PROP_REVISION_DATE)
+    @changed_at ||= exists? ? prop(Svn::Core::PROP_REVISION_DATE) : nil
   end
     
   def message
-    @message ||= prop(Svn::Core::PROP_REVISION_LOG)
+    @message ||= exists? ? prop(Svn::Core::PROP_REVISION_LOG) : ''
   end
 
   def type_code

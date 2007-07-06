@@ -24,7 +24,7 @@ class PermissionsController < ApplicationController
         index
       end
     else
-      current_repository.rebuild_permissions
+      after_permission_update
       flash.now[:notice] = params[:email].blank? ? "Anonymous permission was created successfully" : "#{params[:email]} was granted access."
       index
     end
@@ -33,7 +33,7 @@ class PermissionsController < ApplicationController
   def update
     @user = params[:user_id].blank? ? nil : User.find(params[:user_id])
     current_repository.permissions.set(@user, params[:permission])
-    current_repository.rebuild_permissions
+    after_permission_update
     flash[:notice] = "Permissions updated"
     redirect_to permissions_path
   end
@@ -53,7 +53,7 @@ class PermissionsController < ApplicationController
     else
       destroy_single_permission
     end
-    current_repository.rebuild_permissions
+    after_permission_update
   end
   
   protected
@@ -102,8 +102,15 @@ class PermissionsController < ApplicationController
         redirect_to(logged_in? ? hosted_url(:changesets) : hosted_url(:public_changesets))
       else
         reset_session
-        redirect_to install_path
+        redirect_to installer_path
       end
       false
+    end
+    
+    def after_permission_update
+      current_repository.rebuild_permissions
+      cache_path = File.join(RAILS_ROOT, 'tmp', 'cache', current_repository.domain)
+      cache_path << ".#{request.port}" unless request.port == 80
+      rm_rf cache_path if File.exist?(cache_path)
     end
 end

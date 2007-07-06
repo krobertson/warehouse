@@ -1,4 +1,10 @@
-* SVN
+* 1.0.1
+
+* Fix rare bug when viewing history of path that doesn't exist anymore
+* Sweep the repository's cache when updating the access permissions.
+* fix rare bug where FileUtils#install would clash with the #install route when running rake (only on textdrive)
+
+* 1.0.0 RC
 
 * Fix footer in IE 7 to align to left side of page
 * Fix bookmark line height in IE 7, add ie specific style sheet curbstomp.css
@@ -8,6 +14,8 @@
 * lots of tweaks for repo admins accessing admin functions
 * allow repo admins to add access permissions
 * better error messages for db config errors in import and post-commit tasks
+* Support user-specific timezones with javascript
+* Add fragment caching.
 
 * 0.9.1 (beta)
 

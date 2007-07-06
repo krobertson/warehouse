@@ -24,8 +24,8 @@ ActionController::Routing::Routes.draw do |map|
   map.admin    'admin',          :controller => 'repositories'
   map.settings 'admin/settings', :controller => 'install', :action => 'settings'
 
-  map.install 'install', :controller => 'install', :action => 'index',   :conditions => { :method => :get  }
-  map.connect 'install', :controller => 'install', :action => 'install', :conditions => { :method => :post }
+  map.installer 'install', :controller => 'install', :action => 'index',   :conditions => { :method => :get  }
+  map.connect   'install', :controller => 'install', :action => 'install', :conditions => { :method => :post }
   
   if RAILS_ENV == 'development'
     map.connect 'test_install', :controller => 'install', :action => 'test_install'

@@ -11,7 +11,7 @@
   </div>
 <% end -%>
 
-  <% form_for @repository, :url => install_path do |f| -%>
+  <% form_for @repository, :url => installer_path do |f| -%>
   <div class="overlay-form oform">
     <%= error_messages_for :repository %>
     <% if @repository.new_record? -%>

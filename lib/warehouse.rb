@@ -33,5 +33,5 @@ module Warehouse
   self.default_session_options = {:session_key => '_warehouse_session_id', :secret => 'asMb0bEBw6TXU'}
   self.domain    = ''
   self.forum_url = "http://forum.activereload.net/licenses/%s/installs"
-  self.version   = Version.new(0, 9, 0)
+  self.version   = Version.new(1, 0, 1)
 end

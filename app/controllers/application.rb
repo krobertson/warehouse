@@ -92,7 +92,7 @@ class ApplicationController < ActionController::Base
         redirect_to(logged_in? ? hosted_url(:changesets) : hosted_url(:public_changesets))
       else
         reset_session
-        redirect_to install_path
+        redirect_to installer_path
       end
       false
     end
