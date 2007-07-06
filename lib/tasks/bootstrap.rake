@@ -5,11 +5,15 @@ namespace :warehouse do
         options = OpenStruct.new
         class << options
           def get_binding() binding end
+          def test_database
+            @test_database ||= database.gsub(pattern, '') + '_test'
+          end
         end
         options.keys     = [:adapter, :host, :database, :username, :password, :socket]
+        options.pattern  = /_(dev.*|prod.*|test)$/
         options.adapter  = 'mysql'
         options.host     = ask("What host is the database on? (default = localhost)")
-        options.database = ask("What is the database name?")
+        options.database = ask("What is the database name? (warehouse, my_warehouse, my_warehouse_production are all good choices)")
         options.username = ask("What is the database's user name?")
         options.password = ask("What is the database user's password?") { |q| q.echo = "x" }
         options.socket   = ask("What is the socket path? (blank by default)")
@@ -24,6 +28,7 @@ namespace :warehouse do
         File.open File.join(RAILS_ROOT, 'config', 'database.yml'), 'w' do |f|
           f.write erb.result(options.get_binding)
         end
+        say "I used the '#{options.database}' database for your development and production environments, and '#{options.test_database}' for testing.  If you haven't already, now would be a good time to create them."
       else
         say "I have copied database.sample.yml over.  Now, edit config/database.yml with your correct database settings."
         cp 'config/database.sample.yml', 'config/database.yml'

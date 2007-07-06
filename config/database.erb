@@ -22,7 +22,7 @@ development:
 test:
 <% keys.each do |key| %>
 <% if key == :database %>
-  database: <%= database =~ /_(development|dev)$/ ? database.gsub(/_(development|dev)$/, '_test') : database + '_test' %>
+  database: <%= test_database %>
 <% else %>
   <%= key %>: <%= send(key) %>
 <% end %>
