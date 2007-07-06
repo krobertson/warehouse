@@ -1,3 +1,7 @@
+* 1.0.2
+
+* send valid ATOM feeds.
+
 * 1.0.1
 
 * Fix rare bug when viewing history of path that doesn't exist anymore
