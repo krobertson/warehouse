@@ -1,5 +1,9 @@
-atom_feed(:url => formatted_changesets_url(:atom)) do |feed|
-  feed.title("Changesets for #{current_repository.name}")
+atom_feed(:url => controller.action_name == 'index' ? formatted_changesets_url(:atom) : formatted_public_changesets_url(:atom)) do |feed|
+  if current_repository
+    feed.title("Changesets for #{current_repository.name}")
+  else
+    feed.title("#{'Public ' if controller.action_name == 'public'}Changesets")
+  end
   feed.updated(@changesets.first ? @changesets.first.created_at : Time.now.utc)
 
   @changesets.each do |changeset|
