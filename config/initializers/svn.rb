@@ -31,7 +31,7 @@ module Svn
       alias_method :copied_from, :copied_from_with_gc
 
       def close_with_gc
-        ret = close_without_manual_garbage_collection
+        ret = close_without_gc
         Svn.sweep_garbage!
         ret
       end
@@ -40,7 +40,7 @@ module Svn
 
       def file_contents_with_gc(*args, &block)
         Svn.sweep_garbage!
-        file_contents_without_manual_garbage_collection(*args, &block)
+        file_contents_without_gc(*args, &block)
       end
       alias_method :file_contents_without_gc, :file_contents
       alias_method :file_contents, :file_contents_with_gc
@@ -49,13 +49,13 @@ module Svn
 
   module Delta
     class ChangedEditor
-      def add_file_with_collection(*args)
+      def add_file_with_gc(*args)
         Svn.sweep_garbage!
-        add_file_without_collection(*args)
+        add_file_without_gc(*args)
       end
       
-      alias_method :add_file_without_collection, :add_file
-      alias_method :add_file, :add_file_with_collection
+      alias_method :add_file_without_gc, :add_file
+      alias_method :add_file, :add_file_with_gc
     end
   end
 end
