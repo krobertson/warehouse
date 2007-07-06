@@ -150,6 +150,7 @@ Sheet.prototype = {
   }
 };
 
+// http://redhanded.hobix.com/inspect/showingPerfectTime.html
 /* other support functions -- thanks, ecmanaut! */
 var strftime_funks = {
   zeropad: function( n ){ return n>9 ? n : '0'+n; },
@@ -197,8 +198,9 @@ Date.distanceOfTimeInWords = function(fromTime, toTime) {
   } else if(delta < (48*60*60)) {
       return '1 day ago';
   } else {
-    var fmt  = '%d %b %I:%M %p'
-    if(fromTime.getYear() != fromTime.getYear()) { fmt += ', %Y' }
+    var fmt  = '%d %b'
+    if(toTime.getYear() != fromTime.getYear()) { fmt += ', %Y' }
+    fmt += ' %I:%M %p'
     return fromTime.strftime(fmt);
   }
 }
@@ -208,6 +210,7 @@ Date.prototype.timeAgoInWords = function() {
   return Date.distanceOfTimeInWords(this, relative_to);
 }
 
+// for those times when you get a UTC string like 18 May 09:22 AM
 Date.parseUTC = function(value) {
   var localDate = new Date(value);
   var utcSeconds = Date.UTC(localDate.getFullYear(), localDate.getMonth(), localDate.getDate(), localDate.getHours(), localDate.getMinutes(), localDate.getSeconds())
