@@ -1,6 +1,8 @@
 * 1.0.2
 
 * send valid ATOM feeds.
+* update open_id rails plugin so that urls with '-'s are allowed.
+* fixed a harsh bug with the sheets: http://forum.activereload.net/forums/8/topics/93
 
 * 1.0.1
 

@@ -82,6 +82,7 @@ module ActiveReload
       sheets = default_sheets + @current_sheets.to_a
       return if sheets.blank?
       sheets.collect do |s| 
+        next unless s.last
         "Sheet.Cache['#{escape_javascript s.first}'] = new Sheet('#{escape_javascript s.first}', '#{escape_javascript s.last.to_s}');"
       end.join("\n")
     end

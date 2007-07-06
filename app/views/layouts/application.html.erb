@@ -33,7 +33,7 @@
     <!-- container -->
     <div id="container">
       <% if logged_in? %>
-        <% sheet_form_for current_user, :url => profile_path(:to => request.request_uri), :html => { :multipart => true, :id => 'profile-form', :method => :put }, :trigger => 'profile' do |s| -%>
+        <% sheet_form_for current_user, :url => profile_path(:to => request.request_uri), :html => { :multipart => true, :id => 'profile-form', :method => :put }, :trigger => false do |s| -%>
           <h2>Edit your profile</h2>
           <%= content_tag 'p', flash[:error] if flash[:error] %>
           <%= s.text_field 'SVN Login:', :login, :size => 30 %>
@@ -68,14 +68,14 @@
           </ul>
           </div>
           <% unless logged_in? -%>
-            <% sheet_form_tag login_path, :id => 'openid-form' do |s| -%>
+            <% sheet_form_tag login_path, :id => 'openid-form', :trigger => false do |s| -%>
               <h2>Login with OpenID (<%= link_to 'user/pass', '#', :id => 'login-toggle' %>)</h2>
               <%= content_tag 'p', flash[:error] if flash[:error] %>
               <%= s.text_field_tag %(OpenID: (<a href="#" id="reset-from-openid">reset</a>)), :openid_url, params[:openid_url], :class => 'big' %>
               <%  s.submit 'login.png' %>
             <% end -%>
 
-            <% sheet_form_tag login_path, :id => 'login-form' do |s| -%>
+            <% sheet_form_tag login_path, :id => 'login-form', :trigger => false do |s| -%>
               <h2>Login (<%= link_to 'OpenID', '#', :id => 'openid-toggle' %>)</h2>
               <%= content_tag 'p', flash[:error] if flash[:error] %>
               <%= s.text_field_tag     %(Login:),    :login,    params[:login], :class => 'big' %>
@@ -83,7 +83,7 @@
               <%  s.submit 'login.png' %>
             <% end -%>
             
-            <% sheet_form_tag forget_path, :id => 'reset-form' do |s| %>
+            <% sheet_form_tag forget_path, :id => 'reset-form', :trigger => false do |s| %>
               <h2>Reset your OpenID</h2>
               <%= s.text_field_tag 'Email you signed up with: (<a href="#" id="cancel-reset">login</a>)', :email, '', :class => 'big' %>
             <% end %>
