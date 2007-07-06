@@ -1,6 +1,6 @@
 class ChangesetsController < ApplicationController
   before_filter :repository_subdomain_or_login_required, :only => :index
-  before_filter :repository_member_required, :except => :public
+  before_filter :repository_member_required, :except => [:index, :public]
   before_filter :root_domain_required, :only => :public
 
   caches_action_content :index, :show, :public
@@ -87,14 +87,18 @@ class ChangesetsController < ApplicationController
     end
 
     def repository_subdomain_or_login_required
-      if repository_subdomain.blank? && !logged_in?
-        redirect_to hosted_url(:public_changesets)
-        false
+      if repository_subdomain.blank? 
+        if logged_in?
+          true
+        else
+          redirect_to hosted_url(:public_changesets)
+          false
+        end
       else
-        true
+        repository_member_required
       end
     end
-    
+
     def root_domain_required
       if repository_subdomain.blank?
         true

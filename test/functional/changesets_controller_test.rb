@@ -9,7 +9,7 @@ end
 
 
 context "Changesets Controller" do
-  def setup
+  setup do
     @controller = ChangesetsController.new
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
@@ -71,4 +71,36 @@ context "Changesets Controller" do
       changesets.expects(:paginate_by_paths).with(paths, :page => page, :order => 'changesets.changed_at desc').returns(value)
       Repository.any_instance.expects(:changesets).returns(changesets)
     end
+end
+
+context "Changesets Controller on root domain" do
+  setup do
+    @controller = ChangesetsController.new
+    @request    = ActionController::TestRequest.new
+    @response   = ActionController::TestResponse.new
+    @request.host = "test.host"
+    Repository.any_instance.stubs(:backend).returns(stub(:youngest_rev => 0))
+  end
+  
+  specify "should redirect anon users to public changesets" do
+    get :index
+    assert_redirected_to public_changesets_path
+  end
+  
+  specify "should allow anon users to public changesets" do
+    get :public
+    assert_template 'index'
+  end
+  
+  specify "should allow users to public changesets" do
+    login_as :rick
+    get :public
+    assert_template 'index'
+  end
+  
+  specify "should allow users to changesets" do
+    login_as :rick
+    get :index
+    assert_template 'index'
+  end
 end
