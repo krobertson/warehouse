@@ -1,3 +1,5 @@
+# adapted from retrospectiva
+# http://retrospectiva.org/browse/trunk/app/models/repository_node.rb?rev=141
 class Node
   include PathAccessibility
   @@default_mime_type = 'application/octet-stream'

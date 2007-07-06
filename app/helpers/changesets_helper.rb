@@ -1,5 +1,7 @@
+# Parts were adapted from Retrospectiva
+# http://retrospectiva.org/browse/trunk/app/helpers/changesets_helper.rb?rev=141
 module ChangesetsHelper
-  def diff_for(change)    
+  def diff_for(change)
     raw_diff = change.unified_diff
     diff_line_regex = %r{@@ -(\d+),?(\d*) \+(\d+),?(\d*) @@}
     lines = raw_diff.split("\n")
