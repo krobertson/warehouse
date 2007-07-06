@@ -16,7 +16,7 @@ class User < ActiveRecord::Base
   end
   
   has_many :all_permissions, :class_name => 'Permission', :foreign_key => 'user_id', :dependent => :delete_all
-  has_many :repositories, :through => :permissions, :select => "repositories.*, #{Permission.join_fields}", :order => 'repositories.name, permissions.path', :uniq => true do
+  has_many :repositories, :through => :permissions, :select => "repositories.*, #{Permission.join_fields}", :order => 'repositories.name, permissions.path' do
     def paths
       repo_paths = proxy_owner.repositories.inject({}) do |memo, repo|
         if proxy_owner.admin?

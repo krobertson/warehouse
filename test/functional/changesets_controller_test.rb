@@ -14,13 +14,14 @@ context "Changesets Controller" do
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
     @request.host = "sample.test.host"
+    Repository.any_instance.stubs(:backend).returns(stub(:youngest_rev => 0))
   end
 
   specify "should show 0 changesets for anonymous user" do
     Repository.any_instance.stubs(:public?).returns(false)
     get :index
-    assigns(:changesets).size.should.be.zero
-    assert_template 'index'
+    assigns(:changesets).should.be.nil
+    assert_template 'error'
   end
 
   specify "should show changesets for anonymous user on public repo" do
