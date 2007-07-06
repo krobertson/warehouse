@@ -183,7 +183,7 @@ Date.prototype.strftime = function (fmt) {
 };
 
 // http://twitter.pbwiki.com/RelativeTimeScripts
-Date.distanceOfTimeInWords = function(fromTime, toTime) {
+Date.distanceOfTimeInWords = function(fromTime, toTime, includeTime) {
   var delta = parseInt((toTime.getTime() - fromTime.getTime()) / 1000);
   if(delta < 60) {
       return 'less than a minute ago';
@@ -198,16 +198,21 @@ Date.distanceOfTimeInWords = function(fromTime, toTime) {
   } else if(delta < (48*60*60)) {
       return '1 day ago';
   } else {
-    var fmt  = '%d %b'
-    if(toTime.getYear() != fromTime.getYear()) { fmt += ', %Y' }
-    fmt += ' %I:%M %p'
-    return fromTime.strftime(fmt);
+    var days = (parseInt(delta / 86400)).toString();
+    if(days > 30) {
+      var fmt  = '%B %d'
+      if(toTime.getYear() != fromTime.getYear()) { fmt += ', %Y' }
+      if(includeTime) fmt += ' %I:%M %p'
+      return fromTime.strftime(fmt);
+    } else {
+      return days + " days ago"
+    }
   }
 }
 
 Date.prototype.timeAgoInWords = function() {
   var relative_to = (arguments.length > 0) ? arguments[1] : new Date();
-  return Date.distanceOfTimeInWords(this, relative_to);
+  return Date.distanceOfTimeInWords(this, relative_to, arguments[2]);
 }
 
 // for those times when you get a UTC string like 18 May 09:22 AM
