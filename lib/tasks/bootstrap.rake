@@ -1,7 +1,42 @@
 namespace :warehouse do
   task :bootstrap => :init_highline do
+    say "Bootstrapping Warehouse v#{Warehouse.version}..."
+    puts
+    say "1) Check for subversion bindings and proper permissions"
+    say "2) Create Database.yml config file"
+    say "3) Load Database Schema"
+    puts
+
+    begin
+      say "checking for subversion bindings..."
+      require 'svn/core'
+      say "... found it!"
+    rescue
+      say "You do not have the ruby/svn bindings installed."
+      raise
+    end
+    
+    say "checking for proper write permissions..."
+    if File.writable?('config/initializers')
+      say "... looks good!"
+    else
+      say "The config/initializers directy should be writable to rails so Warehouse can store this copy's configuration."
+      return
+    end
+    
+    puts
+    say "Step 1 is complete, now to check your database.yml file."
+    puts
+
+    if File.exist?('config/database.yml')
+      say "It looks like you already have a database.yml file."
+      if agree("Would you like to CLEAR it and start over? [y/n]")
+        rm 'config/database.yml'
+      end
+    end
+    
     unless File.exist?('config/database.yml')
-      if agree("You are missing a database.yml file.  Would you like to create one now?")
+      if agree("Would you like to create a database.yml file? [y/n]")
         options = OpenStruct.new
         class << options
           def get_binding() binding end
@@ -12,11 +47,18 @@ namespace :warehouse do
         options.keys     = [:adapter, :host, :database, :username, :password, :socket]
         options.pattern  = /_(dev.*|prod.*|test)$/
         options.adapter  = 'mysql'
-        options.host     = ask("What host is the database on? (default = localhost)")
-        options.database = ask("What is the database name? (warehouse, my_warehouse, my_warehouse_production are all good choices)")
-        options.username = ask("What is the database's user name?")
-        options.password = ask("What is the database user's password?") { |q| q.echo = "x" }
-        options.socket   = ask("What is the socket path? (blank by default)")
+        puts
+        options.host     = ask("Host name: (default = localhost)")
+        puts
+        say "This same database will be used for your DEV and PRODUCTION environments."
+        say "The test database name will be inferred from this database name."
+        options.database = ask("Database name:")
+        puts
+        options.username = ask("User name:")
+        puts
+        options.password = ask("Password:") { |q| q.echo = "x" }
+        puts
+        options.socket   = ask("Socket path: (blank by default)")
         [:host, :socket].each do |attr|
           if options.send(attr).to_s.size == 0
             options.delete_field(attr)
@@ -28,29 +70,23 @@ namespace :warehouse do
         File.open File.join(RAILS_ROOT, 'config', 'database.yml'), 'w' do |f|
           f.write erb.result(options.get_binding)
         end
-        say "I used the '#{options.database}' database for your development and production environments, and '#{options.test_database}' for testing.  If you haven't already, now would be a good time to create them."
+        say "Your databases:"
+        say "Development: '#{options.database}'"
+        say "Production:  '#{options.database}'"
+        say "Test:        '#{options.test_database}'"
+        say "I don't quite feel comfortable creating your database for you (I hardly know you).  So, make sure these databases have been created before proceeding."
       else
-        say "I have copied database.sample.yml over.  Now, edit config/database.yml with your correct database settings."
         cp 'config/database.sample.yml', 'config/database.yml'
+        say "I have copied database.sample.yml over.  Now, edit config/database.yml with your correct database settings."
         return
       end
     end
-    
-    begin
-      require 'svn/core'
-    rescue
-      say "You do not have the ruby/svn bindings installed."
-      raise
-    end
-    
-    unless File.writable?('config/initializers')
-      say "The config/initializers directy should be writable to rails so Warehouse can store this copy's configuration."
-      return
-    end
 
-    unless agree("This task will bootstrap your Warehouse install.  All of your data will be overwritten. Are you sure you wish to continue? [yes, no]")
+    puts
+    unless agree("Now it's time for Step 3: Load the database schema.  All of your data will be overwritten. Are you sure you wish to continue? [y/n]")
       raise "Cancelled"
     end
+    puts
 
     mkdir_p File.join(RAILS_ROOT, 'log')
     warehouse_path = File.join(RAILS_ROOT, 'config', 'initializers', 'warehouse.rb')
@@ -59,10 +95,11 @@ namespace :warehouse do
     %w(environment db:schema:load tmp:create).each { |t| Rake::Task[t].execute }
     
     say '=' * 80
-
-    say "Warehouse v#{Warehouse.version} is ready to roll.  Now, start the application with 'script/server' and visit"
-    say "http://mydomain.com/ to start the installation process."
-
+    puts
+    say "Warehouse v#{Warehouse.version} is ready to roll."
+    say "Okay, thanks for bootstrapping!  I know I felt some chemistry here, did you?"
+    say "Now, start the application with 'script/server' and visit http://mydomain.com/ to start the installation process."
+    puts
     say "For help, visit the following:"
     say "  Official Warehouse Site - http://warehouseapp.com"
     say "  The Active Reload Forum - http://forum.activereload.net"
@@ -75,6 +112,7 @@ namespace :warehouse do
     require 'ostruct'
     require "highline"
     require "forwardable"
+    require 'lib/warehouse'
     
     $terminal = HighLine.new
     class << self
