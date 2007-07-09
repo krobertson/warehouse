@@ -2,6 +2,7 @@
 
 * Beef up the initial bootstrapping task.
 * add deployment helper task.
+* Fix bug with access file generation
 
 * 1.0.2
 

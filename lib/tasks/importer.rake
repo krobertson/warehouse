@@ -132,7 +132,7 @@ namespace :warehouse do
         perms_hash = permissions[repo.attributes['id'].to_s]
         next if perms_hash.nil?
         perms_hash.each do |path, perms|
-          file.write("[%s]:/%s\n" % [repo.attributes['subdomain'], path])
+          file.write("[%s:/%s]\n" % [repo.attributes['subdomain'], path])
           perms.each do |p|
             if p.attributes['user_id'].nil?
               file.write('*')

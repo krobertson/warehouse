@@ -18,8 +18,11 @@ namespace :warehouse do
     ln_sf File.expand_path("shared/public/avatars"), File.join(rel_path, 'public', 'avatars')
     ln_sf File.expand_path(rel_path), 'current'
     Dir.chdir rel_path
-
-    say "Upgraded to v#{Warehouse.version}"
+    
+    unless ENV['WAREHOUSE_FORCE']
+      say "Upgraded to v#{Warehouse.version}"
+      say "Be sure to restart the Rails application to see the changes take effect."
+    end
   end
   
   task :check_structure => :init_highline do
@@ -33,14 +36,14 @@ namespace :warehouse do
   task :setup => :check_structure do
     if @in_structure
       say "Warehouse is already setup correctly."
-    else
+    else      
+      top_level = ENV['TOP_LEVEL'] || 'warehouse'
       rel_path = "releases/warehouse-#{Warehouse.version}"
-      
       say "It doesn't look like Warehouse is setup in the recommended structure:"
       puts
-      say "#{@app_root.dirname}/shared <-- shared config files"
-      say "#{@app_root.dirname}/#{rel_path} <-- this warehouse release"
-      say "#{@app_root.dirname}/current <-- symlink of latest warehouse release"
+      say "#{@app_root.dirname}/#{top_level}/shared <-- shared config files"
+      say "#{@app_root.dirname}/#{top_level}/#{rel_path} <-- this warehouse release"
+      say "#{@app_root.dirname}/#{top_level}/current <-- symlink of latest warehouse release"
       puts
       say "The added benefits are simpler Web Server configuration and upgradeability."
       puts
@@ -49,18 +52,19 @@ namespace :warehouse do
           memo.update path => File.expand_path(path)
         end
 
-        Dir.chdir '..'
+        mkdir_p "../#{top_level}"
+        Dir.chdir "../#{top_level}"
         mkdir_p 'shared/config/initializers'
         mkdir_p 'shared/public'
         mkdir_p 'releases'
         rel_files.each do |path, full|
           next unless File.exist?(full)
-          cp_r full, "shared/#{path}"
+          cp_r full, File.join('shared', path)
         end
         touch 'shared/config/initializers/warehouse.rb' unless File.exist?('shared/config/initializers/warehouse.rb')
         touch 'shared/config/database.yml'              unless File.exist?('shared/config/database.yml')
         mkdir_p 'shared/public/avatars'
-        mv @app_root.basename.to_s, rel_path
+        mv @app_root.to_s, rel_path
         
         Dir.chdir rel_path
         ENV['WAREHOUSE_FORCE'] = '1'
