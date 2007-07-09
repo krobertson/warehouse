@@ -99,6 +99,8 @@ class InstallController < ApplicationController
         tmpl << "Warehouse.#{key} = #{value.inspect}" unless value.blank?
       end
 
+      wh_file = File.join(RAILS_ROOT, 'config', 'initializers', 'warehouse.rb')
+      wh_file = File.readlink(wh_file) if File.symlink?(wh_file)
       File.open(File.join(RAILS_ROOT, 'config', 'initializers', 'warehouse.rb'), 'w') do |f|
         f.write tmpl.join("\n")
       end

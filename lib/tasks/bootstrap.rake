@@ -1,6 +1,77 @@
 namespace :warehouse do
-  task :bootstrap => :init_highline do
+  task :upgrade => :check_structure do
+    unless @in_structure || ENV['WAREHOUSE_FORCE']
+      say "Warehouse is not setup to upgrade."
+      say "Try running 'rake warehouse:setup'"
+      return
+    end
+    
+    rel_path = "releases/warehouse-#{Warehouse.version}"
+
+    Dir.chdir '../..'
+    Dir['shared/**/**'].each do |file|
+      next unless file =~ /^shared\/config/
+      rel_file = file.gsub /shared/, rel_path
+      next unless File.file?(file)
+      ln_sf File.expand_path(file), File.dirname(rel_file)
+    end
+    ln_sf File.expand_path("shared/public/avatars"), File.join(rel_path, 'public', 'avatars')
+    ln_sf File.expand_path(rel_path), 'current'
+    Dir.chdir rel_path
+
+    say "Upgraded to v#{Warehouse.version}"
+  end
+  
+  task :check_structure => :init_highline do
+    @app_root = Pathname.new(Dir.pwd)
+    
+    @in_structure = \
+      (@app_root.dirname.basename.to_s == 'releases') && 
+      (@app_root.dirname.dirname + 'shared').exist?
+  end
+  
+  task :setup => :check_structure do
+    if @in_structure
+      say "Warehouse is already setup correctly."
+    else
+      rel_path = "releases/warehouse-#{Warehouse.version}"
+      
+      say "It doesn't look like Warehouse is setup in the recommended structure:"
+      puts
+      say "#{@app_root.dirname}/shared <-- shared config files"
+      say "#{@app_root.dirname}/#{rel_path} <-- this warehouse release"
+      say "#{@app_root.dirname}/current <-- symlink of latest warehouse release"
+      puts
+      say "The added benefits are simpler Web Server configuration and upgradeability."
+      puts
+      if agree("Would you like to setup Warehouse like this? [y/n]")
+        rel_files = ['config/database.yml', 'config/initializers/warehouse.rb', 'public/avatars'].inject({}) do |memo, path|
+          memo.update path => File.expand_path(path)
+        end
+
+        Dir.chdir '..'
+        mkdir_p 'shared/config/initializers'
+        mkdir_p 'shared/public'
+        mkdir_p 'releases'
+        rel_files.each do |path, full|
+          next unless File.exist?(full)
+          cp_r full, "shared/#{path}"
+        end
+        touch 'shared/config/initializers/warehouse.rb' unless File.exist?('shared/config/initializers/warehouse.rb')
+        touch 'shared/config/database.yml'              unless File.exist?('shared/config/database.yml')
+        mkdir_p 'shared/public/avatars'
+        mv @app_root.basename.to_s, rel_path
+        
+        Dir.chdir rel_path
+        ENV['WAREHOUSE_FORCE'] = '1'
+        Rake::Task["warehouse:upgrade"].execute
+      end
+    end
+  end
+  
+  task :bootstrap => :check_structure do
     say "Bootstrapping Warehouse v#{Warehouse.version}..."
+    
     puts
     say "1) Check for subversion bindings and proper permissions"
     say "2) Create Database.yml config file"
@@ -28,15 +99,16 @@ namespace :warehouse do
     say "Step 1 is complete, now to check your database.yml file."
     puts
 
-    if File.exist?('config/database.yml')
+    db_config = "config/database.yml"
+    db_config = File.readlink(db_config) if File.symlink?(db_config)
+    
+    if File.exist?(db_config)
       say "It looks like you already have a database.yml file."
-      if agree("Would you like to CLEAR it and start over? [y/n]")
-        rm 'config/database.yml'
-      end
+      @restart = agree("Would you like to CLEAR it and start over? [y/n]")
     end
     
-    unless File.exist?('config/database.yml')
-      if agree("Would you like to create a database.yml file? [y/n]")
+    unless !@restart && File.exist?(db_config)
+      if @restart || agree("Would you like to create a database.yml file? [y/n]")
         options = OpenStruct.new
         class << options
           def get_binding() binding end
@@ -67,7 +139,7 @@ namespace :warehouse do
         end
         require 'erb'
         erb = ERB.new(IO.read(File.join(RAILS_ROOT, 'config', 'database.erb')), nil, '<>')
-        File.open File.join(RAILS_ROOT, 'config', 'database.yml'), 'w' do |f|
+        File.open File.expand_path(db_config), 'w' do |f|
           f.write erb.result(options.get_binding)
         end
         say "Your databases:"
@@ -76,8 +148,8 @@ namespace :warehouse do
         say "Test:        '#{options.test_database}'"
         say "I don't quite feel comfortable creating your database for you (I hardly know you).  So, make sure these databases have been created before proceeding."
       else
-        cp 'config/database.sample.yml', 'config/database.yml'
-        say "I have copied database.sample.yml over.  Now, edit config/database.yml with your correct database settings."
+        cp 'config/database.sample.yml', db_config
+        say "I have copied database.sample.yml over.  Now, edit #{db_config} with your correct database settings."
         return
       end
     end
@@ -107,17 +179,20 @@ namespace :warehouse do
   end
   
   task :init_highline do
-    RAILS_ENV = 'production'
-    $LOAD_PATH << 'vendor/highline-1.2.9/lib'
-    require 'ostruct'
-    require "highline"
-    require "forwardable"
-    require 'lib/warehouse'
-    
-    $terminal = HighLine.new
-    class << self
-      extend Forwardable
-      def_delegators :$terminal, :agree, :ask, :choose, :say
+    unless $terminal
+      RAILS_ENV = 'production'
+      $LOAD_PATH << 'vendor/highline-1.2.9/lib'
+      require 'ostruct'
+      require 'pathname'
+      require "highline"
+      require "forwardable"
+      require 'lib/warehouse'
+      
+      $terminal = HighLine.new
+      class << self
+        extend Forwardable
+        def_delegators :$terminal, :agree, :ask, :choose, :say
+      end
     end
   end
 end

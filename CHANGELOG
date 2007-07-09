@@ -1,3 +1,8 @@
+* 1.0.3
+
+* Beef up the initial bootstrapping task.
+* add deployment helper task.
+
 * 1.0.2
 
 * send valid ATOM feeds.
