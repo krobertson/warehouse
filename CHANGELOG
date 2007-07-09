@@ -1,5 +1,6 @@
 * 1.0.3
 
+* Add a new favicon
 * Beef up the initial bootstrapping task.
 * add deployment helper task.
 * Fix bug with access file generation
