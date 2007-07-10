@@ -153,7 +153,7 @@ Sheet.prototype = {
 // http://redhanded.hobix.com/inspect/showingPerfectTime.html
 /* other support functions -- thanks, ecmanaut! */
 var strftime_funks = {
-  zeropad: function( n ){ return n>9 ? n : '0'+n; },
+  zeropad: function( n ){ return n > 9 ? n : '0' + n; },
   a: function(t) { return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][t.getDay()] },
   A: function(t) { return ['Sunday','Monday','Tuedsay','Wednesday','Thursday','Friday','Saturday'][t.getDay()] },
   b: function(t) { return ['Jan','Feb','Mar','Apr','May','Jun', 'Jul','Aug','Sep','Oct','Nov','Dec'][t.getMonth()] },

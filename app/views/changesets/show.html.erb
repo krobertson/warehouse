@@ -22,7 +22,10 @@
 <% if @changeset.changes.select(&:diffable?).any? -%>
 <div id="control-center">
   <ul>
-      <li id="cdiff"><%= link_to 'Complete Diff', formatted_changeset_path(@changeset, :diff) %></li>
+      <li id="cdiff"><%= link_to 'Download', formatted_changeset_path(@changeset, :diff) %></li>
+      <li id="diffhead"><%= link_to 'HEAD', formatted_changeset_path(@changeset, :diff) %></li>
+      <li id="diffprev"><%= link_to 'PREV', formatted_changeset_path(@changeset, :diff) %></li>
+      <li id="diffnum"><input type="text" value="#" size="4" /></li>
   </ul>
 </div>
 <% end -%>
