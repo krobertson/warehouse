@@ -7,7 +7,7 @@ module Importer
     end
     
     def self.find_all_by_permissions(permissions)
-      find_all("`id` IN (#{permissions.collect { |p| quote_string(p.attributes['user_id']) }.uniq * ', '})")
+      permissions.any? ? find_all("`id` IN (#{permissions.collect { |p| quote_string(p.attributes['user_id']) }.uniq * ', '})") : []
     end
     
     def repositories

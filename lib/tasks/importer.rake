@@ -134,10 +134,12 @@ namespace :warehouse do
         perms_hash.each do |path, perms|
           file.write("[%s:/%s]\n" % [repo.attributes['subdomain'], path])
           perms.each do |p|
+            login = users[p.attributes['user_id'].to_s].attributes['login']
+            next if login.nil? || login.size == 0
             if p.attributes['user_id'].nil?
               file.write('*')
             else
-              file.write(users[p.attributes['user_id'].to_s].attributes['login'])
+              file.write(login)
             end
             file.write(' = r')
             file.write('w') if p.attributes['full_access'] == '1'
