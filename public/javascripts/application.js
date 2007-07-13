@@ -122,6 +122,7 @@ Sheet.prototype = {
   show: function(event) {
     if(Sheet.Current && Sheet.Current.overlay.visible()) Sheet.Current.hide()
     Sheet.Current = this;
+    this.sheet.show();
     this.overlay.show();
     new Fx.Style(this.sheetContent, 'margin-top', {
       duration: (this.sheetHeight * 2), 

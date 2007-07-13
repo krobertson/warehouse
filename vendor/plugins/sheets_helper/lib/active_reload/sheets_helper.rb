@@ -88,12 +88,16 @@ module ActiveReload
     end
 
     def sheet_form_tag(url_for_options = {}, options = {}, &block)
+      options[:html] ||= {}
+      options[:html][:style] = "display:none"
       concat(form_tag(url_for_options, options), block.binding)
       sheet_form_helper(options, &block)
     end
 
     def sheet_form_for(record_or_name, *args, &block)
       options = args.last.is_a?(Hash) ? args.pop : {}
+      options[:html] ||= {}
+      options[:html][:style] = "display:none"
       
       case record_or_name
         when String, Symbol

@@ -1,5 +1,6 @@
 * 1.0.4
 
+* Add initial display:none to sheet forms so they won't flash on the page during load
 * Remove stray console.log in syncing causing Camino to fail
 
 * 1.0.3

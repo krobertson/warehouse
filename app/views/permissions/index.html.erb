@@ -1,5 +1,5 @@
 <%= render :partial => "admin_tab" %>
-<% if current_repository -%>
+<% if current_repository && @repositories.size > 1 -%>
 <h2><%=h current_repository.name %> Permissions</h2>
 <% end -%>
 <ul id="permissions">
