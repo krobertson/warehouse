@@ -1,3 +1,7 @@
+* 1.0.4
+
+* Remove stray console.log in syncing causing Camino to fail
+
 * 1.0.3
 
 * Add a new favicon
