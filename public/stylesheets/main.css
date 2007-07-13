@@ -495,7 +495,7 @@ a.txt, a.file {
   background: url(../images/app/icons/text-small.png) 0 50% no-repeat;
 }
 
-td span.log, #repos span.log, #permissions span.log {
+td span.log, #repos span.log, #permissions span.log, .listbox span.log {
   font-size: 92%;
   display: block;
   color: #888;
@@ -673,7 +673,7 @@ li.prev a {
   background: url(../images/app/icons/back.png) no-repeat;
 }
 
-.changeset, .repo, .form, .permission {
+.changeset, .repo, .form, .permission, .listbox li.listitem {
   padding: 10px;
   padding-left: 50px;
   background: #f7f7f7 url(../images/app/icons/terminal.png) 5px 3px no-repeat;
@@ -996,7 +996,7 @@ pre.viewsource code {
 #admin-nav {
   list-style: none;
   margin-bottom: 0;
-  margin-top: 0;
+  margin-top: 10px;
   line-height: 100%;
   padding: 0 0 2px 10px !important;
   background: url(../images/app/nav-bg.png) bottom left repeat-x;
@@ -1024,6 +1024,7 @@ pre.viewsource code {
 li#nrepo 	 a { background: url(../images/app/icons/repository.png) 50% 0 no-repeat;}
 li#naccess   a { background: url(../images/app/icons/lock.png) 50% 0 no-repeat;}
 li#nplugin   a { background: url(../images/app/icons/plugins.png) 50% 0 no-repeat;}
+li#nhooks     a { background: url(../images/app/icons/hooks.png) 50% 0 no-repeat;}
 li#nsettings a { background: url(../images/app/icons/settings.png) 50% 0 no-repeat;}
 li#nmembers  a { background: url(../images/app/icons/members.png) 50% 0 no-repeat;}
 
@@ -1080,11 +1081,11 @@ li#jump select {
   padding: 0;
 }
 
-#repos, #permissions {
+#repos, #permissions, .listbox {
   list-style: none;
 }
 
-li.repo, li.permission {
+li.repo, li.permission, ul.listbox li.listitem {
   position: relative;
   background: #f7f7f7 url(../images/app/icons/repository.png) 3px 10px no-repeat;
   padding: 10px 45px;
@@ -1104,7 +1105,7 @@ li.permission .avatar {
   margin-right: 10px;
 }
 
-#repos span.log, #permissions span.log {
+#repos span.log, #permissions span.log, .listbox span.log {
   font-size: 92%;
   font-weight: normal;
 }
@@ -1245,6 +1246,14 @@ input.path {
   font-weight: normal;
   color: #555;
   display: block;
+}
+
+#hooks {
+  list-style: none;
+}
+
+li.listitem {
+  background-image: url(../images/app/icons/hooks.png);
 }
 
 

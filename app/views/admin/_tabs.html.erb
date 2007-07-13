@@ -3,6 +3,8 @@
   <li id="naccess"<%= class_for(permissions_path) %>><%= link_to 'Access', permissions_path %></li>
   <% if admin? -%>
   <li id="nmembers"<%= class_for(users_path) %>><%= link_to 'Members', users_path %></li>
+  <li id="nplugin"<%= class_for(plugins_path) %>><%= link_to 'Plugins', plugins_path %></li>
+  <li id="nhooks"<%= class_for(hooks_path) %>><%= link_to 'Hooks', hooks_path %></li>
   <li id="nsettings"<%= class_for(settings_path) %>><%= link_to 'Settings', settings_path %></li>
   <% end -%>
 </ul>
@@ -11,4 +13,15 @@
 <%= yield :admin_tab %>
 </ul>
 <% end -%>
+
+<% content_for :sidebar do %>
+  <div class="sideblock" id="plugins">
+    <h3>Plugins</h3>
+    <ul>
+      <li><a style="background-image:url(../images/app/icons/gallery-small.png)" href="#">Photo Gallery</a></li>
+      <li><a style="background-image:url(../images/app/icons/stat-small.png)" href="#">Member Stats</a></li>
+      <li><a style="background-image:url(../images/app/icons/caution-small.png)" href="#">Continuous Integration</a></li>
+    </ul>
+  </div>
+<% end %>
 

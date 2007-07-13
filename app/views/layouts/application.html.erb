@@ -101,6 +101,15 @@
         <% unless @fullscreen -%>
         <!-- sbar -->
         <div id="sbar">
+            <div class="sideblock" id="plugins">
+              <h3>Plugins</h3>
+              <ul>
+                <li><a style="background-image:url(../images/app/icons/gallery-small.png)" href="#">Photo Gallery</a></li>
+                <li><a style="background-image:url(../images/app/icons/stat-small.png)" href="#">Member Stats</a></li>
+                <li><a style="background-image:url(../images/app/icons/caution-small.png)" href="#">Continuous Integration</a></li>
+              </ul>
+            </div>
+            
           <%= yield :sidebar %>
           <% cache CacheKey.bookmarks_for(current_repository) do -%>
           <div id="bookmarks" class="sideblock"<%= %( style="display:none") if current_repository.bookmarks.to_a.empty? %>>

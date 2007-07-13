@@ -1,0 +1,17 @@
+<%= render :partial => '/admin/tabs' %>
+
+<ul id="hooks" class="listbox">
+  <% ['Post to Campfire', 'Email Members'].each do |hook| %>
+  <li id="<%= dom_id(hook) %>" class="listitem">
+    <%= link_to hook, {} %></h3>
+    <span class="log">Automatically post changesets to a Campfire room.</span> 
+    <!-- SHEET FORMS HERE -->
+    <% if admin? %>
+      <ul class="admin-controls">
+        <li class="edit" id="hookedit-<%= hook.id %>"><a href="#">Edit</a></li>
+        <li class="del"><%= link_to_remote 'Delete', :url => '', :with => "'_method=delete'", :confirm => "Are you sure you want to delete this hook script?" %></li>
+      </ul>
+    <% end %> 
+  </li>
+  <% end %>
+</ul>

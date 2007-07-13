@@ -1,10 +1,13 @@
 ActionController::Routing::Routes.draw do |map|
   map.resources :bookmarks
+  map.resources :plugins
   map.resources :repositories, :member => { :sync => :any }
   map.resources :permissions, :collection => { :anon => :any }
   map.resources :users, :has_one => [:permissions]
   map.resources :changesets, :has_many => :changes, :collection => { :public => :get }
   map.resource  :profile, :controller => 'users'
+  
+  map.hooks 'hooks', :controller => 'plugins', :action => 'hooks'
 
   map.with_options :controller => 'browser' do |b|
     b.rev_browser 'browser/:rev/*paths', :rev => /r\d+/
