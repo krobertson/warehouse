@@ -1,3 +1,16 @@
+<% if needs_date_slider? %>
+<script type="text/javascript">
+  var slider = new FlashTag("date_slider_open.swf?&slider_variable=Changesets", 678, 140);
+  slider.setFlashvars("lcId=" + lcId);
+  slider.setBgcolor('EBEBEB');
+  slider.setFlashvars("flashSource=http://www.measuremap.com/developer/slider/&line_color=555555&box_color=333333&bar_color=0077bb&file_name=date_slider_data.xml&contentLicense=http://creativecommons.org/licenses/by/2.0/");
+  slider.write(document);
+  function updatePage(range) {
+    //Some ajax call that updates the changesets and pagination.
+    console.log(range);
+  }
+</script>
+<% end %>
 <% if repository_admin? && current_repository.sync? -%>
 <div class="info">Revisions <%= current_repository.revisions_to_sync.inspect.sub(/\.\./, '-') %> need to be synced.  You can do this from the command line or you can 
   do this in the administration user interface.  Command line syncing is much faster.</div>
