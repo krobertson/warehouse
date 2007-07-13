@@ -51,6 +51,10 @@
           <%= s.password_field 'SVN Password:', :password, :size => 30 %>
           <%= s.password_field 'Confirm:', :password_confirmation, :size => 30 %>
           <%= s.text_field 'Email:', :email, :size => 30 %>
+          <p>
+            <label>OpenID Address (<%= link_to 'reset', reset_path %>):</label>
+            <%=h current_user.identity_url %>
+          </p>
           <p id="profile-pic"><%= avatar_for(current_user) %></p>
           <%= s.file_field "Profile picture:", :avatar_data, :size => 25 %>
           <% s.submit 'save.png' %>
