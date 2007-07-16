@@ -109,8 +109,6 @@ class PermissionsController < ApplicationController
     
     def after_permission_update
       current_repository.rebuild_permissions
-      cache_path = File.join(RAILS_ROOT, 'tmp', 'cache', current_repository.domain)
-      cache_path << ".#{request.port}" unless request.port == 80
-      FileUtils.rm_rf cache_path if File.exist?(cache_path)
+      CacheKey.sweep_cache(request, current_repository)
     end
 end

@@ -107,6 +107,7 @@ namespace :warehouse do
   
   task :build_config => :init do
     require 'lib/warehouse'
+    require 'lib/cache_key'
     require 'config/initializers/warehouse'
     config_path = ENV['CONFIG'] || 'config/access.conf'
     
@@ -160,7 +161,7 @@ namespace :warehouse do
         puts "No repo(s) found, REPO=#{ENV['REPO'].inspect} given."
       end
     end
-    rm_rf File.join(RAILS_ROOT, 'tmp', 'cache') if File.exist?(File.join(RAILS_ROOT, 'tmp', 'cache'))
+    CacheKey.sweep_cache
   end
 
   task :clear => :init do

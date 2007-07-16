@@ -38,6 +38,7 @@ class UsersController < ApplicationController
       @user.admin = params[:user][:admin] == '1'
     end
     @user.save
+    CacheKey.sweep_cache
     Repository.rebuild_htpasswd_for(@user)
     redirect_to(params[:to] || root_path)
   end
@@ -45,7 +46,8 @@ class UsersController < ApplicationController
   def destroy
     @user = User.find params[:id]
     @user.destroy
-    current_repository.rebuild_htpasswd_for(@user)
+    CacheKey.sweep_cache
+    Repository.rebuild_htpasswd_for(@user)
     respond_to do |format|
       format.js
     end

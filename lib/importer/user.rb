@@ -11,7 +11,7 @@ module Importer
     end
     
     def repositories
-      Repository.find_all("id IN (SELECT DISTINCT `repository_id` FROM `permissions` WHERE `active` = 1 AND `user_id` = #{quote_string attributes['id']})")
+      Repository.find_all("id IN (SELECT DISTINCT `repository_id` FROM `permissions` WHERE `user_id` = #{quote_string attributes['id']})")
     end
   end
 end

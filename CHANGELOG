@@ -3,6 +3,7 @@
 * Add initial display:none to sheet forms so they won't flash on the page during load
 * Remove stray console.log in syncing causing Camino to fail
 * Add link to reset your OpenID Address from your profile
+* Fix nil error when deleting users, sweep cache when users are updated.
 
 * 1.0.3
 
