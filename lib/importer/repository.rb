@@ -42,7 +42,7 @@ module Importer
         authors.each do |login, changed_at|
           next unless users[login]
           puts "#{login} - #{users[login]} #{changed_at.inspect}"
-          self.class.adapter.execute("UPDATE `permissions` SET changesets_count = (SELECT COUNT(id) FROM changesets WHERE repository_id = #{quote_string attributes['id']} AND author = #{quote_string login}), last_changed_at = #{changed_at.strftime("%Y-%m-%d %H:%M:%S %Z").inspect} WHERE user_id = #{quote_string users[login]} AND repository_id = #{quote_string attributes['id']}")
+          self.class.adapter.execute("UPDATE `permissions` SET changesets_count = (SELECT COUNT(id) FROM changesets WHERE repository_id = #{quote_string attributes['id']} AND author = #{quote_string login}), last_changed_at = #{changed_at.utc.strftime("%Y-%m-%d %H:%M:%S").inspect} WHERE user_id = #{quote_string users[login]} AND repository_id = #{quote_string attributes['id']}")
         end
         puts revisions.last
       end

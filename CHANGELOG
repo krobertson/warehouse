@@ -4,6 +4,7 @@
 * Remove stray console.log in syncing causing Camino to fail
 * Add link to reset your OpenID Address from your profile
 * Fix nil error when deleting users, sweep cache when users are updated.
+* fix error with date/time format when syncin
 
 * 1.0.3
 
