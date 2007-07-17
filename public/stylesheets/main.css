@@ -1228,20 +1228,20 @@ input.path {
   padding: 10px;
 }
 
-.command {
+.command, fieldset p {
   padding: 10px 0 10px 25px;
 }
 
-.command label {
+.command label, fieldset p label {
   font-weight: bold;
   display: block;
 }
 
-.command input[type=text] {
+.command input[type=text], fieldset p input[type=text] {
   font-size: 150%;
 }
 
-.command span.help {
+.command span.help, fieldset p span.help {
   font-size: 92%;
   font-weight: normal;
   color: #555;

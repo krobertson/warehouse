@@ -27,7 +27,7 @@ class InstallController < ApplicationController
       raise res.body
     end
 
-    write_config_file :domain => params[:domain]
+    Warehouse.write_config_file :domain => params[:domain]
 
     User.transaction do
       @repository.save!
@@ -41,8 +41,11 @@ class InstallController < ApplicationController
   end
 
   def settings
+    params[:settings]                     ||= {}
+    params[:settings][:smtp_settings]     ||= {}
+    params[:settings][:sendmail_settings] ||= {}
     return unless request.post?
-    write_config_file :domain => Warehouse.domain, :permission_command => params[:permission_command], :password_command => params[:password_command], :mail_from => params[:mail_from]
+    Warehouse.write_config_file params[:settings].merge(:domain => Warehouse.domain)
   end
 
   if RAILS_ENV == 'development'
@@ -61,23 +64,6 @@ class InstallController < ApplicationController
       else
         true
       end
-    end
-    
-    def write_config_file(attributes = {})
-      domain_is_blank = Warehouse.domain.blank?
-      tmpl = ['# This file is auto generated.  Visit /admin/settings to change it.', '#', "require 'warehouse' unless Object.const_defined?(:Warehouse)", '# set licensed domain name']
-      attributes.each do |key, value|
-        Warehouse.send "#{key}=", (value.blank? ? nil : value)
-        tmpl << "Warehouse.#{key} = #{value.inspect}" unless value.blank?
-      end
-
-      wh_file = File.join(RAILS_ROOT, 'config', 'initializers', 'warehouse.rb')
-      wh_file = File.readlink(wh_file) if File.symlink?(wh_file)
-      File.open(File.join(RAILS_ROOT, 'config', 'initializers', 'warehouse.rb'), 'w') do |f|
-        f.write tmpl.join("\n")
-      end
-      
-      self.class.session(Warehouse.session_options) if domain_is_blank && !attributes[:domain].blank?
     end
 
     def choose_layout

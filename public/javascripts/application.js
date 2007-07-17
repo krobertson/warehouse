@@ -234,5 +234,14 @@ Event.addBehavior({
   },
   'span.time': function() {
     this.innerHTML = Date.parseUTC(this.innerHTML).timeAgoInWords();
+  },
+  '#settings_mail_type:change': function() {
+    if(this.value == 'smtp') {
+      $('mail_sendmail').hide();
+      $('mail_smtp').show();
+    } else {
+      $('mail_smtp').hide();
+      $('mail_sendmail').show();
+    }
   }
 });
