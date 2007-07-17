@@ -12,7 +12,8 @@
     <span class="log"><%= user.sanitized_email || "No email set." %></span>
     <ul class="admin-controls">
       <li id="profile-<%= dom_id user %>" class="edit"><a href="#">Edit</a></li>
-      <li class="del"><%= link_to_remote('Delete', :url => user_path(user), :with => "'_method=delete'") %></li>
+      <li class="del"><%= link_to_remote('Delete', :url => user_path(user), 
+        :with => "'_method=delete'", :confirm => "Are you sure you wish to delete this member?") %></li>
     </ul>
     
   <% sheet_form_for user, :url => user_path(:id => user, :to => users_path), :trigger => "profile-#{dom_id user}", 

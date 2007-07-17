@@ -7,6 +7,7 @@
 * Fix nil error when deleting users, sweep cache when users are updated.
 * fix error with date/time format when syncing
 * remove OpenID requirements for installation
+* Add confirmation message when deleting members
 
 * 1.0.3
 
