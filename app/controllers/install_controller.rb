@@ -10,62 +10,34 @@ class InstallController < ApplicationController
   layout :choose_layout
 
   def index
-    if using_open_id?
-      authenticate_with_open_id do |result, identity_url|
-        if result.successful?
-          @install_file = File.join(@@install_path, "#{Digest::SHA1.hexdigest(identity_url)}.yml")
-          if @install_data = @install_file && File.exist?(@install_file) && YAML.load_file(@install_file)
-            params[:domain]     = @install_data[:domain]
-            params[:license]    = @install_data[:license]
-            params[:repository] = @install_data[:repository]
+    @repository = Repository.new(params[:repository])
+    @user       = User.new(params[:user])
+  end
+  
+  def install
+    index
+    unless @repository.valid? && @user.valid?
+      render :action => 'index'
+      return
+    end
 
-            @repository = Repository.new(params[:repository])
-            unless @repository.valid?
-              render :action => 'index'
-              return
-            end
-    
-            require 'net/http'
-            res = Net::HTTP.post_form(URI.parse(Warehouse.forum_url % params[:license]), 'install[domain]' => params[:domain])
-            if res.code != '200'
-              raise res.body
-            end
+    require 'net/http'
+    res = Net::HTTP.post_form(URI.parse(Warehouse.forum_url % params[:license]), 'install[domain]' => params[:domain])
+    if res.code != '200'
+      raise res.body
+    end
 
-            write_config_file :domain => params[:domain]
+    write_config_file :domain => params[:domain]
 
-            User.transaction do
-              @repository.save!
-              User.find_or_initialize_by_identity_url(identity_url).save!
-            end
-            render :action => 'install'
-          else
-            raise "No install file found"
-          end
-        else
-          raise result.message || "Sorry, cannot create user by that identity URL exists (#{identity_url})"
-        end
-      end
-    else
-      @repository = Repository.new
+    User.transaction do
+      @repository.save!
+      @user.save!
     end
   rescue
     @message = $!.message
     logger.warn $!.message
     $!.backtrace.each { |b| logger.warn "> #{b}" }
     render :action => 'index'
-  ensure
-    FileUtils.rm @install_file if @install_data
-  end
-  
-  def install
-    FileUtils.mkdir_p @@install_path
-    data = {:domain => params[:domain], 
-      :license => params[:license],
-      :repository => params[:repository]}
-    File.open(File.join(@@install_path, "#{Digest::SHA1.hexdigest(OpenIdAuthentication.normalize_url(params[:openid_url]))}.yml"), 'w') do |f|
-      f.write data.to_yaml
-    end
-    authenticate_with_open_id
   end
 
   def settings
@@ -110,14 +82,5 @@ class InstallController < ApplicationController
 
     def choose_layout
       action_name == 'settings' ? 'application' : 'install'
-    end
-
-    # this regex is the stuff nightmares are made of
-    # thanks to shaun inman
-    # http://www.shauninman.com/archive/2006/05/08/validating_domain_names
-    #
-    # put down here because this monstrosity messed with textmate's syntax highlighting
-    def evil_regex
-      /^([a-z0-9]([-a-z0-9]*[a-z0-9])?\.)+((a[cdefgilmnoqrstuwxz]|aero|arpa)|(b[abdefghijmnorstvwyz]|biz)|(c[acdfghiklmnorsuvxyz]|cat|com|coop)|d[ejkmoz]|(e[ceghrstu]|edu)|f[ijkmor]|(g[abdefghilmnpqrstuwy]|gov)|(h[kmnrtu]#{RAILS_ENV=='test'?'|host':''})|(i[delmnoqrst]|info|int)|(j[emop]|jobs)|k[eghimnprwyz]|l[abcikrstuvy]|(m[acdghklmnopqrstuvwxyz]|mil|mobi|museum)|(n[acefgilopruz]|name|net)|(om|org)|(p[aefghklmnrstwy]|pro)|qa|r[eouw]|s[abcdeghijklmnortvyz]|(t[cdfghjklmnoprtvwz]|travel)|u[agkmsyz]|v[aceginu]|w[fs]|y[etu]|z[amw])$/
     end
 end

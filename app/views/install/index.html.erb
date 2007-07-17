@@ -40,14 +40,29 @@
     <% else -%>
     <p><%=h @message %></p>
     <% end -%>
+    <%= error_messages_for :user %>
+    <% fields_for :user do |fu| -%>
     <p>
-      <label for="openid_url">Open ID Address
+      <label for="user_login">Initial Admin Login
         <span class="help">
           This will create your initial user account to administer your Warehouse repositories.
         </span>
       </label>
-      <%= text_field_tag :openid_url, params[:openid_url], :size => 40 %>
+      <%= fu.text_field :login, :size => 40 %>
     </p>
+    <p>
+      <label for="user_email">Email</label>
+      <%= fu.text_field :email, :size => 40 %>
+    </p>
+    <p>
+      <label for="user_password">Password</label>
+      <%= fu.password_field :password, :size => 40 %>
+    </p>
+    <p>
+      <label for="user_password_confirmation">Confirm Passowrd</label>
+      <%= fu.password_field :password_confirmation, :size => 40 %>
+    </p>
+    <% end -%>
     </div>
     <p class="btns">
       <%= submit_image 'install.png' %>

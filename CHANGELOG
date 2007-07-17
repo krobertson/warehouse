@@ -2,9 +2,11 @@
 
 * Add initial display:none to sheet forms so they won't flash on the page during load
 * Remove stray console.log in syncing causing Camino to fail
+* when building the access file, only use active permissions
 * Add link to reset your OpenID Address from your profile
 * Fix nil error when deleting users, sweep cache when users are updated.
-* fix error with date/time format when syncin
+* fix error with date/time format when syncing
+* remove OpenID requirements for installation
 
 * 1.0.3
 
