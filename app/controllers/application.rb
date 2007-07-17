@@ -28,27 +28,60 @@ class ApplicationController < ActionController::Base
   
   protected
     def repository_member_required
-      repository_member? || status_message(:error, "You must be a member of this repository to visit this page.")
+      repository_member? || access_denied_message("You must be a member of this repository to visit this page.")
     end
     
     # specifies a controller action where a repository admin is required.
     def repository_admin_required
-      repository_admin? || status_message(:error, "You must be an administrator for this repository to visit this page.")
+      repository_admin? || access_denied_message("You must be an administrator for this repository to visit this page.")
     end
     
     # specifies a controller action that only warehouse administrators are allowed
     def admin_required
-      admin? || status_message(:error, "You must be an administrator to visit this page.")
+      admin? || access_denied_message("You must be an administrator to visit this page.")
     end
 
     def login_required
-      logged_in? || status_message(:error, "You must be logged in to edit a profile.")
+      logged_in? || access_denied_message("You must be logged in to edit a profile.")
     end
 
+    # handles non-html responses in DEV mode when there are exceptions
+    def rescue_action_locally(exception)
+      if request.format.html?
+        super
+      else
+        render :text => "Error: #{exception.message}", :status => :internal_server_error
+      end
+    end
+
+    # handles non-html responses in PRODUCTION mode when there are exceptions
+    def rescue_action_in_public(exception)
+      if request.format.html?
+        super
+      else
+        render :text => "An error has occurred with Warehouse.  Check your #{RAILS_ENV} logs.", :status => :internal_server_error
+      end
+    end
+
+    # Renders simple page w/ the error message.
     def status_message(type, message = nil, template = nil)
       @message = message || "A login is required to visit this page."
-      render :template => (template || "shared/#{type}")
+      if request.format.html?
+        render :template => (template || "shared/#{type}")
+      else
+        render :text => @message, :status => :internal_server_error
+      end
       false
+    end
+
+    # Same as #status_message but sends the 401 basic auth headers
+    def access_denied_message(message)
+      if request.format.html?
+        status_message(:error, message)
+      else
+        headers["WWW-Authenticate"] = %(Basic realm="Web Password")
+        render :text => "Couldn't authenticate you.", :status => :unauthorized
+      end
     end
 
     def repository_path
