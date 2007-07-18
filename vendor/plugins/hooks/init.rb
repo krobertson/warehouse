@@ -1,0 +1,1 @@
+Warehouse::Hooks.discover(directory)
