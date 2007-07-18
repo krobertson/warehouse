@@ -88,10 +88,10 @@ module ActiveReload
     end
 
     def sheet_form_tag(url_for_options = {}, options = {}, &block)
-      options[:html] ||= {}
-      options[:html][:style] = "display:none"
+      options[:style] = [options[:style], "display:none"].compact.join(';')
+      trigger = options.delete(:trigger)
       concat(form_tag(url_for_options, options), block.binding)
-      sheet_form_helper(options, &block)
+      sheet_form_helper(options.update(:trigger => trigger), &block)
     end
 
     def sheet_form_for(record_or_name, *args, &block)
