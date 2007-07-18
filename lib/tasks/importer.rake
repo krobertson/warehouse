@@ -185,3 +185,9 @@ namespace :warehouse do
     repo_id > 0 ?  Importer::Repository.find_by_id(repo_id) : Importer::Repository.find_first("subdomain = '#{value}'")
   end
 end
+
+namespace :test do
+  task :hooks do
+    require 'vendor/plugins/hooks/test/hooks_test'
+  end
+end

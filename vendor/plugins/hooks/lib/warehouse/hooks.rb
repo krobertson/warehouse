@@ -21,12 +21,39 @@ module Warehouse
     end
     
     def self.define(name, &block)
-      klass = Class.new(Base)
-      klass.send(:define_method, :run, &block)
-      const_set Base.class_name_of(name), klass
+      const_set Base.class_name_of(name), MethodDefinitionProxy.proxy(Base, &block)
     end
 
     self.discovered = []
     self.index = {}
   end
+end
+
+class MethodDefinitionProxy
+  attr_reader :klass
+
+  def self.proxy(parent, &block)
+    proxy = new(Class.new(parent))
+    if block.arity == 1 # proxy is yielded
+      block.call proxy
+    else
+      proxy.run &block # no block variable, assume they're defining #run
+    end
+    proxy.klass
+  end
+
+  def initialize(klass)
+    @klass = klass
+  end
+  
+  private
+    def method_missing(name, *args, &block)
+      if name == 'run'
+        method_name = name
+      else
+        method_name = "retrieving_#{name}"
+        klass.expiring_attr_reader name, method_name
+      end
+      klass.send :define_method, method_name, &block
+    end
 end
