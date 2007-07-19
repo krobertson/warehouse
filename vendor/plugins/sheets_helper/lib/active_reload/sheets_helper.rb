@@ -124,7 +124,7 @@ module ActiveReload
       case record_or_name
         when String, Symbol
           object_name = record_or_name
-          object      = nil
+          object      = args.first
         else
           object      = record_or_name
           object_name = ActionController::RecordIdentifier.singular_class_name(record_or_name)

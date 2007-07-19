@@ -1,6 +1,6 @@
 require 'digest/sha1'
 module TokenGenerator
-  @@chars = (('a'..'z').to_a + ('0'..'9').to_a) - %w(i o 0 1 l 0)
+  @@chars = (('a'..'z').to_a + ('0'..'9').to_a) - %w(i o 0 1 l)
   @@char_size = @@chars.size
   extend self
   

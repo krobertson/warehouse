@@ -1,6 +1,2 @@
-module Warehouse
-  module Hooks
-    class Email < Base
-    end
-  end
+Warehouse::Hooks.define :email do
 end

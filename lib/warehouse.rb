@@ -88,3 +88,5 @@ module Warehouse
   self.version   = Version.new(1, 0, 3)
   self.smtp_settings = self.sendmail_settings = {}
 end
+
+Dependencies.autoloaded_constants.delete "Warehouse" if defined?(Dependencies)
