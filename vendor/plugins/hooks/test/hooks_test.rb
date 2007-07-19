@@ -22,8 +22,8 @@ context "Hooks" do
       Warehouse::Hooks.const_defined?(:HookMultipleMethods).should == false
       
       Warehouse::Hooks.define :hook_multiple_methods do |hook|
-        hook.name { 'bob' }
-        hook.run  { "hi #{name}" }
+        hook.receiver { 'bob' }
+        hook.run      { "hi #{receiver}" }
       end
       
       Warehouse::Hooks::HookMultipleMethods.new(nil).run.should == 'hi bob'
@@ -40,9 +40,9 @@ context "Base" do
     commit = stub(:dirs_changed => %w(foo/bar foo baz).join("\n"))
     Warehouse::Hooks::Base.new(commit).should.be.valid
     Warehouse::Hooks::Base.new(commit, :prefix => '').should.be.valid
-    Warehouse::Hooks::Base.new(commit, :prefix => /^foo/).should.be.valid
-    Warehouse::Hooks::Base.new(commit, :prefix => /^baz/).should.be.valid
-    Warehouse::Hooks::Base.new(commit, :prefix => /^bar/).should.not.be.valid
+    Warehouse::Hooks::Base.new(commit, :prefix => '^foo').should.be.valid
+    Warehouse::Hooks::Base.new(commit, :prefix => '/^baz/').should.be.valid
+    Warehouse::Hooks::Base.new(commit, :prefix => '/^bar').should.not.be.valid
   end
 end
 
@@ -56,7 +56,7 @@ context "Commit" do
   end
   
   specify "should only run valid hooks" do
-    ValidHook.any_instance.expects(:run)
+    ValidHook.any_instance.expects(:run!)
     Warehouse::Hooks::Commit.run '', 1, [[ValidHook, {}], [InvalidHook, {}]]
   end
 end
@@ -68,11 +68,11 @@ end
 
 class ValidHook
   def valid?() true end
-  def initialize(commit, options)
-  end
+  def initialize(commit, options) end
+  def run() end
 end
 
 class InvalidHook < ValidHook
   def valid?() false end
-  def run() raise end
+  def run!() raise end
 end

@@ -8,7 +8,7 @@ module Warehouse
           commit = new(repo_path, revision)
           hook_options.each do |(hook_class, options)|
             hook = hook_class.new(commit, options)
-            hook.run if hook.valid?
+            hook.run! if hook.valid?
           end
         end
 

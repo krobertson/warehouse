@@ -29,18 +29,31 @@ module Warehouse
       def default_options
         @default_options ||= {}
       end
-    
-      def option(property, default = nil)
+      
+      def option_formats
+        @option_formats ||= {}
+      end
+      
+      def option_order
+        @option_order ||= []
+      end
+
+      def option(property, *args)
+        desc    = args.pop
+        format  = args.first.is_a?(Regexp) ? args.shift : nil
+        default = args.shift
         class_eval <<-END, __FILE__, __LINE__
             def #{property}
-              options[#{property.inspect}].blank? ? #{default.inspect} : options[#{property.inspect}]
+              options[#{property.inspect}].to_s.empty? ? #{default.inspect} : options[#{property.inspect}]
             end
           
             def #{property}=(value)
-              options[#{property.inspect}] = value
+              options[#{property.inspect}] = value#{" if value.to_s =~ #{format.inspect}" if format}
             end
           END
+        option_order << "#{property} #{desc}".strip
         default_options[property] = default
+        option_formats[property]  = format if format
       end
 
       # see expiring_attr_reader plugin

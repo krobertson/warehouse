@@ -21,39 +21,45 @@ module Warehouse
     end
     
     def self.define(name, &block)
-      const_set Base.class_name_of(name), MethodDefinitionProxy.proxy(Base, &block)
+      hook_class = Class.new(Base)
+      hook_class.option :prefix, "(Optional) Regular expression matching on the updated files' paths to determine if the current commit should use this hook. "
+      Proxy.process!(hook_class, &block)
+      const_set Base.class_name_of(name), hook_class
     end
 
     self.discovered = []
     self.index = {}
-  end
-end
 
-class MethodDefinitionProxy
-  attr_reader :klass
-
-  def self.proxy(parent, &block)
-    proxy = new(Class.new(parent))
-    if block.arity == 1 # proxy is yielded
-      block.call proxy
-    else
-      proxy.run &block # no block variable, assume they're defining #run
-    end
-    proxy.klass
-  end
-
-  def initialize(klass)
-    @klass = klass
-  end
-  
-  private
-    def method_missing(name, *args, &block)
-      if name == 'run'
-        method_name = name
-      else
-        method_name = "retrieving_#{name}"
-        klass.expiring_attr_reader name, method_name
+    class Proxy
+      attr_reader :klass
+    
+      def self.process!(klass, &block)
+        proxy = new(klass)
+        if block.arity == 1 # proxy is yielded
+          block.call proxy
+        else
+          proxy.run &block # no block variable, assume they're defining #run
+        end
       end
-      klass.send :define_method, method_name, &block
+    
+      def initialize(klass)
+        @klass = klass
+      end
+      
+      private
+        def method_missing(name, *args, &block)
+          if klass.respond_to?(name)
+            klass.send(name, *args)
+          else
+            if %w(run init).include?(name.to_s)
+              method_name = name
+            else
+              method_name = "retrieving_#{name}"
+              klass.expiring_attr_reader name, method_name
+            end
+            klass.send :define_method, method_name, &block
+          end
+        end
     end
+  end
 end
