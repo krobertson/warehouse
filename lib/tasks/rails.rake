@@ -1,4 +1,9 @@
 desc "freeze rails edge"
+
+task :test do
+  Rake::Task['test:hooks'].invoke
+end
+
 task :edge do
   ENV['SHARED_PATH']  = '../../shared' unless ENV['SHARED_PATH']
   ENV['RAILS_PATH'] ||= File.join(ENV['SHARED_PATH'], 'rails')

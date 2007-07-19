@@ -1,3 +1,7 @@
+* 1.1
+
+* Add post-commit hook API
+
 * 1.0.4
 
 * Add initial display:none to sheet forms so they won't flash on the page during load

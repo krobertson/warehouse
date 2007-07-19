@@ -3,6 +3,12 @@ require 'cgi'
 require 'net/http'
 
 Warehouse::Hooks.define :lighthouse do |hook|
+  hook.author  'activereload'
+  hook.version '1.0'
+  hook.homepage 'http://activereload.net'
+  hook.notes <<-END_NOTES
+    This plugin will post the new revision data to your Lighthouse project.
+  END_NOTES
   
   # define the options this hook needs
   hook.option :account, /^[a-z0-9_-]+$/i, 

@@ -19,7 +19,7 @@ module Warehouse
       plugin_property_source = %w(author version homepage notes).collect! do |property|
         <<-END
           def #{property}(value = nil)
-            @#{property} = value if value
+            @#{property} = value.to_s.strip if value
             @#{property}
           end
         END
