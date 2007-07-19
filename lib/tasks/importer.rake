@@ -26,6 +26,7 @@ namespace :warehouse do
     require 'yaml'
     require 'config/initializers/svn'
     require 'importer/base'
+    require 'lib/cache_key'
     ENV['DB_CONFIG'] ||= "config/database.yml"
     raise "No database config at #{ENV['DB_CONFIG'].inspect}" unless File.exist?(ENV['DB_CONFIG'])
     config = {}
@@ -107,7 +108,6 @@ namespace :warehouse do
   
   task :build_config => :init do
     require 'lib/warehouse'
-    require 'lib/cache_key'
     require 'config/initializers/warehouse'
     config_path = ENV['CONFIG'] || 'config/access.conf'
     
