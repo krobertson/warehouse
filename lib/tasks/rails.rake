@@ -2,6 +2,21 @@ desc "freeze rails edge"
 
 task :test do
   Rake::Task['test:hooks'].invoke
+  Rake::Task['test:commands'].invoke
+end
+
+namespace :test do
+  Rake::TestTask.new :hooks do |t|
+    t.libs << 'test'
+    t.pattern = 'vendor/plugins/hooks/test/*_test.rb'
+    t.verbose = true
+  end
+
+  Rake::TestTask.new :commands do |t|
+    t.libs << 'test'
+    t.pattern = 'test/commands/*_test.rb'
+    t.verbose = true
+  end
 end
 
 task :edge do

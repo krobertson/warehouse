@@ -133,16 +133,10 @@ namespace :warehouse do
 
   task :find_repo => :init do
     @repo = find_first_repo(ENV['REPO'])
-    raise "Please select a repo with REPO=id or REPO=repository_subdomain" if @repo.nil?
+    raise "Please select a repo with REPO=id or REPO=repoository_subdomain" if @repo.nil?
   end
   
   def find_first_repo(value)
     @command.send(:find_repo, ENV['REPO'])
-  end
-end
-
-namespace :test do
-  task :hooks do
-    require 'vendor/plugins/hooks/test/hooks_test'
   end
 end
