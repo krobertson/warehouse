@@ -1,0 +1,371 @@
+=== SVN
+
+* Wrote basic MySQL spec.
+
+* Fixd MySQL::Dataset to return correct data types with symbols as hash keys.
+
+* Removed discunctional MySQL::Database#transaction.
+
+* Added support for single threaded operation.
+
+* Fixed bug in Dataset#format_eq_expression where Range objects would not be literalized correctly.
+
+* Added parens around postgres LIKE expressions using regexps.
+
+=== 0.1.8 (2007-07-10)
+
+* Implemented Dataset#columns for retrieving the columns in the result set.
+
+* Updated Model with changes to how model-associated datasets work.
+
+* Beefed-up specs. Coverage is now at 95.0%.
+
+* Added support for polymorphic datasets.
+
+* The adapter dataset interface was simplified and standardized. Only four methods need be overriden: fetch_rows, update, insert and delete.
+
+* The Dataset class was refactored. The bulk of the dataset code was moved into separate modules.
+
+* Renamed Dataset#hash_column to Dataset#to_hash.
+
+* Added some common pragmas to sqlite adapter.
+
+* Added Postgres::Dataset#analyze for EXPLAIN ANALYZE queries.
+
+* Fixed broken Postgres::Dataset#explain.
+
+=== 0.1.7
+
+* Removed db.synchronize wrapping calls in sqlite adapter.
+
+* Implemented Model.join method to restrict returned columns to the model table (thanks Pedro Gutierrez).
+
+* Implemented Dataset#paginate method.
+
+* Fixed after_destroy hook.
+
+* Improved Dataset#first and #last to accept a filter hash.
+
+* Added Dataset#[]= method.
+
+* Added Sequel() convenience method.
+
+* Fixed Dataset#first to include a LIMIT clause for a single record.
+
+* Small fix to Postgres driver to return a primary_key value for the inserted record if it is specified in the insertion values (thanks Florian Aßmann and Pedro Gutierrez).
+
+* Fixed Symbol#DESC to support qualified notation (thanks Pedro Gutierrez).
+
+=== 0.1.6
+
+* Fixed Model#method_missing to raise for an invalid attribute.
+
+* Fixed PrettyTable to print model objects (thanks snok.)
+
+* Fixed ODBC timestamp conversion to return DateTime rather than Time object (thanks snok.)
+
+* Fixed Model.method_missing (thanks snok.)
+
+* Model.method_missing now creates stubs for calling Model.dataset methods. Methods like Model.each etc are removed.
+
+* Changed default join type to INNER JOIN (thanks snok.)
+
+* Added support for literal expressions, e.g. DB[:items].filter(:col1 => 'col2 - 10'.expr).
+
+* Added Dataset#and.
+
+* SQLite adapter opens a memory DB if no database is specified, e.g. Sequel.open 'sqlite:/'.
+
+* Added Dataset#or, pretty nifty.
+
+=== 0.1.5
+
+* Fixed Dataset#join to support multiple joins. Added #left_outer_join, #right_outer_join, #full_outer_join, #inner_join methods.
+
+=== 0.1.4
+
+* Added String#split_sql.
+
+* Implemented Array#to_sql and String#to_sql. Database#to_sql can now take an array of strings and convert into an SQL string. Comments and excessive white-space are removed.
+
+* Improved Schema generator to support data types as method names:
+  DB.create_table :test do
+    integer :abc
+    text :def
+    ...
+  end
+
+* Implemented ODBC adapter.
+
+=== 0.1.3
+
+* Implemented DBI adapter.
+
+* Refactored database connection code. Now handled through Database#connect.
+
+=== 0.1.2
+
+* The first opened database is automatically assigned to to Model.db.
+
+* Removed SequelConnectionError. Exception class errors are converted to RuntimeError.
+
+* Added support for UNION, INTERSECT and EXCEPT set operations.
+
+* Fixed Dataset#single_record to return nil if no record is found.
+
+* Updated specs to conform to RSpec 1.0.
+
+* Added Model#find_or_create method.
+
+* Fixed MySQL::Dataset#query_single (thanks Dries Harnie.)
+
+* Added Model.subset method. Fixed Model.filter and Model.exclude to accept blocks.
+
+* Added Database#uri method.
+
+* Refactored and removed deprecated code in postgres adapter.
+
+===0.1.1
+
+* More documentation for Dataset.
+
+* Added Dataset#size as alias to Dataset#count.
+
+* Changed Database#<< to call execute (instead of being an alias). Thus it will work for descendants as well.
+
+* Fixed Sequel.open to accept variable arity.
+
+* Refactored Model#refresh, Model.create. Removed Model#reload.
+
+* Refactored Model hooks.
+
+* Cleaned up Dataset API.
+
+=== 0.1.0
+
+* Changed Database#create_table to only accept a block. Nobody's gonna use the other way.
+
+* Removed Dataset#[]= method. Too confusing and not really useful.
+
+* Fixed ConnectionPool#hold to wrap exceptions only once.
+
+* Dataset#where_list Renamed Dataset#expression_list.
+
+* Added support for qualified fields in Proc expressions (e.g. filter {items.id == 1}.)
+
+* Added like? and in? Proc expression operators.
+
+* Added require 'date' in dataset.rb. Is this a 1.8.5 thing?
+
+* Refactored Dataset to use literal strings instead of format strings (slight performance improvement and better readability.)
+
+* Added support for literalizing Date objects.
+
+* Refactored literalization of Time objects.
+
+=== 0.0.20
+
+* Refactored Dataset where clause construction to use expressions.
+
+* Implemented Proc expressions (adapted from a great idea by Sam Smoot.)
+
+* Fixed Model#map.
+
+* Documentation for ConnectionPool.
+
+* Specs for Database.
+
+=== 0.0.19
+
+* More specs for Dataset.
+
+* Fixed Dataset#invert_order to work correctly with strings.
+
+* Fixed Model#== to check equality of values.
+
+* Added Model#exclude and Model#order.
+
+* Fixed Dataset#order and Dataset#group to behave correctly when supplied with qualified field name symbols.
+
+* Removed Database#literal. Shouldn't have been there.
+
+* Added SQLite::Dataset#explain. Returns an array of opcode hashes.
+
+* Specs for ConnectionPool.
+
+=== 0.0.18
+
+* Implemented SequelError and SequelConnectionError classes. ConnectionPool#hold now catches any connection errors and reraises them SequelConnectionError.
+
+* Removed duplication in Database#[].
+
+* :from and :select options are now always arrays (patch by Alex Bradbury.)
+
+* Fixed Dataset#exclude to work correctly (patch and specs by Alex Bradbury.)
+
+=== 0.0.17
+
+* Fixed Postgres::Database#tables to return table names as symbols (caused problem when using Database#table_exists?).
+
+* Fixed Dataset#from to have variable arity, like Dataset#select and Dataset#where (patch by Alex Bradbury.)
+
+* Added support for GROUP BY and HAVING clauses (patches by Alex Bradbury.) Refactored Dataset#filter.
+
+* More specs.
+
+* Refactored Dataset#where for better composability.
+
+* Added Dataset#[]= method.
+
+* Added support for DISTINCT and OFFSET clauses (patches by Alex Bradbury.) Dataset#limit now accepts ranges. Added Dataset#uniq and distinct methods.
+
+=== 0.0.16
+
+* More documentation.
+
+* Added support for subqueries in Dataset#literal.
+
+* Added support for Model.all_by_XXX methods through Model.method_missing.
+
+* Added basic SQL logging to Database.
+
+* Added Enumerable#send_each convenience method.
+
+* Changed Dataset#destroy to return the number of deleted records.
+
+=== 0.0.15
+
+* Improved Dataset#insert_sql to allow arrays as well as hashes.
+
+* Database#drop_table now accepts a list of table names.
+
+* Added Model#id to to return the id column.
+
+=== 0.0.14
+
+* Fixed Model's attribute accessors (hopefully for the last time).
+
+* Changed Model.db and Model.db= to allow different databases for different model classes.
+
+* Fixed bug in aggregate methods (max, min, etc) for datasets using record classes.
+
+=== 0.0.13
+
+* Fixed Model#method_missing to do both find, filter and attribute accessors. duh.
+
+* Fixed bug in Dataset#literal when quoting arrays of strings (thanks Douglas Koszerek.)
+
+=== 0.0.12
+
+* Model#save now correctly performs an INSERT for new objects.
+
+* Added Model#reload for reloading an object from the database.
+
+* Added Dataset#naked method for getting a version of a dataset that fetches records as hashes.
+
+* Implemented attribute accessors for column values ala ActiveRecord models.
+
+* Fixed filtering using nil values (e.g. dataset.filter(:parent_id => nil)).
+
+=== 0.0.11
+
+* Renamed Model.schema to Model.set_schema and Model.get_schema to Model.schema.
+
+* Improved Model class to allow descendants of model clases (thanks Pedro Gutierrez.)
+
+* Removed require 'postgres' in schema.rb (thanks Douglas Koszerek.)
+
+=== 0.0.10
+
+* Added some examples.
+
+* Added Dataset#print method for pretty-printing tables.
+
+=== 0.0.9
+
+* Fixed Postgres::Database#tables and #locks methods.
+
+* Added PGconn#last_insert_id method that should support all 7.x and 8.x versions of Postgresql.
+
+* Added Dataset#exists method for EXISTS where clauses.
+
+* Changed behavior of Dataset#literal to regard symbols as field names.
+
+* Refactored and DRY'd Dataset#literal and overrides therof. Added support for subqueries in where clause.
+
+=== 0.0.8
+
+* Fixed Dataset#reverse_order to provide chainability. This method can be called without arguments to invert the current order or with arguments to provide a descending order.
+
+* Fixed literal representation of literals in SQLite adapter (thanks Christian Neukirchen!) 
+
+* Refactored insert code in Postgres adapter (in preparation for fetching the last insert id for pre-8.1 versions).
+
+=== 0.0.7
+
+* Fixed bug in Model.schema, duh!
+
+=== 0.0.6
+
+* Added Dataset#sql as alias to Dataset#select_sql.
+
+* Dataset#where and Dataset#exclude can now be used for refining dataset conditions, enabling stuff like posts.where(:title => 'abcdef').exclude(:user_id => 3).
+
+* Implemented Dataset#exclude method.
+
+* Added Sequel::Schema#auto_primary_key method for setting an automatic primary key to be added to every table definition. Changed the schema generator to not define a primary key by default.
+
+* Changed Sequel::Database#table_exists? to rely on the tables method if it is available.
+
+* Implemented SQLite::Database#tables.
+
+=== 0.0.5
+
+* Added Dataset#[] method. Refactored Model#find and Model#[].
+
+* Renamed Pool#conn_maker to Pool#connection_proc.
+
+* Added automatic require 'sequel' to all adapters for convenience.
+
+=== 0.0.4
+
+* Added preliminary MySQL support.
+
+* Code cleanup.
+
+=== 0.0.3
+
+* Add Dataset#sum method.
+
+* Added support for exclusive ranges (thanks Christian Neukirchen.)
+
+* Added sequel console for quick'n'dirty access to databases.
+
+* Fixed small bug in Dataset#qualified_field_name for better join support.
+
+=== 0.0.2
+
+* Added Sequel.open as alias to Sequel.connect.
+
+* Refactored Dataset#where_equal_condition into Dataset#where_condition, allowing arrays and ranges, e.g. posts.filter(:stamp => (3.days.ago)..(1.day.ago)), or posts.filter(:category => ['ruby', 'postgres', 'linux']).
+
+* Added Model#[]= method for changing column values and Model#save 
+method for saving them.
+
+* Added Dataset#destroy for deleting each record individually as support for models. Renamed Model#delete to Model#destroy (and Model#destroy_all) ala ActiveRecord.
+
+* Refactored Dataset#first and Dataset#last code. These methods can now accept the number of records to fetch.
+
+=== 0.0.1
+
+* More documentation for Dataset.
+
+* Renamed Database#query to Database#dataset.
+
+* Added Dataset#insert_multiple for inserting multiple records.
+
+* Added Dataset#<< as shorthand for inserting records.
+
+* Added Database#<< method for executing arbitrary SQL.
+
+* Imported Sequel code.

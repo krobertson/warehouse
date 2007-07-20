@@ -1,0 +1,2 @@
+class SequelError < StandardError
+end

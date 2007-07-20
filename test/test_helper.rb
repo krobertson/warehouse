@@ -27,3 +27,4 @@ end
 
 Warehouse.domain = 'test.host'
 Warehouse.permission_command = Warehouse.password_command = nil
+Warehouse::Command.configure(ActiveRecord::Base.configurations['test'].symbolize_keys)

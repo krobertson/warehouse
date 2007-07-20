@@ -1,0 +1,34 @@
+# Add Dataset#update_or_create:
+
+  DB[:items].filter(:name => 'abc').update_or_create(:price => 100)
+  
+  # equivalent to:
+  
+  if (DB[:items].filter(:name => 'abc').update(:price => 100) < 1)
+    DB[:items] << {:name => 'abc', :price => 100}
+
+* Dataset#set as alias to Dataset#update
+
+* Refactor schema code to allow adapters to adapt schema definitions to specific capabilities.
+
+* many_to_many smart relationships.
+
+* schema extraction and database dumping and copying.
+
+* Improve relationship DSL To allow stuff like the following:
+
+class Book
+  one_to_one author, :class => Author
+end
+
+Book.filter_by_author(Author[:name => 'Kurt Vonnegut']).print
+
+#instead of:
+
+Book.filter_by_author_id(Author[:name => 'Kurt Vonnegut'].id).print
+
+* Adapters: 
+
+  db2, frontbase, interbase (http://ruby-dbi.rubyforge.org/)
+  oracle OCI8 (http://ruby-oci8.rubyforge.org/en) 
+  openbase (http://ruby-openbase.rubyforge.org)

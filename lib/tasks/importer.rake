@@ -27,6 +27,8 @@ namespace :warehouse do
     require 'config/initializers/svn'
     require 'importer/base'
     require 'lib/cache_key'
+    $LOAD_PATH << 'vendor/ruby-sequel/lib'
+    require 'lib/warehouse/command'
     ENV['DB_CONFIG'] ||= "config/database.yml"
     raise "No database config at #{ENV['DB_CONFIG'].inspect}" unless File.exist?(ENV['DB_CONFIG'])
     config = {}
@@ -37,7 +39,7 @@ namespace :warehouse do
       config[k.to_sym] = v
     end
     @num  = (ENV['NUM'] || ENV['N']).to_i
-    Importer::MysqlAdapter.create config
+    @command = Warehouse::Command.new(config)
   end
 
   task :post_commit do
@@ -47,39 +49,18 @@ namespace :warehouse do
   end
   
   task :build_htpasswd => :init do
-    require 'webrick'
-    write_users_to_htpasswd(Importer::User.find_all, ENV['CONFIG'] || 'config/htpasswd.conf')
+    @command.write_users_to_htpasswd(ENV['CONFIG'] || 'config/htpasswd.conf')
   end
   
   task :build_repo_htpasswd => :find_repo do
-    require 'webrick'
-    write_repo_users_to_htpasswd(@repo, ENV['CONFIG'] || 'config/htpasswd.conf')
+    @command.write_repo_users_to_htpasswd(@repo, ENV['CONFIG'] || 'config/htpasswd.conf')
   end
   
   task :build_user_htpasswd => :init do
     require 'webrick'
     raise "Need htpasswd config path with :repo variable.  CONFIG=/svn/:repo/.htaccess" unless ENV['CONFIG'].to_s[/:repo/]
     raise "Need single user id. USER=234" unless ENV['USER']
-    user         = Importer::User.find_by_id(ENV['USER'])
-    write_repo_users_to_htpasswd user.repositories, ENV['CONFIG']
-  end
-  
-  def write_repo_users_to_htpasswd(repos, htpasswd_path)
-    [repos].flatten.each do |repo|
-      write_users_to_htpasswd(repo.users, htpasswd_path.gsub(/:repo/, repo.attributes['subdomain']))
-    end
-  end
-  
-  def write_users_to_htpasswd(users, htpasswd_path)
-    htpasswd = WEBrick::HTTPAuth::Htpasswd.new(htpasswd_path)
-    htpasswd.each do |(user, passwd)|
-      htpasswd.delete_passwd(nil, user)
-    end
-    users.each do |user|
-      next if user.attributes['login'].to_s == '' || user.attributes['crypted_password'].to_s == ''
-      htpasswd.instance_variable_get("@passwd")[user.attributes['login']] = user.attributes['crypted_password']
-    end
-    htpasswd.flush
+    @command.write_repo_users_to_htpasswd @command.repos_from_user(:id => user), ENV['CONFIG']
   end
   
   # CONFIG
@@ -111,67 +92,42 @@ namespace :warehouse do
     require 'config/initializers/warehouse'
     config_path = ENV['CONFIG'] || 'config/access.conf'
     
-    repo_id = ENV['REPO'].to_i
-    repositories = 
-      if ENV['REPO'].nil?
-        Importer::Repository.find_all
-      else
-        [repo_id > 0 ?  Importer::Repository.find_by_id(repo_id) : Importer::Repository.find_first("subdomain = '#{ENV['REPO']}'")]
-      end
-    permissions = Importer::Permission.find_all_by_repositories(repositories).inject({}) do |memo, perm| 
-      (memo[perm.attributes['repository_id'].to_s] ||= []) << perm; memo
-    end
-    users = Importer::User.find_all_by_permissions(permissions.values.flatten).inject({}) { |memo, user| memo.update(user.attributes['id'].to_s => user) }
-    permissions.each do |repo_id, perms|
-      permissions[repo_id] = perms.inject({}) do |memo, p|
-        (memo[p.attributes['path']] ||= []) << p; memo
-      end
-    end
-
-    open(config_path, 'w') do |file|
-      repositories.each do |repo|
-        perms_hash = permissions[repo.attributes['id'].to_s]
-        next if perms_hash.nil?
-        perms_hash.each do |path, perms|
-          file.write("[%s:/%s]\n" % [repo.attributes['subdomain'], path])
-          perms.each do |p|
-            if p.attributes['user_id'].nil?
-              file.write('*')
-            else
-              login = users[p.attributes['user_id'].to_s].attributes['login'] rescue nil
-              next if login.nil? || login.size == 0
-              file.write(login)
-            end
-            file.write(' = r')
-            file.write('w') if p.attributes['full_access'] == '1'
-            file.write("\n")
-          end
-          file.write("\n")
-        end
-      end
+    if ENV['REPO']
+      @command.build_config config_path
+    else
+      @command.build_config_for ENV['REPO'], config_path
     end
   end
 
   task :sync => :init do
-    (ENV['REPO'] ? [find_first_repo(ENV['REPO'])] : Importer::Repository.find_all).each do |repo|
-      if repo
-        puts "Syncing revisions for #{repo.attributes['name'].inspect}"
-        repo.sync_revisions(@num)
+    require 'active_support'
+    # time to beat: 153
+    now = Time.now.to_i
+    if ENV['REPO']
+      if repo = find_first_repo(ENV['REPO'])
+        puts "Syncing revisions for #{repo[:name].inspect}"
+        @command.sync_revisions_for(repo, @num)
       else
         puts "No repo(s) found, REPO=#{ENV['REPO'].inspect} given."
       end
+    else
+      @command.sync_revisions @num
     end
-    CacheKey.sweep_cache
+    puts Time.now.to_i - now
   end
 
   task :clear => :init do
-    (ENV['REPO'] ? [find_first_repo(ENV['REPO'])] : Importer::Repository.find_all).each do |repo|
+    if ENV['REPO']
+      repo = find_first_repo(ENV['REPO'])
       if repo
-        repo.clear_revisions!
-        puts "All repositories for #{repo.attributes['name'].inspect} were cleared."
+        @command.clear_changesets_for repo
+        puts "All revisions for #{repo[:name].inspect} were cleared."
       else
         puts "No repo(s) found, REPO=#{ENV['REPO'].inspect} given."
       end
+    else
+      @command.clear_changesets
+      puts "All revisions for all repositories were cleared"
     end
   end
 
@@ -181,8 +137,7 @@ namespace :warehouse do
   end
   
   def find_first_repo(value)
-    repo_id = value.to_i
-    repo_id > 0 ?  Importer::Repository.find_by_id(repo_id) : Importer::Repository.find_first("subdomain = '#{value}'")
+    @command.send(:find_repo, ENV['REPO'])
   end
 end
 
