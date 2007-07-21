@@ -19,6 +19,12 @@ namespace :test do
   end
 end
 
+require 'code_statistics'
+STATS_DIRECTORIES.insert 4, %w(Hooks       vendor/plugins/hooks/lib)
+STATS_DIRECTORIES.insert 5, %w(Hook\ tests vendor/plugins/hooks/test)
+STATS_DIRECTORIES << %w(Command\ tests     test/commands)
+CodeStatistics::TEST_TYPES << 'Command tests' << 'Hook tests'
+
 task :edge do
   ENV['SHARED_PATH']  = '../../shared' unless ENV['SHARED_PATH']
   ENV['RAILS_PATH'] ||= File.join(ENV['SHARED_PATH'], 'rails')

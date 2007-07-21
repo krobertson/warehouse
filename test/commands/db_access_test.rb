@@ -38,6 +38,6 @@ context "Command DB Access" do
   end
   
   specify "should find repos from a user" do
-    @command.repos_from_user(:id => 1).collect { |r| r[:id] }.should == [1,2]
+    @command.send(:repos_from_user, :id => 1).collect { |r| r[:id] }.should == [1,2]
   end
 end
