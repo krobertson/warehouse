@@ -25,7 +25,7 @@ context "Command Change" do
   end
 
   specify "should skip syncing if there are no revisions to sync" do
-    @command.connection.stubs(:transaction).returns { raise("This shouldn't happen") }
+    @command.connection.expects(:transaction).times(0)
     @command.expects(:paginated_revisions).with(@repo, 23).returns([])
     @command.sync_revisions_for(@repo, 23)
   end
