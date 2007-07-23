@@ -57,7 +57,6 @@ namespace :warehouse do
   end
   
   task :build_user_htpasswd => :init do
-    require 'webrick'
     raise "Need htpasswd config path with :repo variable.  CONFIG=/svn/:repo/.htaccess" unless ENV['CONFIG'].to_s[/:repo/]
     raise "Need single user id. USER=234" unless ENV['USER']
     @command.write_repo_users_to_htpasswd @command.repos_from_user(:id => user), ENV['CONFIG']
@@ -69,22 +68,8 @@ namespace :warehouse do
   # REPO_PATH
   # REPO_ACCESS r/rw
   task :import_users => :environment do
-    require 'webrick'
     raise "Need an htpasswd file to import.  CONFIG=/path/to/htpasswd" unless ENV['CONFIG']
-    repo = ENV['REPO'].blank? ? nil : Repository.find_by_subdomain(ENV['REPO'])
-    User.transaction do
-      WEBrick::HTTPAuth::Htpasswd.new(ENV['CONFIG']).each do |(login, passwd)|
-        user = User.new(:login => login)
-        user.crypted_password = passwd
-        user.email = "#{login}@#{ENV['EMAIL'] || 'unknown.net'}"
-        i = 1
-        user.login = "#{login}_#{i+=1}" until user.valid?
-        user.save!
-        
-        next if repo.nil?
-        repo.grant(:path => ENV['REPO_PATH'].to_s, :user => user, :full_access => ENV['REPO_ACCESS'] == 'rw')
-      end
-    end
+    @command.import_users_from_htpasswd ENV['CONFIG'], ENV['EMAIL'], ENV['REPO'], ENV['REPO_PATH'], ENV['REPO_ACCESS']
   end
   
   task :build_config => :init do

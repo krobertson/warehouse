@@ -1,5 +1,3 @@
-require 'webrick'
-
 module Warehouse
   class Command
     class << self
@@ -75,17 +73,14 @@ module Warehouse
         htpasswd_path = users
         users         = connection[:users]
       end
-      htpasswd = WEBrick::HTTPAuth::Htpasswd.new(htpasswd_path)
-      htpasswd.each do |(user, passwd)|
-        htpasswd.delete_passwd(nil, user)
-      end
       
       users = users.select(:login, :crypted_password) if users.is_a?(Sequel::Dataset)
-      users.each do |user|
-        next if user[:login].to_s == '' || user[:crypted_password].to_s == ''
-        htpasswd.instance_variable_get("@passwd")[user[:login]] = user[:crypted_password]
+      open htpasswd_path, 'w' do |f|
+        users.each do |user|
+          next if user[:login].to_s == '' || user[:crypted_password].to_s == ''
+          f.write("%s:%s\n" % [user[:login], user[:crypted_password]])
+        end
       end
-      htpasswd.flush
     end
 
     def build_config(config_path)
@@ -120,6 +115,27 @@ module Warehouse
             end
             file.write("\n")
           end
+        end
+      end
+    end
+
+    # Uses active record!
+    def import_users_from_htpasswd(htpasswd, email_domain = nil, repo = nil, repo_path = nil, repo_access = false)
+      repo = find_repo(repo) unless repo.nil? || repo.is_a?(Repository)
+      email_domain ||= 'unknown.net'
+      User.transaction do
+        IO.read(htpasswd).split("\n").each do |line|
+          line.strip!
+          login, password = line.split(":")
+          user = User.new(:login => login)
+          user.crypted_password = password
+          user.email = "#{login}@#{email_domain}"
+          i = 1
+          user.login = "#{login}_#{i+=1}" until user.valid?
+          user.save!
+          
+          next if repo.nil? || repo_path.nil?
+          repo.grant(:path => repo_path, :user => user, :full_access => repo_access)
         end
       end
     end
