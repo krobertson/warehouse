@@ -2,25 +2,30 @@ require 'yaml'
 require 'cgi'
 require 'net/http'
 
-Warehouse::Hooks.define :lighthouse do |hook|
-  hook.author  'activereload'
-  hook.version '1.0'
-  hook.homepage 'http://activereload.net'
-  hook.notes <<-END_NOTES
+Warehouse::Hooks.define :lighthouse do
+  # Some common plugin properties
+  author   'activereload'
+  version  '1.0'
+  homepage 'http://activereload.net'
+  notes <<-END_NOTES
     This plugin will post the new revision data to your Lighthouse project.
   END_NOTES
   
-  # define the options this hook needs
-  hook.option :account, /^[a-z0-9_-]+$/i, 
+  # Define the options this hook needs
+  # These are given text fields in the Hook admin for the user to customize them.
+  option :account, /^[a-z0-9_-]+$/i, 
     "The name of the account used in the URL.  ('activereload' in 'activereload.lighthouseapp.com')"
-  hook.option :project, /^\d+$/,
+  option :project, /^\d+$/,
     "Project ID.  ('55'' in '/projects/55/tickets...')"
-  hook.option :token,   /^[a-z0-9]+$/i,
+  option :token,   /^[a-z0-9]+$/i,
     "Unique API Token to identify the user accessing Lighthouse."
-  hook.option :users,   /^([a-z0-9_-]+ [a-z0-9]+(,\s*)?)+$/,
+  option :users,   /^([a-z0-9_-]+ [a-z0-9]+(,\s*)?)+$/,
     "(Optional) Comma-separated list linking svn commit authors with different Lighthouse tokens.  Examples: 'rick my-token' or 'rick my-token, bob his-token'"
   
-  hook.init do
+  # Called before #run
+  init do
+    # accept users value like 'bob token, fred token'
+    # converts to hash like {'bob' => 'token', 'fred' => 'token'}
     unless @options[:users].is_a?(Hash)
       user_string = @options.delete(:users).to_s
       @options[:users] = {}
@@ -33,7 +38,8 @@ Warehouse::Hooks.define :lighthouse do |hook|
     end
   end
   
-  hook.commit_changes do
+  # Array of changes like ["M /foo/bar.txt", ...]
+  commit_changes do
     @commit.changed.split("\n").inject([]) do |memo, line| 
       if line.strip =~ /(\w)\s+(.*)/
         memo << [$1, $2]
@@ -41,7 +47,7 @@ Warehouse::Hooks.define :lighthouse do |hook|
     end
   end
 
-  hook.changeset_xml do
+  changeset_xml do
     <<-END_XML
 <changeset>
   <title>#{CGI.escapeHTML("%s committed changeset [%d]" % [@commit.author, @commit.revision])}</title>
@@ -53,15 +59,15 @@ Warehouse::Hooks.define :lighthouse do |hook|
 END_XML
   end
 
-  hook.current_token do
+  current_token do
     @options[:users][@commit.author] || @options[:token]
   end
   
-  hook.changeset_url do
+  changeset_url do
     '%s/projects/%d/changesets.xml?_token=%s' % [@options[:account], @options[:project], current_token]
   end
   
-  hook.run do
+  run do
     Net::HTTP.start "#{@options[:account]}.lighthouseapp.com" do |http|
       http.post changeset_url, changeset_xml
     end

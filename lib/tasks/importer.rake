@@ -23,9 +23,9 @@ end
 
 namespace :warehouse do
   task :init do
+    require 'logger'
     require 'yaml'
     require 'config/initializers/svn'
-    require 'importer/base'
     require 'lib/cache_key'
     $LOAD_PATH << 'vendor/ruby-sequel/lib'
     require 'lib/warehouse/command'
@@ -39,21 +39,23 @@ namespace :warehouse do
       config[k.to_sym] = v
     end
     @num  = (ENV['NUM'] || ENV['N']).to_i
+    Warehouse::Command.logger ||= Logger.new(ENV['LOGGER'] || STDOUT) unless ENV['LOGGER'] == 'none'
+    Warehouse::Command.logger.level = Logger.const_get((ENV['LOG_LEVEL'] || 'INFO').upcase) if Warehouse::Command.logger
     @command = Warehouse::Command.new(config)
   end
 
   task :post_commit do
     ENV['REPO'] ||= ENV['REPO_PATH'].split('/').last if ENV['REPO_PATH']
     Rake::Task['warehouse:sync'].invoke
-    # eventually add other stuff here, like email
+    @command.process_hooks_for(ENV['REPO'], ENV['REPO_PATH'], ENV['REVISION'] || ENV['CHANGESET'])
   end
   
   task :build_htpasswd => :init do
     @command.write_users_to_htpasswd(ENV['CONFIG'] || 'config/htpasswd.conf')
   end
   
-  task :build_repo_htpasswd => :find_repo do
-    @command.write_repo_users_to_htpasswd(@repo, ENV['CONFIG'] || 'config/htpasswd.conf')
+  task :build_repo_htpasswd => :init do
+    @command.write_repo_users_to_htpasswd(ENV['REPO'], ENV['CONFIG'] || 'config/htpasswd.conf')
   end
   
   task :build_user_htpasswd => :init do
@@ -77,51 +79,14 @@ namespace :warehouse do
     require 'config/initializers/warehouse'
     config_path = ENV['CONFIG'] || 'config/access.conf'
     
-    if ENV['REPO']
-      @command.build_config config_path
-    else
-      @command.build_config_for ENV['REPO'], config_path
-    end
+    @command.build_config_for ENV['REPO'], config_path
   end
 
   task :sync => :init do
-    require 'active_support'
-    # time to beat: 153
-    now = Time.now.to_i
-    if ENV['REPO']
-      if repo = find_first_repo(ENV['REPO'])
-        puts "Syncing revisions for #{repo[:name].inspect}"
-        @command.sync_revisions_for(repo, @num)
-      else
-        puts "No repo(s) found, REPO=#{ENV['REPO'].inspect} given."
-      end
-    else
-      @command.sync_revisions @num
-    end
-    puts Time.now.to_i - now
+    @command.sync_revisions_for(ENV['REPO'], @num)
   end
 
   task :clear => :init do
-    if ENV['REPO']
-      repo = find_first_repo(ENV['REPO'])
-      if repo
-        @command.clear_changesets_for repo
-        puts "All revisions for #{repo[:name].inspect} were cleared."
-      else
-        puts "No repo(s) found, REPO=#{ENV['REPO'].inspect} given."
-      end
-    else
-      @command.clear_changesets
-      puts "All revisions for all repositories were cleared"
-    end
-  end
-
-  task :find_repo => :init do
-    @repo = find_first_repo(ENV['REPO'])
-    raise "Please select a repo with REPO=id or REPO=repoository_subdomain" if @repo.nil?
-  end
-  
-  def find_first_repo(value)
-    @command.send(:find_repo, ENV['REPO'])
+    @command.clear_changesets_for ENV['REPO']
   end
 end

@@ -41,6 +41,7 @@ module Warehouse
     end
     
     def setup_mail!
+      return unless Object.const_defined?(:ActionMailer)
       ActionMailer::Base.delivery_method = :test
       return if RAILS_ENV == 'test' || mail_type.nil? || send("#{mail_type}_settings").nil? || send("#{mail_type}_settings").empty?
       ActionMailer::Base.delivery_method = mail_type.to_sym
@@ -48,6 +49,7 @@ module Warehouse
     end
     
     def setup_caching!
+      return unless Object.const_defined?(:ActionController)
       ActionController::Base.perform_caching = false
       return if caching.nil? || caching.empty?
       ActionController::Base.perform_caching = true

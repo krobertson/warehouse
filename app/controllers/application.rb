@@ -143,7 +143,7 @@ class ApplicationController < ActionController::Base
       name       = args.pop
       repository = args.pop
       options[:host] = repository ? repository.domain : Warehouse.domain
-      options[:port] = request.port unless request.port == 80
+      options[:port] = request.port unless request.port == request.standard_port
       send("#{name}_url", options)
     end
 

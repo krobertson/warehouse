@@ -28,18 +28,13 @@ module Warehouse
     end
 
     self.discovered = []
-    self.index = {}
+    self.index      = {}
 
     class Proxy
       attr_reader :klass
     
       def self.process!(klass, &block)
-        proxy = new(klass)
-        if block.arity == 1 # proxy is yielded
-          block.call proxy
-        else
-          proxy.run &block # no block variable, assume they're defining #run
-        end
+        new(klass).instance_eval &block
       end
     
       def initialize(klass)

@@ -1,7 +1,7 @@
 module Warehouse
   class Command
     class << self
-      attr_accessor :connection
+      attr_accessor :logger, :connection
     
       def configure(config)
         @connection = Sequel(yaml_to_connection_string(config))
@@ -34,7 +34,19 @@ module Warehouse
       @connection = Sequel(self.class.yaml_to_connection_string(config))
     end
 
-    def sync_revisions_for(repo, num = 0)
+    def sync_revisions_for(repo_subdomain, num = 0)
+      if repo_subdomain.nil?
+        connection[:repositories].each do |repo|
+          sync_revisions_for repo, num
+        end
+        return
+      end
+      repo = find_repo(repo_subdomain)
+      unless backend_for(repo)
+        puts "No SVN repository found for '#{repo[:subdomain]}' in '#{repo[:path]}'", :warn
+        return
+      end
+
       revisions = paginated_revisions(repo, num)
       connection.transaction do
         authors = {}
@@ -44,7 +56,7 @@ module Warehouse
           if rev > 1 && rev % 100 == 0
             connection.execute "COMMIT"
             connection.execute "BEGIN"
-            puts "##{rev}"
+            puts "##{rev}", :debug
           end
           changeset = create_changeset(repo, rev)
           authors[changeset[:author]] = Time.now.utc
@@ -61,11 +73,18 @@ module Warehouse
         puts revisions.last
       end unless revisions.empty?
     end
+    
+    def process_hooks_for(repo, repo_path, revision)
+      
+    end
 
-    def write_repo_users_to_htpasswd(repos, htpasswd_path)
-      [repos].flatten.each do |repo|
-        write_users_to_htpasswd(users_from_repo(repo), htpasswd_path.gsub(/:repo/, repo[:subdomain].to_s))
+    def write_repo_users_to_htpasswd(repo_subdomain, htpasswd_path)
+      repo = find_repo(repo_subdomain)
+      if repo.nil?
+        puts "No repository found for '#{repo_subdomain}'", :warn
+        return
       end
+      write_users_to_htpasswd(users_from_repo(repo), htpasswd_path.gsub(/:repo/, repo[:subdomain].to_s))
     end
     
     def write_users_to_htpasswd(users, htpasswd_path = nil)
@@ -81,13 +100,15 @@ module Warehouse
           f.write("%s:%s\n" % [user[:login], user[:crypted_password]])
         end
       end
-    end
-
-    def build_config(config_path)
-      build_config_for connection[:repositories], config_path
+      puts "Wrote htpasswd file to '#{htpasswd_path}'"
     end
 
     def build_config_for(repositories, config_path)
+      if repositories.nil? 
+        build_config_for connection[:repositories], config_path
+        return
+      end
+      
       unless repositories.is_a?(Sequel::Dataset) || repositories.is_a?(Array)
         return build_config_for([find_repo(repositories)], config_path)
       end
@@ -117,6 +138,7 @@ module Warehouse
           end
         end
       end
+      puts "Wrote access config file to '#{config_path}'"
     end
 
     # Uses active record!
@@ -139,29 +161,35 @@ module Warehouse
         end
       end
     end
-
-    def find_repo(value)
-      return nil if value.nil?
-      key   = value.to_i > 0 ? :id : :subdomain
-      connection[:repositories][key => value]
-    end
     
     def clear_changesets
       clear_changesets_for nil
     end
     
-    def clear_changesets_for(revisions)
-      revisions  = revisions[:id] if revisions.is_a?(Hash)
+    def clear_changesets_for(repo_subdomain)
+      repo = repo_subdomain && connection[:repositories].where(:subdomain => repo_subdomain).first
+      if repo_subdomain && repo.nil?
+        puts "No repo(s) found, REPO=#{repo_subdomain.inspect} given."
+        return
+      end
       changesets = connection[:changesets]
       changes    = connection[:changes]
-      if revisions
-        changesets = changesets.where(:repository_id => revisions) 
+      if repo
+        changesets = changesets.where(:repository_id => repo) 
         changes    = changes.where(:changeset_id => changesets.select(:id))
       end
-      [changes, changesets].each { |ds| ds.delete }
+      connection.transaction { [changes, changesets].each { |ds| ds.delete } }
+      puts repo ? "All revisions for #{repo[:name].inspect} were cleared." : "All revisions for all repositories were cleared"
     end
     
     protected
+      def find_repo(value)
+        return nil if value.nil?
+        return value if value.is_a?(Hash) || value.is_a?(Sequel::Dataset)
+        key   = value.to_i > 0 ? :id : :subdomain
+        connection[:repositories][key => value]
+      end
+    
       def paginated_revisions(repo, num)
         revisions = (recorded_revision_for(repo)..latest_revision_for(repo)).to_a
         num > 0 ? revisions[0..num-1] : revisions
@@ -173,17 +201,14 @@ module Warehouse
       end
 
       def latest_revision_for(repo)
-        backend_for(repo).youngest_rev
+        backend = backend_for(repo)
+        backend && backend.youngest_rev
       end
     
       def backend_for(repo)
         (@backends ||= {})[repo[:path]] ||= Svn::Repos.open(repo[:path])
-      end
-
-      def sync_revisions(num = 0)
-        connection[:repositories].each do |repo|
-          sync_revisions_for repo, num
-        end
+      rescue Svn::Error
+        nil
       end
 
       def update_user_activity(repo, user, changed_at)
@@ -279,6 +304,10 @@ module Warehouse
       def users_from_repo(repo)
         user_ids = connection[:permissions].select(:user_id).where(:active => 1, :repository_id => repo[:id]).uniq
         connection[:users].where(:id => user_ids)
+      end
+      
+      def puts(str, level = :info)
+        self.class.logger.send(level, str) if self.class.logger
       end
   end
 end

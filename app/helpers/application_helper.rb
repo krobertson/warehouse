@@ -58,10 +58,6 @@ module ApplicationHelper
   def jstime(time, format = nil)
     content_tag 'span', time.strftime(format || @@default_jstime_format), :class => 'time'
   end
-  
-  def needs_date_slider?
-    current_page?(changesets_path)
-  end
 
   # simple wrapper around #cache that checks the current_cache hash 
   # for cached data before reading the fragment.  See #current_cache

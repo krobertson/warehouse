@@ -42,7 +42,7 @@ context "Command htpasswd" do
     user.expects(:valid?).returns(true)
     user.expects(:email=).with('rick@activereload.net')
     user.expects(:save!)
-    repo = stub
+    repo = Repository.new
     repo.expects(:grant).with(:path => '/foo', :user => user, :full_access => true)
     @command.import_users_from_htpasswd('htpasswd', 'activereload.net', repo, '/foo', true)
   end

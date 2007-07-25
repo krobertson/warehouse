@@ -1,29 +1,13 @@
 require File.expand_path(File.join(File.dirname(__FILE__), 'test_helper'))
 
 context "Hooks" do
-  specify "should define hook class with #run method" do
-    begin
-      Warehouse::Hooks.const_defined?(:HookSingleMethods).should == false
-      
-      Warehouse::Hooks.define :hook_single_methods do 
-        'hi'
-      end
-      
-      Warehouse::Hooks::HookSingleMethods.new(nil).run.should == 'hi'
-      
-      Warehouse::Hooks.const_defined?(:HookSingleMethods).should == true
-    ensure
-      Warehouse::Hooks.send(:remove_const, :HookSingleMethods) if Warehouse::Hooks.const_defined?(:HookSingleMethods)
-    end
-  end
-  
   specify "should define hook class with multiple methods" do
     begin
       Warehouse::Hooks.const_defined?(:HookMultipleMethods).should == false
       
-      Warehouse::Hooks.define :hook_multiple_methods do |hook|
-        hook.receiver { 'bob' }
-        hook.run      { "hi #{receiver}" }
+      Warehouse::Hooks.define :hook_multiple_methods do
+        receiver { 'bob' }
+        run      { "hi #{receiver}" }
       end
       
       Warehouse::Hooks::HookMultipleMethods.new(nil).run.should == 'hi bob'

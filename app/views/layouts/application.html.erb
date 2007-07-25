@@ -11,14 +11,6 @@
     <%= javascript_include_tag 'prototype', 'lowpro-lite', 'moo.fx.js', 'moo.fx.transitions.js', 'application', :cache => 'warehouse' %>
     <script src="http://warehouseapp.com/javascripts/version_check.js" type="text/javascript" charset="utf-8"></script>
     
-    <% if needs_date_slider? %>
-      <%= javascript_include_tag 'dateslider/JavaScriptFlashGateway' %>
-      <script type="text/javascript" charset="utf-8">
-        var lcId = new Date().getTime();
-        var flashProxy = new FlashProxy(lcId, "/javascripts/dateslider/JavaScriptFlashGateway.swf");
-      </script>
-    <% end %>
-    
     <%= yield :scripts %>
     <script type="text/javascript" charset="utf-8">
       Event.onReady(function() {
