@@ -1,5 +1,4 @@
 require File.dirname(__FILE__) + '/../test_helper'
-Warehouse::Command.configure(ActiveRecord::Base.configurations['test'].symbolize_keys)
 
 context "Post Commit Hooks" do
   setup do

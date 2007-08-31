@@ -1,4 +1,6 @@
-require File.expand_path(File.join(File.dirname(__FILE__), 'test_helper'))
+require File.join(File.dirname(__FILE__), '..', 'test_helper')
+HOOK_ROOT = File.join(RAILS_ROOT, 'vendor', 'plugins', 'hooks')
+Warehouse::Hooks.discover HOOK_ROOT
 
 context "Hooks" do
   specify "should define hook class with multiple methods" do
@@ -56,7 +58,7 @@ context "Commit" do
 end
 
 Warehouse::Hooks.discovered.each do |hook|
-  test_file = File.join($hooks_root, hook.plugin_name, 'test')
+  test_file = File.join(HOOK_ROOT, hook.plugin_name, 'test')
   require test_file if File.exist?(test_file + '.rb')
 end
 
