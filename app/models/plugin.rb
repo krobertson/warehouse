@@ -1,19 +1,46 @@
 class Plugin < ActiveRecord::Base
+  @@plugin_path = File.join(RAILS_ROOT, RAILS_ENV == 'test' ? 'test/plugins' : 'vendor/plugins/warehouse')
+  cattr_reader :plugin_path
+
   serialize :options, Hash
   
-  validates_presence_of :name
+  before_validation_on_create :convert_name
+  validates_presence_of   :name
+  validates_uniqueness_of :name
   validate :plugin_options_are_valid?
   
-  def self.find_discovered
-    
+  def self.create_empty_for(name)
+    create! :name => name, :options => {}, :active => false
   end
   
+  def self.find_from(plugins)
+    find(:all, :conditions => ['name IN (?)', plugins])
+  end
+  
+  def plugin_class
+    return nil unless active?
+    require File.join(plugin_path, name, 'plugin') unless Warehouse::Plugins.const_defined?(plugin_class_name)
+    @plugin_class ||= Warehouse::Plugins.const_get(plugin_class_name)
+  end
+  
+  def plugin_class_name
+    @plugin_class_name ||= Warehouse::Plugins::Base.class_name_of(name)
+  end
+
   def properties
-    @properties ||= Warehouse::Plugins[name].new(options || {})
+    @properties ||= plugin_class.new(options || {})
   end
   
   protected
+    def convert_name
+      self.name = name.to_s.demodulize.underscore if name
+    end
+
     def plugin_options_are_valid?
-      errors.add_to_base("Hook options are invalid") unless properties.valid_options?(options)
+      return true unless active?
+      if plugin_class.nil?
+        errors.add_to_base "Plugin class is invalid" and return
+      end
+      errors.add_to_base("Plugin options are invalid") unless properties.valid_options?(options)
     end
 end

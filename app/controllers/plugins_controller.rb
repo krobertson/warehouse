@@ -1,4 +1,5 @@
 class PluginsController < ApplicationController
+  skip_before_filter :check_for_repository
   before_filter :admin_required
 
   def index

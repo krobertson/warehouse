@@ -9,14 +9,25 @@ module Warehouse
       end
     end
 
-    def self.discover(path)
-      Dir[File.join(path, "*")].each do |dir|
-        name = File.basename(dir)
-        next unless File.directory?(dir)
-        plugin = const_set(Base.class_name_of(name), Class.new(Base))
-        discovered << plugin unless discovered.include?(plugin)
-        index[plugin.plugin_name] = plugin
+    def self.discover(path = nil)
+      path  ||= Plugin.plugin_path
+      plugins = find_in(path)
+      records = Plugin.find_from(plugins)
+      plugins.each do |p|
+        next if index.key?(p)
+        record = records.detect { |r| r.name == p } || Plugin.create_empty_for(p)
+        discovered << record unless discovered.include?(record)
+        index[p]    = record
       end
+      discovered
+    end
+    
+    def self.load(path = nil)
+      discovered(path).each { |plugin| plugin.plugin_class }
+    end
+
+    def self.find_in(path)
+      Dir[File.join(path, '*')].select { |d| File.directory?(d) && File.file?(File.join(d, 'plugin.rb')) }.collect { |d| File.basename(d) }
     end
 
     self.discovered = []
