@@ -1251,6 +1251,20 @@ input.path {
   display: block;
 }
 
+#advanced-settings fieldset {
+  border: none;
+  border-top: 1px solid #ccc;
+  padding: 0;
+  margin-right: 20px;
+  margin-top: 10px;
+}
+
+#advanced-settings legend {
+  font-weight: bold;
+  color: #555;
+  padding-left: 10px;
+}
+
 #hooks {
   list-style: none;
 }
@@ -1341,7 +1355,7 @@ div.oform p label {
   border: none;
 }
 
-input.big {
+input.big, select.big {
   font-size: 150%;
   width: 95%;
 }

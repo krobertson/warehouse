@@ -1,3 +1,5 @@
+
+
 Permissions = {
   removeMember: function(user_id) {
     if(!confirm("Are you sure you wish to remove this member?")) return
@@ -222,6 +224,7 @@ Date.parseUTC = function(value) {
 }
 
 Event.addBehavior({
+  
   'a.addpath:click': function(event) {
     var a = Event.findElement(event, 'a');
     Permissions.add(a.up());
@@ -231,16 +234,25 @@ Event.addBehavior({
   'a.delpath:click': function() {
     Permissions.remove(this.up());
   },
+  
   'span.time': function() {
     this.innerHTML = Date.parseUTC(this.innerHTML).timeAgoInWords();
   },
-  '#settings_mail_type:change': function() {
-    if(this.value == 'smtp') {
-      $('mail_sendmail').hide();
-      $('mail_smtp').show();
+  
+  'a#as-toggle:click': function(event) {
+    Event.stop(event);
+    var as = $('advanced-settings'); as.toggle();
+    as.visible() ? this.update('Less settings&hellip;') : this.update('More settings&hellip;')
+  },
+  
+  '#settings-mail-type:change': function() {
+    if($F(this) == 'smtp') {
+      $('mail-sendmail').hide();
+      $('mail-smtp').show();
     } else {
-      $('mail_smtp').hide();
-      $('mail_sendmail').show();
+      $('mail-smtp').hide();
+      $('mail-sendmail').show();
     }
   }
+  
 });

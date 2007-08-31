@@ -2,14 +2,12 @@
 
 <% if request.post? -%>
 <div class="notice">Your settings have been saved.</div>
-<% else -%>
-<div class="info">
-  Please see <a href="http://warehouseapp.com/faqs/what-are-these-admin-settings-for">the documentation for this page</a> to help you 
-  better understand what these settings do.
-</div>
 <% end -%>
 
 <div id="commands">
+  <p style="font-weight:bold">
+    <a href="http://warehouseapp.com/faqs/what-are-these-admin-settings-for">View help docs &raquo;</a>
+  </p>
 <% form_tag settings_path do -%>
   <p class="command">
     <label for="settings_permission_command">
@@ -29,23 +27,6 @@
   </p>
   
   <p class="command">
-    <label>
-      <%= check_box_tag :settings_syncing, params[:settings][:syncing] || Warehouse.sync? %>
-      Sync Changesets automatically 
-    </label>
-    (Turn this off and setup a post-commit hook in subversion to speed Warehouse up)
-  </p>
-
-  <p class="command">
-    <ul>
-      <li><label><%= radio_button_tag :settings_caching, 'fs', (params[:settings][:caching] || Warehouse.caching) == 'fs', 
-        :name => 'settings[caching]' %> Filesystem Caching</label> - Caches the common browser/changeset/history pages to the filesystem for much faster access.  Cached files are located in <em><%= File.join(RAILS_ROOT, 'tmp', 'cache') %></em></li>
-      <li><label><%= radio_button_tag :settings_caching, '',   (params[:settings][:caching] || Warehouse.caching).blank?,  
-        :name => 'settings[caching]' %> No Caching</label></li>
-    </ul>
-  </p>
-
-  <p class="command">
     <label for="settings_mail_from">
       Email address that email notifications are sent from.
       <span class="help">Reply to/From address used when adding new members.</span>
@@ -53,14 +34,34 @@
     <%= text_field_tag :settings_mail_from, params[:settings][:mail_from] || Warehouse.mail_from, 
       :size => 40, :name => 'settings[mail_from]' %>
   </p>
+  
+  <p class="command">
+    <label>
+      <%= check_box_tag :settings_syncing, params[:settings][:syncing] || Warehouse.sync? %>
+      Sync changesets automatically 
+      <span class="help">Leave unchecked and setup a post-commit hook in Subversion to make Warehouse faster</span>
+    </label>
+  </p>
+  
+  <p class="command">
+    <a id="as-toggle" href="#advanced-settings">More settings...</a>
+  </p>
+  
+  <div id="advanced-settings" style="display:none">
+  <p class="command">
+    <label><%= check_box_tag :settings_caching, 'fs', (params[:settings][:caching] || Warehouse.caching) == 'fs', 
+        :name => 'settings[caching]' %> Use filesystem cache</label>
+    <span class="help">Caches common pages to the filesystem for speed.  Cached files are located in <span style="color:#456"><%= File.join(RAILS_ROOT, 'tmp', 'cache') %></span>
+  </p>
+  
   <p class="command">
     <label for="settings_mail_type">Mail Server Type</label>
-    <select name="settings[mail_type]" id="settings_mail_type">
+    <select name="settings[mail_type]" id="settings-mail-type" style="width:200px">
       <%= options_for_select([%w(SMTP smtp), 'sendmail'], params[:settings][:mail_type] || Warehouse.mail_type) %>
     </select>
   </p>
   
-  <fieldset id="mail_smtp"<%= %( style="display:none") if (params[:settings][:mail_type] || Warehouse.mail_type) == 'sendmail' %>>
+  <fieldset id="mail-smtp"<%= %( style="display:none") if (params[:settings][:mail_type] || Warehouse.mail_type) == 'sendmail' %>>
     <legend>SMTP Mail Settings</legend>
     <p>
       <label for="settings_mail_address">Address</label>
@@ -94,7 +95,7 @@
     </p>
   </fieldset>
 
-  <fieldset id="mail_sendmail"<%= %( style="display:none") if (params[:settings][:mail_type] || Warehouse.mail_type) == 'smtp' %>>
+  <fieldset id="mail-sendmail"<%= %( style="display:none") if (params[:settings][:mail_type] || Warehouse.mail_type) == 'smtp' %>>
     <legend>Sendmail Settings</legend>
     <p>
       <label for="settings_mail_location">Location</label>
@@ -107,7 +108,7 @@
         :size => 40, :name => 'settings[sendmail_settings][arguments]' %>
     </p>
   </fieldset>
-
+  </div>
   <p class="btns"><%= submit_image 'save.png' %></p>
 <% end -%>
 </div>
