@@ -3,8 +3,10 @@
   <li id="naccess"<%= class_for(permissions_path) %>><%= link_to 'Access', permissions_path %></li>
   <% if admin? -%>
   <li id="nmembers"<%= class_for(users_path) %>><%= link_to 'Members', users_path %></li>
+  <% if current_repository -%>
   <li id="nplugin"<%= class_for(plugins_path) %>><%= link_to 'Plugins', plugins_path %></li>
   <li id="nhooks"<%= class_for(hooks_path) %>><%= link_to 'Hooks', hooks_path %></li>
+  <% end -%>
   <li id="nsettings"<%= class_for(settings_path) %>><%= link_to 'Settings', settings_path %></li>
   <% end -%>
 </ul>

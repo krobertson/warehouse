@@ -1,0 +1,18 @@
+  <li id="<%= dom_id hook %>" class="listitem">
+    <%= link_to plugin.name.titleize, {} %></h3>
+    <span class="log"><%=h plugin.properties.notes %></span> 
+
+    <% remote_sheet_form_for :plugin, plugin.properties, :url => plugin_path(plugin), :method => :put,
+         :trigger => "pluginedit-#{plugin.id}", :html => {:id => "pluginsheet-#{plugin.id}"} do |s| %>
+      <h2>Edit <%= plugin.name.titleize %></h2>
+      <% plugin.properties.class.option_order.each do |option| -%>
+        <% name, *desc = option.split -%>
+      <%= s.text_field %(#{h name.titleize}: <span class="desc" regex="#{h plugin.properties.option_formats[name.to_sym].inspect}">#{h desc.join(' ')}</span>:), name %>
+      <% end -%>
+    <% end %>
+
+    <ul class="admin-controls">
+      <li class="edit" id="pluginedit-<%= plugin.id %>"><a href="#">Edit</a></li>
+      <li class="del"><%= link_to_remote 'Delete', :url => plugin_path(plugin), :with => "'_method=delete'", :confirm => "Are you sure you want to delete this plugin?" %></li>
+    </ul>
+  </li>

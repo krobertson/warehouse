@@ -2,9 +2,12 @@ module Warehouse
   class PluginBase
     attr_reader :options
 
-    def initialize
+    def initialize(options = {}, &block)
       @options = default_options.dup
-      yield self if block_given?
+      options.each do |key, value|
+        send "#{key}=", value
+      end
+      block.call(self) if block
     end
 
     class << self
@@ -44,16 +47,24 @@ module Warehouse
         default = args.shift
         class_eval <<-END, __FILE__, __LINE__
             def #{property}
-              options[#{property.inspect}].to_s.empty? ? #{default.inspect} : options[#{property.inspect}]
+              options[:#{property}].to_s.empty? ? #{default.inspect} : options[:#{property}]
             end
           
             def #{property}=(value)
-              options[#{property.inspect}] = value#{" if value.to_s =~ #{format.inspect}" if format}
+              options[:#{property}] = value#{" if value.to_s =~ #{format.inspect}" if format}
             end
           END
         option_order << "#{property} #{desc}".strip
-        default_options[property] = default
-        option_formats[property]  = format if format
+        default_options[property.to_sym] = default
+        option_formats[property.to_sym]  = format if format
+      end
+      
+      def valid_options?(options)
+        options.each do |key, value|
+          if format = option_formats[key.to_sym]
+            return false unless value.blank? || value.to_s =~ format
+          end
+        end
       end
 
       # see expiring_attr_reader plugin
@@ -86,8 +97,8 @@ module Warehouse
       end
     end
 
-    plugin_property_source = %w(author version homepage notes plugin_name plugin_path view_path default_options).collect! do |property|
-      "def #{property}() self.class.#{property} end"
+    plugin_property_source = %w(author version homepage notes plugin_name plugin_path view_path default_options option_formats option_order valid_options?).collect! do |property|
+      "def #{property}(*args) self.class.#{property}(*args) end"
     end
     eval plugin_property_source * "\n"
 

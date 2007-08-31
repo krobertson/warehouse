@@ -1,15 +1,14 @@
-# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
-one:
+sample_lighthouse:
   id: 1
   repository_id: 1
-  name: MyString
-  options: MyText
+  name: lighthouse
+  options: "--- \nprefix: trunk\naccount: abc\ntoken: \"\"\nproject: \"3\"\nusers: \"\"\n"
   created_at: 2007-07-19 09:39:00
   updated_at: 2007-07-19 09:39:00
-two:
+example_lighthouse:
   id: 2
-  repository_id: 1
-  name: MyString
-  options: MyText
+  repository_id: 2
+  name: lighthouse
+  options: "--- \nprefix: trunk\naccount: def\ntoken: \"\"\nproject: \"5\"\nusers: \"\"\n"
   created_at: 2007-07-19 09:39:00
   updated_at: 2007-07-19 09:39:00

@@ -1,1 +1,5 @@
-page.call "Sheet.Cache['hooksheet-#{@hook.id}'].hide"
+if @hook.save
+  page.call "Sheet.Cache['hooksheet-#{@hook.id}'].hide"
+else
+  page.alert "The hook options were invalid.  Replace this with a less obtrusive prompt"
+end

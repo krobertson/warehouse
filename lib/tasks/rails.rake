@@ -20,8 +20,10 @@ namespace :test do
 end
 
 require 'code_statistics'
-STATS_DIRECTORIES.insert 4, %w(Hooks       vendor/plugins/hooks/lib)
-STATS_DIRECTORIES.insert 5, %w(Hook\ tests vendor/plugins/hooks/test)
+STATS_DIRECTORIES.insert 3, %w(Cachers     app/cachers)
+STATS_DIRECTORIES.insert 4, %w(Concerns    app/concerns)
+STATS_DIRECTORIES.insert 5, %w(Hooks       vendor/plugins/hooks/lib)
+STATS_DIRECTORIES.insert 6, %w(Hook\ tests vendor/plugins/hooks/test)
 STATS_DIRECTORIES << %w(Command\ tests     test/commands)
 CodeStatistics::TEST_TYPES << 'Command tests' << 'Hook tests'
 

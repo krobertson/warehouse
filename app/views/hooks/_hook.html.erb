@@ -7,7 +7,7 @@
       <h2>Edit <%= hook.name.titleize %></h2>
       <% hook.properties.class.option_order.each do |option| -%>
         <% name, *desc = option.split -%>
-      <%= s.text_field %(<span title="#{h desc.join(' ')}">#{h name.titleize}</span>:), name %>
+      <%= s.text_field %(#{h name.titleize}: <span class="desc" regex="#{h hook.properties.option_formats[name.to_sym].inspect}">#{h desc.join(' ')}</span>:), name %>
       <% end -%>
     <% end %>
 

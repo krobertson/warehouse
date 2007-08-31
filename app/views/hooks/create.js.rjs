@@ -1,1 +1,2 @@
 page.insert_html :bottom, :hooks, :partial => 'hook', :object => @hook
+page << %(Sheet.Cache['hooksheet-#{@hook.id}'] = new Sheet('hooksheet-#{@hook.id}', 'hookedit-#{@hook.id}');)

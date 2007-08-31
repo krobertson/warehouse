@@ -2,7 +2,7 @@
 # migrations feature of ActiveRecord to incrementally modify your database, and
 # then regenerate this schema definition.
 
-ActiveRecord::Schema.define(:version => 23) do
+ActiveRecord::Schema.define(:version => 24) do
 
   create_table "avatars", :force => true do |t|
     t.string  "content_type"
@@ -84,6 +84,14 @@ ActiveRecord::Schema.define(:version => 23) do
   end
 
   add_index "permissions", ["repository_id", "active"], :name => "index_permissions_on_repository_id"
+
+  create_table "plugins", :force => true do |t|
+    t.string   "name"
+    t.text     "options"
+    t.boolean  "active"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "repositories", :force => true do |t|
     t.string  "name"

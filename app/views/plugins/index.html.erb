@@ -1,1 +1,5 @@
 <%= render :partial => '/admin/tabs' %>
+
+<ul id="plugins" class="listbox">
+  <%= render :partial => "plugin", :collection => @plugins %>
+</ul>

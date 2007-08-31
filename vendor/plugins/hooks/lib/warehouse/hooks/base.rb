@@ -1,12 +1,9 @@
 module Warehouse
   module Hooks
     class Base < PluginBase
-      def initialize(commit, options = {})
+      def initialize(commit, options = {}, &block)
         @commit  = commit
-        @options = options
-        self.class.option_formats.each do |property, format|
-          @options[property] = nil if format && @options[property].to_s !~ format
-        end
+        super(options, &block)
       end
       
       # checks if the commit matches the optional prefix

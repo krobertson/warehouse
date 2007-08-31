@@ -2,10 +2,6 @@ require File.dirname(__FILE__) + '/../test_helper'
 Warehouse::Command.configure(ActiveRecord::Base.configurations['test'].symbolize_keys)
 
 context "Command connections" do
-  setup do
-    @command = Warehouse::Command.new
-  end
-
   specify "should build correct sequel connection string from activerecord config hash" do
     Warehouse::Command.yaml_to_connection_string(:adapter => 'mysql', :username => 'rick', :password => 'secret', :host => 'myhost', :database => 'test').should == \
       "mysql://rick:secret@myhost/test"

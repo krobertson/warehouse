@@ -15,7 +15,7 @@ module Warehouse
         next unless File.directory?(dir) && !%w(lib test).include?(name)
         require File.join(dir, 'hook')
         hook = const_get(Base.class_name_of(name))
-        discovered << hook
+        discovered << hook unless discovered.include?(hook)
         index[hook.plugin_name] = hook
       end
     end

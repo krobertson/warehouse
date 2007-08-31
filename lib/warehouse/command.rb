@@ -74,8 +74,10 @@ module Warehouse
       end unless revisions.empty?
     end
     
-    def process_hooks_for(repo, repo_path, revision)
-      
+    def process_hooks_for(repo_subdomain, repo_path, revision)
+      repo         = find_repo(repo_subdomain)
+      hook_options = indexed_hooks(hooks_for(repo))
+      Warehouse::Hooks::Commit.run repo_path, revision, hook_options
     end
 
     def write_repo_users_to_htpasswd(repo_subdomain, htpasswd_path)
@@ -271,6 +273,16 @@ module Warehouse
           change[:from_revision] = path[2]
         end
         connection[:changes] << change
+      end
+
+      def hooks_for(repo)
+        connection[:hooks].where(:repository_id => repo[:id]).order(:name)
+      end
+    
+      def indexed_hooks(hooks)
+        hooks.inject [] do |memo, hook|
+          memo << [Warehouse::Hooks[hook[:name]], YAML.load(hook[:options])]
+        end
       end
 
       def grouped_permissions_for(repositories)
