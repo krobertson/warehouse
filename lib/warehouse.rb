@@ -91,4 +91,7 @@ module Warehouse
   self.smtp_settings = self.sendmail_settings = {}
 end
 
-Dependencies.autoloaded_constants.delete "Warehouse" if defined?(Dependencies)
+if Object.const_defined?(:Dependencies)
+  Dependencies.autoloaded_constants.delete 'Warehouse'
+end
+  

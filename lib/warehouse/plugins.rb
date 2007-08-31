@@ -16,7 +16,7 @@ module Warehouse
       plugins.each do |p|
         next if index.key?(p)
         record = records.detect { |r| r.name == p } || Plugin.create_empty_for(p)
-        discovered << record unless discovered.include?(record)
+        discovered << record
         index[p]    = record
       end
       discovered

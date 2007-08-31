@@ -19,7 +19,7 @@ module Warehouse
         camelize plugin_name
       end
 
-      plugin_property_source = %w(author version homepage notes).collect! do |property|
+      plugin_property_source = %w(title author version homepage notes).collect! do |property|
         <<-END
           def #{property}(value = nil)
             @#{property} = value.to_s.strip if value
@@ -97,7 +97,7 @@ module Warehouse
       end
     end
 
-    plugin_property_source = %w(author version homepage notes plugin_name plugin_path view_path default_options option_formats option_order valid_options?).collect! do |property|
+    plugin_property_source = %w(title author version homepage notes plugin_name plugin_path view_path default_options option_formats option_order valid_options?).collect! do |property|
       "def #{property}(*args) self.class.#{property}(*args) end"
     end
     eval plugin_property_source * "\n"

@@ -4,6 +4,7 @@ require 'net/http'
 
 Warehouse::Hooks.define :lighthouse do
   # Some common plugin properties
+  title    'Lighthouse Beacon'
   author   'activereload'
   version  '1.0'
   homepage 'http://activereload.net'

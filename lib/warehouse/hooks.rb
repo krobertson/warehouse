@@ -1,5 +1,8 @@
 module Warehouse
   module Hooks
+    @@hook_path = RAILS_ENV == 'test' ? 'test/hooks' : 'vendor/plugins/hooks'
+    mattr_reader :hook_path
+
     class << self
       attr_accessor :discovered
       attr_accessor :index
@@ -9,15 +12,19 @@ module Warehouse
       end
     end
   
-    def self.discover(path)
+    def self.discover(path = nil)
+      path ||= Warehouse::Hooks.hook_path
       Dir[File.join(path, "*")].each do |dir|
         name = File.basename(dir)
-        next unless File.directory?(dir) && !%w(lib test).include?(name)
-        require File.join(dir, 'hook')
-        hook = const_get(Base.class_name_of(name))
-        discovered << hook unless discovered.include?(hook)
+        next unless File.directory?(dir)
+        hook_name = Base.class_name_of(name)
+        require File.join(dir, 'hook') unless const_defined?(hook_name)
+        next if index.key?(name)
+        hook = const_get(hook_name)
+        discovered             << hook
         index[hook.plugin_name] = hook
       end
+      discovered
     end
     
     def self.define(name, &block)
