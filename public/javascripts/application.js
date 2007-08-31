@@ -8,9 +8,9 @@ Permissions = {
   },
   
   remove: function(line) {
-    if(line.getAttribute('id')) {
-      if(!confirm("Are you sure you wish to remove this permission?")) return
-      new Ajax.Request("/permissions/" + line.getAttribute('id').match(/(\d+)$/)[0], {method:'delete'});
+    if(line.readAttribute('id')) {
+      if(!confirm("Are you sure you wish to remove this permission?")) return;
+      new Ajax.Request("/permissions/" + line.readAttribute('id').match(/(\d+)$/)[0], {method:'delete'});
     } else {
       line.remove();
     }
@@ -23,9 +23,9 @@ Permissions = {
     var newpath = newline.down('input');
     var newid   = newline.down('input', 1);
     newpath.value = '';
-    newpath.setAttribute('id', 'permission_paths_' + index + '_path')
-    newpath.setAttribute('name', 'permission[paths][' + index + '][path]')
-    newsel.setAttribute('name', 'permission[paths][' + index + '][full_access]')
+    newpath.writeAttribute('id', 'permission_paths_' + index + '_path')
+    newpath.writeAttribute('name', 'permission[paths][' + index + '][path]')
+    newsel.writeAttribute('name', 'permission[paths][' + index + '][full_access]')
     if(newid) newid.remove();
     
     if(!Prototype.Browser.IE) {
@@ -96,22 +96,21 @@ Sheet.prototype = {
   
   addObservers: function() {
     [this.trigger].flatten().each(function(t) {
-      $(t).observe('click', this.toggle.bindAsEventListener(this));
+      $(t).observe('click', this.toggle.bind(this));
     }.bind(this));
-    this.cancelBtn.observe('click', this.hide.bindAsEventListener(this));
+    this.cancelBtn.observe('click', this.hide.bind(this));
   },
   
   toggle: function(event) {
-    Event.stop(event);
-    if(this.overlay.visible()) {
+    event.stop();
+    if(this.overlay.visible())
       this.hide();
-    } else {
+    else 
       this.show();
-    }
   },
   
   hide: function(event) {
-    if(event) Event.stop(event);
+    if(event) event.stop();
     new Fx.Style(this.sheetContent, 'margin-top', {
       duration: (this.sheetHeight * 2) + 500,
       transition: Fx.Transitions.expoOut,
@@ -122,8 +121,8 @@ Sheet.prototype = {
   show: function(event) {
     if(Sheet.Current && Sheet.Current.overlay.visible()) Sheet.Current.hide()
     Sheet.Current = this;
+    Sheet.Current.overlay.show();
     this.sheet.show();
-    this.overlay.show();
     new Fx.Style(this.sheetContent, 'margin-top', {
       duration: (this.sheetHeight * 2), 
       transition: Fx.Transitions.expoOut
@@ -145,7 +144,7 @@ Sheet.prototype = {
     this.sheetContent.addClassName('overlay-content');
     this.sheetContent.appendChild(this.sheet);
     this.overlay.appendChild(this.sheetContent);
-    this.sheetContent.setStyle({'margin-top': -(this.sheetHeight) + "px"});
+    this.sheetContent.setStyle({marginTop: -(this.sheetHeight) + "px"});
     $('container').appendChild(this.overlay);
   }
 };

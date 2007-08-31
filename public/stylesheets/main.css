@@ -1,6 +1,8 @@
 /* @override 
 	http://mymac.com:3000/stylesheets/main.css
 	http://treasure.svn.mymac.com:3000/stylesheets/main.css
+	http://svn.mymac.com:3000/stylesheets/main.css
+	http://tracks.svn.mymac.com:3000/stylesheets/main.css
 */
 
 html {
@@ -618,8 +620,8 @@ div p.rcontrols {
   width: 60px;
   padding: 5px;
   text-align: center;
-  background-image: url(../images/app/controls-bg.png);
-  border-right: 1px solid #bbb;
+  background-color: #e2e2e2; 
+  border-right: 1px solid #ddd;
   line-height: 100%;
 }
 
@@ -641,6 +643,7 @@ div p.rcontrols {
   padding: 5px;
   padding-right: 50px;
   margin-left: 71px;
+  font-size: 92% !important;
 }
 
 #changesets {
@@ -787,15 +790,15 @@ span.cp {
 
 #control-center li a {
   display: block;
-  padding: 3px 5px 3px 22px;
+  padding: 3px 20px 3px 28px;
+  border-right: 1px dotted #ccc;
   color: #555;
-  margin-left: 5px;
   float: left;
   font-weight: bold;
   font-family: Verdana, Helvetica, Arial, sans-serif;
   font-size: 82%;
   text-shadow: 2px 2px #f1f1f1;
-  background: #ddd url(../images/app/icons/diff.png) 3px 50% no-repeat;
+  background: #ddd url(../images/app/icons/diff.png) 8px 50% no-repeat;
 }
 
 #control-center li a:hover {
