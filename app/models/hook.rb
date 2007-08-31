@@ -5,6 +5,10 @@ class Hook < ActiveRecord::Base
   validates_presence_of :repository_id, :name
   validate :hook_options_are_valid?
   
+  def active?
+    true
+  end
+  
   def properties
     @properties ||= Warehouse::Hooks[name].new(nil, options || {})
   end

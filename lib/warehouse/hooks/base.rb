@@ -5,7 +5,15 @@ module Warehouse
         @commit  = commit
         super(options, &block)
       end
+
+      def self.properties
+        @properties ||= new(nil)
+      end
       
+      def self.active?
+        false
+      end
+
       # checks if the commit matches the optional prefix
       def valid?
         return true if @options[:prefix].to_s.empty?

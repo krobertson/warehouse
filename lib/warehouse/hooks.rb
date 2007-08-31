@@ -11,7 +11,12 @@ module Warehouse
         index[plugin_name]
       end
     end
-  
+
+    def self.for(repository)
+      hooks = repository.hooks.index_by { |h| h.name }
+      discover.collect { |h| hooks[h.plugin_name] || h }
+    end
+
     def self.discover(path = nil)
       path ||= Warehouse::Hooks.hook_path
       Dir[File.join(path, "*")].each do |dir|

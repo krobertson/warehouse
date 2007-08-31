@@ -42,6 +42,31 @@ context "Base" do
   end
 end
 
+context "Discovered" do
+  setup do
+    Warehouse::Hooks.discovered.clear
+    Warehouse::Hooks.index.clear
+  end
+  
+  specify "should find discovered hooks" do
+    Warehouse::Hooks.discover.should == [Warehouse::Hooks::Foo]
+  end
+  
+  specify "should replace with repository hook" do
+    hook = Hook.new :name => 'foo'
+    repository = stub
+    repository.expects(:hooks).returns([hook])
+    Warehouse::Hooks.for(repository).should == [hook]
+  end
+  
+  specify "should not replace with other repository hook" do
+    hook = Hook.new :name => 'foo2'
+    repository = stub
+    repository.expects(:hooks).returns([hook])
+    Warehouse::Hooks.for(repository).should == [Warehouse::Hooks::Foo]
+  end
+end
+
 context "Commit" do
   %w(author dirs_changed log changed).each do |attr|
     specify "#{attr} should expire" do
