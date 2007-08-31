@@ -102,6 +102,10 @@ module Warehouse
     end
     eval plugin_property_source * "\n"
 
+    def self.logger
+      RAILS_DEFAULT_LOGGER
+    end
+
     def logger
       RAILS_DEFAULT_LOGGER
     end

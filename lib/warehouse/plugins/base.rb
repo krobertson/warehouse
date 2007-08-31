@@ -3,8 +3,22 @@ module Warehouse
     class Base < PluginBase
       cattr_accessor :custom_routes, :view_paths, :tabs
       class << self
+        def load
+          logger.debug "Loading #{name} Plugin"
+          load_path = File.join(RAILS_ROOT, 'vendor', 'plugins', 'warehouse', name.demodulize.underscore, 'lib')
+          $LOAD_PATH << load_path
+          Dependencies.load_paths << load_path
+          install_routes!
+        end
+
+        def install_routes!
+          return unless Object.const_defined?(:ActionController)
+          mapper = ActionController::Routing::RouteSet::Mapper.new(ActionController::Routing::Routes)
+          custom_routes.each { |args| mapper.send *args }
+        end
+
         def plugin_path
-          @plugin_path ||= File.join(RAILS_ROOT, 'vendor', 'warehouse', 'plugins', plugin_name)
+          @plugin_path ||= File.join(RAILS_ROOT, 'vendor', 'plugins', 'warehouse', plugin_name)
         end
 
         def view_path
@@ -83,7 +97,6 @@ module Warehouse
       
       def initialize(options = {}, &block)
         super(options, &block)
-        install_routes!
       end
 
       def head_extras
@@ -99,14 +112,6 @@ module Warehouse
       end
 
       protected
-        def install_routes!
-          return unless Object.const_defined?(:ActionController)
-          mapper = ActionController::Routing::RouteSet::Mapper.new(ActionController::Routing::Routes)
-          self.class.custom_routes.each do |args|
-            mapper.send *args
-          end
-        end
-      
         def sanitize_path(path)
           sanitized = path[plugin_path.size + 7..-1]
           sanitized.gsub! /^\/([^\/]+)\// do |path|

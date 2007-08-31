@@ -4,7 +4,7 @@ class PluginsController < ApplicationController
 
   def index
     @plugin  = Plugin.new
-    @plugins = Plugin.find_discovered
+    @plugins = Warehouse::Plugins.load
   end
   
   def create

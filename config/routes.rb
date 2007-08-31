@@ -1,5 +1,7 @@
 ActionController::Routing::Routes.draw do |map|
-  map.resources :bookmarks, :plugins, :hooks
+  map.resources :bookmarks
+  map.resources :plugins, :member => {:activate => :post}
+  map.resources :hooks,   :member => {:activate => :post}
   map.resources :repositories, :member => { :sync => :any }
   map.resources :permissions, :collection => { :anon => :any }
   map.resources :users, :has_one => [:permissions]

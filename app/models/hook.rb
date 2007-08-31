@@ -5,9 +5,7 @@ class Hook < ActiveRecord::Base
   validates_presence_of :repository_id, :name
   validate :hook_options_are_valid?
   
-  def active?
-    true
-  end
+  before_save :set_default_active_state
   
   def properties
     @properties ||= Warehouse::Hooks[name].new(nil, options || {})
@@ -18,6 +16,10 @@ class Hook < ActiveRecord::Base
   end
   
   protected
+    def set_default_active_state
+      self.active = true
+    end
+
     def hook_options_are_valid?
       errors.add_to_base("Hook options are invalid") unless properties.valid_options?(options)
     end

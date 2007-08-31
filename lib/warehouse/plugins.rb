@@ -3,6 +3,7 @@ module Warehouse
     class << self
       attr_accessor :discovered
       attr_accessor :index
+      attr_accessor :loaded
 
       def [](plugin_name)
         index[plugin_name]
@@ -23,14 +24,21 @@ module Warehouse
     end
     
     def self.load(path = nil)
-      discovered(path).each { |plugin| plugin.plugin_class }
+      discover(path).each do |plugin|
+        if !loaded.include?(plugin) && plugin.plugin_class
+          plugin.plugin_class.load
+          loaded << plugin
+        end
+      end
+      loaded
     end
 
     def self.find_in(path)
-      Dir[File.join(path, '*')].select { |d| File.directory?(d) && File.file?(File.join(d, 'plugin.rb')) }.collect { |d| File.basename(d) }
+      Dir[File.join(path, '*')].select { |d| File.directory?(d) && File.file?(File.join(d, 'lib', 'plugin.rb')) }.collect! { |d| File.basename(d) }
     end
 
     self.discovered = []
     self.index      = {}
+    self.loaded     = []
   end
 end

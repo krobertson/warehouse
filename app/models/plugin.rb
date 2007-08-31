@@ -19,7 +19,7 @@ class Plugin < ActiveRecord::Base
   
   def plugin_class
     return nil unless active?
-    require File.join(plugin_path, name, 'plugin') unless Warehouse::Plugins.const_defined?(plugin_class_name)
+    require File.join(plugin_path, name, 'lib', 'plugin') unless Warehouse::Plugins.const_defined?(plugin_class_name)
     @plugin_class ||= Warehouse::Plugins.const_get(plugin_class_name)
   end
   
