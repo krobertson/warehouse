@@ -1,3 +1,6 @@
+require File.dirname(__FILE__) + '/../test_helper'
+load_hook :lighthouse
+
 context "Lighthouse" do
   setup do
     @commit = stub(:revision => 5, :changed => ['M foo', 'A foo/bar'].join("\n"), :author => 'rick', :log => 'add bar', :date => 'abc (def)')

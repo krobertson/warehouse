@@ -34,6 +34,9 @@ Class.class_eval do
   alias_method_chain :inherited, :mixins
 end
 
+REXML::Document.class_eval { def doctype() nil end }
+ActionContentFilter.preserved_instance_variables = %w(@title @onready @fullscreen @current_sheets @content_for_scripts @content_for_onready @content_for_javascript @content_for_sidebar)
+
 require 'open3'
 require 'application'
 require 'warehouse'
@@ -44,5 +47,4 @@ Warehouse::Plugins.load
 if RAILS_ENV == 'development'
   ENV["RAILS_ASSET_ID"] = ''
 end
-REXML::Document.class_eval { def doctype() nil end }
-ActionContentFilter.preserved_instance_variables = %w(@title @onready @fullscreen @current_sheets @content_for_scripts @content_for_onready @content_for_javascript @content_for_sidebar)
+

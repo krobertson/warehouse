@@ -6,11 +6,16 @@ class Change < ActiveRecord::Base
   delegate :repository,   :to => :changeset
   delegate :unified_diff, :to => :node
   delegate :diffable?,    :to => :node
+
   def node
     @node ||= changeset.repository.node(path, revision)
   end
   
   def backend
     changeset.repository.backend
+  end
+  
+  def modified?
+    name =~ /m/i
   end
 end

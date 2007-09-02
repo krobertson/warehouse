@@ -42,6 +42,10 @@ module Warehouse
         return
       end
       repo = find_repo(repo_subdomain)
+      unless repo
+        puts "no repository found for the '#{repo_subdomain}' subdomain", :warn
+        return
+      end
       unless backend_for(repo)
         puts "No SVN repository found for '#{repo[:subdomain]}' in '#{repo[:path]}'", :warn
         return
@@ -221,29 +225,31 @@ module Warehouse
       
       def create_changeset(repo, revision)
         backend = backend_for(repo)
-        changeset = {
+        changeset = { 
           :repository_id => repo[:id],
           :revision      => revision,
           :author        => backend.fs.prop(Svn::Core::PROP_REVISION_AUTHOR, revision),
           :message       => backend.fs.prop(Svn::Core::PROP_REVISION_LOG,    revision),
           :changed_at    => backend.fs.prop(Svn::Core::PROP_REVISION_DATE,   revision).utc}
         changeset_id   = connection[:changesets] << changeset
-        create_change_from_changeset(backend, changeset.update(:id => changeset_id))
+        changes = {:all => [], :diffable => []}
+        create_change_from_changeset(backend, changeset.update(:id => changeset_id), changes)
+        connection[:changesets].filter(:id => changeset_id).update(:diffable => 1) if changes[:diffable].size > 0
         changeset
       end
       
-      def create_change_from_changeset(backend, changeset)
+      def create_change_from_changeset(backend, changeset, changes)
         root           = backend.fs.root(changeset[:revision].to_i)
         base_root      = backend.fs.root(changeset[:revision].to_i-1)
         changed_editor = Svn::Delta::ChangedEditor.new(root, base_root)
         base_root.dir_delta('', '', root, '', changed_editor)
-        
+
         (changed_editor.added_dirs + changed_editor.added_files).each do |path|
-          process_change_path_and_save(changeset, 'A', path)
+          process_change_path_and_save(backend, changeset, 'A', path, changes)
         end
         
         (changed_editor.updated_dirs + changed_editor.updated_files).each do |path|
-          process_change_path_and_save(changeset, 'M', path)
+          process_change_path_and_save(backend, changeset, 'M', path, changes)
         end
         
         deleted_files = changed_editor.deleted_dirs + changed_editor.deleted_files
@@ -252,26 +258,33 @@ module Warehouse
         end
         
         moved_files.each do |path|
-          process_change_path_and_save(changeset, 'MV', path)
+          process_change_path_and_save(backend, changeset, 'MV', path, changes)
         end
         
         copied_files.each do |path|
-          process_change_path_and_save(changeset, 'CP', path)
+          process_change_path_and_save(backend, changeset, 'CP', path, changes)
         end
         
         deleted_files.each do |path|
-          process_change_path_and_save(changeset, 'D', path)
+          process_change_path_and_save(backend, changeset, 'D', path, changes)
         end
       end
       
       @@extra_change_names = Set.new(%w(MV CP))
-      def process_change_path_and_save(changeset, name, path)
+      @@undiffable_change_names = Set.new(%w(D))
+      def process_change_path_and_save(backend, changeset, name, path, changes)
         change = {:changeset_id => changeset[:id], :name => name, :path => path}
         if @@extra_change_names.include?(name)
           change[:path]          = path[0]
           change[:from_path]     = path[1]
           change[:from_revision] = path[2]
         end
+        unless @@undiffable_change_names.include?(change[:name]) || changeset[:diffable] == 1
+          root          = backend.fs.root(changeset[:revision])
+          mime_type     = root.check_path(change[:path]) == Svn::Core::NODE_DIR ? nil : root.node_prop(change[:path], Svn::Core::PROP_MIME_TYPE)
+          changes[:diffable] << change unless mime_type == 'application/octet-stream'
+        end
+        changes[:all] << change
         connection[:changes] << change
       end
 

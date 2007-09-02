@@ -121,10 +121,6 @@ class Node
     end
     @unified_diff
   end
-  
-  def diffable?
-    @diffable ||= self.text? && previous_root.check_path(path) == Svn::Core::NODE_FILE
-  end
 
   protected
     def root

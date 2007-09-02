@@ -19,7 +19,7 @@
 </div>
 <% end -%>
 
-<% if @changeset.changes.select(&:diffable?).any? -%>
+<% if @changeset.diffable? -%>
 <div id="control-center">
   <ul>
       <li id="cdiff"><%= link_to 'Download', formatted_changeset_path(@changeset, :diff) %></li>
