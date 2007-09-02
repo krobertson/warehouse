@@ -21,7 +21,7 @@ Warehouse::Hooks.define :lighthouse do
   option :token,   /^[a-z0-9]+$/i,
     "Unique API Token to identify the user accessing Lighthouse."
   option :users,   /^([a-z0-9_-]+ [a-z0-9]+(,\s*)?)+$/,
-    "(Optional) Comma-separated list linking svn commit authors with different Lighthouse tokens.  Examples: 'rick my-token' or 'rick my-token, bob his-token'"
+    "Optional comma-separated list linking svn commit authors with different Lighthouse tokens.  (e.g. 'rick ABCDEF12345' or 'rick ABCDEF12345, bob 98765DCBA')"
   
   # Called before #run
   init do

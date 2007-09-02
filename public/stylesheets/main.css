@@ -1244,11 +1244,18 @@ input.path {
   font-size: 150%;
 }
 
-.command span.help, fieldset p span.help {
+.command span.help, fieldset p span.help, span.help {
   font-size: 92%;
   font-weight: normal;
   color: #555;
   display: block;
+}
+
+.oform span.help {
+  color: #777;
+  margin-top: 2px;
+  line-height: 150%;
+  text-shadow: none;
 }
 
 #advanced-settings fieldset {
@@ -1269,7 +1276,7 @@ input.path {
   list-style: none;
 }
 
-li.listitem {
+#hooks li.listitem {
   background-image: url(../images/app/icons/hooks.png);
 }
 

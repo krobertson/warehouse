@@ -1,12 +1,12 @@
-  <li id="<%= dom_id hook %>" class="listitem">
-    <%= link_to hook.properties.title, {} %></h3>
-    <span class="log"><%=h hook.properties.notes %></span>
-    <% if @hooks[hook.name] -%>
-    <ul>
-    <% @hooks[hook.name].each do |h| -%>
-      <li><%= h.id %></li>
-    <% end -%>
-    </ul>
-    <% end -%>
-    <p>Add (link to form)</p>
-  </li>
+<li id="<%= dom_id hook %>" class="listitem">
+  <%= link_to hook.properties.title, {} %></h3>
+  <span class="log"><%=h hook.properties.notes %></span>
+  <% if @hooks[hook.name] -%>
+  <ul>
+  <% @hooks[hook.name].each do |h| -%>
+    <li><%= h.id %></li>
+  <% end -%>
+  </ul>
+  <% end -%>
+  <p>Add (link to form)</p>
+</li>
