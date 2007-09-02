@@ -6,7 +6,7 @@ module Warehouse
       attr_accessor :loaded
 
       def [](plugin_name)
-        index[plugin_name]
+        index[plugin_name.to_s]
       end
     end
 
@@ -14,9 +14,11 @@ module Warehouse
       path  ||= Plugin.plugin_path
       plugins = find_in(path)
       records = Plugin.find_from(plugins)
+      discovered.clear
+      index.clear
       plugins.each do |p|
-        next if index.key?(p)
         record = records.detect { |r| r.name == p } || Plugin.create_empty_for(p)
+        next if index.key?(p)
         discovered << record
         index[p]    = record
       end
@@ -25,11 +27,12 @@ module Warehouse
     
     def self.load(path = nil)
       discover(path).each do |plugin|
-        if !loaded.include?(plugin) && plugin.plugin_class
+        if !loaded.include?(plugin) && plugin.active?
           plugin.plugin_class.load
           loaded << plugin
         end
       end
+      loaded.delete_if { |plugin| !plugin.active? }
       loaded
     end
 

@@ -8,6 +8,7 @@ module Warehouse
           load_path = File.join(RAILS_ROOT, 'vendor', 'plugins', 'warehouse', name.demodulize.underscore, 'lib')
           $LOAD_PATH << load_path
           Dependencies.load_paths << load_path
+          yield if block_given?
           install_routes!
         end
 
@@ -85,10 +86,6 @@ module Warehouse
           end
         end
 
-        def properties
-          @properties ||= new
-        end
-
         protected
           def css_files
             @css_files ||= Dir[File.join(plugin_path, 'public', 'stylesheets', '*.css')]
@@ -102,6 +99,10 @@ module Warehouse
       def initialize(options = {}, &block)
         super(options, &block)
       end
+
+        def properties
+          self
+        end
 
       def head_extras
         @head_extras ||= 

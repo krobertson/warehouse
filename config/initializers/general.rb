@@ -42,6 +42,8 @@ require 'application'
 require 'warehouse'
 require 'warehouse/plugins'
 require 'warehouse/hooks'
+require 'plugin'
+require 'hook'
 Warehouse::Hooks.discover
 Warehouse::Plugins.load
 if RAILS_ENV == 'development'

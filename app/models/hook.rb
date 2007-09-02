@@ -5,7 +5,7 @@ class Hook < ActiveRecord::Base
   validates_presence_of :repository_id, :name
   validate :hook_options_are_valid?
   
-  before_save :set_default_active_state
+  before_create :set_default_active_state
   
   def properties
     @properties ||= Warehouse::Hooks[name].new(nil, options || {})

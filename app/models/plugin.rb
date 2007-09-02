@@ -5,14 +5,10 @@ class Plugin < ActiveRecord::Base
   serialize :options, Hash
   
   before_validation_on_create :convert_name
-  before_save :set_default_active_state
+  before_create :set_default_active_state
   validates_presence_of   :name
   validates_uniqueness_of :name
   validate :plugin_options_are_valid?
-
-  def properties
-    @properties ||= Warehouse::Plugins[name].new(options || {})
-  end
 
   def self.create_empty_for(name)
     create! :name => name, :options => {}, :active => false
@@ -23,7 +19,6 @@ class Plugin < ActiveRecord::Base
   end
   
   def plugin_class
-    return nil unless active?
     require File.join(plugin_path, name, 'lib', 'plugin') unless Warehouse::Plugins.const_defined?(plugin_class_name)
     @plugin_class ||= Warehouse::Plugins.const_get(plugin_class_name)
   end
@@ -38,7 +33,7 @@ class Plugin < ActiveRecord::Base
   
   protected
     def set_default_active_state
-      self.active = true
+      self.active = false ; true
     end
 
     def convert_name

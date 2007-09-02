@@ -8,7 +8,7 @@ module Warehouse
       attr_accessor :index
 
       def [](plugin_name)
-        index[plugin_name]
+        index[plugin_name.to_s]
       end
     end
 

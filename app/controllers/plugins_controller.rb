@@ -1,10 +1,11 @@
 class PluginsController < ApplicationController
   skip_before_filter :check_for_repository
   before_filter :admin_required
+  before_filter(:only => :index) { Warehouse::Plugins.load }
 
   def index
     @plugin  = Plugin.new
-    @plugins = Warehouse::Plugins.load
+    @plugins = Warehouse::Plugins.discovered
   end
   
   def create
