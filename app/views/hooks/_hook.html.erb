@@ -11,9 +11,9 @@
   <h3><%= link_to hook.properties.title, {} %></h3>
   <span class="log"><%=h hook.properties.notes %></span>
   <a href="#" id="hooknew-<%= hook.id %>">Add a <%= hook.title %> instance</a>
-  <% if @hooks[hook.name] -%>
+  <% if @hooks[hook.plugin_name] -%>
   <ul>
-  <% @hooks[hook.name].each do |h| -%>
+  <% @hooks[hook.plugin_name].each do |h| -%>
     <li><%= h.id %></li>
   <% end -%>
   </ul>
