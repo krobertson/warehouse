@@ -5,23 +5,23 @@ require 'net/http'
 Warehouse::Hooks.define :lighthouse do
   # Some common plugin properties
   title    'Lighthouse Beacon'
-  author   'activereload'
+  author   'Active Reload LLC.'
   version  '1.0'
   homepage 'http://activereload.net'
   notes <<-END_NOTES
-    This plugin will post the new revision data to your Lighthouse project.
+    This hook will post the new revision data to your Lighthouse project.
   END_NOTES
   
   # Define the options this hook needs
   # These are given text fields in the Hook admin for the user to customize them.
   option :account, /^[a-z0-9_-]+$/i, 
-    "The name of the account used in the URL.  ('activereload' in 'activereload.lighthouseapp.com')"
+    "The account name.  (e.g. 'activereload' in 'activereload.lighthouseapp.com')"
   option :project, /^\d+$/,
     "Project ID.  ('55'' in '/projects/55/tickets...')"
   option :token,   /^[a-z0-9]+$/i,
     "Unique API Token to identify the user accessing Lighthouse."
   option :users,   /^([a-z0-9_-]+ [a-z0-9]+(,\s*)?)+$/,
-    "Optional comma-separated list linking svn commit authors with different Lighthouse tokens.  (e.g. 'rick ABCDEF12345' or 'rick ABCDEF12345, bob 98765DCBA')"
+    "Optional comma-separated list linking svn commit authors with different Lighthouse tokens.  (e.g. 'rick ABCDEF12345, bob 98765DCBA')"
   
   # Called before #run
   init do

@@ -1,6 +1,16 @@
 <li id="<%= dom_id hook %>" class="listitem">
-  <%= link_to hook.properties.title, {} %></h3>
+  
+  <% remote_sheet_form_for :hook, hook.properties, :url => hook_path(hook.name), :method => :put,
+         :trigger => "hooknew-#{hook.id}", :html => {:id => "hooksheet-#{hook.id}"} do |s| %>
+      <h2>Edit <%= hook.title %></h2>
+      <% hook.properties.class.option_order.each do |option| -%>
+        <% name, *desc = option.split -%>
+        <%= s.text_field %(#{h name.titleize}: <span class="help">#{h desc.join(' ')}</span>), name %>
+      <% end -%>
+    <% end %>
+  <h3><%= link_to hook.properties.title, {} %></h3>
   <span class="log"><%=h hook.properties.notes %></span>
+  <a href="#" id="hooknew-<%= hook.id %>">Add a <%= hook.title %> instance</a>
   <% if @hooks[hook.name] -%>
   <ul>
   <% @hooks[hook.name].each do |h| -%>
