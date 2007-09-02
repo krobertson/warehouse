@@ -1,6 +1,6 @@
   <li id="<%= dom_id plugin %>" class="listitem">
-    <%= link_to plugin.name.titleize, {} %></h3>
-    <span class="log"><%=h plugin.properties.notes %></span> 
+    <%= link_to plugin.properties.title, {} %></h3>
+    <span class="log"><%=h plugin.properties.notes %></span>
 
     <% remote_sheet_form_for :plugin, plugin.properties, :url => plugin_path(plugin), :method => :put,
          :trigger => "pluginedit-#{plugin.id}", :html => {:id => "pluginsheet-#{plugin.id}"} do |s| %>

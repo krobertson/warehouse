@@ -28,6 +28,11 @@ module Warehouse
         END
       end
       eval plugin_property_source * "\n"
+      
+      def title(value = nil)
+        @title   = value.to_s.strip if value
+        @title ||= name.demodulize.titleize
+      end
 
       def default_options
         @default_options ||= {}

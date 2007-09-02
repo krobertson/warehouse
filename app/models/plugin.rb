@@ -5,10 +5,15 @@ class Plugin < ActiveRecord::Base
   serialize :options, Hash
   
   before_validation_on_create :convert_name
+  before_save :set_default_active_state
   validates_presence_of   :name
   validates_uniqueness_of :name
   validate :plugin_options_are_valid?
-  
+
+  def properties
+    @properties ||= Warehouse::Plugins[name].new(options || {})
+  end
+
   def self.create_empty_for(name)
     create! :name => name, :options => {}, :active => false
   end
@@ -32,6 +37,10 @@ class Plugin < ActiveRecord::Base
   end
   
   protected
+    def set_default_active_state
+      self.active = true
+    end
+
     def convert_name
       self.name = name.to_s.demodulize.underscore if name
     end

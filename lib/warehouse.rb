@@ -30,6 +30,14 @@ module Warehouse
   class << self
     attr_accessor :domain, :forum_url, :permission_command, :password_command, :mail_from, :version, :default_session_options, :smtp_settings, :sendmail_settings, :mail_type, :caching, :config_path, :syncing
     
+    def has_plugin_tabs?
+      plugin_tabs.size > 0
+    end
+    
+    def plugin_tabs
+      @plugin_tabs ||= []
+    end
+    
     def sync?
       syncing.nil? || syncing == '1'
     end

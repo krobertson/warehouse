@@ -1,18 +1,12 @@
   <li id="<%= dom_id hook %>" class="listitem">
-    <%= link_to hook.name.titleize, {} %></h3>
-    <span class="log"><%=h hook.properties.notes %></span> 
-
-    <% remote_sheet_form_for :hook, hook.properties, :url => hook_path(hook), :method => :put,
-         :trigger => "hookedit-#{hook.id}", :html => {:id => "hooksheet-#{hook.id}"} do |s| %>
-      <h2>Edit <%= hook.name.titleize %></h2>
-      <% hook.properties.class.option_order.each do |option| -%>
-        <% name, *desc = option.split -%>
-      <%= s.text_field %(#{h name.titleize}: <span class="desc" regex="#{h hook.properties.option_formats[name.to_sym].inspect}">#{h desc.join(' ')}</span>:), name %>
-      <% end -%>
-    <% end %>
-
-    <ul class="admin-controls">
-      <li class="edit" id="hookedit-<%= hook.id %>"><a href="#">Edit</a></li>
-      <li class="del"><%= link_to_remote 'Delete', :url => hook_path(hook), :with => "'_method=delete'", :confirm => "Are you sure you want to delete this hook script?" %></li>
+    <%= link_to hook.properties.title, {} %></h3>
+    <span class="log"><%=h hook.properties.notes %></span>
+    <% if @hooks[hook.name] -%>
+    <ul>
+    <% @hooks[hook.name].each do |h| -%>
+      <li><%= h.id %></li>
+    <% end -%>
     </ul>
+    <% end -%>
+    <p>Add (link to form)</p>
   </li>

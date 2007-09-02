@@ -3,7 +3,7 @@ class HooksController < ApplicationController
   before_filter :find_or_initialize_hook
   
   def index
-    @hooks = current_repository.hooks
+    @hooks = current_repository.hooks.group_by { |h| h.name }
   end
   
   def create

@@ -85,6 +85,10 @@ module Warehouse
           end
         end
 
+        def properties
+          @properties ||= new
+        end
+
         protected
           def css_files
             @css_files ||= Dir[File.join(plugin_path, 'public', 'stylesheets', '*.css')]

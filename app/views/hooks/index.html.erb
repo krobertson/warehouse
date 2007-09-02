@@ -1,10 +1,5 @@
 <%= render :partial => '/admin/tabs' %>
 
-<% remote_form_for :hook, :url => hooks_path, :html => { :id => dom_id(@hook) } do |f| -%>
-  <p>Add a new hook: <%= f.collection_select :name, Warehouse::Hooks.discovered, :plugin_name, :name %></p>
-  <p class="btns"><%= submit_tag :Add %></p>
-<% end -%>
-
 <ul id="hooks" class="listbox">
-  <%= render :partial => "hook", :collection => @hooks %>
+  <%= render :partial => "hook", :collection => Warehouse::Hooks.discovered %>
 </ul>

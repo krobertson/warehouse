@@ -5,9 +5,8 @@
   <li id="nmembers"<%= class_for(users_path) %>><%= link_to 'Members', users_path %></li>
   <% if current_repository -%>
   <li id="nhooks"<%= class_for(hooks_path) %>><%= link_to 'Hooks', hooks_path %></li>
-  <% else -%>
-  <li id="nplugin"<%= class_for(plugins_path) %>><%= link_to 'Plugins', plugins_path %></li>
   <% end -%>
+  <li id="nplugin"<%= class_for(plugins_path) %>><%= link_to 'Plugins', plugins_path %></li>
   <li id="nsettings"<%= class_for(settings_path) %>><%= link_to 'Settings', settings_path %></li>
   <% end -%>
 </ul>
