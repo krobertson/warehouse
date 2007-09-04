@@ -823,6 +823,12 @@ li#diffnum input {
   border: 2px solid #ccc;
 }
 
+#diffnum form, #diffnum div {
+  display:inline;
+  margin:0;
+  padding:0;
+}
+
 div.control {
   position: relative;
 }

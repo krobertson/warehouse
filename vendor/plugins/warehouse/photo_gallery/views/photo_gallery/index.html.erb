@@ -1,7 +1,8 @@
 <ul id="photos">
   <% @photos.each do |photo| -%>
   <li class="photo clearfix" id="<%= dom_id photo %>">
-    <%= photo.path %>
+    <%= photo.name %> <%= photo.path %>
+    <%= image_tag raw_path(:paths => photo.path.split("/")) %>
   </li>
   <% end -%>
 </ul>

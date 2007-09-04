@@ -253,6 +253,17 @@ Event.addBehavior({
       $('mail-smtp').hide();
       $('mail-sendmail').show();
     }
+  },
+  
+  '#diffnum form:submit': function(event) {
+    var field = this.down('input');
+    var match = $F(field).match(/\d+/);
+    if(match) {
+      location.href = "/changesets/" + match
+    } else {
+      field.value = "#";
+    }
+    Event.stop(event);
   }
   
 });

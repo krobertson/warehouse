@@ -108,7 +108,7 @@ class Node
   end
 
   def unified_diff
-    unless @unified_diff || !diffable?
+    unless @unified_diff || !text?
       differ = Svn::Fs::FileDiff.new(previous_root, path, root, path)
   
       if differ.binary?

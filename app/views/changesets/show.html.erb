@@ -23,9 +23,12 @@
 <div id="control-center">
   <ul>
       <li id="cdiff"><%= link_to 'Download', formatted_changeset_path(@changeset, :diff) %></li>
-      <li id="diffhead"><%= link_to 'HEAD', formatted_changeset_path(@changeset, :diff) %></li>
-      <li id="diffprev"><%= link_to 'PREV', formatted_changeset_path(@changeset, :diff) %></li>
-      <li id="diffnum"><input type="text" value="#" size="4" /></li>
+      <li id="diffhead"><%= link_to 'Latest', changeset_path(current_repository.latest_changeset) %></li>
+      <li id="diffnum">
+        <% form_tag changesets_path, :method => :get do -%>
+          <div><input type="text" name="rev" value="#" size="8" /></div>
+        <% end -%>
+      </li>
   </ul>
 </div>
 <% end -%>

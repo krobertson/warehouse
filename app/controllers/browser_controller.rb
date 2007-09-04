@@ -12,16 +12,22 @@ class BrowserController < ApplicationController
     render :action => @node.node_type.downcase
   end
   
-  def text(raw = false)
+  def text
     if @node.dir?
       render :layout => false, :content_type => Mime::TEXT
     else
-      render :text => @node.content, :content_type => (!raw && @node.text? ? Mime::TEXT : @node.mime_type)
+      render :text => @node.content, :content_type => Mime::TEXT
     end
   end
 
   def raw
-    text(true)
+    if @node.dir?
+      render :layout => false, :content_type => Mime::TEXT
+    elsif content = @node.content
+      send_data content, :disposition => 'inline', :content_type => @node.mime_type
+    else
+      head :not_found
+    end
   end
 
   protected

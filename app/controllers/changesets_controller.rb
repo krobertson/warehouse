@@ -1,4 +1,5 @@
 class ChangesetsController < ApplicationController
+  before_filter :check_for_changeset_rev, :only => :index
   before_filter :repository_subdomain_or_login_required, :only => :index
   before_filter :repository_member_required, :except => [:index, :public]
   before_filter :root_domain_required, :only => :public
@@ -36,6 +37,7 @@ class ChangesetsController < ApplicationController
   
   def show
     @changeset = current_repository.changesets.find_by_paths(changeset_paths, :conditions => ['revision = ?', params[:id]])
+    raise ActiveRecord::RecordNotFound unless @changeset
     respond_to do |format|
       format.html
       format.diff { render :action => 'show', :layout => false }
@@ -112,5 +114,15 @@ class ChangesetsController < ApplicationController
     def check_for_repository
       return true if repository_subdomain.blank? && @@global_actions.include?(action_name)
       super
+    end
+    
+    def check_for_changeset_rev
+      return unless params[:rev]
+      if num = params[:rev].scan(/\d+/).first
+        redirect_to changeset_path(num)
+      else
+        flash[:notice] = "Bad ?rev parameter: #{params[:rev].inspect}"
+        redirect_to changesets_path
+      end
     end
 end
