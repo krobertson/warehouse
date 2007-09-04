@@ -1284,6 +1284,7 @@ input.path {
 
 #hooks li.listitem {
   background-image: url(../images/app/icons/hooks.png);
+  padding: 10px 10px 10px 45px;
 }
 
 #hook-instances {
