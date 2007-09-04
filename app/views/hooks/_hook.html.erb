@@ -1,22 +1,26 @@
-<li id="<%= dom_id hook %>" class="listitem">
-  
-  <% remote_sheet_form_for :hook, hook.properties, :url => hook_path(hook.name), :method => :put,
-         :trigger => "hooknew-#{hook.id}", :html => {:id => "hooksheet-#{hook.id}"} do |s| %>
+<li id="hook-#{hook.plugin_name}" class="listitem">
+  <% remote_sheet_form_for :hook, hook.properties, :url => new_hook_path(:hook => hook.plugin_name), 
+         :trigger => "hooknew-#{hook.plugin_name}", :html => {:id => "hooksheet-#{hook.plugin_name}"} do |s| %>
+    <h2>Edit <%= hook.title %></h2>
+    <% hook.properties.class.option_order.each do |option| -%>
+      <% name, *desc = option.split -%>
+      <%= s.text_field %(#{h name.titleize}: <span class="help">#{h desc.join(' ')}</span>), name %>
+    <% end -%>
+  <% end -%>
+  <h3><%= link_to hook.properties.title, {} %></h3>
+  <span class="log"><%=h hook.properties.notes %></span>
+  <a href="#" id="hooknew-<%= hook.plugin_name %>">Add a <%= hook.title %> instance</a>
+  <% @hooks[hook.plugin_name].each do |hk| -%>
+    <div id="hook-#{hk.id}">
+    <% remote_sheet_form_for :hook, hk.properties, :url => hook_path(hk), :method => :put,
+           :trigger => "hookedit-#{hk.id}", :html => {:id => "hooksheet-#{hk.id}"} do |s| %>
       <h2>Edit <%= hook.title %></h2>
       <% hook.properties.class.option_order.each do |option| -%>
         <% name, *desc = option.split -%>
         <%= s.text_field %(#{h name.titleize}: <span class="help">#{h desc.join(' ')}</span>), name %>
       <% end -%>
-    <% end %>
-  <h3><%= link_to hook.properties.title, {} %></h3>
-  <span class="log"><%=h hook.properties.notes %></span>
-  <a href="#" id="hooknew-<%= hook.id %>">Add a <%= hook.title %> instance</a>
-  <% if @hooks[hook.plugin_name] -%>
-  <ul>
-  <% @hooks[hook.plugin_name].each do |h| -%>
-    <li><%= h.id %></li>
-  <% end -%>
-  </ul>
-  <% end -%>
-  <p>Add (link to form)</p>
+    <% end -%>
+      <p><%= hk.id %></p>
+    </div>
+  <% end if @hooks[hook.plugin_name] -%>
 </li>
