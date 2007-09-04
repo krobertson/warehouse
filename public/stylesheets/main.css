@@ -1280,6 +1280,41 @@ input.path {
   background-image: url(../images/app/icons/hooks.png);
 }
 
+#hook-instances {
+  margin: 10px 0 0 0;
+  list-style: none;
+}
+
+.add-hk {
+  font-size: 82%;
+  text-align: right;
+  margin-top: 10px;
+}
+
+#hook-instances li {
+  font-weight: bold;
+  font-size: 92%;
+  color: #444;
+  padding: 5px 0 5px 25px;
+  border-top: 1px dotted #ccc;
+  background: url(../images/app/icons/check-small.png) 0 50% no-repeat;
+  position: relative !important;
+}
+
+#hook-instances .admin-controls {
+  right: 40px;
+}
+
+#hook-instances .admin-controls .del {
+  top: 0;
+}
+
+#hook-instances .admin-controls li, 
+#hook-instances .admin-controls li a {
+  padding: 0;
+  position: absolute;
+}
+
 
 /* @end */
 
