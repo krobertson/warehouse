@@ -1464,6 +1464,11 @@ button {
   font-size: 92%;
 }
 
+#plugins li a:first-child {
+  border-top: none;
+}
+
+
 #plugins li a {
   display: block;
   font-weight: bold;
