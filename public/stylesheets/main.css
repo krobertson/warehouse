@@ -823,12 +823,6 @@ li#diffnum input {
   border: 2px solid #ccc;
 }
 
-#diffnum form, #diffnum div {
-  display:inline;
-  margin:0;
-  padding:0;
-}
-
 div.control {
   position: relative;
 }
@@ -1296,6 +1290,18 @@ input.path {
   font-size: 82%;
   text-align: right;
   margin-top: 10px;
+}
+
+.hook-help ul {
+  font-weight: normal;
+  margin: 10px 10px 10px 5px;
+  font-size: 82%;
+  color: #444;
+}
+
+.hook-help li {
+  margin-bottom: 3px;
+  list-style: none;
 }
 
 #hook-instances li {

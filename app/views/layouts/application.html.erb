@@ -47,8 +47,8 @@
             <%=h current_user.identity_url %>
           </p>
           <p>
-            <label>API Token (<%= link_to_function 'show', "$('user-token').show()" %>):</label>
-            <span id="user-token" style="display:none"><%=h current_user.token %></span>
+            <label>API Token:</label>
+            <span id="user-token"><%=h current_user.token %></span>
           </p>
           <p id="profile-pic"><%= avatar_for(current_user) %></p>
           <%= s.file_field "Profile picture:", :avatar_data, :size => 25 %>

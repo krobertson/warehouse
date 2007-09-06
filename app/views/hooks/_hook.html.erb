@@ -4,11 +4,21 @@
     <h2>Edit <%= hook.title %></h2>
     <% hook.properties.class.option_order.each do |option| -%>
       <% name, *desc = option.split -%>
-      <%= s.text_field %(#{h name.titleize}: <span class="help">#{h desc.join(' ')}</span>), name %>
+      <%= s.text_field %(#{h name.titleize}:), name %>
     <% end -%>
   <% end -%>
   <h3><%= link_to hook.properties.title, {} %></h3>
-  <span class="log"><%=h hook.properties.notes %></span>  
+  <span class="log"><%=h hook.properties.notes %></span>
+  <div class="hook-help">
+    <ul>
+    <% hook.properties.class.option_order.each do |option| -%>
+      <% name, *desc = option.split -%>
+      <li>
+        <p><strong><%= h name.titleize %>:</strong> <span><%= h desc.join(' ') %></span></p>
+      </li>
+    <% end -%>
+    </ul>
+  </div>
   <ul id="hook-instances">
   <% @hooks[hook.plugin_name].each do |hk| -%>
     <li id="hook-<%= hk.id %>">
@@ -17,14 +27,13 @@
         <li id="hooki-<%= hk.id %>" class="edit"><a href="#">Edit</a></li>
         <li class="del"><%= link_to_function('Delete', "Hook.removeInstance('#{hk.id}')") %></li>
       </ul>
-      
       <!-- sheet -->
       <% remote_sheet_form_for :hook, hk.properties, :url => hook_path(hk), :method => :put,
-             :trigger => "hooki-#{hk.id}", :html => {:id => "hooksheet-#{hk.id}"} do |s| %>
+             :trigger => "hooki-#{hk.id}", :html => {:id => "hooksheet-#{hk.id}", :style => 'display:none'} do |s| %>
         <h2>Edit <%= hook.title %></h2>
         <% hook.properties.class.option_order.each do |option| -%>
           <% name, *desc = option.split -%>
-          <%= s.text_field %(#{h name.titleize}: <span class="help">#{h desc.join(' ')}</span>), name %>
+          <%= s.text_field %(#{h name.titleize}:), name %>
         <% end -%>
       <% end -%>
       <!--/sheet -->
