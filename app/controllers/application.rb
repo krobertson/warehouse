@@ -120,9 +120,6 @@ class ApplicationController < ActionController::Base
     end
   
     def check_for_repository
-      logger.warn ">>>> #{request.content_type}"
-      logger.warn ">>>> #{request.env['HTTP_ACCEPT']}"
-      
       return true if current_repository
       if !Warehouse.domain.blank? && Repository.count > 0
         redirect_to(logged_in? ? hosted_url(:changesets) : hosted_url(:public_changesets))
