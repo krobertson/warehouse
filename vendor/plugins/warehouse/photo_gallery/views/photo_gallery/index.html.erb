@@ -7,11 +7,11 @@
   </thead>
   <% @photos.each do |photo| -%>
   <tr>
-    <% path = photo.path.split('/') %>
+    <% paths = photo.path.split('/') -%>
     <td class="item">
-      <%= link_to h(path.last), "", :class => 'image' %>
+      <%= link_to h(paths.last), browser_path(:paths => paths), :class => 'image' %>
     </td>
-    <td><span class="log"><% path.pop %> <%= path.join('/') %></span></td>
+    <td><span class="log"><% paths.pop %> <%= paths.join('/') %></span></td>
   </tr>
   <% end -%>
 </table>
