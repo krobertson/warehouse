@@ -16,7 +16,7 @@ context "Plugin" do
   end
   
   specify "should find loaded plugins" do
-    Plugin.find_from(%w(foo bar)).should == [plugins(:foo)]
+    Plugin.find_from(%w(foo baz)).should == [plugins(:foo)]
   end
   
   specify "should create empty plugin record" do
@@ -29,11 +29,6 @@ context "Plugin" do
   specify "should create empty plugin record from class" do
     plugin = Plugin.create_empty_for(Warehouse::Plugins::Whatever)
     plugin.name.should == 'whatever'
-  end
-  
-  specify "should not return plugin class for inactive plugin" do
-    plugin = Plugin.new :name => 'whatever'
-    plugin.plugin_class.should.be.nil
   end
   
   specify "should return plugin class for active plugin" do

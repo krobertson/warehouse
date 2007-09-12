@@ -142,9 +142,13 @@ class ApplicationController < ActionController::Base
       options    = args.last.is_a?(Hash) ? args.pop : {}
       name       = args.pop
       repository = args.pop
-      options[:host] = repository ? repository.domain : Warehouse.domain
-      options[:port] = request.port unless request.port == request.standard_port
-      send("#{name}_url", options)
+      route_args = options.empty? ? [] : [options]
+      "http%s://%s%s%s" % [
+        ('s' if request.ssl?),
+        (repository ? repository.domain : Warehouse.domain),
+        (':' + request.port.to_s unless request.port == request.standard_port),
+        send("#{name}_path", *route_args)
+        ]
     end
 
     # stores cache fragments that have already been read by
