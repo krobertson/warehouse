@@ -1,3 +1,5 @@
+require 'enumerator'
+
 module Sequel
   class Dataset
     module Convenience
@@ -12,7 +14,8 @@ module Sequel
       # Returns the first value of the first reecord in the dataset.
       def single_value(opts = nil)
         opts = opts ? NAKED_HASH.merge(opts) : NAKED_HASH
-        each(opts) {|r| return r.values.first}
+        # reset the columns cache so it won't fuck subsequent calls to columns
+        each(opts) {|r| @columns = nil; return r.values.first}
       end
 
       # Returns the first record in the dataset. If the num argument is specified,
@@ -79,19 +82,27 @@ module Sequel
         end
       end
 
-      # returns a paginated dataset. The resulting dataset also provides the
+      # Returns a paginated dataset. The resulting dataset also provides the
       # total number of pages (Dataset#page_count) and the current page number
       # (Dataset#current_page), as well as Dataset#prev_page and Dataset#next_page
       # for implementing pagination controls.
       def paginate(page_no, page_size)
-        total_pages = (count / page_size.to_f).ceil
+        record_count = count
+        total_pages = (record_count / page_size.to_f).ceil
         paginated = limit(page_size, (page_no - 1) * page_size)
-        paginated.current_page = page_no
-        paginated.page_count = total_pages
+        paginated.set_pagination_info(page_no, page_size, record_count)
         paginated
       end
+      
+      # Sets the pagination info
+      def set_pagination_info(page_no, page_size, record_count)
+        @current_page = page_no
+        @page_size = page_size
+        @pagination_record_count = record_count
+        @page_count = (record_count / page_size.to_f).ceil
+      end
 
-      attr_accessor :page_count, :current_page
+      attr_accessor :page_size, :page_count, :current_page, :pagination_record_count
 
       # Returns the previous page number or nil if the current page is the first
       def prev_page
@@ -102,30 +113,78 @@ module Sequel
       def next_page
         current_page < page_count ? (current_page + 1) : nil
       end
+      
+      # Returns the page range
+      def page_range
+        1..page_count
+      end
+      
+      # Returns the record range for the current page
+      def current_page_record_range
+        return (0..0) if @current_page > @page_count
+        
+        a = 1 + (@current_page - 1) * @page_size
+        b = a + @page_size - 1
+        b = @pagination_record_count if b > @pagination_record_count
+        a..b
+      end
+
+      # Returns the number of records in the current page
+      def current_page_record_count
+        return 0 if @current_page > @page_count
+        
+        a = 1 + (@current_page - 1) * @page_size
+        b = a + @page_size - 1
+        b = @pagination_record_count if b > @pagination_record_count
+        b - a + 1
+      end
 
       # Returns the minimum value for the given field.
       def min(field)
-        single_value(:select => [field.MIN])
+        single_value(:select => [field.MIN.AS(:v)])
       end
 
       # Returns the maximum value for the given field.
       def max(field)
-        single_value(:select => [field.MAX])
+        single_value(:select => [field.MAX.AS(:v)])
       end
 
       # Returns the sum for the given field.
       def sum(field)
-        single_value(:select => [field.SUM])
+        single_value(:select => [field.SUM.AS(:v)])
       end
 
       # Returns the average value for the given field.
       def avg(field)
-        single_value(:select => [field.AVG])
+        single_value(:select => [field.AVG.AS(:v)])
       end
 
       # Pretty prints the records in the dataset as plain-text table.
       def print(*cols)
         Sequel::PrettyTable.print(naked.all, cols.empty? ? columns : cols)
+      end
+      
+      # Inserts multiple records into the associated table. This method can be
+      # to efficiently insert a large amounts of records into a table. Inserts
+      # are automatically wrapped in a transaction. If the :commit_every 
+      # option is specified, the method will generate a separate transaction 
+      # for each batch of records, e.g.:
+      #
+      #   dataset.multi_insert(list, :commit_every => 1000)
+      def multi_insert(list, opts = {})
+        if every = opts[:commit_every]
+          list.each_slice(every) do |s|
+            @db.transaction do
+              s.each {|r| @db.execute(insert_sql(r))}
+              # @db.execute(s.map {|r| insert_sql(r)}.join)
+            end
+          end
+        else
+          @db.transaction do
+            # @db.execute(list.map {|r| insert_sql(r)}.join)
+            list.each {|r| @db.execute(insert_sql(r))}
+          end
+        end
       end
     end
   end

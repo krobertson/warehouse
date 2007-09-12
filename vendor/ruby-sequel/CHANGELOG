@@ -1,5 +1,211 @@
 === SVN
 
+* Changed Model.create to INSERT DEFAULT VALUES instead of (id) VALUES (null) (brings back #41.)
+
+* Fixed Model.new to work without arguments.
+
+* Added Model.no_primary_key method to allow models without primary keys.
+
+* Added Model#this method (#42 thanks Duane Johnson).
+
+* Fixed Dataset#insert_sql to use DEFAULT VALUES clause if argument is an empty hash.
+
+* Fixed Model.create to work correctly when no argument is passed (#41).
+
+=== 0.2.0.2 (2007-09-07)
+
+* Dataset#insert can now accept subqueries.
+
+* Changed Migrator.apply to return the version.
+
+* Changed Sequel::Model() to cache intermediate classes so descendant classes can be reopened (#39).
+
+* Added :charset option to MySQL adapter (#40).
+
+* Fixed Dataset#exclude to add parens around NOT expression (#38).
+
+* Fixed use of sub-queries with all comparison operators in block filters (#38).
+
+* Fixed arithmetic expressions in block filters to not be literalized.
+
+* Changed Symbol#method_missing to return LiteralString.
+
+* Changed PrettyTable to right-align numbers.
+
+* Fixed Model.create_table (thanks Duane Johnson.)
+
+=== 0.2.0.1 (2007-09-04)
+
+* Improved support for invoking methods with inline procs inside block filters.
+
+=== 0.2.0 (2007-09-02)
+
+* Fixed Model.drop_table (thanks Duane Johnson.)
+
+* Dataset#each can now return rows for arbitrary SQL by specifying :sql option.
+
+* Added spec for postgres adapter.
+
+* Fixed Model.method_missing to work with new SQL generation.
+
+* Fixed #compare_expr to support regexps.
+
+* Fixed postgres, mysql adapters to support regexps.
+
+* More specs for block filters. Updated README.
+
+* Added support for globals and $X macros in block filters.
+
+* Fixed Sequelizer to not fail if ParseTree or Ruby2Ruby gems are missing.
+
+* Renamed String#expr into String#lit (#expr should be deprecated in future versions).
+
+* Renamed Sequel::ExpressionString into LiteralString.
+
+* Fixed Symbol#[] to return an ExpressionString, so as not to be literalized.
+
+* Renamed Dataset::Expressions to Dataset::Sequelizer.
+
+* Renamed Expressions#format_re_expression to match_expr.
+
+* Renamed Expressions#format_eq_expression to compare_expr.
+
+* Added support for Regexp in MySQL adapter.
+
+* Refactored Regexp expressions into a separate #format_re_expression method.
+
+* Added support for arithmetic in proc filters.
+
+* Added support for nested proc expressions, more specs.
+
+* Added support for SQL function using symbols, e.g. :sum[:x].
+
+* Fixed deadlock bug in ConnectionPool.
+
+* Removed deprecated old expressions.rb.
+
+* Rewrote Proc filter feature using ParseTree.
+
+* Added support for additional functions on columns using Symbol#method_missing.
+
+* Added support for supplying filter block to DB#[] method, to allow stuff like DB[:nodes] {:path =~ /^icex1/}.
+
+=== 0.1.9.12 (2007-08-26)
+
+* Added spec for PrettyTable.
+
+* Added specs for Schema::Generator and Model (#36 thanks technoweenie).
+
+* Fixed Sequel::Model.set_schema (#36 thanks technoweenie.)
+
+* Added support for no options on Schema::Generator#foreign_key (#36 thanks technoweenie.)
+
+* Implemented (restored?) Schema::Generator#primary_key_name (#36 thanks technoweenie.)
+
+* Better spec code coverage.
+
+=== 0.1.9.11 (2007-08-24)
+
+* Changed Dataset#set_model to allow supplying additional arguments to the model's initialize method (#35). Thanks Sunny Hirai.
+
+=== 0.1.9.10 (2007-08-22)
+
+* Changed schema generation code to generate separate statements for CREATE TABLE and each CREATE INDEX (#34).
+
+* Refactored Dataset::SQL#field_name for better support of different field quoting standards by specific adapters.
+
+* Added #current_page_record_count for paginated datasets.
+
+* Removed Database#literal and included Dataset::SQL instead.
+
+* Sequel::Dataset:SQL#field_name can now take a hash (as well as #select and any method that uses #field_name) for aliasing column names.  E.g. DB[:test].select(:_qqa => 'Date').sql #=> 'SELECT _qqa AS Date FROM test'.
+
+* Moved SingleThreadedPool to lib/sequel/connection_pool.rb.
+
+* Changed SQLite::Dataset to return affected rows for #delete and #update (#33).
+
+* ADO adapter: Added use of Enumerable for Recordset#Fields, playing it safe and moving to the first row before getting results, and changing the auto_increment constant to work for MSSQL.
+
+=== 0.1.9.9 (2007-08-18)
+
+* New ADO adapter by cdcarter (#31).
+
+* Added automatic column aliasing to #avg, #sum, #min and #max (#30).
+
+* Fixed broken Sequel::DBI::Dataset#fetch_rows (#29 thanks cdcarter.)
+
+=== 0.1.9.8 (2007-08-15)
+
+* Fixed DBI adapter.
+
+=== 0.1.9.7 (2007-08-15)
+
+* Added support for executing batch statements in sqlite adapter.
+
+* Changed #current_page_record_range to return 0..0 for an invalid page.
+
+* Fixed joining of aliased tables.
+
+* Improved Symbol#to_field_name to prevent false positives.
+
+* Implemented Dataset#multi_insert with :commit_every option.
+
+* More docs for Dataset#set_model.
+
+* Implemented automatic creation of convenience methods for each adapter (e.g. Sequel.sqlite etc.)
+
+=== 0.1.9.6 (2007-08-13)
+
+* Refactored schema definition code. Gets rid of famous primary_key problem as well as other issues (e.g. issue #22).
+
+* Added #pagination_record_count, #page_range and #current_page_record_range for paginated datasets.
+
+* Changed MySQL adapter to automatically reconnect (issue #26).
+
+* Changed Sequel() to accept variable arity.
+
+* Added :elements option to column definition, in order to support ENUM and SET types.
+
+=== 0.1.9.5 (2007-08-12)
+
+* Fixed migration docs.
+
+* Removed dependency on PGconn in Schema class.
+
+=== 0.1.9.4 (2007-08-11)
+
+* Added Sequel.dbi convenience method for using DBI connection strings to open DBI databases.
+
+=== 0.1.9.3 (2007-08-10)
+
+* Added support for specifying field size in schema definitions (thanks Florian Aßmann.)
+
+* Added migration code based on work by Florian Aßmann.
+
+* Reintroduced metaid dependency. No need to keep a local copy of it.
+
+=== 0.1.9.2 (2007-07-24)
+
+* Removed metaid dependency. Re-factored requires in lib/sequel.rb.
+
+=== 0.1.9.1 (2007-07-22)
+
+* Improved robustness of MySQL::Dataset#field_name.
+
+* Added Sequel.single_threaded= convenience method.
+
+=== 0.1.9 (2007-07-21)
+
+* Fixed #update_sql and #insert_sql to support field quoting by calling #field_name.
+
+* Implemented automatic data type conversion in mysql adapter.
+
+* Added support for boolean literals in mysql adapter.
+
+* Added support for ORDER and LIMIT clauses in UPDATE statements in mysql adapter.
+
+* Implemented correct field quoting (using back-ticks) in mysql adapter.
+
 * Wrote basic MySQL spec.
 
 * Fixd MySQL::Dataset to return correct data types with symbols as hash keys.

@@ -1,8 +1,9 @@
 require 'time'
 require 'date'
 
-require File.join(File.dirname(__FILE__), 'dataset/dataset_sql')
-require File.join(File.dirname(__FILE__), 'dataset/dataset_convenience')
+require File.join(File.dirname(__FILE__), 'dataset/sequelizer')
+require File.join(File.dirname(__FILE__), 'dataset/sql')
+require File.join(File.dirname(__FILE__), 'dataset/convenience')
 
 module Sequel
   # A Dataset represents a view of a the data in a database, constrained by
@@ -63,8 +64,9 @@ module Sequel
   #   end
   class Dataset
     include Enumerable
-    include SQL # in dataset/dataset_sql.rb
-    include Convenience # in dataset/dataset_convenience.rb
+    include Sequelizer
+    include SQL
+    include Convenience
     
     attr_reader :db
     attr_accessor :opts
@@ -171,36 +173,81 @@ module Sequel
       d
     end
     
-    # Associates the dataset with a model. If 
-    def set_model(*args)
-      if args.empty? || (args.first == nil)
+    # Associates or disassociates the dataset with a model. If no argument or
+    # nil is specified, the dataset is turned into a naked dataset and returns
+    # records as hashes. If a model class specified, the dataset is modified
+    # to return records as instances of the model class, e.g:
+    #
+    #   class MyModel
+    #     def initialize(values)
+    #       @values = values
+    #       ...
+    #     end
+    #   end
+    # 
+    #   dataset.set_model(MyModel)
+    #
+    # You can also provide additional arguments to be passed to the model's
+    # initialize method:
+    #
+    #   class MyModel
+    #     def initialize(values, options)
+    #       @values = values
+    #       ...
+    #     end
+    #   end
+    # 
+    #   dataset.set_model(MyModel, :allow_delete => false)
+    #  
+    # The dataset can be made polymorphic by specifying a column name as the
+    # polymorphic key and a hash mapping column values to model classes.
+    #
+    #   dataset.set_model(:kind, {1 => Person, 2 => Business})
+    #
+    # You can also set a default model class to fall back on by specifying a
+    # class corresponding to nil:
+    #
+    #   dataset.set_model(:kind, {nil => DefaultClass, 1 => Person, 2 => Business})
+    # 
+    # To disassociate a model from the dataset, you can call the #set_model 
+    # and specify nil as the class:
+    # 
+    #   dataset.set_model(nil)
+    #
+    def set_model(key, *args)
+      # pattern matching
+      case key
+      when nil: # set_model(nil) => no
+        # no argument provided, so the dataset is denuded
         @opts.merge!(:naked => true, :models => nil, :polymorphic_key => nil)
         extend_with_stock_each
-      elsif args.size == 1
-        c = args.first
-        @opts.merge!(:naked => nil, :models => {nil => c}, :polymorphic_key => nil)
-        extend_with_model(c)
+      when Class:
+        # isomorphic model
+        @opts.merge!(:naked => nil, :models => {nil => key}, :polymorphic_key => nil)
+        extend_with_model(key, *args)
+        extend_with_destroy
+      when Symbol:
+        # polymorphic model
+        hash = args.shift || raise(SequelError, "No class hash supplied for polymorphic model")
+        @opts.merge!(:naked => true, :models => hash, :polymorphic_key => key)
+        extend_with_polymorphic_model(key, hash, *args)
         extend_with_destroy
       else
-        key, hash = args
-        @opts.merge!(:naked => true, :models => hash, :polymorphic_key => key)
-        extend_with_polymorphic_model(key, hash)
-        extend_with_destroy
+        raise SequelError, "Invalid parameters specified"
       end
       self
     end
     
     private
     # Overrides the each method to convert records to model instances.
-    def extend_with_model(c)
-      meta_def(:model_class) {c}
+    def extend_with_model(c, *args)
+      meta_def(:make_model_instance) {|r| c.new(r, *args)}
       m = Module.new do
         def each(opts = nil, &block)
-          c = model_class
           if opts && opts[:naked]
             fetch_rows(select_sql(opts), &block)
           else
-            fetch_rows(select_sql(opts)) {|r| block.call(c.new(r))}
+            fetch_rows(select_sql(opts)) {|r| block.call(make_model_instance(r))}
           end
         end
       end
@@ -210,21 +257,18 @@ module Sequel
     # Overrides the each method to convert records to polymorphic model
     # instances. The model class is determined according to the value in the
     # key column.
-    def extend_with_polymorphic_model(key, hash)
-      meta_def(:model_class) {|r| hash[r[key]] || hash[nil]}
+    def extend_with_polymorphic_model(key, hash, *args)
+      meta_def(:make_model_instance) do |r|
+        c = hash[r[key]] || hash[nil] || \
+          raise(SequelError, "No matching model class for record (#{polymorphic_key} => #{r[polymorphic_key].inspect})")
+        c.new(r, *args)
+      end
       m = Module.new do
         def each(opts = nil, &block)
           if opts && opts[:naked]
             fetch_rows(select_sql(opts), &block)
           else
-            fetch_rows(select_sql(opts)) do |r|
-              c = model_class(r)
-              if c
-                block.call(c.new(r))
-              else
-                raise SequelError, "No matching model class for record (#{polymorphic_key} = #{r[polymorphic_key].inspect})"
-              end
-            end
+            fetch_rows(select_sql(opts)) {|r| block.call(make_model_instance(r))}
           end
         end
       end

@@ -6,34 +6,45 @@ require 'mysql'
 
 # Monkey patch Mysql::Result to yield hashes with symbol keys
 class Mysql::Result
+  MYSQL_TYPES = {
+    0 => :to_i,
+    1 => :to_i,
+    2 => :to_i,
+    3 => :to_i,
+    4 => :to_f,
+    5 => :to_f,
+    7 => :to_time,
+    8 => :to_i,
+    9 => :to_i,
+    10 => :to_time,
+    11 => :to_time,
+    12 => :to_time,
+    13 => :to_i,
+    14 => :to_time,
+    247 => :to_i,
+    248 => :to_i
+  }
+  
+  def convert_type(v, type)
+    v ? ((t = MYSQL_TYPES[type]) ? v.send(t) : v) : nil
+  end
+  
   def columns(with_table = nil)
-    @columns ||= fetch_fields.map do |f|
-      (with_table ? (f.table + "." + f.name) : f.name).to_sym
+    unless @columns
+      @column_types = []
+      @columns = fetch_fields.map do |f|
+        @column_types << f.type
+        (with_table ? (f.table + "." + f.name) : f.name).to_sym
+      end
     end
+    @columns
   end
   
   def each_hash(with_table=nil)
     c = columns
     while row = fetch_row
       h = {}
-      c.each_with_index {|f, i| h[f] = row[i]}
-      yield h
-    end
-  end
-end
-
-class Mysql::Stmt
-  def columns(with_table = nil)
-    @columns ||= result_metadata.fetch_fields.map do |f|
-      (with_table ? (f.table + "." + f.name) : f.name).to_sym
-    end
-  end
-  
-  def each_hash
-    c = columns
-    while row = fetch
-      h = {}
-      c.each_with_index {|f, i| h[f] = row[i]}
+      c.each_with_index {|f, i| h[f] = convert_type(row[i], @column_types[i])}
       yield h
     end
   end
@@ -44,10 +55,26 @@ module Sequel
     class Database < Sequel::Database
       set_adapter_scheme :mysql
     
+      def serial_primary_key_options
+        {:primary_key => true, :type => :integer, :auto_increment => true}
+      end
+      
+      AUTO_INCREMENT = 'AUTO_INCREMENT'.freeze
+      
+      def auto_increment_sql
+        AUTO_INCREMENT
+      end
+
       def connect
         conn = Mysql.real_connect(@opts[:host], @opts[:user], @opts[:password], 
           @opts[:database], @opts[:port])
         conn.query_with_result = false
+        if @opts[:charset]
+          conn.query("set character_set_connection = '#{@opts[:charset]}';")
+          conn.query("set character_set_client = '#{@opts[:charset]}';")
+          conn.query("set character_set_results = '#{@opts[:charset]}';")
+        end
+        conn.reconnect = true
         conn
       end
       
@@ -76,15 +103,6 @@ module Sequel
         end
       end
       
-      def stmt(sql)
-        @logger.info(sql) if @logger
-        @pool.hold do |conn|
-          stmt = conn.prepare(sql)
-          stmt.execute
-          stmt
-        end
-      end
-    
       def execute_insert(sql)
         @logger.info(sql) if @logger
         @pool.hold do |conn|
@@ -124,6 +142,63 @@ module Sequel
     end
     
     class Dataset < Sequel::Dataset
+      UNQUOTABLE_FIELD_RE = /^(`(.+)`)|\*$/.freeze
+      def quote_field(f)
+        f =~ UNQUOTABLE_FIELD_RE ? f : "`#{f}`"
+      end
+      
+      FIELD_EXPR_RE = /^([^\(]+\()?([^\.]+\.)?([^\s\)]+)(\))?(\sAS\s(.+))?$/i.freeze
+      FIELD_ORDER_RE = /^(.*) (DESC|ASC)$/i.freeze
+      def quoted_field_name(name)
+        case name
+        when FIELD_EXPR_RE:
+          $6 ? \
+            "#{$1}#{$2}#{quote_field($3)}#{$4} AS #{quote_field($6)}" : \
+            "#{$1}#{$2}#{quote_field($3)}#{$4}"
+        when FIELD_ORDER_RE: "#{quote_field($1)} #{$2}"
+        else
+          quote_field(name)
+        end
+      end
+      
+      TRUE = '1'
+      FALSE = '0'
+      
+      def literal(v)
+        case v
+        when true: TRUE
+        when false: FALSE
+        else
+          super
+        end
+      end
+      
+      def match_expr(l, r)
+        case r
+        when Regexp:
+          "(#{literal(l)} REGEXP #{literal(r.source)})"
+        else
+          super
+        end
+      end
+      
+      # MySQL supports ORDER and LIMIT clauses in UPDATE statements.
+      def update_sql(values, opts = nil)
+        sql = super
+
+        opts = opts ? @opts.merge(opts) : @opts
+        
+        if order = opts[:order]
+          sql << " ORDER BY #{field_list(order)}"
+        end
+
+        if limit = opts[:limit]
+          sql << " LIMIT #{limit}"
+        end
+
+        sql
+      end
+
       def insert(*values)
         @db.execute_insert(insert_sql(*values))
       end
@@ -138,12 +213,12 @@ module Sequel
       
       def fetch_rows(sql)
         @db.synchronize do
-          s = @db.stmt(sql)
+          r = @db.query(sql)
           begin
-            @columns = s.columns
-            s.each_hash {|r| yield r}
+            @columns = r.columns
+            r.each_hash {|row| yield row}
           ensure
-            s.close
+            r.free
           end
         end
         self

@@ -122,10 +122,6 @@ class String
       nil
     end
   end
-
-  def postgres_to_time
-    Time.parse(self)
-  end
 end
 
 module Sequel
@@ -138,7 +134,7 @@ module Sequel
       23 => :to_i,
       700 => :to_f,
       701 => :to_f,
-      1114 => :postgres_to_time
+      1114 => :to_time
     }
 
     class Database < Sequel::Database
@@ -162,7 +158,6 @@ module Sequel
       RELATION_QUERY = {:from => [:pg_class], :select => [:relname]}.freeze
       RELATION_FILTER = "(relkind = 'r') AND (relname !~ '^pg|sql')".freeze
       SYSTEM_TABLE_REGEXP = /^pg|sql/.freeze
-    
     
       def tables
         dataset(RELATION_QUERY).filter(RELATION_FILTER).map {|r| r[:relname].to_sym}
@@ -269,12 +264,16 @@ module Sequel
         end
       end
 
+      def serial_primary_key_options
+        {:primary_key => true, :type => :serial}
+      end
+
+      def drop_table_sql(name)
+        "DROP TABLE #{name} CASCADE;"
+      end
     end
   
     class Dataset < Sequel::Dataset
-      TRUE = "'t'".freeze
-      FALSE = "'f'".freeze
-      
       def literal(v)
         case v
         when String, Fixnum, Float, TrueClass, FalseClass: PGconn.quote(v)
@@ -286,14 +285,12 @@ module Sequel
       LIKE = '(%s ~ %s)'.freeze
       LIKE_CI = '%s ~* %s'.freeze
       
-      def format_eq_expression(left, right)
-        case right
+      def match_expr(l, r)
+        case r
         when Regexp:
-          l = field_name(left)
-          r = PGconn.quote(right.source)
-          right.casefold? ? \
-            "(#{l} ~* #{r})" : \
-            "(#{l} ~ #{r})"
+          r.casefold? ? \
+            "(#{literal(l)} ~* #{literal(r.source)})" :
+            "(#{literal(l)} ~ #{literal(r.source)})"
         else
           super
         end

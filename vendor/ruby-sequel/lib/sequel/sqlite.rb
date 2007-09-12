@@ -3,15 +3,18 @@ if !Object.const_defined?('Sequel')
 end
 
 require 'sqlite3'
-require 'metaid'
 
 module Sequel
   module SQLite
     class Database < Sequel::Database
       set_adapter_scheme :sqlite
     
+      def serial_primary_key_options
+        {:primary_key => true, :type => :integer, :auto_increment => true}
+      end
+
       def connect
-        if @opts[:database].empty?
+        if @opts[:database].nil? || @opts[:database].empty?
           @opts[:database] = ':memory:'
         end
         db = ::SQLite3::Database.new(@opts[:database])
@@ -31,7 +34,7 @@ module Sequel
     
       def execute(sql)
         @logger.info(sql) if @logger
-        @pool.hold {|conn| conn.execute(sql)}
+        @pool.hold {|conn| conn.execute_batch(sql); conn.changes}
       end
       
       def execute_insert(sql)
@@ -119,12 +122,19 @@ module Sequel
     
       def update(values, opts = nil)
         @db.execute update_sql(values, opts)
-        self
       end
     
       def delete(opts = nil)
-        @db.execute delete_sql(opts)
-        self
+        # check if no filter is specified
+        unless (opts && opts[:where]) || @opts[:where]
+          @db.transaction do
+            unfiltered_count = count
+            @db.execute delete_sql(opts)
+            unfiltered_count
+          end
+        else
+          @db.execute delete_sql(opts)
+        end
       end
       
       EXPLAIN = 'EXPLAIN %s'.freeze

@@ -67,12 +67,12 @@ context "Command Syncing" do
   
   specify "should update user activity" do
     @changesets_where = stub
-    @changesets_where.expects(:count).with(:id).returns 15
+    @changesets_where.expects(:select).with(:id.COUNT).returns 15
     @changesets = stub
-    @changesets.expects(:where).with(:repository_id => @repo[:id]).returns(@changesets_where)
+    @changesets.expects(:where).with(:repository_id => @repo[:id], :author => @user[:login]).returns(@changesets_where)
     
     @permissions_where = stub
-    @permissions_where.expects(:update).with(:author => @user[:login], :last_changed_at => @changeset[:changed_at], :changesets_count => 15).returns(77)
+    @permissions_where.expects(:update).with(:last_changed_at => @changeset[:changed_at], :changesets_count => 15).returns(77)
     @permissions = stub
     @permissions.expects(:where).with(:user_id => @user[:id], :repository_id => @repo[:id]).returns(@permissions_where)
     

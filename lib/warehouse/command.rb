@@ -218,9 +218,9 @@ module Warehouse
       end
 
       def update_user_activity(repo, user, changed_at)
-        changesets_count = connection[:changesets].where(:repository_id => repo[:id]).count(:id)
+        changesets_count = connection[:changesets].where(:repository_id => repo[:id], :author => user[:login]).select(:id.COUNT)
         connection[:permissions].where(:user_id => user[:id], :repository_id => repo[:id]).update \
-              :author => user[:login], :last_changed_at => changed_at, :changesets_count => changesets_count
+              :last_changed_at => changed_at, :changesets_count => changesets_count
       end
       
       def create_changeset(repo, revision)

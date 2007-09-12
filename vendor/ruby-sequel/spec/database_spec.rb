@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '../lib/sequel')
+require File.join(File.dirname(__FILE__), 'spec_helper')
 
 context "A new Database" do
   setup do
@@ -80,6 +80,12 @@ context "Database#dataset" do
     e = @db[:miu]
     e.should be_a_kind_of(Sequel::Dataset)
     e.sql.should == 'SELECT * FROM miu'
+  end
+  
+  specify "should provide a filtered #from dataset if a block is given" do
+    d = @db.from(:mau) {:x > 100}
+    d.should be_a_kind_of(Sequel::Dataset)
+    d.sql.should == 'SELECT * FROM mau WHERE (x > 100)'
   end
   
   specify "should provide a #select dataset" do
@@ -181,7 +187,13 @@ end
 
 class DummyDatabase < Sequel::Database
   attr_reader :sql
-  def execute(sql); @sql = sql; end
+  
+  def execute(sql)
+    @sql ||= ""
+    @sql << sql
+  end
+  
+  def transaction; yield; end
 
   def dataset
     DummyDataset.new(self)
@@ -200,7 +212,7 @@ context "Database#create_table" do
       index :name, :unique => true
     end
     @db.sql.should == 
-      'CREATE TABLE test (id integer NOT NULL PRIMARY KEY, name text);CREATE UNIQUE INDEX test_name_index ON test (name);'
+      'CREATE TABLE test (id integer NOT NULL PRIMARY KEY AUTOINCREMENT, name text);CREATE UNIQUE INDEX test_name_index ON test (name);'
   end
 end
 
@@ -218,13 +230,13 @@ context "Database#drop_table" do
   specify "should construct proper SQL" do
     @db.drop_table :test
     @db.sql.should == 
-      'DROP TABLE test CASCADE;'
+      'DROP TABLE test;'
   end
   
   specify "should accept multiple table names" do
     @db.drop_table :a, :bb, :ccc
     @db.sql.should ==
-      'DROP TABLE a CASCADE;DROP TABLE bb CASCADE;DROP TABLE ccc CASCADE;'
+      'DROP TABLE a;DROP TABLE bb;DROP TABLE ccc;'
   end
 end
 
@@ -338,6 +350,24 @@ context "A Database adapter with a scheme" do
     c.opts[:database].should == 'db'
   end
 
+  specify "should register a convenience method on Sequel" do
+    Sequel.should respond_to(:ccc)
+    
+    # invalid parameters
+    proc {Sequel.ccc('abc', 'def')}.should raise_error(SequelError)
+    
+    c = Sequel.ccc('mydb')
+    c.should be_a_kind_of(CCC)
+    c.opts.should == {:database => 'mydb'}
+    
+    c = Sequel.ccc('mydb', :host => 'localhost')
+    c.should be_a_kind_of(CCC)
+    c.opts.should == {:database => 'mydb', :host => 'localhost'}
+    
+    c = Sequel.ccc
+    c.should be_a_kind_of(CCC)
+    c.opts.should == {}
+  end
 end
 
 context "An unknown database scheme" do
@@ -384,6 +414,34 @@ context "A single threaded database" do
     Sequel::Database.single_threaded = true
     db = Sequel::Database.new
     db.pool.should be_a_kind_of(Sequel::SingleThreadedPool)
+  end
+
+  specify "should be constructable using Sequel.single_threaded = true" do
+    Sequel.single_threaded = true
+    db = Sequel::Database.new
+    db.pool.should be_a_kind_of(Sequel::SingleThreadedPool)
+  end
+end
+
+context "A single threaded database" do
+  setup do
+    conn = 1234567
+    @db = Sequel::Database.new(:single_threaded => true) do
+      conn += 1
+    end
+  end
+  
+  specify "should invoke connection_proc only once" do
+    @db.pool.hold {|c| c.should == 1234568}
+    @db.pool.hold {|c| c.should == 1234568}
+  end
+  
+  specify "should convert an Exception into a RuntimeError" do
+    db = Sequel::Database.new(:single_threaded => true) do
+      raise Exception
+    end
+    
+    proc {db.pool.hold {|c|}}.should raise_error(RuntimeError)
   end
 end
 

@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '../lib/sequel')
+require File.join(File.dirname(__FILE__), 'spec_helper')
 
 context "Dataset" do
   setup do
@@ -98,17 +98,34 @@ context "A simple dataset" do
     @dataset.delete_sql.should == 'DELETE FROM test'
   end
   
-  specify "should format an insert statement" do
-    @dataset.insert_sql.should == 'INSERT INTO test DEFAULT VALUES'
+  specify "should format an insert statement with default values" do
+    @dataset.insert_sql.should == 'INSERT INTO test DEFAULT VALUES;'
+  end
+  
+  specify "should format an insert statement with hash" do
     @dataset.insert_sql(:name => 'wxyz', :price => 342).
       should match(/INSERT INTO test \(name, price\) VALUES \('wxyz', 342\)|INSERT INTO test \(price, name\) VALUES \(342, 'wxyz'\)/)
+  end
+  
+  specify "should format an insert statement with sub-query" do
+    @sub = Sequel::Dataset.new(nil).from(:something).filter(:x => 2)
+    @dataset.insert_sql(@sub).should == \
+      "INSERT INTO test (SELECT * FROM something WHERE (x = 2))"
+  end
+  
+  specify "should format an insert statement with array" do
     @dataset.insert_sql('a', 2, 6.5).should ==
-      "INSERT INTO test VALUES ('a', 2, 6.5)"
+      "INSERT INTO test VALUES ('a', 2, 6.5);"
   end
   
   specify "should format an update statement" do
     @dataset.update_sql(:name => 'abc').should ==
       "UPDATE test SET name = 'abc'"
+  end
+  
+  specify "should be able to return rows for arbitrary SQL" do
+    @dataset.select_sql(:sql => 'xxx yyy zzz').should ==
+      "xxx yyy zzz"
   end
 end
 
@@ -208,7 +225,7 @@ context "Dataset#where" do
       "SELECT * FROM test WHERE (a = 1) AND (d = 4)"
       
     # string and proc expr
-    @d3.where {e < 5}.select_sql.should ==
+    @d3.where {:e < 5}.select_sql.should ==
       "SELECT * FROM test WHERE (a = 1) AND (e < 5)"
   end
   
@@ -222,10 +239,10 @@ context "Dataset#where" do
     @dataset.filter(:id => 4...7).sql.should ==
       'SELECT * FROM test WHERE (id >= 4 AND id < 7)'
 
-    @dataset.filter {id == (4..7)}.sql.should ==
+    @dataset.filter {:id == (4..7)}.sql.should ==
       'SELECT * FROM test WHERE (id >= 4 AND id <= 7)'
 
-    @dataset.filter {id.in 4..7}.sql.should ==
+    @dataset.filter {:id.in?(4..7)}.sql.should ==
       'SELECT * FROM test WHERE (id >= 4 AND id <= 7)'
   end
   
@@ -233,7 +250,7 @@ context "Dataset#where" do
     @dataset.filter(:owner_id => nil).sql.should ==
       'SELECT * FROM test WHERE (owner_id IS NULL)'
 
-    @dataset.filter{owner_id.nil?}.sql.should ==
+    @dataset.filter{:owner_id.nil?}.sql.should ==
       'SELECT * FROM test WHERE (owner_id IS NULL)'
   end
   
@@ -247,45 +264,39 @@ context "Dataset#where" do
   end
   
   specify "should accept a subquery for an EXISTS clause" do
-    a = @dataset.filter {price < 100}
+    a = @dataset.filter {:price < 100}
     @dataset.filter(a.exists).sql.should ==
       'SELECT * FROM test WHERE EXISTS (SELECT 1 FROM test WHERE (price < 100))'
   end
   
-  specify "should accept proc expressions (nice!)" do
+  specify "should accept proc expressions" do
     d = @d1.select(:gdp.AVG)
-    @dataset.filter {gdp > d}.sql.should ==
+    @dataset.filter {:gdp > d}.sql.should ==
       "SELECT * FROM test WHERE (gdp > (SELECT avg(gdp) FROM test WHERE (region = 'Asia')))"
     
-    @dataset.filter {id.in 4..7}.sql.should ==
+    @dataset.filter {:id.in(4..7)}.sql.should ==
       'SELECT * FROM test WHERE (id >= 4 AND id <= 7)'
     
-    @dataset.filter {c == 3}.sql.should ==
+    @dataset.filter {:c == 3}.sql.should ==
       'SELECT * FROM test WHERE (c = 3)'
       
-    @dataset.filter {id == :items__id}.sql.should ==
+    @dataset.filter {:id == :items__id}.sql.should ==
       'SELECT * FROM test WHERE (id = items.id)'
       
-    @dataset.filter {a < 1}.sql.should ==
+    @dataset.filter {:a < 1}.sql.should ==
       'SELECT * FROM test WHERE (a < 1)'
 
-    @dataset.filter {a <=> 1}.sql.should ==
-      'SELECT * FROM test WHERE NOT (a = 1)'
+    @dataset.filter {:a != 1}.sql.should ==
+      'SELECT * FROM test WHERE (NOT (a = 1))'
       
-    @dataset.filter {a >= 1 && b <= 2}.sql.should ==
-      'SELECT * FROM test WHERE (a >= 1) AND (b <= 2)'
+    @dataset.filter {:a >= 1 && :b <= 2}.sql.should ==
+      'SELECT * FROM test WHERE ((a >= 1) AND (b <= 2))'
       
-    @dataset.filter {c =~ 'ABC%'}.sql.should ==
+    @dataset.filter {:c.like 'ABC%'}.sql.should ==
       "SELECT * FROM test WHERE (c LIKE 'ABC%')"
 
-    @dataset.filter {test.ccc =~ 'ABC%'}.sql.should ==
-      "SELECT * FROM test WHERE (test.ccc LIKE 'ABC%')"
-  end
-  
-  specify "should raise SequelError for invalid proc expressions" do
-    proc {@dataset.filter {Object.czxczxcz}}.should raise_error(SequelError)
-    proc {@dataset.filter {a.bcvxv}}.should raise_error(SequelError)
-    proc {@dataset.filter {x}}.should raise_error(SequelError)
+    @dataset.filter {:c.like? 'ABC%'}.sql.should ==
+      "SELECT * FROM test WHERE (c LIKE 'ABC%')"
   end
 end
 
@@ -309,7 +320,7 @@ context "Dataset#or" do
     @d1.or('(y > ?)', 2).sql.should ==
       'SELECT * FROM test WHERE (x = 1) OR (y > 2)'
       
-    (@d1.or {yy > 3}).sql.should ==
+    (@d1.or {:yy > 3}).sql.should ==
       'SELECT * FROM test WHERE (x = 1) OR (yy > 3)'
   end
   
@@ -342,7 +353,7 @@ context "Dataset#and" do
     @d1.and('(y > ?)', 2).sql.should ==
       'SELECT * FROM test WHERE (x = 1) AND (y > 2)'
       
-    (@d1.and {yy > 3}).sql.should ==
+    (@d1.and {:yy > 3}).sql.should ==
       'SELECT * FROM test WHERE (x = 1) AND (yy > 3)'
   end
   
@@ -362,33 +373,33 @@ context "Dataset#exclude" do
 
   specify "should correctly include the NOT operator when one condition is given" do
     @dataset.exclude(:region=>'Asia').select_sql.should ==
-      "SELECT * FROM test WHERE NOT (region = 'Asia')"
+      "SELECT * FROM test WHERE (NOT (region = 'Asia'))"
   end
 
   specify "should take multiple conditions as a hash and express the logic correctly in SQL" do
     @dataset.exclude(:region => 'Asia', :name => 'Japan').select_sql.
-      should match(Regexp.union(/WHERE NOT \(\(region = 'Asia'\) AND \(name = 'Japan'\)\)/,
-                                /WHERE NOT \(\(name = 'Japan'\) AND \(region = 'Asia'\)\)/))
+      should match(Regexp.union(/WHERE \(NOT \(\(region = 'Asia'\) AND \(name = 'Japan'\)\)\)/,
+                                /WHERE \(NOT \(\(name = 'Japan'\) AND \(region = 'Asia'\)\)\)/))
   end
 
   specify "should parenthesize a single string condition correctly" do
     @dataset.exclude("region = 'Asia' AND name = 'Japan'").select_sql.should ==
-      "SELECT * FROM test WHERE NOT (region = 'Asia' AND name = 'Japan')"
+      "SELECT * FROM test WHERE (NOT (region = 'Asia' AND name = 'Japan'))"
   end
 
   specify "should parenthesize an array condition correctly" do
     @dataset.exclude('region = ? AND name = ?', 'Asia', 'Japan').select_sql.should ==
-      "SELECT * FROM test WHERE NOT (region = 'Asia' AND name = 'Japan')"
+      "SELECT * FROM test WHERE (NOT (region = 'Asia' AND name = 'Japan'))"
   end
 
   specify "should corrently parenthesize when it is used twice" do
     @dataset.exclude(:region => 'Asia').exclude(:name => 'Japan').select_sql.should ==
-      "SELECT * FROM test WHERE NOT (region = 'Asia') AND NOT (name = 'Japan')"
+      "SELECT * FROM test WHERE (NOT (region = 'Asia')) AND (NOT (name = 'Japan'))"
   end
   
   specify "should support proc expressions" do
-    @dataset.exclude {id == (6...12)}.sql.should == 
-      'SELECT * FROM test WHERE NOT ((id >= 6 AND id < 12))'
+    @dataset.exclude {:id == (6...12)}.sql.should == 
+      'SELECT * FROM test WHERE (NOT ((id >= 6 AND id < 12)))'
   end
 end
 
@@ -411,7 +422,7 @@ context "Dataset#having" do
   end
 
   specify "should support proc expressions" do
-    @grouped.having {SUM(:population) > 10}.sql.should == 
+    @grouped.having {:sum[:population] > 10}.sql.should == 
       "SELECT #{@fields} FROM test GROUP BY region HAVING (sum(population) > 10)"
   end
 end
@@ -550,6 +561,11 @@ context "Dataset#select" do
 
   specify "should use the wildcard if no arguments are given" do
     @d.select.sql.should == 'SELECT * FROM test'
+  end
+  
+  specify "should accept a hash for AS values" do
+    @d.select(:name => 'n', :__ggh => 'age').sql.should =~
+      /SELECT ((name AS n, __ggh AS age)|(__ggh AS age, name AS n)) FROM test/
   end
 
   specify "should overrun the previous select option" do
@@ -748,7 +764,7 @@ context "Dataset#count" do
   end
   
   specify "should include the where clause if it's there" do
-    @dataset.filter {abc < 30}.count.should == 1
+    @dataset.filter {:abc < 30}.count.should == 1
     @c.sql.should == 'SELECT COUNT(*) FROM test WHERE (abc < 30)'
   end
 end
@@ -764,7 +780,7 @@ context "Dataset#join_table" do
   end
   
   specify "should include WHERE clause if applicable" do
-    @d.filter {price < 100}.join_table(:right_outer, :categories, :category_id => :id).sql.should ==
+    @d.filter {:price < 100}.join_table(:right_outer, :categories, :category_id => :id).sql.should ==
       'SELECT * FROM items RIGHT OUTER JOIN categories ON (categories.category_id = items.id) WHERE (price < 100)'
   end
   
@@ -830,6 +846,11 @@ context "Dataset#join_table" do
   specify "should raise if an invalid join type is specified" do
     proc {@d.join_table(:invalid, :a, :b)}.should raise_error(SequelError)
   end
+  
+  specify "should treat aliased tables correctly" do
+    @d.from('stats s').join('players p', :id => :player_id).sql.should ==
+      'SELECT * FROM stats s INNER JOIN players p ON (p.id = s.player_id)'
+  end
 end
 
 context "Dataset#[]=" do
@@ -889,23 +910,23 @@ context "Dataset aggregate methods" do
   end
   
   specify "should include min" do
-    @d.min(:a).should == 'SELECT min(a) FROM test'
+    @d.min(:a).should == 'SELECT min(a) AS v FROM test'
   end
   
   specify "should include max" do
-    @d.max(:b).should == 'SELECT max(b) FROM test'
+    @d.max(:b).should == 'SELECT max(b) AS v FROM test'
   end
   
   specify "should include sum" do
-    @d.sum(:c).should == 'SELECT sum(c) FROM test'
+    @d.sum(:c).should == 'SELECT sum(c) AS v FROM test'
   end
   
   specify "should include avg" do
-    @d.avg(:d).should == 'SELECT avg(d) FROM test'
+    @d.avg(:d).should == 'SELECT avg(d) AS v FROM test'
   end
   
   specify "should accept qualified fields" do
-    @d.avg(:test__bc).should == 'SELECT avg(test.bc) FROM test'
+    @d.avg(:test__bc).should == 'SELECT avg(test.bc) AS v FROM test'
   end
 end
 
@@ -1140,35 +1161,36 @@ context "Dataset#set_model" do
   setup do
     @c = Class.new(Sequel::Dataset) do
       def fetch_rows(sql, &block)
-        (1..10).each(&block)
+        # yield a hash with kind as the 1 bit of a number
+        (1..10).each {|i| block.call({:kind => i[0]})}
       end
     end
     @dataset = @c.new(nil).from(:items)
     @m = Class.new do
-      attr_accessor :c
-      def initialize(c); @c = c; end
-      def ==(o); @c == o.c; end
+      attr_accessor :c, :args
+      def initialize(c, *args); @c = c; @args = args; end
+      def ==(o); (@c == o.c) && (@args = o.args); end
     end
   end
   
   specify "should clear the models hash and restore the stock #each if nil is specified" do
     @dataset.set_model(@m)
     @dataset.set_model(nil)
-    @dataset.first.should == 1
+    @dataset.first.should == {:kind => 1}
     @dataset.model_classes.should be_nil
   end
   
   specify "should clear the models hash and restore the stock #each if nothing is specified" do
     @dataset.set_model(@m)
-    @dataset.set_model
-    @dataset.first.should == 1
+    @dataset.set_model(nil)
+    @dataset.first.should == {:kind => 1}
     @dataset.model_classes.should be_nil
   end
   
   specify "should alter #each to provide model instances" do
-    @dataset.first.should == 1
+    @dataset.first.should == {:kind => 1}
     @dataset.set_model(@m)
-    @dataset.first.should == @m.new(1)
+    @dataset.first.should == @m.new({:kind => 1})
   end
   
   specify "should extend the dataset with a #destroy method" do
@@ -1183,16 +1205,43 @@ context "Dataset#set_model" do
     @dataset.opts[:naked].should be_nil
   end
   
+  specify "should send additional arguments to the models' initialize method" do
+    @dataset.set_model(@m, 7, 6, 5)
+    @dataset.first.should == @m.new({:kind => 1}, 7, 6, 5)
+  end
+  
   specify "should provide support for polymorphic model instantiation" do
     @m1 = Class.new(@m)
     @m2 = Class.new(@m)
-    @dataset.set_model(0, 0 => @m1, 1 => @m2)
+    @dataset.set_model(:kind, 0 => @m1, 1 => @m2)
+    @dataset.opts[:polymorphic_key].should == :kind
     all = @dataset.all
     all[0].class.should == @m2
     all[1].class.should == @m1
     all[2].class.should == @m2
     all[3].class.should == @m1
     #...
+    
+    # denude model
+    @dataset.set_model(nil)
+    @dataset.first.should == {:kind => 1}
+  end
+  
+  specify "should send additional arguments for polymorphic models as well" do
+    @m1 = Class.new(@m)
+    @m2 = Class.new(@m)
+    @dataset.set_model(:kind, {0 => @m1, 1 => @m2}, :hey => :wow)
+    all = @dataset.all
+    all[0].class.should == @m2; all[0].args.should == [{:hey => :wow}]
+    all[1].class.should == @m1; all[1].args.should == [{:hey => :wow}]
+    all[2].class.should == @m2; all[2].args.should == [{:hey => :wow}]
+    all[3].class.should == @m1; all[3].args.should == [{:hey => :wow}]
+  end
+  
+  specify "should raise for invalid parameters" do
+    proc {@dataset.set_model('kind')}.should raise_error(SequelError)
+    proc {@dataset.set_model(0)}.should raise_error(SequelError)
+    proc {@dataset.set_model(:kind)}.should raise_error(SequelError) # no hash given
   end
 end
 
@@ -1224,7 +1273,7 @@ context "Dataset#model_classes" do
   specify "should return the polymorphic hash for a polymorphic model dataset" do
     @m1 = Class.new(@m)
     @m2 = Class.new(@m)
-    @dataset.set_model(0, 0 => @m1, 1 => @m2)
+    @dataset.set_model(:key, 0 => @m1, 1 => @m2)
     @dataset.model_classes.should == {0 => @m1, 1 => @m2}
   end
 end
@@ -1281,7 +1330,7 @@ context "A polymorphic model dataset" do
   setup do
     @c = Class.new(Sequel::Dataset) do
       def fetch_rows(sql, &block)
-        (1..10).each(&block)
+        (1..10).each {|i| block.call(:bit => i[0])}
       end
     end
     @dataset = @c.new(nil).from(:items)
@@ -1294,7 +1343,7 @@ context "A polymorphic model dataset" do
   
   specify "should use a nil key in the polymorphic hash to specify the default model class" do
     @m2 = Class.new(@m)
-    @dataset.set_model(0, nil => @m, 1 => @m2)
+    @dataset.set_model(:bit, nil => @m, 1 => @m2)
     all = @dataset.all
     all[0].class.should == @m2
     all[1].class.should == @m
@@ -1305,13 +1354,13 @@ context "A polymorphic model dataset" do
   
   specify "should raise SequelError if no suitable class is found in the polymorphic hash" do
     @m2 = Class.new(@m)
-    @dataset.set_model(0, 1 => @m2)
+    @dataset.set_model(:bit, 1 => @m2)
     proc {@dataset.all}.should raise_error(SequelError)
   end
 
   specify "should supply naked records if the naked option is specified" do
-    @dataset.set_model(0, nil => @m)
-    @dataset.each(:naked => true) {|r| r.class.should == Fixnum}
+    @dataset.set_model(:bit, nil => @m)
+    @dataset.each(:naked => true) {|r| r.class.should == Hash}
   end
 end
 
@@ -1404,6 +1453,24 @@ context "A paginated dataset" do
     @paginated.prev_page.should be_nil
     @d.paginate(4, 50).prev_page.should == 3
   end
+  
+  specify "should return the page range" do
+    @paginated.page_range.should == (1..8)
+    @d.paginate(4, 50).page_range.should == (1..4)
+  end
+  
+  specify "should return the record range for the current page" do
+    @paginated.current_page_record_range.should == (1..20)
+    @d.paginate(4, 50).current_page_record_range.should == (151..153)
+    @d.paginate(5, 50).current_page_record_range.should == (0..0)
+  end
+
+  specify "should return the record count for the current page" do
+    @paginated.current_page_record_count.should == 20
+    @d.paginate(3, 50).current_page_record_count.should == 50
+    @d.paginate(4, 50).current_page_record_count.should == 3
+    @d.paginate(5, 50).current_page_record_count.should == 0
+  end
 end
 
 context "Dataset#columns" do
@@ -1445,5 +1512,62 @@ context "Dataset#print" do
     @output.rewind
     @output.read.should == \
       "+-+-+\n|a|b|\n+-+-+\n|1|2|\n|3|4|\n|5|6|\n+-+-+\n"
+  end
+
+  specify "should default to the dataset's columns" do
+    @dataset.meta_def(:columns) {[:a, :b]}
+    @dataset.print
+    @output.rewind
+    @output.read.should == \
+      "+-+-+\n|a|b|\n+-+-+\n|1|2|\n|3|4|\n|5|6|\n+-+-+\n"
+  end
+end
+
+context "Dataset#multi_insert" do
+  setup do
+    @dbc = Class.new do
+      attr_reader :sqls
+      
+      def execute(sql)
+        @sqls ||= []
+        @sqls << sql
+      end
+      
+      def transaction
+        @sqls ||= []
+        @sqls << 'BEGIN;'
+        yield
+        @sqls << 'COMMIT;'
+      end
+    end
+    @db = @dbc.new
+    
+    @ds = Sequel::Dataset.new(@db).from(:items)
+    
+    @list = [{:name => 'abc'}, {:name => 'def'}, {:name => 'ghi'}]
+  end
+  
+  specify "should join all inserts into a single SQL string" do
+    @ds.multi_insert(@list)
+    @db.sqls.should == [
+      'BEGIN;',
+      "INSERT INTO items (name) VALUES ('abc');",
+      "INSERT INTO items (name) VALUES ('def');",
+      "INSERT INTO items (name) VALUES ('ghi');",
+      'COMMIT;'
+    ]
+  end
+  
+  specify "should accept the commit_every option for commiting every x records" do
+    @ds.multi_insert(@list, :commit_every => 2)
+    @db.sqls.should == [
+      'BEGIN;',
+      "INSERT INTO items (name) VALUES ('abc');",
+      "INSERT INTO items (name) VALUES ('def');",
+      'COMMIT;',
+      'BEGIN;',
+      "INSERT INTO items (name) VALUES ('ghi');",
+      'COMMIT;'
+    ]
   end
 end

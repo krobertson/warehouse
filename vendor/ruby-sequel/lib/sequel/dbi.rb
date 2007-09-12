@@ -6,13 +6,12 @@ require 'dbi'
 
 module Sequel
   module DBI
-
     class Database < Sequel::Database
       set_adapter_scheme :dbi
     
       def connect
-        dbname = @opts[:database] =~ /^DBI:/ ? \
-          @opts[:database] : @opts[:database] = 'DBI:' + @opts[:database]
+        dbname = @opts[:database]
+        dbname = 'DBI:' + dbname unless dbname =~ /^DBI:/
         ::DBI.connect(dbname, @opts[:user], @opts[:password])
       end
     
@@ -48,7 +47,7 @@ module Sequel
         @db.synchronize do
           s = @db.execute sql
           begin
-            @columns = stmt.column_names.map {|c| c.to_sym}
+            @columns = s.column_names.map {|c| c.to_sym}
             s.fetch {|r| yield hash_row(s, r)}
           ensure
             s.finish rescue nil

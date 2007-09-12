@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '../lib/sequel')
+require File.join(File.dirname(__FILE__), 'spec_helper')
 
 context "Enumerable#send_each" do
   specify "should send the supplied method to each item" do
@@ -52,10 +52,33 @@ context "String#to_sql" do
   end
 end
 
+context "String#lit" do
+  specify "should return an LiteralString object" do
+    'xyz'.lit.should be_a_kind_of(Sequel::LiteralString)
+    'xyz'.lit.to_s.should == 'xyz'
+  end
+  
+  specify "should inhibit string literalization" do
+    db = Sequel::Database.new
+    ds = db[:t]
+    
+    ds.update_sql(:stamp => "NOW()".lit).should == \
+      "UPDATE t SET stamp = NOW()"
+  end
+end
+
 context "String#expr" do
-  specify "should return an ExpressionString object" do
-    'xyz'.expr.should be_a_kind_of(Sequel::ExpressionString)
+  specify "should return an LiteralString object" do
+    'xyz'.expr.should be_a_kind_of(Sequel::LiteralString)
     'xyz'.expr.to_s.should == 'xyz'
+  end
+
+  specify "should inhibit string literalization" do
+    db = Sequel::Database.new
+    ds = db[:t]
+    
+    ds.update_sql(:stamp => "NOW()".expr).should == \
+      "UPDATE t SET stamp = NOW()"
   end
 end
 
@@ -68,6 +91,13 @@ context "String#split_sql" do
   specify "should remove comments from the string" do
     "DROP TABLE a;/* DROP TABLE b; DROP TABLE c;*/DROP TABLE d".split_sql.should == \
       ['DROP TABLE a', 'DROP TABLE d']
+  end
+end
+
+context "String#to_time" do
+  specify "should convert the string into a Time object" do
+    "2007-07-11".to_time.should == Time.parse("2007-07-11")
+    "06:30".to_time.should == Time.parse("06:30")
   end
 end
 
@@ -108,6 +138,25 @@ context "Symbol#to_field_name" do
   end
 end
 
+context "FieldCompositionMethods#field_title" do
+  specify "should return the field name for non aliased fields" do
+    :xyz.field_title.should == 'xyz'
+    :abc__xyz.field_title.should == 'xyz'
+    
+    'abc'.field_title.should == 'abc'
+    'abc.def'.field_title.should == 'def'
+  end
+  
+  specify "should return the field alias for aliased fields" do
+    :xyz___x.field_title.should == 'x'
+    :abc__xyz___y.field_title.should == 'y'
+    
+    'abc AS x'.field_title.should == 'x'
+    'abc as y'.field_title.should == 'y'
+    'abc.def AS d'.field_title.should == 'd'
+  end
+end
+
 context "Symbol" do
   specify "should support MIN for specifying min function" do
     :abc__def.MIN.should == 'min(abc.def)'
@@ -123,5 +172,23 @@ context "Symbol" do
 
   specify "should support AVG for specifying avg function" do
     :abc__def.AVG.should == 'avg(abc.def)'
+  end
+  
+  specify "should support COUNT for specifying count function" do
+    :abc__def.COUNT.should == 'count(abc.def)'
+  end
+  
+  specify "should support any other function using upper case letters" do
+    :abc__def.DADA.should == 'dada(abc.def)'
+  end
+  
+  specify "should support upper case outer functions" do
+    :COUNT['1'].should == 'COUNT(1)'
+  end
+  
+  specify "should inhibit string literalization" do
+    db = Sequel::Database.new
+    ds = db[:t]
+    ds.select(:COUNT['1']).sql.should == "SELECT COUNT(1) FROM t"
   end
 end

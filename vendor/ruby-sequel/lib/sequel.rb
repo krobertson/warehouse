@@ -1,13 +1,11 @@
+require 'metaid'
+
+files = %w[
+  core_ext error connection_pool pretty_table
+  dataset migration model schema database 
+]
 dir = File.join(File.dirname(__FILE__), 'sequel')
-require File.join(dir, 'core_ext')
-require File.join(dir, 'error')
-require File.join(dir, 'database')
-require File.join(dir, 'connection_pool')
-require File.join(dir, 'schema')
-require File.join(dir, 'pretty_table')
-require File.join(dir, 'expressions')
-require File.join(dir, 'dataset')
-require File.join(dir, 'model')
+files.each {|f| require(File.join(dir, f))}
 
 module Sequel #:nodoc:
   class << self
@@ -25,11 +23,15 @@ module Sequel #:nodoc:
     end
     
     alias_method :open, :connect
+    
+    def single_threaded=(value)
+      Database.single_threaded = value
+    end
   end
 end
 
 class Object
-  def Sequel(uri)
-    Sequel.connect(uri)
+  def Sequel(*args)
+    Sequel.connect(*args)
   end
 end

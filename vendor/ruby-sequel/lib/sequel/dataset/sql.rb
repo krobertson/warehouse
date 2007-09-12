@@ -7,16 +7,40 @@ module Sequel
       # symbols can include double underscores to denote a dot separator, e.g.
       # :posts__id will be converted into posts.id.
       def field_name(field)
-        field.is_a?(Symbol) ? field.to_field_name : field
+        case field
+        when Symbol, String:
+          quoted_field_name(field.to_field_name)
+        when Hash:
+          field.map {|f,a| "#{field_name(f)} AS #{field_name(a)}"}.join(COMMA_SEPARATOR)
+        else
+          field
+        end
       end
 
-      QUALIFIED_REGEXP = /(.*)\.(.*)/.freeze
+      # Adds quoting to field references. This method is just a stub and can
+      # be overriden in adapters in order to provide correct field quoting
+      # behavior.
+      def quoted_field_name(name)
+        name
+      end
+      
+      ALIASED_REGEXP = /^(.*)\s(.*)$/.freeze
+      QUALIFIED_REGEXP = /^(.*)\.(.*)$/.freeze
 
       # Returns a qualified field name (including a table name) if the field
       # name isn't already qualified.
       def qualified_field_name(field, table)
-        fn = field_name(field)
-        fn =~ QUALIFIED_REGEXP ? fn : "#{table}.#{fn}"
+        field = field_name(field)
+        if field =~ QUALIFIED_REGEXP
+          # field is already qualified
+          field
+        else 
+          # check if the table is aliased
+          if table =~ ALIASED_REGEXP
+            table = $2
+          end
+          "#{table}.#{field}"
+        end
       end
 
       WILDCARD = '*'.freeze
@@ -44,6 +68,8 @@ module Sequel
       NULL = "NULL".freeze
       TIMESTAMP_FORMAT = "TIMESTAMP '%Y-%m-%d %H:%M:%S'".freeze
       DATE_FORMAT = "DATE '%Y-%m-%d'".freeze
+      TRUE = "'t'".freeze
+      FALSE = "'f'".freeze
 
       # Returns a literal representation of a value to be used as part
       # of an SQL expression. The stock implementation supports literalization 
@@ -60,10 +86,12 @@ module Sequel
       # If an unsupported object is given, an exception is raised.
       def literal(v)
         case v
-        when ExpressionString: v
+        when LiteralString: v
         when String: "'#{v.gsub(/'/, "''")}'"
         when Integer, Float: v.to_s
         when NilClass: NULL
+        when TrueClass: TRUE
+        when FalseClass: FALSE
         when Symbol: v.to_field_name
         when Array: v.empty? ? NULL : v.map {|i| literal(i)}.join(COMMA_SEPARATOR)
         when Time: v.strftime(TIMESTAMP_FORMAT)
@@ -75,92 +103,24 @@ module Sequel
       end
 
       AND_SEPARATOR = " AND ".freeze
-
-      # Formats an equality expression involving a left value and a right value.
-      # Equality expressions differ according to the class of the right value.
-      # The stock implementation supports Range (inclusive and exclusive), Array
-      # (as a list of values to compare against), Dataset (as a subquery to
-      # compare against), or a regular value.
-      #
-      #   dataset.format_eq_expression('id', 1..20) #=>
-      #     "(id >= 1 AND id <= 20)"
-      #   dataset.format_eq_expression('id', [3,6,10]) #=>
-      #     "(id IN (3, 6, 10))"
-      #   dataset.format_eq_expression('id', DB[:items].select(:id)) #=>
-      #     "(id IN (SELECT id FROM items))"
-      #   dataset.format_eq_expression('id', nil) #=>
-      #     "(id IS NULL)"
-      #   dataset.format_eq_expression('id', 3) #=>
-      #     "(id = 3)"
-      def format_eq_expression(left, right)
-        case right
-        when Range:
-          right.exclude_end? ? \
-            "(#{left} >= #{literal(right.begin)} AND #{left} < #{literal(right.end)})" : \
-            "(#{left} >= #{literal(right.begin)} AND #{left} <= #{literal(right.end)})"
-        when Array:
-          "(#{left} IN (#{literal(right)}))"
-        when Dataset:
-          "(#{left} IN (#{right.sql}))"
-        when NilClass:
-          "(#{left} IS NULL)"
-        else
-          "(#{left} = #{literal(right)})"
-        end
-      end
-
-      # Formats an expression comprising a left value, a binary operator and a
-      # right value. The supported operators are :eql (=), :not (!=), :lt (<),
-      # :lte (<=), :gt (>), :gte (>=) and :like (LIKE operator). Examples:
-      #
-      #   dataset.format_expression('price', :gte, 100) #=> "(price >= 100)"
-      #   dataset.format_expression('id', :not, 30) #=> "NOT (id = 30)"
-      #   dataset.format_expression('name', :like, 'abc%') #=>
-      #     "(name LIKE 'abc%')"
-      #
-      # If an unsupported operator is given, an exception is raised.
-      def format_expression(left, op, right)
-        left = field_name(left)
-        case op
-        when :eql:
-          format_eq_expression(left, right)
-        when :not:
-          "NOT #{format_eq_expression(left, right)}"
-        when :lt:
-          "(#{left} < #{literal(right)})"
-        when :lte:
-          "(#{left} <= #{literal(right)})"
-        when :gt:
-          "(#{left} > #{literal(right)})"
-        when :gte:
-          "(#{left} >= #{literal(right)})"
-        when :like:
-          "(#{left} LIKE #{literal(right)})"
-        else
-          raise SequelError, "Invalid operator specified: #{op}"
-        end
-      end
-
       QUESTION_MARK = '?'.freeze
 
       # Formats a where clause. If parenthesize is true, then the whole 
       # generated clause will be enclosed in a set of parentheses.
-      def expression_list(where, parenthesize = false)
-        case where
+      def expression_list(expr, parenthesize = false)
+        case expr
         when Hash:
-          parenthesize = false if where.size == 1
-          fmt = where.map {|i| format_expression(i[0], :eql, i[1])}.
-            join(AND_SEPARATOR)
+          parenthesize = false if expr.size == 1
+          fmt = expr.map {|i| compare_expr(i[0], i[1])}.join(AND_SEPARATOR)
         when Array:
-          fmt = where.shift.gsub(QUESTION_MARK) {literal(where.shift)}
+          fmt = expr.shift.gsub(QUESTION_MARK) {literal(expr.shift)}
         when Proc:
-          fmt = where.to_expressions.map {|e| format_expression(e.left, e.op, e.right)}.
-            join(AND_SEPARATOR)
+          fmt = proc_to_sql(expr)
         else
           # if the expression is compound, it should be parenthesized in order for 
           # things to be predictable (when using #or and #and.)
-          parenthesize |= where =~ /\).+\(/
-          fmt = where
+          parenthesize |= expr =~ /\).+\(/
+          fmt = expr
         end
         parenthesize ? "(#{fmt})" : fmt
       end
@@ -189,7 +149,7 @@ module Sequel
       # Returns a copy of the dataset with the order reversed. If no order is
       # given, the existing order is inverted.
       def reverse_order(*order)
-        order(invert_order(order.empty? ? @opts[:order] : order))
+        order(*invert_order(order.empty? ? @opts[:order] : order))
       end
 
       DESC_ORDER_REGEXP = /(.*)\sDESC/.freeze
@@ -244,10 +204,6 @@ module Sequel
         parenthesize = !(cond.is_a?(Hash) || cond.is_a?(Array))
         filter = cond.is_a?(Hash) && cond
         if @opts[clause]
-          if filter && cond.is_a?(Hash)
-            filter
-          end
-          filter = 
           l = expression_list(@opts[clause])
           r = expression_list(block || cond, parenthesize)
           clone_merge(clause => "#{l} AND #{r}")
@@ -293,9 +249,9 @@ module Sequel
         if @opts[clause]
           l = expression_list(@opts[clause])
           r = expression_list(block || cond, parenthesize)
-          cond = "#{l} AND NOT #{r}"
+          cond = "#{l} AND (NOT #{r})"
         else
-          cond = "NOT #{expression_list(block || cond, true)}"
+          cond = "(NOT #{expression_list(block || cond, true)})"
         end
         clone_merge(clause => cond)
       end
@@ -354,7 +310,7 @@ module Sequel
 
         join_expr = expr.map do |k, v|
           l = qualified_field_name(k, table)
-          r = qualified_field_name(v, @opts[:last_joined_table] || @opts[:from])
+          r = qualified_field_name(v, @opts[:last_joined_table] || @opts[:from].first)
           "(#{l} = #{r})"
         end.join(AND_SEPARATOR)
 
@@ -399,6 +355,10 @@ module Sequel
       # options.
       def select_sql(opts = nil)
         opts = opts ? @opts.merge(opts) : @opts
+        
+        if sql = opts[:sql]
+          return sql
+        end
 
         fields = opts[:select]
         select_fields = fields ? field_list(fields) : WILDCARD
@@ -406,7 +366,7 @@ module Sequel
         sql = opts[:distinct] ? \
           "SELECT DISTINCT #{select_fields} FROM #{select_source}" : \
           "SELECT #{select_fields} FROM #{select_source}"
-
+        
         if join = opts[:join]
           sql << join
         end
@@ -459,19 +419,23 @@ module Sequel
       #     'INSERT INTO items (a, b) VALUES (1, 2)'
       def insert_sql(*values)
         if values.empty?
-          "INSERT INTO #{@opts[:from]} DEFAULT VALUES"
-        elsif (values.size == 1) && values[0].is_a?(Hash)
-          field_list = []
-          value_list = []
-          values[0].each do |k, v|
-            field_list << k
-            value_list << literal(v)
-          end
-          fl = field_list.join(COMMA_SEPARATOR)
-          vl = value_list.join(COMMA_SEPARATOR)
-          "INSERT INTO #{@opts[:from]} (#{fl}) VALUES (#{vl})"
+          "INSERT INTO #{@opts[:from]} DEFAULT VALUES;"
         else
-          "INSERT INTO #{@opts[:from]} VALUES (#{literal(values)})"
+          values = values[0] if values.size == 1
+          case values
+          when Hash
+            if values.empty?
+              "INSERT INTO #{@opts[:from]} DEFAULT VALUES;"
+            else
+              fl, vl = [], []
+              values.each {|k, v| fl << field_name(k); vl << literal(v)}
+              "INSERT INTO #{@opts[:from]} (#{fl.join(COMMA_SEPARATOR)}) VALUES (#{vl.join(COMMA_SEPARATOR)});"
+            end
+          when Dataset
+            "INSERT INTO #{@opts[:from]} #{literal(values)}"
+          else
+            "INSERT INTO #{@opts[:from]} VALUES (#{literal(values)});"
+          end
         end
       end
 
@@ -488,7 +452,7 @@ module Sequel
           raise SequelError, "Can't update a joined dataset"
         end
 
-        set_list = values.map {|k, v| "#{k} = #{literal(v)}"}.
+        set_list = values.map {|k, v| "#{field_name(k)} = #{literal(v)}"}.
           join(COMMA_SEPARATOR)
         sql = "UPDATE #{@opts[:from]} SET #{set_list}"
 

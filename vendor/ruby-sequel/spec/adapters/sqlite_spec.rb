@@ -60,6 +60,18 @@ context "An SQLite database" do
     
     proc {@db.temp_store = :invalid}.should raise_error(SequelError)
   end
+  
+  specify "should be able to execute multiple statements at once" do
+    @db.create_table :t do
+      text :name
+    end
+    
+    @db << "insert into t (name) values ('abc');insert into t (name) values ('def')"
+
+    @db[:t].count.should == 2
+    
+    @db[:t].order(:name).map(:name).should == ['abc', 'def']
+  end
 end
 
 context "An SQLite dataset" do
@@ -102,3 +114,75 @@ context "An SQLite dataset" do
     @d.first[:name].should == 'def'
   end
 end
+
+context "An SQLite dataset" do
+  setup do
+    @d = SQLITE_DB[:items]
+    @d.delete # remove all records
+    @d << {:name => 'abc', :value => 1.23}
+    @d << {:name => 'def', :value => 4.56}
+    @d << {:name => 'ghi', :value => 7.89}
+  end
+  
+  specify "should correctly return avg" do
+    @d.avg(:value).should == ((1.23 + 4.56 + 7.89) / 3).to_s
+  end
+  
+  specify "should correctly return sum" do
+    @d.sum(:value).should == (1.23 + 4.56 + 7.89).to_s
+  end
+  
+  specify "should correctly return max" do
+    @d.max(:value).should == 7.89.to_s
+  end
+  
+  specify "should correctly return min" do
+    @d.min(:value).should == 1.23.to_s
+  end
+end
+
+context "SQLite::Dataset#delete" do
+  setup do
+    @d = SQLITE_DB[:items]
+    @d.delete # remove all records
+    @d << {:name => 'abc', :value => 1.23}
+    @d << {:name => 'def', :value => 4.56}
+    @d << {:name => 'ghi', :value => 7.89}
+  end
+  
+  specify "should return the number of records affected when filtered" do
+    @d.count.should == 3
+    @d.filter {:value < 3}.delete.should == 1
+    @d.count.should == 2
+
+    @d.filter {:value < 3}.delete.should == 0
+    @d.count.should == 2
+  end
+  
+  specify "should return the number of records affected when unfiltered" do
+    @d.count.should == 3
+    @d.delete.should == 3
+    @d.count.should == 0
+
+    @d.delete.should == 0
+  end
+end
+
+context "SQLite::Dataset#update" do
+  setup do
+    @d = SQLITE_DB[:items]
+    @d.delete # remove all records
+    @d << {:name => 'abc', :value => 1.23}
+    @d << {:name => 'def', :value => 4.56}
+    @d << {:name => 'ghi', :value => 7.89}
+  end
+  
+  specify "should return the number of records affected" do
+    @d.filter(:name => 'abc').update(:value => 2).should == 1
+    
+    @d.update(:value => 10).should == 3
+    
+    @d.filter(:name => 'xxx').update(:value => 23).should == 0
+  end
+end
+
