@@ -54,7 +54,7 @@ module Warehouse
       revisions = paginated_revisions(repo, num)
       connection.transaction do
         authors = {}
-        puts "Syncing Revisions ##{revisions.first} - ##{revisions.last}"
+        puts "Syncing Revisions ##{revisions.first} - ##{revisions.last}", :debug
         
         revisions.each do |rev|
           if rev > 1 && rev % 100 == 0
@@ -74,7 +74,7 @@ module Warehouse
           update_user_activity repo, {:id => users[login], :login => login}, changed_at
         end
         CacheKey.sweep_cache
-        puts revisions.last
+        puts revisions.last, :raw
       end unless revisions.empty?
     end
     
@@ -332,7 +332,11 @@ module Warehouse
       end
       
       def puts(str, level = :info)
-        self.class.logger.send(level, str) if self.class.logger
+        if level == :raw
+          super(str)
+        else
+          self.class.logger && self.class.logger.send(level, str)
+        end
       end
   end
 end
