@@ -7,8 +7,7 @@ module ChangeMethods
   
   module ClassMethods
     def find_recent_photos(*args)
-      args = [:all] if args.empty?
-      with_scope(CHANGE_SCOPE) { find *args }
+      with_scope(CHANGE_SCOPE) { paginate *args }
     end
   end
 end

@@ -3,6 +3,6 @@ class PhotoGalleryController < Warehouse::PluginController
   plugin :photo_gallery
 
   def index
-    @photos = current_repository.changes.find_recent_photos
+    @photos = current_repository.changes.find_recent_photos(:page => params[:page])
   end
 end
