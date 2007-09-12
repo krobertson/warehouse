@@ -1,0 +1,5 @@
+if @plugin.save
+  page.call "Sheet.Cache['pluginsheet-#{@plugin.id}'].hide"
+else
+  page.alert "The plugin options were invalid.  Replace this with a less obtrusive prompt"
+end
