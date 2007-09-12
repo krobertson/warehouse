@@ -1,7 +1,18 @@
-<ul id="photos">
+<table id="browser" cellspacing="0" cellpadding="0">
+  <thead>
+    <tr>
+      <th>File name</th>
+      <th>Location</th>
+    </tr>
+  </thead>
   <% @photos.each do |photo| -%>
-  <li class="photo clearfix" id="<%= dom_id photo %>" style="float:left">
-    <%= image_tag raw_path(:paths => photo.path.split("/")) %>
-  </li>
+  <tr>
+    <% path = photo.path.split('/') %>
+    <td class="item">
+      <%= link_to h(path.last), "", :class => 'image' %>
+    </td>
+    <td><span class="log"><% path.pop %> <%= path.join('/') %></span></td>
+  </tr>
   <% end -%>
-</ul>
+</table>
+

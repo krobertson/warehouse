@@ -50,6 +50,7 @@ Importer.prototype = {
   },
   
   step: function(progress) {
+    console.log(progress);
     if(this.firstRun) progress = this.options.startProgress;
     if(progress < 100) {
       new Ajax.Request('/repositories/' + this.repoId + '/sync', {

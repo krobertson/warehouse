@@ -3,6 +3,7 @@
 * Add post-commit hook API
 * Fix bug with building permissions with anonymous users. [yrashk]
 * replace lame Importer lib with ruby-sequel for db access
+* Fixed progress reporting during admin synching of changesets
 
 * 1.0.4
 
