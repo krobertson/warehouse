@@ -497,11 +497,13 @@ a.txt, a.file {
   background: url(../images/app/icons/text-small.png) 0 50% no-repeat;
 }
 
-td span.log, #repos span.log, #permissions span.log, .listbox span.log {
+td span.log, #repos span.log, #permissions span.log, .listbox span.log, p.desc {
   font-size: 92%;
   display: block;
   color: #888;
 }
+
+p.desc { font-weight:  normal; }
 
 .rev {
   line-height: 100%;

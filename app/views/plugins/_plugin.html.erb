@@ -1,9 +1,10 @@
   <li id="<%= dom_id plugin %>" class="listitem">
-    <%= link_to plugin.properties.title, {} %></h3>
-    <span class="log"><%=h plugin.properties.notes %></span>
+    <h3><%= link_to plugin.properties.title, {} %></h3>
+    <span class="log"> v<%= plugin.properties.version %> by: <%= link_to(h(plugin.properties.author), plugin.properties.homepage) %></span>
+    <p class="desc"><%=h plugin.properties.notes %><p>
 
     <% remote_sheet_form_for :plugin, plugin.properties, :url => plugin_path(plugin), :method => :put,
-         :trigger => "pluginedit-#{plugin.id}", :html => {:id => "pluginsheet-#{plugin.id}"} do |s| %>
+         :trigger => "pluginedit-#{plugin.id}", :html => {:id => "pluginsheet-#{plugin.id}", :style => 'display:none'} do |s| %>
       <h2>Edit <%= plugin.name.titleize %></h2>
       <% plugin.properties.class.option_order.each do |option| -%>
         <% name, *desc = option.split -%>
