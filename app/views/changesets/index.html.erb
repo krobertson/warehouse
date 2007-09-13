@@ -4,6 +4,7 @@
 <% end -%>
 
 <ul id="changesets">
+  <% if @changesets.any? %>
   <% @changesets.each do |changeset| -%>
     <% user = @users[changeset.author] -%>
   <li class="changeset clearfix" id="changeset-<%= changeset.revision %>">
@@ -13,12 +14,20 @@
         <span class="change-number"><%= link_to(changeset.revision, hosted_url(changeset.repository, :changeset, :id => changeset.revision)) %></span>
       </p>
     </div>
-    <div class="cs-log">      
-       <%=h changeset.message %>
+    <div class="cs-log clearfix">      
+       <%= simple_format(changeset.message) %>
       <span class="timenauthor">by <%= changeset.author %>, <%= jstime changeset.changed_at %></span>
     </div>
   </li>
   <% end -%>
+  <% else %>
+  <li>
+    <div class="info">
+      <h3>No Changesets available</h3>
+      <p style="font-weight:normal">Either you don't have access to view changesets, or the repository you're viewing hasn't been synced or modified.</p>
+    </div>
+  </li>
+  <% end %>
 </ul>
 
 <%= will_paginate @changesets unless @changesets.empty? %>

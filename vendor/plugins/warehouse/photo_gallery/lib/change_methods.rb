@@ -1,6 +1,6 @@
 module ChangeMethods
   include_into "Change"
-  CHANGE_SCOPE = {:find => {:conditions => ['path LIKE ? OR path LIKE ? OR path LIKE ?', '%.jpg', '%.gif', '%.png'], :order => 'id desc', :group => 'path', :limit => 15}}
+  CHANGE_SCOPE = {:find => {:conditions => ['path LIKE ? OR path LIKE ? OR path LIKE ?', '%.jpg', '%.gif', '%.png'], :order => 'path', :group => 'path', :limit => 15}}
   def self.included(base)
     base.extend ClassMethods
   end

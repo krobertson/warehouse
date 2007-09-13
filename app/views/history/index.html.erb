@@ -8,8 +8,8 @@
     <%= avatar_for(user) %>
     <span class="change-number"><%= link_to(changeset.revision, changeset_path(changeset.revision)) %></span>
   </div>
-  <div class="cs-log">      
-     <%=h changeset.message %>
+  <div class="cs-log clearfix">      
+     <%= simple_format(changeset.message) %>
     <span class="timenauthor">by <%= changeset.author %>, <%= jstime changeset.changed_at %></span>
   </div>
 </li>

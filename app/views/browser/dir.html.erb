@@ -7,8 +7,8 @@
       <span class="change-number"><%= link_to(current_changeset.revision, changeset_path(current_changeset.revision)) %></span>
     </p>
   </div>
-  <div class="cs-log">      
-     <%=h current_changeset.message %>
+  <div class="cs-log clearfix">      
+     <%= simple_format(current_changeset.message) %>
     <span class="timenauthor">by <%= current_changeset.author %>, <%= jstime current_changeset.changed_at %></span>
   </div>
   <ul class="changeset-nav">

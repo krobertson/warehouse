@@ -646,6 +646,7 @@ div p.rcontrols {
   padding-right: 50px;
   margin-left: 71px;
   font-size: 92% !important;
+  background-color: #f7f7f7;
 }
 
 #changesets {
@@ -681,7 +682,7 @@ li.prev a {
 .changeset, .repo, .form, .permission, .listbox li.listitem {
   padding: 10px;
   padding-left: 50px;
-  background: #f7f7f7 url(../images/app/icons/terminal.png) 5px 3px no-repeat;
+  background: #e2e2e2 url(../images/app/icons/terminal.png) 5px 3px no-repeat;
   margin-bottom: 10px;
   border: 1px solid #ddd;
   border-bottom-color: #ccc;
@@ -1121,6 +1122,10 @@ ul.admin-controls {
   right: 42px;
   top: 5px;
   height: 16px;
+}
+
+ul.single {
+  right: 21px;
 }
 
 .edit, .del, .sync {

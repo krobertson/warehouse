@@ -12,8 +12,7 @@
       <% end -%>
     <% end %>
 
-    <ul class="admin-controls">
+    <ul class="admin-controls single">
       <li class="edit" id="pluginedit-<%= plugin.id %>"><a href="#">Edit</a></li>
-      <li class="del"><%= link_to_remote 'Delete', :url => plugin_path(plugin), :with => "'_method=delete'", :confirm => "Are you sure you want to delete this plugin?" %></li>
     </ul>
   </li>

@@ -51,7 +51,7 @@ module ApplicationHelper
   
   def avatar_for(user)
     img = user && user.avatar? ? user.avatar_path : '/images/app/icons/member.png'
-    tag('img', :src => img, :class => 'avatar')
+    tag('img', :src => img, :class => 'avatar', :alt => 'avatar')
   end
 
   @@default_jstime_format = "%d %b, %Y %I:%M %p"
