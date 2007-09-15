@@ -10,6 +10,7 @@
         <% name, *desc = option.split -%>
       <%= s.text_field %(#{h name.titleize}: <span class="desc" regex="#{h plugin.properties.option_formats[name.to_sym].inspect}">#{h desc.join(' ')}</span>:), name %>
       <% end -%>
+      <%= s.check_box "Active:", "Sets whether the plugin is active or not.", :active %>
     <% end %>
 
     <ul class="admin-controls single">

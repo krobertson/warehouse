@@ -1,15 +1,21 @@
 module Warehouse
   module Plugins
     class Base < PluginBase
+      attr_accessor :active
       cattr_accessor :custom_routes, :view_paths, :tabs
       class << self
+        attr_accessor :loaded
+        
         def load
-          logger.debug "Loading #{name} Plugin"
-          load_path = File.join(RAILS_ROOT, 'vendor', 'plugins', 'warehouse', name.demodulize.underscore, 'lib')
-          $LOAD_PATH << load_path
-          Dependencies.load_paths << load_path
-          yield if block_given?
-          install_routes!
+          unless @loaded
+            logger.debug "Loading #{name} Plugin"
+            load_path = File.join(RAILS_ROOT, 'vendor', 'plugins', 'warehouse', name.demodulize.underscore, 'lib')
+            $LOAD_PATH << load_path
+            Dependencies.load_paths << load_path
+            yield if block_given?
+            install_routes!
+            @loaded = true
+          end
         end
 
         def install_routes!
@@ -47,13 +53,15 @@ module Warehouse
         end
       
         def resources(resource, options = {})
+          icon = options.delete(:icon)
           route :resources, resource, options
-          controller resource.to_s.humanize, resource
+          controller resource.to_s.humanize, options[:controller] || resource, options.update(:icon => icon)
         end
       
         def resource(resource, options = {})
+          icon = options.delete(:icon)
           route :resource, resource, options
-          controller resource.to_s.humanize, resource
+          controller resource.to_s.humanize, options[:controller] || resource, options.update(:icon => icon)
         end
   
         # Keeps track of custom adminstration tabs.  Each item is an array of arguments to be passed to link_to.
@@ -63,6 +71,11 @@ module Warehouse
         #   end
         def tab(*args)
           tabs << args
+        end
+        
+        def tab!(*args)
+          tabs.clear
+          tab(*args)
         end
 
         # Sets up a custom controller.  Beast::Plugin.public_controller is used for the basic setup.  This also automatically
@@ -81,8 +94,9 @@ module Warehouse
         # Your views will then be stored in #{YOUR_PLUGIN}/views/admin/foo/*.rhtml.
         def controller(title, name = nil, options = {})
           returning (name || title.underscore).to_sym do |controller_name|
+            link_options = {:style => "background-image:url(/images/#{controller_name}/#{options.delete(:icon)})"}
             view_paths[controller_name] = File.join(plugin_path, 'views').to_s
-            tab title, {:controller => controller_name.to_s}.update(options)
+            tab title, {:controller => controller_name.to_s}.update(options), link_options
           end
         end
 
@@ -96,13 +110,18 @@ module Warehouse
           end
       end
       
-      def initialize(options = {}, &block)
+      def initialize(options = {}, active = false, &block)
+        @active = active
         super(options, &block)
       end
 
-        def properties
-          self
-        end
+      def active?
+        @active
+      end
+
+      def properties
+        self
+      end
 
       def head_extras
         @head_extras ||= 
@@ -110,7 +129,7 @@ module Warehouse
           (js_files.collect  { |f| %(<script src="#{sanitize_path f}" type="text/javascript"></script>)   } * "\n")
       end
 
-      %w(plugin_path view_path).each do |method_name|
+      %w(plugin_path view_path tabs).each do |method_name|
         define_method method_name do 
           self.class.send method_name
         end

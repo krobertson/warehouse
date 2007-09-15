@@ -1,6 +1,6 @@
 class Plugin < ActiveRecord::Base
-  @@plugin_path = File.join(RAILS_ROOT, RAILS_ENV == 'test' ? 'test/plugins' : 'vendor/plugins/warehouse')
-  cattr_reader :plugin_path
+  @@plugin_class_path = File.join(RAILS_ROOT, RAILS_ENV == 'test' ? 'test/plugins' : 'vendor/plugins/warehouse')
+  cattr_reader :plugin_class_path
 
   serialize :options, Hash
   
@@ -19,7 +19,7 @@ class Plugin < ActiveRecord::Base
   end
   
   def plugin_class
-    require File.join(plugin_path, name, 'lib', 'plugin') unless Warehouse::Plugins.const_defined?(plugin_class_name)
+    require File.join(plugin_class_path, name, 'lib', 'plugin') unless Warehouse::Plugins.const_defined?(plugin_class_name)
     @plugin_class ||= Warehouse::Plugins.const_get(plugin_class_name)
   end
   
@@ -28,8 +28,19 @@ class Plugin < ActiveRecord::Base
   end
 
   def properties
-    @properties ||= plugin_class.new(options || {})
+    @properties ||= plugin_class.new(options || {}, active?)
   end
+
+  def options=(value)
+    value ||= {}
+    self.active = value.delete(:active) if value.key?(:active)
+    write_attribute :options, value.to_hash
+  end
+
+  delegate :plugin_path, :to => :properties
+  delegate :view_path,   :to => :properties
+  delegate :title,       :to => :properties
+  delegate :tabs,        :to => :properties
   
   protected
     def set_default_active_state

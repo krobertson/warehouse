@@ -11,7 +11,7 @@ module Warehouse
     end
 
     def self.discover(path = nil)
-      path  ||= Plugin.plugin_path
+      path  ||= Plugin.plugin_class_path
       plugins = find_in(path)
       records = Plugin.find_from(plugins)
       discovered.clear
@@ -38,6 +38,19 @@ module Warehouse
 
     def self.find_in(path)
       Dir[File.join(path, '*')].select { |d| File.directory?(d) && File.file?(File.join(d, 'lib', 'plugin.rb')) }.collect! { |d| File.basename(d) }
+    end
+    
+    def self.each_tab
+      loaded.each do |plugin|
+        plugin.tabs.each do |tab|
+          yield tab
+        end
+      end
+    end
+    
+    def self.tabs?
+      loaded.delete_if { |plugin| !plugin.active? }
+      loaded.size > 0
     end
 
     self.discovered = []

@@ -2,6 +2,7 @@ sample_lighthouse:
   id: 1
   repository_id: 1
   name: lighthouse
+  label: abc
   options: "--- \nprefix: trunk\naccount: abc\ntoken: \"\"\nproject: \"3\"\nusers: \"\"\n"
   created_at: 2007-07-19 09:39:00
   updated_at: 2007-07-19 09:39:00
@@ -9,6 +10,7 @@ example_lighthouse:
   id: 2
   repository_id: 2
   name: lighthouse
+  label: def
   options: "--- \nprefix: trunk\naccount: def\ntoken: \"\"\nproject: \"5\"\nusers: \"\"\n"
   created_at: 2007-07-19 09:39:00
   updated_at: 2007-07-19 09:39:00

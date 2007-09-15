@@ -1,39 +1,34 @@
 class HooksController < ApplicationController
   before_filter :repository_admin_required
-  before_filter :find_or_initialize_hook
+  before_filter :find_hook, :except => [:index, :create]
   
   def index
     @hooks = current_repository.hooks.group_by { |h| h.name }
   end
   
   def create
-    @hook.repository = current_repository
-    @hook.save
+    @hook = current_repository.hooks.create!(:name => params[:name], :options => params[:hook])
     respond_to do |format|
       format.js
     end
   end
   
   def update
-    @hook.options = params[:hook].to_hash
+    @hook.options = params[:hook]
     respond_to do |format|
       format.js
     end
   end
   
   def destroy
-    @hook.update_attribute :active, false
+    @hook.destroy
     respond_to do |format|
       format.js
     end
   end
   
-  def activate
-    @hook.update_attribute :active, true
-  end
-  
   protected
-    def find_or_initialize_hook
-      @hook = params[:id] ? current_repository.hooks.find(params[:id]) : Hook.new(params[:hook])
+    def find_hook
+      @hook = current_repository.hooks.find(params[:id])
     end
 end

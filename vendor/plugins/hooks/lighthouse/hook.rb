@@ -23,25 +23,18 @@ Warehouse::Hooks.define :lighthouse do
   option :users,   /^([a-z0-9_-]+ [a-z0-9]+(,\s*)?)+$/,
     "Optional comma-separated list linking svn commit authors with different Lighthouse tokens.  (e.g. 'rick ABCDEF12345, bob 98765DCBA')"
   
-  # Called before #run
-  init do
-    # accept users value like 'bob token, fred token'
-    # converts to hash like {'bob' => 'token', 'fred' => 'token'}
-    unless @options[:users].is_a?(Hash)
-      user_string = @options.delete(:users).to_s
-      @options[:users] = {}
-      user_string.split(',').each do |user|
-        user.strip!
-        next if user.empty?
-        name, token = user.split
-        @options[:users][name] = token
-      end
+  user_tokens do
+    options[:users].to_s.split(",").inject({}) do |memo, user|
+      user.strip!
+      next if user.empty?
+      name, token = user.split
+      memo.update name => token
     end
   end
   
   # Array of changes like ["M /foo/bar.txt", ...]
   commit_changes do
-    @commit.changed.split("\n").inject([]) do |memo, line| 
+    commit.changed.split("\n").inject([]) do |memo, line| 
       if line.strip =~ /(\w)\s+(.*)/
         memo << [$1, $2]
       end
@@ -51,25 +44,25 @@ Warehouse::Hooks.define :lighthouse do
   changeset_xml do
     <<-END_XML
 <changeset>
-  <title>#{CGI.escapeHTML("%s committed changeset [%d]" % [@commit.author, @commit.revision])}</title>
-  <body>#{CGI.escapeHTML(@commit.log)}</body>
+  <title>#{CGI.escapeHTML("%s committed changeset [%d]" % [commit.author, commit.revision])}</title>
+  <body>#{CGI.escapeHTML(commit.log)}</body>
   <changes>#{CGI.escapeHTML(commit_changes.to_yaml)}</changes>
-  <revision>#{CGI.escapeHTML(@commit.revision.to_s)}</revision>
-  <changed-at type="datetime">#{CGI.escapeHTML(@commit.date.split('(').first.strip)}</changed-at>
+  <revision>#{CGI.escapeHTML(commit.revision.to_s)}</revision>
+  <changed-at type="datetime">#{CGI.escapeHTML(commit.date.split('(').first.strip)}</changed-at>
 </changeset>
 END_XML
   end
 
   current_token do
-    @options[:users][@commit.author] || @options[:token]
+    user_tokens[commit.author] || options[:token]
   end
   
   changeset_url do
-    '%s/projects/%d/changesets.xml?_token=%s' % [@options[:account], @options[:project], current_token]
+    '%s/projects/%d/changesets.xml?_token=%s' % [options[:account], options[:project], current_token]
   end
   
   run do
-    Net::HTTP.start "#{@options[:account]}.lighthouseapp.com" do |http|
+    Net::HTTP.start "#{options[:account]}.lighthouseapp.com" do |http|
       http.post changeset_url, changeset_xml
     end
   end

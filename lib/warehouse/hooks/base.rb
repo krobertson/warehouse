@@ -1,24 +1,49 @@
 module Warehouse
   module Hooks
     class Base < PluginBase
-      def initialize(commit, options = {}, &block)
-        @commit  = commit
+      attr_reader :instance
+      attr_reader :commit
+
+      def initialize(instance, commit = nil, &block)
+        @instance = instance
+        @commit   = commit
         super(options, &block)
       end
 
       def self.properties
-        @properties ||= new(nil)
+        @properties ||= new
       end
       
-      def self.active?
-        false
+      def active
+        @instance && @instance.active
+      end
+      
+      def active?
+        @instance && @instance.active?
+      end
+      
+      def active=(value)
+        @instance && @instance.active = value
+      end
+      
+      def label
+        @instance && @instance.label
+      end
+      
+      def label=(value)
+        @instance && @instance.label = value
+      end
+      
+      def options
+        (@instance && @instance.options) || {}
       end
 
       # checks if the commit matches the optional prefix
       def valid?
-        return true if @options[:prefix].to_s.empty?
-        @options[:prefix] = Regexp.new(@options[:prefix].to_s.gsub(/(^\/)|(\/$)/, '')) unless @options[:prefix].is_a?(Regexp)
-        @commit.dirs_changed.split(/\n/).any? { |path| path =~ @options[:prefix] }
+        return false unless active?
+        return true if options[:prefix].to_s.empty?
+        options[:prefix] = Regexp.new(options[:prefix].to_s.gsub(/(^\/)|(\/$)/, '')) unless options[:prefix].is_a?(Regexp)
+        @commit.dirs_changed.split(/\n/).any? { |path| path =~ options[:prefix] }
       end
       
       def run!

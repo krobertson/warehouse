@@ -4,8 +4,7 @@ load_hook :lighthouse
 context "Lighthouse" do
   setup do
     @commit = stub(:revision => 5, :changed => ['M foo', 'A foo/bar'].join("\n"), :author => 'rick', :log => 'add bar', :date => 'abc (def)')
-    @hook   = Warehouse::Hooks::Lighthouse.new(@commit)
-    @hook.init
+    @hook   = Warehouse::Hooks::Lighthouse.new(Hook.new, @commit)
   end
   
   specify "should keep option order" do
@@ -13,26 +12,21 @@ context "Lighthouse" do
   end
   
   specify "should gather commit changes" do
-    hook = Warehouse::Hooks::Lighthouse.new(@commit)
-    hook.init
-    hook.commit_changes.should == [%w(M foo), %w(A foo/bar)]
+    @hook.commit_changes.should == [%w(M foo), %w(A foo/bar)]
   end
   
   specify "should get use default token if no user token is available" do
-    hook = Warehouse::Hooks::Lighthouse.new(@commit, :token => 'test')
-    hook.init
+    hook = Warehouse::Hooks::Lighthouse.new(Hook.new(:options => {:token => 'test'}), @commit)
     hook.current_token.should == 'test'
   end
   
   specify "should get use user token if available" do
-    hook = Warehouse::Hooks::Lighthouse.new(@commit, :token => 'test', :users => 'rick foo')
-    hook.init
+    hook = Warehouse::Hooks::Lighthouse.new(Hook.new(:options => {:token => 'test', :users => 'rick foo'}), @commit)
     hook.current_token.should == 'foo'
   end
   
   specify "should construct url from options" do
-    hook = Warehouse::Hooks::Lighthouse.new(@commit, :token => 'test', :project => '1')
-    hook.init
+    hook = Warehouse::Hooks::Lighthouse.new(Hook.new(:options => {:token => 'test', :project => '1'}), @commit)
     hook.changeset_url.should == "/projects/1/changesets.xml?_token=test"
   end
   
@@ -86,25 +80,33 @@ END_XML
     end
   end
   
-  specify "should require correct users format" do
-    ['!adsf', 'a-b_c', 'abc', '123', 'a b, c'].each do |value|
-      @hook.users = value
-      @hook.users.should.be.nil
-    end
-    
-    ['a b', 'a b,   a b'].each do |value|
-      @hook.users = value
-      @hook.users.should == value
-    end
+  specify "should not accept weird characters" do
+    @hook.users = '!adsf'
+    @hook.user_tokens.should == {}
   end
   
-  specify "should parse users" do
-    @hook.users = 'a b'
-    @hook.init
-    @hook.users.should == {'a' => 'b'}
+  specify "should require token" do
+    @hook.users = 'abc'
+    @hook.user_tokens.should == {}
+  end
+  
+  specify "should require token for all users" do
+    @hook.users = 'a b, c'
+    @hook.user_tokens.should == {}
+  end
 
-    @hook.users = 'a b, c d'
-    @hook.init
-    @hook.users.should == {'a' => 'b', 'c' => 'd'}
+  specify "should parse user" do
+    @hook.users = 'a b'
+    @hook.user_tokens.should == {'a' => 'b'}
+  end
+  
+  specify "should parse unique users" do
+    @hook.users = 'a b,   a b'
+    @hook.user_tokens == {'a' => 'b'}
+  end
+  
+  specify "should parse multiple users" do
+    @hook.users = 'a b,   c d'
+    @hook.user_tokens.should == {'a' => 'b', 'c' => 'd'}
   end
 end

@@ -1,5 +1,5 @@
 if @hook.save
-  page.call "Sheet.Cache['hooksheet-#{@hook.id}'].hide"
+  page.call "location.reload"
 else
   page.alert "The hook options were invalid.  Replace this with a less obtrusive prompt"
 end

@@ -3,6 +3,7 @@ class Warehouse::PluginController < ApplicationController
   
   def self.plugin(name = nil)
     @plugin = Warehouse::Plugins[name] if name
+    prepend_view_path @plugin.view_path
     @plugin
   end
   

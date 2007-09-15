@@ -51,14 +51,14 @@ module Warehouse
         format  = args.first.is_a?(Regexp) ? args.shift : nil
         default = args.shift
         class_eval <<-END, __FILE__, __LINE__
-            def #{property}
-              options[:#{property}].to_s.empty? ? #{default.inspect} : options[:#{property}]
-            end
-          
-            def #{property}=(value)
-              options[:#{property}] = value#{" if value.to_s =~ #{format.inspect}" if format}
-            end
-          END
+          def #{property}
+            options[:#{property}].to_s.empty? ? #{default.inspect} : options[:#{property}]
+          end
+        
+          def #{property}=(value)
+            options[:#{property}] = value#{" if value.to_s =~ #{format.inspect}" if format}
+          end
+        END
         option_order << "#{property} #{desc}".strip
         default_options[property.to_sym] = default
         option_formats[property.to_sym]  = format if format

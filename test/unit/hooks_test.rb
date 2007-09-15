@@ -34,11 +34,11 @@ context "Base" do
   
   specify "should check validity of hook" do
     commit = stub(:dirs_changed => %w(foo/bar foo baz).join("\n"))
-    Warehouse::Hooks::HookTest.new(commit).should.be.valid
-    Warehouse::Hooks::HookTest.new(commit, :prefix => '').should.be.valid
-    Warehouse::Hooks::HookTest.new(commit, :prefix => '^foo').should.be.valid
-    Warehouse::Hooks::HookTest.new(commit, :prefix => '/^baz/').should.be.valid
-    Warehouse::Hooks::HookTest.new(commit, :prefix => '/^bar').should.not.be.valid
+    Warehouse::Hooks::HookTest.new(stub(:active? => true, :options => {}), commit).should.be.valid
+    Warehouse::Hooks::HookTest.new(stub(:active? => true, :options => {:prefix => ''}), commit).should.be.valid
+    Warehouse::Hooks::HookTest.new(stub(:active? => true, :options => {:prefix => '^foo'}), commit).should.be.valid
+    Warehouse::Hooks::HookTest.new(stub(:active? => true, :options => {:prefix => '/^baz/'}), commit).should.be.valid
+    Warehouse::Hooks::HookTest.new(stub(:active? => true, :options => {:prefix => '/^bar'}), commit).should.not.be.valid
   end
 end
 

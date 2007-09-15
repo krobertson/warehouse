@@ -12,7 +12,7 @@ context "Plugin" do
   fixtures :plugins
 
   specify "should find plugins in filesystem" do
-    Warehouse::Plugins.find_in(Plugin.plugin_path).should == %w(bar foo)
+    Warehouse::Plugins.find_in(Plugin.plugin_class_path).should == %w(bar foo)
   end
   
   specify "should find loaded plugins" do
@@ -43,7 +43,7 @@ context "Plugin (discovery)" do
   setup do
     Warehouse::Plugins.index.clear
     Warehouse::Plugins.discovered.clear
-    Warehouse::Plugins.discover Plugin.plugin_path
+    Warehouse::Plugins.discover Plugin.plugin_class_path
   end
   
   specify "should create empty plugin" do

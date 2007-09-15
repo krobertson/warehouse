@@ -3,7 +3,7 @@ class AssetsController < ApplicationController
   caches_page :show
 
   def show
-    if !params[:paths].blank? && plugin = Warehouse::Plugins.discovered.detect { |p| p.plugin_name == params[:plugin] }
+    if !params[:paths].blank? && plugin = Warehouse::Plugins[params[:plugin]]
       filename = File.join(plugin.plugin_path, 'public', params[:asset], *params[:paths])
       if File.exist?(filename)
         content_type = content_type_for params[:paths].last

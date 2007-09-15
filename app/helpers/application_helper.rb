@@ -71,4 +71,8 @@ module ApplicationHelper
       cache(name, &block)
     end
   end
+  
+  def link_to_tab(name, url = {}, options = {})
+    link_to name, url, options
+  end
 end

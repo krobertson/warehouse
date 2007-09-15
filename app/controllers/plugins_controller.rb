@@ -10,9 +10,7 @@ class PluginsController < ApplicationController
   
   def update
     @plugin = Plugin.find(params[:id])
-    params[:plugin] ||= {}
-    @plugin.active  = params[:plugin].delete(:active)
-    @plugin.options = params[:plugin].to_hash
+    @plugin.options = params[:plugin]
     respond_to do |format|
       format.js
     end
