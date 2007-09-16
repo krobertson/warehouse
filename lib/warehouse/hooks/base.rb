@@ -1,6 +1,6 @@
 module Warehouse
   module Hooks
-    class Base < PluginBase
+    class Base < Extension
       attr_reader :instance
       attr_reader :commit
 

@@ -1,5 +1,5 @@
 module Warehouse
-  class PluginBase
+  class Extension
     attr_reader :options
 
     def initialize(options = {}, &block)

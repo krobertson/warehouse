@@ -1,6 +1,6 @@
 module Warehouse
   module Plugins
-    class Base < PluginBase
+    class Base < Extension
       attr_accessor :active
       cattr_accessor :custom_routes, :view_paths, :tabs
       class << self
