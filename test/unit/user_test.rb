@@ -57,3 +57,79 @@ context "User" do
     users(:rick).administered_repositories.should == [repositories(:sample)]
   end
 end
+
+context "User with basic authentication" do
+  before do
+    @user       = User.new :password => 'foo', :login => 'bob'
+    @old_scheme = Warehouse.authentication_scheme
+    @old_realm  = Warehouse.authentication_realm
+    Warehouse.authentication_scheme = 'basic'
+    Warehouse.authentication_realm  = 'foo'
+  end
+  
+  after do
+    Warehouse.authentication_scheme = @old_scheme
+    Warehouse.authentication_realm  = @old_realm
+  end
+  
+  specify "should encrypt password" do
+    TokenGenerator.expects(:generate_simple).with(2).returns('ab')
+    @user.encrypt_password!
+    @user.crypted_password.should == 'abQ9KY.KfrYrc'
+  end
+  
+  specify "should decrypt password" do
+    @user.encrypt_password!
+    @user.password_matches?('foo').should == true
+  end
+end
+
+context "User with plain authentication" do
+  before do
+    @user       = User.new :password => 'foo', :login => 'bob'
+    @old_scheme = Warehouse.authentication_scheme
+    @old_realm  = Warehouse.authentication_realm
+    Warehouse.authentication_scheme = 'plain'
+    Warehouse.authentication_realm  = 'foo'
+  end
+  
+  after do
+    Warehouse.authentication_scheme = @old_scheme
+    Warehouse.authentication_realm  = @old_realm
+  end
+  
+  specify "should encrypt password" do
+    @user.encrypt_password!
+    @user.crypted_password.should == 'foo'
+  end
+  
+  specify "should decrypt password" do
+    @user.encrypt_password!
+    @user.password_matches?('foo').should == true
+  end
+end
+
+context "User with md5 authentication" do
+  before do
+    @user       = User.new :password => 'foo', :login => 'bob'
+    @old_scheme = Warehouse.authentication_scheme
+    @old_realm  = Warehouse.authentication_realm
+    Warehouse.authentication_scheme = 'md5'
+    Warehouse.authentication_realm  = 'bar'
+  end
+  
+  after do
+    Warehouse.authentication_scheme = @old_scheme
+    Warehouse.authentication_realm  = @old_realm
+  end
+  
+  specify "should encrypt password" do
+    @user.encrypt_password!
+    @user.crypted_password.should == Digest::MD5::hexdigest("bob:bar:foo")
+  end
+  
+  specify "should decrypt password" do
+    @user.encrypt_password!
+    @user.password_matches?('foo').should == true
+  end
+end

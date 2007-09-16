@@ -54,6 +54,21 @@
     <span class="help">Caches common pages to the filesystem for speed.  Cached files are located in <span style="color:#456"><%= File.join(RAILS_ROOT, 'tmp', 'cache') %></span>
   </p>
   
+  <fieldset>
+    <legend>Password Settings</legend>
+    <p>This setting determines how the passwords are stored in the database, and how they are written to the svn password file.  Changing this setting will require all users to reset their passwords.</p>
+    <p>
+      <label for="settings_authentication_scheme">Authentication Scheme</label>
+      <%= select_tag :settings_authentication_scheme, options_for_select(%w(basic md5 plain), Warehouse.authentication_scheme),
+           :name => 'settings[authentication_scheme]' %>
+    </p>
+    <p>
+      <label for="settings_authentication_realm">Authentication Realm</label>
+      <%= text_field_tag :settings_authentication_realm, params[:settings][:authentication_realm] || Warehouse.authentication_realm,
+            :size => 40, :name => 'settings[authentication_realm]' %>
+    </p>
+  </fieldset>
+  
   <p class="command">
     <label for="settings_mail_type">Mail Server Type</label>
     <select name="settings[mail_type]" id="settings-mail-type" style="width:200px">

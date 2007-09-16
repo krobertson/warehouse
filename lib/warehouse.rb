@@ -28,7 +28,9 @@ module Warehouse
   end
 
   class << self
-    attr_accessor :domain, :forum_url, :permission_command, :password_command, :mail_from, :version, :default_session_options, :smtp_settings, :sendmail_settings, :mail_type, :caching, :config_path, :syncing
+    attr_accessor :domain, :forum_url, :permission_command, :password_command, :mail_from, :version, 
+      :default_session_options, :smtp_settings, :sendmail_settings, :mail_type, :caching, :config_path, 
+      :syncing, :authentication_scheme, :authentication_realm
     
     def sync?
       syncing.nil? || syncing == '1'
@@ -87,8 +89,10 @@ module Warehouse
   self.default_session_options = {:session_key => '_warehouse_session_id', :secret => 'asMb0bEBw6TXU'}
   self.domain    = ''
   self.forum_url = "http://forum.activereload.net/licenses/%s/installs"
-  self.version   = Version.new(1, 0, 3)
+  self.version   = Version.new(1, 1, 0)
   self.smtp_settings = self.sendmail_settings = {}
+  self.authentication_scheme = 'basic' # plain / md5
+  self.authentication_realm  = ''
 end
 
 if Object.const_defined?(:Dependencies)

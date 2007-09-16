@@ -1,3 +1,4 @@
+require 'digest/md5'
 class User < ActiveRecord::Base
   include PermissionMethods  
   attr_accessor :avatar_data
@@ -95,6 +96,36 @@ class User < ActiveRecord::Base
     write_attribute :identity_url, OpenIdAuthentication.normalize_url(value)
   end
 
+  def self.encrypt_password(user, password = nil)
+    password ||= user.password
+    case Warehouse.authentication_scheme
+      when 'plain' then user.password
+      when 'md5'   then Digest::MD5::hexdigest([user.login, Warehouse.authentication_realm, password].join(":"))
+      when 'basic' then password.crypt(TokenGenerator.generate_simple(2))
+    end
+  end
+  
+  def self.password_matches?(user, password)
+    user.crypted_password == 
+      case Warehouse.authentication_scheme
+        when 'plain' then password
+        when 'md5'   then user.encrypt_password(password)
+        when 'basic' then password.crypt(user.crypted_password[0,2])
+      end
+  end
+  
+  def encrypt_password(password = nil)
+    self.class.encrypt_password self, password
+  end
+  
+  def encrypt_password!(password = nil)
+    self.crypted_password = self.class.encrypt_password(self, password)
+  end
+  
+  def password_matches?(password)
+    self.class.password_matches? self, password
+  end
+
   protected
     def set_default_attributes
       self.token = TokenGenerator.generate_random(TokenGenerator.generate_simple)
@@ -103,8 +134,8 @@ class User < ActiveRecord::Base
     end
 
     def sanitize_email
-      write_attribute :crypted_password, password.crypt(TokenGenerator.generate_simple(2)) unless password.blank?
-      email.downcase! unless email.blank?
+      encrypt_password! unless password.blank?
+      email.downcase!   unless email.blank?
     end
     
     def presence_of_identity_url_or_email

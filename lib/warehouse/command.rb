@@ -90,7 +90,7 @@ module Warehouse
         puts "No repository found for '#{repo_subdomain}'", :warn
         return
       end
-      write_users_to_htpasswd(users_from_repo(repo), htpasswd_path.gsub(/:repo/, repo[:subdomain].to_s))
+      write_users_to_htpasswd(users_from_repo(repo), htpasswd_path.gsub(/:repo/, base_path(repo[:path])))
     end
     
     def write_users_to_htpasswd(users, htpasswd_path = nil)
@@ -127,7 +127,7 @@ module Warehouse
           perms_hash = permissions[repo[:id].to_s]
           next if perms_hash.nil?
           perms_hash.each do |path, perms|
-            file.write("[%s:/%s]\n" % [repo[:subdomain], path])
+            file.write("[%s:/%s]\n" % [base_path(repo[:path]), path])
             perms.each do |p|
               if p[:user_id].nil?
                 file.write('*')
@@ -329,6 +329,10 @@ module Warehouse
       def users_from_repo(repo)
         user_ids = connection[:permissions].select(:user_id).where(:active => 1, :repository_id => repo[:id]).uniq
         connection[:users].where(:id => user_ids)
+      end
+      
+      def base_path(path)
+        path.to_s.split("/").last.to_s
       end
       
       def puts(str, level = :info)

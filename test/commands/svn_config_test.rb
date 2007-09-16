@@ -19,8 +19,8 @@ rick = rw
 * = rw
 rick = r
 END
-    repo1 = {:id => 1, :subdomain => 'repo1'}
-    repo2 = {:id => 2, :subdomain => 'repo2'}
+    repo1 = {:id => 1, :subdomain => 'repo1', :path => 'foo/bar/repo1'}
+    repo2 = {:id => 2, :subdomain => 'repo2', :path => 'foo/bar/repo2'}
     
     @command.expects(:grouped_permission_paths_for).with([repo1, repo2]).returns(
       {'1' => {'' => [
