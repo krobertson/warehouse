@@ -2,6 +2,8 @@ class RepositoriesController < ApplicationController
   before_filter :admin_required,            :only   => :create
   before_filter :repository_admin_required, :except => :create
   before_filter :find_or_initialize_repository
+  
+  cache_sweeper :repository_sweeper, :only => [:create, :update, :destroy]
 
   def index
     @repositories = admin? ? Repository.find(:all) : current_user.administered_repositories
