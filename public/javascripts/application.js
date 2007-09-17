@@ -193,7 +193,7 @@ Date.distanceOfTimeInWords = function(fromTime, toTime, includeTime) {
       return 'about a minute ago';
   } else if(delta < (45*60)) {
       return (parseInt(delta / 60)).toString() + ' minutes ago';
-  } else if(delta < (90*60)) {
+  } else if(delta < (120*60)) {
       return 'about an hour ago';
   } else if(delta < (24*60*60)) {
       return 'about ' + (parseInt(delta / 3600)).toString() + ' hours ago';
