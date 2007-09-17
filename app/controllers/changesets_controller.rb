@@ -23,15 +23,13 @@ class ChangesetsController < ApplicationController
   def public
     @repositories = Repository.find_all_by_public(true)
     @changesets   = @repositories.empty? ? [] :
-      Changeset.paginate(:conditions => ['repository_id in (?)', @repositories.collect(&:id)], :page => params[:page], :order => 'changesets.changed_at desc',
-        :count => 'distinct changesets.id')
+      Changeset.paginate(:conditions => ['repository_id in (?)', @repositories.collect(&:id)], :page => params[:page], :order => 'changesets.changed_at desc')
     respond_for_changesets
   end
   
   def global_index
     @repositories = current_user.repositories
-    @changesets   = Changeset.paginate_by_paths(current_user.repositories.paths, :page => params[:page], :order => 'changesets.changed_at desc',
-      :count => 'distinct changesets.id')
+    @changesets   = Changeset.paginate_by_paths(current_user.repositories.paths, :page => params[:page], :order => 'changesets.changed_at desc')
     respond_for_changesets
   end
   
@@ -54,7 +52,7 @@ class ChangesetsController < ApplicationController
   end
 
   def action_caching_layout
-    !(request.format.atom? || request.format.diff?)
+    !(api_format? || request.format.diff?)
   end
 
   protected

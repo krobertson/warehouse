@@ -6,12 +6,22 @@ class HistoryController < ApplicationController
 
   def index
     @changesets = current_repository.changesets.paginate_by_path(@node.path, :page => params[:page])
-    @users      = User.find_all_by_logins(@changesets.collect(&:author).uniq).index_by(&:login)
+    if api_format?
+      render :layout => false
+    else
+      @users = User.find_all_by_logins(@changesets.collect(&:author).uniq).index_by(&:login)
+    end
   end
   
   protected
     def find_node
-      @node = current_repository.node(params[:paths] * '/')
+      full_path = if params[:paths].last.to_s =~ /\.atom$/
+        request.format = :atom
+        params[:paths].first(params[:paths].size - 1)
+      else
+        params[:paths]
+      end
+      @node = current_repository.node(full_path * "/")
       unless @node.accessible_by?(current_user)
         status_message :error, "You do not have access to this path."
         false

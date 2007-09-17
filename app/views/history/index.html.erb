@@ -17,3 +17,7 @@
 </ul>
 
 <%= will_paginate @changesets %>
+
+<% content_for :sidebar do -%>
+<%= link_to 'Subscribe to Changesets', history_path(:paths => (params[:paths] << 'changesets.atom')), :id => 'subscribe-btn' %>
+<% end -%>

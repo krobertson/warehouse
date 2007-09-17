@@ -7,6 +7,11 @@ class Changeset < ActiveRecord::Base
   delegate :backend, :to => :repository
   expiring_attr_reader :user, :retrieve_user
 
+  def self.paginate(options = {})
+    options = {:count => 'distinct changesets.id'}.update(options)
+    super
+  end
+
   def self.paginate_by_path(path, options = {})
     with_paths([path]) { paginate(options) }
   end

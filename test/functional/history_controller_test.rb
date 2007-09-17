@@ -7,9 +7,36 @@ class HistoryController
   def check_for_valid_domain() end
 end
 
-
 context "History Controller" do
-  def setup
+  setup do
+    @controller = HistoryController.new
+    @request    = ActionController::TestRequest.new
+    @response   = ActionController::TestResponse.new
+    @request.host = "sample.test.host"
+    Repository.any_instance.stubs(:backend).returns(true)
+    @controller.stubs(:current_repository).returns(repositories(:sample))
+    repositories(:sample).stubs(:public?).returns(false)
+    repositories(:sample).expects(:node).with('').returns(stub_node)
+  end
+  
+  specify "should show html browser history" do
+    login_as :rick
+    get :index, :paths => []
+    @request.format.html?.should == true
+    assert_template 'index'
+  end
+  
+  specify "should show atom browser history" do
+    login_as :rick
+    get :index, :paths => ['changesets.atom']
+    @request.format.html?.should == false
+    @request.format == Mime::ATOM
+    assert_template 'index'
+  end
+end
+
+context "History Controller (permissions)" do
+  setup do
     @controller = HistoryController.new
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new

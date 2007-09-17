@@ -47,40 +47,40 @@ class ApplicationController < ActionController::Base
 
     # handles non-html responses in DEV mode when there are exceptions
     def rescue_action_locally(exception)
-      if request.format.html?
-        super
-      else
+      if api_format?
         render :text => "Error: #{exception.message}", :status => :internal_server_error
+      else
+        super
       end
     end
 
     # handles non-html responses in PRODUCTION mode when there are exceptions
     def rescue_action_in_public(exception)
-      if request.format.html?
-        super
-      else
+      if api_format?
         render :text => "An error has occurred with Warehouse.  Check your #{RAILS_ENV} logs.", :status => :internal_server_error
+      else
+        super
       end
     end
 
     # Renders simple page w/ the error message.
     def status_message(type, message = nil, template = nil)
       @message = message || "A login is required to visit this page."
-      if request.format.html?
-        render :template => (template || "shared/#{type}")
-      else
+      if api_format?
         render :text => @message, :status => :internal_server_error
+      else
+        render :template => (template || "shared/#{type}")
       end
       false
     end
 
     # Same as #status_message but sends the 401 basic auth headers
     def access_denied_message(message)
-      if request.format.html?
-        status_message(:error, message)
-      else
+      if api_format?
         headers["WWW-Authenticate"] = %(Basic realm="Web Password")
         render :text => "Couldn't authenticate you.", :status => :unauthorized
+      else
+        status_message(:error, message)
       end
     end
 
@@ -167,5 +167,9 @@ class ApplicationController < ActionController::Base
       ActiveRecord::Base.with_context do
         yield
       end
+    end
+    
+    def api_format?
+      request.format.atom? || request.format.xml?
     end
 end

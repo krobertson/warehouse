@@ -20,8 +20,8 @@ class Repository < ActiveRecord::Base
   end
   has_many :members, :through => :permissions, :source => :user, :select => "users.*, #{Permission.join_fields}", :uniq => true
   has_many :all_permissions, :class_name => 'Permission', :foreign_key => 'repository_id', :dependent => :delete_all
-  has_many :changesets
-  has_many :changes, :through => :changesets, :order => 'changesets.revision desc'
+  has_many :changesets, :order => 'changesets.changed_at desc'
+  has_many :changes, :through => :changesets, :order => 'changesets.changed_at desc'
   has_many :bookmarks, :dependent => :destroy
   has_many :hooks, :dependent => :destroy
   has_one  :latest_changeset, :class_name => 'Changeset', :foreign_key => 'repository_id', :order => 'changed_at desc'
