@@ -194,7 +194,7 @@ module Warehouse
         return nil if value.nil?
         return value if value.is_a?(Hash) || value.is_a?(Sequel::Dataset)
         key   = value.to_i > 0 ? :id : :subdomain
-        connection[:repositories][key => value].first
+        connection[:repositories][key => value]
       end
     
       def paginated_revisions(repo, num)

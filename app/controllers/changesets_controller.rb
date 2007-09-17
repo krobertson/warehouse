@@ -38,6 +38,7 @@ class ChangesetsController < ApplicationController
     unless @changeset
       return status_message(:error, "You must be a member of this repository to visit this page.", "changesets/error")
     end
+    @changes = @changeset.changes.paginate(:page => params[:page])
     respond_to do |format|
       format.html
       format.diff { render :action => 'show', :layout => false }

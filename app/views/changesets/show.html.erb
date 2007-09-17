@@ -34,9 +34,11 @@
 <% end -%>
 
 <ul id="change-list">
-<%= render :partial => "changes", :locals => { :changeset => @changeset } %>
+<%= render :partial => "changes", :locals => { :changeset => @changeset, :changes => @changes } %>
 </ul>
 
-<% @changeset.changes.select(&:diffable?).each do |change| -%>
+<% @changes.select(&:diffable?).each do |change| -%>
   <%= diff_for change %>
 <% end -%>
+
+<%= will_paginate @changes %>

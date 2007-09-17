@@ -59,6 +59,10 @@ class Node
   def exists?
     type_code != Svn::Core::NODE_NONE
   end
+  
+  def diffable?
+    text? && previous_root.check_path(path) == Svn::Core::NODE_FILE
+  end
           
   def name
     File.basename(path) + (self.dir? ? '/' : '')

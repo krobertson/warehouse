@@ -1,0 +1,15 @@
+<div id="error">
+  <h2>Sorry, you're not authorized to view this changeset</h2>
+  <p><%= @message %></p>
+  
+  <% if current_repository.backend.nil? -%>
+    <p>The Repository Path is invalid and needs to be fixed in the <%= link_to 'Repository Admin', admin_path %></p>
+  <% elsif logged_in? -%>
+  <p>
+    You can browse <%= link_to 'all changesets', changesets_path %> that you have access to, 
+    or try contacting the owner of this subversion repository to get access.
+  </p>
+  <% else -%>
+  <p>Try logging in with your OpenID or subversion credentials to access this repository.</p>
+  <% end -%>
+</div>

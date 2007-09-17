@@ -11,7 +11,7 @@ class Change < ActiveRecord::Base
   end
   
   def diffable?
-    node ? node.text? : false
+    node ? node.diffable? : false
   end
   
   def backend
