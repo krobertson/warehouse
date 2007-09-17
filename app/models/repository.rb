@@ -34,8 +34,22 @@ class Repository < ActiveRecord::Base
 
   def member?(user, path = nil)
     return true if public? || (user.is_a?(User) && user.admin?)
-    paths = path.to_s.split('/').inject([]) { |m, p| m << (m.last.nil? ? p : "#{m.last}/#{p}") }.unshift('')
-    !permissions.count(:id, :conditions => ["(user_id is null or user_id = ?) and path in (?)", user ? user.id : 0, paths]).zero?
+    conditions = [[]]
+    if user
+      conditions.first << "(user_id is null or user_id = ?)"
+      conditions       << user.id
+    end
+    if path
+      paths = path.to_s.split('/').inject([]) { |m, p| m << (m.last.nil? ? p : "#{m.last}/#{p}") }.unshift('')
+      conditions.first << 'path in (?)'
+      conditions       << paths
+    end
+    if conditions.size == 1
+      conditions = nil
+    else
+      conditions[0] = conditions[0] * " and "
+    end
+    !permissions.count(:id, :conditions => conditions).zero?
   end
   
   def admin?(user)

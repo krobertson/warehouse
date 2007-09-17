@@ -35,7 +35,9 @@ class ChangesetsController < ApplicationController
   
   def show
     @changeset = current_repository.changesets.find_by_paths(changeset_paths, :conditions => ['revision = ?', params[:id]])
-    raise ActiveRecord::RecordNotFound unless @changeset
+    unless @changeset
+      return status_message(:error, "You must be a member of this repository to visit this page.", "changesets/error")
+    end
     respond_to do |format|
       format.html
       format.diff { render :action => 'show', :layout => false }

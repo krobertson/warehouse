@@ -71,7 +71,7 @@ context "Browser Controller Permissions" do
     @controller.stubs(:current_repository).returns(repositories(:sample))
     @controller.stubs(:current_user).returns(stub(:id => users(:rick).id, :admin? => false))
     repositories(:sample).stubs(:public?).returns(false)
-    repositories(:sample).stubs(:node).returns(stub_node)
+    repositories(:sample).stubs(:node).returns(stub_node('/'))
     get :index, :paths => []
     assert_match /^error/, @response.body
   end
