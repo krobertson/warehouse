@@ -769,6 +769,26 @@ context "Dataset#count" do
   end
 end
 
+context "Dataset#empty?" do
+  specify "should return true if #count == 0" do
+    @c = Class.new(Sequel::Dataset) do
+      def count
+        0
+      end
+    end
+    @dataset = @c.new(nil).from(:test)
+    @dataset.empty?.should be_true
+
+    @c = Class.new(Sequel::Dataset) do
+      def count
+        1
+      end
+    end
+    @dataset = @c.new(nil).from(:test)
+    @dataset.empty?.should be_false
+  end
+end
+
 context "Dataset#join_table" do
   setup do
     @d = Sequel::Dataset.new(nil).from(:items)
@@ -1154,6 +1174,33 @@ context "Dataset#single_value" do
   
   specify "should pass opts to each" do
     @d.single_value(:limit => 3).should == 'SELECT * FROM test LIMIT 3'
+  end
+end
+
+context "Dataset#set_row_filter" do
+  setup do
+    @c = Class.new(Sequel::Dataset) do
+      def fetch_rows(sql, &block)
+        # yield a hash with kind as the 1 bit of a number
+        (1..10).each {|i| block.call({:kind => i[0]})}
+      end
+    end
+    @dataset = @c.new(nil).from(:items)
+  end
+  
+  specify "should cause dataset to pass all rows through the filter" do
+    @dataset.set_row_filter {|h| h[:der] = h[:kind] + 2; h}
+    
+    rows = @dataset.all
+    rows.size.should == 10
+    
+    rows.each {|r| r[:der].should == (r[:kind] + 2)}
+  end
+  
+  specify "should be copied over when dataset is cloned" do
+    @dataset.set_row_filter {|h| h[:der] = h[:kind] + 2; h}
+    
+    @dataset.filter(:a => 1).first.should == {:kind => 1, :der => 3}
   end
 end
 

@@ -17,6 +17,7 @@ module Warehouse
             config[:host]  ||= 'localhost'
             config[:adapter] = 'postgres' if config[:adapter].to_s =~ /^postgre/ # supports postgres, postgresql, etc
             require "sequel/#{config[:adapter]}"
+            Sequel::Database.single_threaded = true
             "%s://%s:%s@%s/%s" % %w(adapter username password host database).collect! { |key| config[key.to_sym] }
         end
       end
@@ -36,7 +37,7 @@ module Warehouse
 
     def sync_revisions_for(repo_subdomain, num = 0)
       if repo_subdomain.nil?
-        connection[:repositories].each do |repo|
+        connection[:repositories].all.each do |repo|
           sync_revisions_for repo, num
         end
         return
@@ -193,7 +194,7 @@ module Warehouse
         return nil if value.nil?
         return value if value.is_a?(Hash) || value.is_a?(Sequel::Dataset)
         key   = value.to_i > 0 ? :id : :subdomain
-        connection[:repositories][key => value]
+        connection[:repositories][key => value].first
       end
     
       def paginated_revisions(repo, num)

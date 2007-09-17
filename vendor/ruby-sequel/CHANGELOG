@@ -1,5 +1,25 @@
 === SVN
 
+* More model refactoring. Added support for composite keys.
+
+* Added Dataset#empty? method (#46).
+
+* Fixed Symbol#to_field_name to support names with numbers and upper-case characters (#45).
+
+* Added install_no_doc rake task.
+
+* Partial refactoring of model code.
+
+* Refactored dataset-model association and added Dataset#set_row_filter method.
+
+* Added support for case-sensitive regexps to mysql adapter.
+
+* Changed mysql adapter to support encoding option as well.
+
+* Added charset/encoding option to postgres adapter.
+
+* Implemented Model.serialize (thanks Aman Gupta.)
+
 * Changed Model.create to INSERT DEFAULT VALUES instead of (id) VALUES (null) (brings back #41.)
 
 * Fixed Model.new to work without arguments.
