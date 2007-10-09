@@ -81,7 +81,7 @@ module Warehouse
         f.write tmpl.join("\n")
       end
       
-      self.class.session(Warehouse.session_options) if domain_is_blank && !attributes[:domain].blank?
+      ApplicationController.session(Warehouse.session_options) if domain_is_blank && !attributes[:domain].blank?
     end
   end
 

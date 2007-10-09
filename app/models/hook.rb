@@ -8,7 +8,7 @@ class Hook < ActiveRecord::Base
   before_create :set_default_active_state
   
   def properties
-    @properties ||= Warehouse::Hooks[name].new(nil, self)
+    @properties ||= Warehouse::Hooks[name].new(self, nil)
   end
   
   def options

@@ -1,4 +1,5 @@
 class RepositoriesController < ApplicationController
+  skip_before_filter :check_for_repository
   before_filter :admin_required,            :only   => :create
   before_filter :repository_admin_required, :except => :create
   before_filter :find_or_initialize_repository

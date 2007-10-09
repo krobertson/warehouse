@@ -1,4 +1,4 @@
-if @hook.save
+if @hook.errors.empty?
   page.call "location.reload"
 else
   page.alert "The hook options were invalid.  Replace this with a less obtrusive prompt"

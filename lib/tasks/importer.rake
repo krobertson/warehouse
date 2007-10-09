@@ -27,7 +27,7 @@ namespace :warehouse do
     require 'yaml'
     require 'config/initializers/svn'
     require 'lib/cache_key'
-    $LOAD_PATH << 'vendor/ruby-sequel/lib'
+    $LOAD_PATH << 'vendor/ruby-sequel/lib' << 'vendor/metaid-1.0'
     require 'lib/warehouse/command'
     ENV['DB_CONFIG'] ||= "config/database.yml"
     raise "No database config at #{ENV['DB_CONFIG'].inspect}" unless File.exist?(ENV['DB_CONFIG'])

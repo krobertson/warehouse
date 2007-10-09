@@ -1,3 +1,4 @@
+require 'metaid'
 module Warehouse
   class Command
     class << self

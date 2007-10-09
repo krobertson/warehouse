@@ -11,7 +11,7 @@ module Warehouse
       end
 
       def self.properties
-        @properties ||= new
+        @properties ||= new(nil)
       end
       
       def active

@@ -3,18 +3,18 @@ class SessionsController < ApplicationController
 
   def create
     if using_open_id?
-      cookies['use_svn'] = {:value => '0', :expires => 1.year.ago.utc, :domain => Warehouse.domain, :path => '/'}
+      cookies['use_svn'] = {:value => '0', :expires => 1.year.ago.utc, :domain => ".#{Warehouse.domain}", :path => '/'}
       authenticate_with_open_id do |result, identity_url|
         if result.successful? && self.current_user = User.find_or_create_by_identity_url(identity_url)
-          redirect_to root_path
+          successful_login
         else
           status_message :error, result.message || "Sorry, no user by that identity URL exists (#{identity_url})"
         end
       end
     else
-      cookies['use_svn'] = {:value => '1', :expires => 1.year.from_now.utc, :domain => Warehouse.domain, :path => '/'}
+      cookies['use_svn'] = {:value => '1', :expires => 1.year.from_now.utc, :domain => ".#{Warehouse.domain}", :path => '/'}
       if self.current_user = User.authenticate(params[:login], params[:password])
-        redirect_to root_path
+        successful_login
       else
         status_message :error, "Invalid Password"
       end
@@ -45,7 +45,7 @@ class SessionsController < ApplicationController
     self.current_user = User.find_by_token(params[:token]) unless params[:token].blank?
     return if request.get? && params[:open_id_complete].nil?
     if using_open_id?
-      cookies['use_svn'] = {:value => '0', :expires => 1.year.ago.utc, :domain => Warehouse.domain, :path => '/'}
+      cookies['use_svn'] = {:value => '0', :expires => 1.year.ago.utc, :domain => ".#{Warehouse.domain}", :path => '/'}
       authenticate_with_open_id do |result, identity_url|
         if result.successful?
           current_user.identity_url = identity_url
@@ -54,11 +54,17 @@ class SessionsController < ApplicationController
         end
       end
     else
-      cookies['use_svn'] = {:value => '1', :expires => 1.year.from_now.utc, :domain => Warehouse.domain, :path => '/'}
+      cookies['use_svn'] = {:value => '1', :expires => 1.year.from_now.utc, :domain => ".#{Warehouse.domain}", :path => '/'}
     end
     unless performed? 
       current_user.reset_token!
       redirect_to root_path
     end
+  end
+
+protected
+  def successful_login
+    cookies[:login_token] = {:value => "#{current_user.id};#{current_user.token}", :expires => 1.year.from_now.utc, :domain => "#{Warehouse.domain}", :path => '/'}
+    redirect_to root_path
   end
 end

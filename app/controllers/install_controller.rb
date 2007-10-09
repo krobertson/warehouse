@@ -36,6 +36,9 @@ class InstallController < ApplicationController
       @repository.save!
       @user.save!
     end
+    
+    cookies[:login_token] = {:value => "#{@user.id};#{@user.token}", :expires => 1.year.from_now.utc, :domain => ".#{Warehouse.domain}", :path => '/'}
+    
   rescue
     @message = $!.message
     logger.warn $!.message

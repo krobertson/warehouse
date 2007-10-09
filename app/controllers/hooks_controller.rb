@@ -7,7 +7,7 @@ class HooksController < ApplicationController
   end
   
   def create
-    @hook = current_repository.hooks.create!(:name => params[:name], :options => params[:hook])
+    @hook = current_repository.hooks.create(:name => params[:name], :options => params[:hook])
     respond_to do |format|
       format.js
     end
@@ -15,6 +15,7 @@ class HooksController < ApplicationController
   
   def update
     @hook.options = params[:hook]
+    @hook.save
     respond_to do |format|
       format.js
     end
