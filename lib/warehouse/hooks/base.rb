@@ -39,7 +39,14 @@ module Warehouse
       def valid?
         return false unless instance.nil? || active?
         return true if options[:prefix].to_s.empty?
-        options[:prefix] = Regexp.new(options[:prefix].to_s.gsub(/(^\/)|(\/$)/, '')) unless options[:prefix].is_a?(Regexp)
+        unless options[:prefix].is_a?(Regexp)
+          options[:prefix] = options[:prefix].to_s
+          options[:prefix].gsub!(/(^\/)|(\/$)/, '')
+          if options[:prefix] =~ /^[\w_\/-]+$/
+            options[:prefix] = "^" + options[:prefix]
+          end
+          options[:prefix] = Regexp.new(options[:prefix])
+        end
         @commit.dirs_changed.split(/\n/).any? { |path| path =~ options[:prefix] }
       end
       

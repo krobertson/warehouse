@@ -72,7 +72,7 @@ END_XML
       when Net::HTTPSuccess, Net::HTTPRedirection
         ## all good, we submitted...
       else
-        res.error!
+        raise "#{res.inspect} - #{res.body}"
     end
   end
 end
