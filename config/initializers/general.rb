@@ -44,8 +44,21 @@ require 'warehouse/plugins'
 require 'warehouse/hooks'
 require 'plugin'
 require 'hook'
-Warehouse::Hooks.discover
-Warehouse::Plugins.load
+
+begin
+  Warehouse::Hooks.discover
+rescue ActiveRecord::StatementInvalid
+  puts "Error loading hooks: #{$!}"
+  puts "Make sure the database was created successfully and migrated."
+end
+
+begin
+  Warehouse::Plugins.load
+rescue ActiveRecord::StatementInvalid
+  puts "Error loading plugins: #{$!}"
+  puts "Make sure the database was created successfully and migrated."
+end
+
 if RAILS_ENV == 'development'
   ENV["RAILS_ASSET_ID"] = ''
 end

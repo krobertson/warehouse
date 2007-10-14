@@ -1,16 +1,16 @@
 module Warehouse
   module Hooks
-    @@hook_path = RAILS_ENV == 'test' ? 'test/hooks' : 'vendor/plugins/hooks'
-    mattr_reader :hook_path
-
     class << self
       attr_accessor :discovered
       attr_accessor :index
+      attr_accessor :hook_path
 
       def [](plugin_name)
         index[plugin_name.to_s]
       end
     end
+    
+    self.hook_path = RAILS_ENV == 'test' ? 'test/hooks' : 'vendor/plugins/hooks'
 
     def self.for(repository)
       hooks = repository.hooks.index_by { |h| h.name }
