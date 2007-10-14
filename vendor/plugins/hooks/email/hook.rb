@@ -18,6 +18,7 @@ Warehouse::Hooks.define :email do
   
   option :recipients, "Email address(es) to send to."
   option :sender,     "Email address that the messages are sent from."
+  option :subject_prefix, "(optional)"
   
   first_commit_line do
     commit.log.split("\n").first
@@ -29,7 +30,8 @@ Warehouse::Hooks.define :email do
   end
   
   subject do
-    "#{commit.revision}: #{first_commit_line}"
+    prefix = options[:subject_prefix].to_s
+    "#{prefix.size == 0 ? nil : "[#{prefix}] "}#{commit.revision}: #{first_commit_line}"
   end
   
   body do
