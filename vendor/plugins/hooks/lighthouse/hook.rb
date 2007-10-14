@@ -72,7 +72,11 @@ END_XML
       when Net::HTTPSuccess, Net::HTTPRedirection
         ## all good, we submitted...
       else
-        raise "#{res.inspect} - #{res.body}"
+        if res.code == '422'
+          puts "Validation error: #{res.body}"
+        else
+          raise "#{res.inspect} - #{res.body}"
+        end
     end
   end
 end

@@ -34,20 +34,20 @@ Warehouse::Hooks.define :email do
   
   body do
     html = []
-    body << "<h2>#{commit.revision}: #{CGI.escapeHTML(first_commit_line)}</h2>"
-    body << "<p><strong>#{CGI.escapeHTML commit.author.capitalize}</strong> &#8212; " + 
+    html << "<h2>#{commit.revision}: #{CGI.escapeHTML(first_commit_line)}</h2>"
+    html << "<p><strong>#{CGI.escapeHTML commit.author.capitalize}</strong> &#8212; " + 
       commit.changed_at.strftime("%I:%M%p, %a %d %b %Y") + "</p>"
 
-    body << "<hr />"
+    html << "<hr />"
     
     if extended_commit_lines
-      body << "<h3>Complete change description:</h3>"
+      html << "<h3>Complete change description:</h3>"
       extended_commit_lines.each do |line|
-        body << "<p>#{CGI.escapeHTML(line)}</p>"
+        html << "<p>#{CGI.escapeHTML(line)}</p>"
       end
     end
     
-    body << "<pre>"
+    html << "<pre>"
     commit.diff.split("\n").each do |line|
       color = nil
       if line.match(/^Modified: /) || line.match(/^Added: /) || line.match(/^=+$/)
@@ -62,10 +62,10 @@ Warehouse::Hooks.define :email do
         color = "#000"
       end
 
-      body << "<span style=\"color:#{color};\">#{CGI.escapeHTML(line)}</span>\n"
+      html << "<span style=\"color:#{color};\">#{CGI.escapeHTML(line)}</span>"
     end
-    body << "</pre>"
-    body * "\n"
+    html << "</pre>"
+    html * "\n"
   end
   
   run do

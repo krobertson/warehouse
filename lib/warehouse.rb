@@ -49,18 +49,18 @@ module Warehouse
         ActionMailer::Base.delivery_method = mail_type.to_sym
         ActionMailer::Base.send("#{mail_type}_settings=", send("#{mail_type}_settings"))
       elsif Warehouse.const_defined?(:Mailer)
-        Warehouse::Mailer.test_send = :test_send
+        Warehouse::Mailer.delivery_method = :test_send
         return if RAILS_ENV == 'test' || mail_type.nil? || send("#{mail_type}_settings").nil? || send("#{mail_type}_settings").empty?
-        mail_type = mail_type.to_sym
         options   = send("#{mail_type}_settings")
-        Warehouse::Mailer.delivery_method = mail_type == :smtp ? :net_smtp : :sendmail
+        Warehouse::Mailer.delivery_method = mail_type == 'smtp' ? :net_smtp : :sendmail
         Warehouse::Mailer.config = {}
         return if Warehouse::Mailer.delivery_method == :sendmail
-        Warehouse::Mailer[:host] = options[:address]
-        Warehouse::Mailer[:port] = options[:port]
-        Warehouse::Mailer[:user] = options[:user_name]
-        Warehouse::Mailer[:pass] = options[:password]
-        Warehouse::Mailer[:auth] = options[:authentication]
+        Warehouse::Mailer.config[:domain] = options[:domain]         if options[:domain] && options[:domain].size > 0
+        Warehouse::Mailer.config[:host]   = options[:address]        if options[:address] && options[:address].size > 0
+        Warehouse::Mailer.config[:port]   = options[:port]           if options[:port]
+        Warehouse::Mailer.config[:user]   = options[:user_name]      if options[:user_name] && options[:user_name].size > 0
+        Warehouse::Mailer.config[:pass]   = options[:password]       if options[:password] && options[:password].size > 0
+        Warehouse::Mailer.config[:auth]   = options[:authentication] if options[:authentication] && options[:authentication].size > 0
       end
     end
     

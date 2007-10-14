@@ -1,10 +1,8 @@
 begin
-  require 'rubygems'
   require 'mailfactory'
   require 'net/smtp'
 rescue LoadError
-  puts "You need to install the mailfactory gem to use Merb::Mailer"
-  MERB_LOGGER.warn "You need to install the mailfactory gem to use Merb::Mailer"
+  puts "You need to install the mailfactory gem to use Warehouse::Mailer"
 end  
 
 class MailFactory
@@ -35,7 +33,12 @@ module Warehouse
   #   m.deliver!                     
 
   class Mailer
-    class_inheritable_accessor :config, :delivery_method, :deliveries
+    class << self
+      attr_accessor :config
+      attr_accessor :delivery_method
+      attr_accessor :deliveries
+    end
+
     attr_accessor :mail
     self.deliveries = []
     
@@ -47,18 +50,18 @@ module Warehouse
   
     # :plain, :login, or :cram_md5
     def net_smtp
-      Net::SMTP.start(config[:host], config[:port].to_i, config[:domain], 
-                      config[:user], config[:pass], (config[:auth].to_sym||:plain)) { |smtp|
+      Net::SMTP.start(self.class.config[:host], self.class.config[:port].to_i, self.class.config[:domain], 
+                      self.class.config[:user], self.class.config[:pass], (self.class.config[:auth].to_sym||:plain)) { |smtp|
         smtp.send_message(@mail.to_s, @mail.from.first, @mail.to)
       }
     end
     
     def test_send
-      deliveries << @mail
+      self.class.deliveries << @mail
     end
     
     def deliver!
-      send(delivery_method || :net_smtp)
+      send(self.class.delivery_method || :net_smtp)
     end
       
     def attach(file_or_files, filename = file_or_files.is_a?(File) ? File.basename(file_or_files.path) : nil, 
@@ -72,8 +75,7 @@ module Warehouse
     end
       
     def initialize(o={})
-      self.config = :sendmail if config.nil?
-      o[:rawhtml] = o.delete(:html)
+      self.class.config = :sendmail if self.class.config.nil?
       m = MailFactory.new()
       o.each { |k,v| m.send "#{k}=", v }
       @mail = m
