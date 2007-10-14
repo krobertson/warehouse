@@ -8,7 +8,11 @@ class Hook < ActiveRecord::Base
   before_create :set_default_active_state
   
   def properties
-    @properties ||= Warehouse::Hooks[name].new(self, nil)
+    if @properties.nil?
+      @properties = Warehouse::Hooks[name].new(nil, options)
+      @properties.instance = self
+    end
+    @properties
   end
   
   def options

@@ -13,6 +13,13 @@ module Warehouse
         end
       end
       
+      attr_reader :repo_path
+      attr_reader :revision
+      
+      def changed_at
+        @changed_at ||= Time.parse(svnlook(:date))
+      end
+      
       def author
         @author ||= svnlook :author
       end

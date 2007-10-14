@@ -23,6 +23,7 @@ end
 
 namespace :warehouse do
   task :init do
+    require 'set'
     require 'logger'
     require 'yaml'
     require 'config/initializers/svn'
@@ -51,6 +52,7 @@ namespace :warehouse do
   task :post_commit do
     ENV['REPO'] ||= ENV['REPO_PATH'].split('/').last if ENV['REPO_PATH']
     Rake::Task['warehouse:sync'].invoke
+    Warehouse::Hooks.discover
     @command.process_hooks_for(ENV['REPO'], ENV['REPO_PATH'], ENV['REVISION'] || ENV['CHANGESET'])
   end
   

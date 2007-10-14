@@ -3,8 +3,8 @@ load_hook :lighthouse
 
 context "Lighthouse" do
   setup do
-    @commit = stub(:revision => 5, :changed => ['M foo', 'A foo/bar'].join("\n"), :author => 'rick', :log => 'add bar', :date => 'abc (def)')
-    @hook   = Warehouse::Hooks::Lighthouse.new(Hook.new, @commit)
+    @commit = stub(:revision => 5, :changed => ['M foo', 'A foo/bar'].join("\n"), :author => 'rick', :log => 'add bar', :changed_at => Time.utc(2007, 1, 1))
+    @hook   = Warehouse::Hooks::Lighthouse.new(@commit)
   end
   
   specify "should keep option order" do
@@ -16,18 +16,18 @@ context "Lighthouse" do
   end
   
   specify "should get use default token if no user token is available" do
-    hook = Warehouse::Hooks::Lighthouse.new(Hook.new(:options => {:token => 'test'}), @commit)
+    hook = Warehouse::Hooks::Lighthouse.new(@commit, :token => 'test')
     hook.current_token.should == 'test'
   end
   
   specify "should get use user token if available" do
-    hook = Warehouse::Hooks::Lighthouse.new(Hook.new(:options => {:token => 'test', :users => 'rick foo'}), @commit)
+    hook = Warehouse::Hooks::Lighthouse.new(@commit, :token => 'test', :users => 'rick foo')
     hook.current_token.should == 'foo'
   end
   
   specify "should construct url from options" do
-    hook = Warehouse::Hooks::Lighthouse.new(Hook.new(:options => {:token => 'test', :project => '1'}), @commit)
-    hook.changeset_url.should == "/projects/1/changesets.xml?_token=test"
+    hook = Warehouse::Hooks::Lighthouse.new(@commit, :token => 'test', :project => '1')
+    hook.changeset_url.path.should == "/projects/1/changesets.xml"
   end
   
   specify "should construct changeset xml" do
@@ -37,7 +37,7 @@ context "Lighthouse" do
   <body>add bar</body>
   <changes>#{CGI.escapeHTML(@hook.commit_changes.to_yaml)}</changes>
   <revision>5</revision>
-  <changed-at type="datetime">abc</changed-at>
+  <changed-at type="datetime">2007-01-01T00:00:00Z</changed-at>
 </changeset>
 END_XML
 

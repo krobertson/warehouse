@@ -48,7 +48,7 @@ Warehouse::Hooks.define :lighthouse do
   <body>#{CGI.escapeHTML(commit.log)}</body>
   <changes>#{CGI.escapeHTML(commit_changes.to_yaml)}</changes>
   <revision>#{CGI.escapeHTML(commit.revision.to_s)}</revision>
-  <changed-at type="datetime">#{CGI.escapeHTML(commit.date.split('(').first.strip)}</changed-at>
+  <changed-at type="datetime">#{CGI.escapeHTML(commit.changed_at.xmlschema)}</changed-at>
 </changeset>
 END_XML
   end
@@ -58,12 +58,21 @@ END_XML
   end
   
   changeset_url do
-    '%s/projects/%d/changesets.xml?_token=%s' % [options[:account], options[:project], current_token]
+    URI.parse('/projects/%d/changesets.xml' % options[:project])
   end
   
   run do
-    Net::HTTP.start "#{options[:account]}.lighthouseapp.com" do |http|
-      http.post changeset_url, changeset_xml
+    req = Net::HTTP::Post.new(changeset_url.path) 
+    req.basic_auth current_token, 'x' # to ensure authentication
+    req.body = changeset_xml.strip
+    req.set_content_type('application/xml')
+    
+    res = Net::HTTP.new("#{options[:account]}.lighthouseapp.com").start {|http| http.request(req) }
+    case res
+      when Net::HTTPSuccess, Net::HTTPRedirection
+        ## all good, we submitted...
+      else
+        res.error!
     end
   end
 end

@@ -1,11 +1,12 @@
 module Warehouse
   module Hooks
     class Base < Extension
-      attr_reader :instance
       attr_reader :commit
+      
+      # The instance reference lets this class act like a hook record in the database.
+      attr_accessor :instance
 
-      def initialize(instance, commit = nil, &block)
-        @instance = instance
+      def initialize(commit = nil, options = {}, &block)
         @commit   = commit
         super(options, &block)
       end
@@ -33,14 +34,10 @@ module Warehouse
       def label=(value)
         @instance && @instance.label = value
       end
-      
-      def options
-        (@instance && @instance.options) || {}
-      end
 
       # checks if the commit matches the optional prefix
       def valid?
-        return false unless active?
+        return false unless instance.nil? || active?
         return true if options[:prefix].to_s.empty?
         options[:prefix] = Regexp.new(options[:prefix].to_s.gsub(/(^\/)|(\/$)/, '')) unless options[:prefix].is_a?(Regexp)
         @commit.dirs_changed.split(/\n/).any? { |path| path =~ options[:prefix] }
