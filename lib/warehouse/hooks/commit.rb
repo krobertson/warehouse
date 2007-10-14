@@ -32,6 +32,10 @@ module Warehouse
         @log ||= svnlook :log
       end
       
+      def diff
+        @diff ||= svnlook :diff
+      end
+      
       def changed
         @changed ||= svnlook :changed
       end

@@ -29,6 +29,7 @@ namespace :warehouse do
     require 'config/initializers/svn'
     require 'lib/cache_key'
     $LOAD_PATH << 'vendor/ruby-sequel/lib' << 'vendor/metaid-1.0'
+    require 'lib/warehouse/mailer'
     require 'lib/warehouse/command'
     require 'lib/warehouse/extension'
     require 'lib/warehouse/hooks'

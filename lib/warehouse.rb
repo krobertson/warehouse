@@ -43,11 +43,25 @@ module Warehouse
     end
     
     def setup_mail!
-      return unless Object.const_defined?(:ActionMailer)
-      ActionMailer::Base.delivery_method = :test
-      return if RAILS_ENV == 'test' || mail_type.nil? || send("#{mail_type}_settings").nil? || send("#{mail_type}_settings").empty?
-      ActionMailer::Base.delivery_method = mail_type.to_sym
-      ActionMailer::Base.send("#{mail_type}_settings=", send("#{mail_type}_settings"))
+      if Object.const_defined?(:ActionMailer)
+        ActionMailer::Base.delivery_method = :test
+        return if RAILS_ENV == 'test' || mail_type.nil? || send("#{mail_type}_settings").nil? || send("#{mail_type}_settings").empty?
+        ActionMailer::Base.delivery_method = mail_type.to_sym
+        ActionMailer::Base.send("#{mail_type}_settings=", send("#{mail_type}_settings"))
+      elsif Warehouse.const_defined?(:Mailer)
+        Warehouse::Mailer.test_send = :test_send
+        return if RAILS_ENV == 'test' || mail_type.nil? || send("#{mail_type}_settings").nil? || send("#{mail_type}_settings").empty?
+        mail_type = mail_type.to_sym
+        options   = send("#{mail_type}_settings")
+        Warehouse::Mailer.delivery_method = mail_type == :smtp ? :net_smtp : :sendmail
+        Warehouse::Mailer.config = {}
+        return if Warehouse::Mailer.delivery_method == :sendmail
+        Warehouse::Mailer[:host] = options[:address]
+        Warehouse::Mailer[:port] = options[:port]
+        Warehouse::Mailer[:user] = options[:user_name]
+        Warehouse::Mailer[:pass] = options[:password]
+        Warehouse::Mailer[:auth] = options[:authentication]
+      end
     end
     
     def setup_caching!
