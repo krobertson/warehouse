@@ -54,7 +54,8 @@ context "User" do
   end
   
   specify "should find administered repositories" do
-    users(:rick).administered_repositories.should == [repositories(:sample)]
+    users(:rick).administered_repositories.should   == [repositories(:sample)]
+    users(:justin).administered_repositories.should == []
   end
 end
 

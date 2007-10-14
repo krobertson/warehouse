@@ -90,15 +90,18 @@ class ApplicationController < ActionController::Base
     end
     
     def retrieve_repository_member
+      return true if admin?
       return nil unless current_repository
       return true if current_repository.public?
       return nil unless logged_in?
-      current_repository.backend && current_repository.member?(current_user, repository_path)
+      current_repository.member?(current_user, repository_path)
     end
     
     def retrieve_repository_admin
+      #debugger
+      return true if admin?
       return nil unless current_repository
-      return nil unless logged_in? || current_repository.public?
+      return nil unless current_repository.public? || logged_in?
       current_repository.admin?(current_user)
     end
     
@@ -108,7 +111,6 @@ class ApplicationController < ActionController::Base
     end
     
     def retrieve_current_user
-      RAILS_DEFAULT_LOGGER.warn "COOKIE: #{cookies[:login_token].inspect}"
       @current_user || 
         authenticate_with_http_basic { |u, p| User.find_by_token(u) } ||
         (cookies[:login_token] && User.find_by_id_and_token(*cookies[:login_token].split(";"))) || 

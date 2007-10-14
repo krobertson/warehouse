@@ -1,14 +1,15 @@
 class RepositoriesController < ApplicationController
   skip_before_filter :check_for_repository
-  before_filter :admin_required,            :only   => :create
-  before_filter :repository_admin_required, :except => :create
+  before_filter :admin_required, :only   => :create
+  before_filter :login_required, :only   => :index
+  before_filter :repository_admin_required,  :except => [:create, :index]
   before_filter :find_or_initialize_repository
   
   cache_sweeper :repository_sweeper, :only => [:create, :update, :destroy]
 
   def index
     @repositories = admin? ? Repository.find(:all) : current_user.administered_repositories
-    if current_repository
+    if current_repository && @repositories.include?(current_repository)
       @repositories.unshift current_repository
       @repositories.uniq!
     end
@@ -56,13 +57,5 @@ class RepositoriesController < ApplicationController
     def find_or_initialize_repository
       @repository = params[:id] ? (admin? ? Repository : current_user.administered_repositories).find(params[:id]) : Repository.new
       @repository.attributes = params[:repository] unless params[:repository].blank?
-    end
-
-    def check_for_repository
-      (repository_subdomain.blank? && admin?) || super
-    end
-    
-    def repository_admin_required
-      (repository_subdomain.blank? && admin?) || super
     end
 end

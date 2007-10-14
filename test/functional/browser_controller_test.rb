@@ -32,7 +32,7 @@ context "Browser Controller Permissions" do
   
   specify "should accept anonymous public repo" do
     @controller.stubs(:current_repository).returns(repositories(:sample))
-    @controller.stubs(:current_user).returns(:false)
+    @controller.stubs(:current_user).returns(nil)
     repositories(:sample).stubs(:public?).returns(true)
     repositories(:sample).stubs(:node).returns(stub_node)
     get :index, :paths => []
@@ -41,7 +41,7 @@ context "Browser Controller Permissions" do
   
   specify "should accept anonymous to public repo" do
     @controller.stubs(:current_repository).returns(repositories(:sample))
-    @controller.stubs(:current_user).returns(:false)
+    @controller.stubs(:current_user).returns(nil)
     repositories(:sample).stubs(:public?).returns(true)
     repositories(:sample).stubs(:node).returns(stub_node)
     get :index, :paths => []
