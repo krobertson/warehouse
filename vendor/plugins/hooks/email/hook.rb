@@ -1,4 +1,3 @@
-require 'yaml'
 require 'cgi'
 
 Warehouse::Hooks.define :email do
