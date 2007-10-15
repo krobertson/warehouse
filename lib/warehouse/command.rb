@@ -291,7 +291,7 @@ module Warehouse
       end
 
       def hooks_for(repo)
-        connection[:hooks].where(:repository_id => repo[:id]).order(:name)
+        connection[:hooks].where(:repository_id => repo[:id], :active => true).order(:name)
       end
     
       def indexed_hooks(hooks)

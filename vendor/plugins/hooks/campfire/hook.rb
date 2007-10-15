@@ -18,7 +18,7 @@ Warehouse::Hooks.define :campfire do
   
   option :campfire, "Your campfire subdomain"
   option :room, "(optional) Your Campfire room name."
-  option :user, "Your user name.  Can be an anchor if you want a link."
+  option :user, "Email used to log into campfire.  (You should use a dedicated account for this)"
   option :password, "Your campfire password"
   option :url, "A string format for a direct link to a changeset.  ex: 'http://%s.wh.yourdomain.com/changesets/%s'"
   
@@ -35,11 +35,12 @@ Warehouse::Hooks.define :campfire do
     campfire.login options[:user], options[:password]
     room = \
       if options[:room]
-        campfire.rooms.select { |r| r.name == options[:room] } || campfire.rooms.first
+        campfire.rooms.detect { |r| r.name == options[:room] } || campfire.rooms.first
       else
         campfire.rooms.first
       end
     
     room.speak "#{repo[:subdomain]}: #{commit.author} committed [#{commit.revision}] #{permalink}"
+    room.paste "#{commit.log}\n#{commit.changes}"
   end
 end
