@@ -33,13 +33,7 @@ Warehouse::Hooks.define :campfire do
   run do
     campfire = Tinder::Campfire.new options[:campfire]
     campfire.login options[:user], options[:password]
-    room = \
-      if options[:room]
-        campfire.rooms.detect { |r| r.name == options[:room] } || campfire.rooms.first
-      else
-        campfire.rooms.first
-      end
-    
+    room = options[:room] ? Tinder::Room.new(campfire, options[:room]) : campfire.rooms.first
     room.speak "#{repo[:subdomain]}: #{commit.author} committed [#{commit.revision}] #{permalink}"
     room.paste "#{commit.log}\n#{commit.changed}"
   end
