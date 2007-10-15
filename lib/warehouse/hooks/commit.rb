@@ -4,8 +4,8 @@ module Warehouse
       class << self
         attr_accessor :svnlook_path
 
-        def run(repo_path, revision, hook_options)
-          commit = new(repo_path, revision)
+        def run(repo, repo_path, revision, hook_options)
+          commit = new(repo, repo_path, revision)
           hook_options.each do |(hook_class, options)|
             hook = hook_class.new(commit, options)
             hook.run! if hook.valid?
@@ -13,6 +13,7 @@ module Warehouse
         end
       end
       
+      attr_reader :repo
       attr_reader :repo_path
       attr_reader :revision
       
@@ -42,7 +43,8 @@ module Warehouse
       
       self.svnlook_path = '/usr/bin/svnlook'
       
-      def initialize(repo_path, revision)
+      def initialize(repo, repo_path, revision)
+        @repo      = repo
         @repo_path = repo_path
         @revision  = revision
       end

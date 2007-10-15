@@ -2,12 +2,14 @@ module Warehouse
   module Hooks
     class Base < Extension
       attr_reader :commit
-      
+      attr_reader :repo
+
       # The instance reference lets this class act like a hook record in the database.
       attr_accessor :instance
 
       def initialize(commit = nil, options = {}, &block)
         @commit   = commit
+        @repo     = commit.repo
         super(options, &block)
       end
 

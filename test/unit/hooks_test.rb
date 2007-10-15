@@ -73,7 +73,7 @@ end
 context "Commit" do
   %w(author dirs_changed log changed).each do |attr|
     specify "#{attr} should expire" do
-      commit = Warehouse::Hooks::Commit.new('', 1)
+      commit = Warehouse::Hooks::Commit.new(nil, '', 1)
       commit.expects(:svnlook).returns(5)
       2.times { commit.send(attr).should == 5 }
     end
@@ -81,7 +81,7 @@ context "Commit" do
   
   specify "should only run valid hooks" do
     ValidHook.any_instance.expects(:run!)
-    Warehouse::Hooks::Commit.run '', 1, [[ValidHook, {}], [InvalidHook, {}]]
+    Warehouse::Hooks::Commit.run nil, '', 1, [[ValidHook, {}], [InvalidHook, {}]]
   end
 end
 
