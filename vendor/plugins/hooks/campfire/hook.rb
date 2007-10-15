@@ -41,6 +41,6 @@ Warehouse::Hooks.define :campfire do
       end
     
     room.speak "#{repo[:subdomain]}: #{commit.author} committed [#{commit.revision}] #{permalink}"
-    room.paste "#{commit.log}\n#{commit.changes}"
+    room.paste "#{commit.log}\n#{commit.changed}"
   end
 end
