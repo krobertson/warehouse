@@ -12,7 +12,7 @@ context "Hooks" do
         run      { "hi #{receiver}" }
       end
       
-      Warehouse::Hooks::HookMultipleMethods.new(nil).run.should == 'hi bob'
+      Warehouse::Hooks::HookMultipleMethods.new(stub(:repo => nil)).run.should == 'hi bob'
       
       Warehouse::Hooks.const_defined?(:HookMultipleMethods).should == true
     ensure
@@ -33,7 +33,7 @@ context "Base" do
   end
   
   specify "should check validity of hook" do
-    commit = stub(:dirs_changed => %w(foo/bar foo baz).join("\n"))
+    commit = stub(:dirs_changed => %w(foo/bar foo baz).join("\n"), :repo => nil)
     Warehouse::Hooks::HookTest.new(commit).should.be.valid
     Warehouse::Hooks::HookTest.new(commit, :prefix => '').should.be.valid
     Warehouse::Hooks::HookTest.new(commit, :prefix => 'foo').should.be.valid

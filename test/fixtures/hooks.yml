@@ -6,6 +6,7 @@ sample_lighthouse:
   options: "--- \nprefix: trunk\naccount: abc\ntoken: \"\"\nproject: \"3\"\nusers: \"\"\n"
   created_at: 2007-07-19 09:39:00
   updated_at: 2007-07-19 09:39:00
+  active: true
 example_lighthouse:
   id: 2
   repository_id: 2

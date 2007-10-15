@@ -3,7 +3,8 @@ load_hook :lighthouse
 
 context "Lighthouse" do
   setup do
-    @commit = stub(:revision => 5, :changed => ['M foo', 'A foo/bar'].join("\n"), :author => 'rick', :log => 'add bar', :changed_at => Time.utc(2007, 1, 1))
+    @repo   = {:id => 1, :subdomain => 'foo'}
+    @commit = stub(:revision => 5, :changed => ['M foo', 'A foo/bar'].join("\n"), :author => 'rick', :log => 'add bar', :changed_at => Time.utc(2007, 1, 1), :repo => @repo)
     @hook   = Warehouse::Hooks::Lighthouse.new(@commit)
   end
   
