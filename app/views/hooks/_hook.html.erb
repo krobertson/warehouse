@@ -22,9 +22,10 @@
   </div>
   <ul id="hook-instances">
   <% @hooks[hook.plugin_name].each do |hk| -%>
-    <li id="hook-<%= hk.id %>">
+    <li id="hook-<%= hk.id %>"<%= %( class="inactive") unless hk.active? %>>
       <p>
-        <%= hk.properties.title %>: <%= hk.label %>
+        <%= "(inactive)" unless hk.active? %>
+        <%= hk.label.blank? ? 'No label' : hk.label %>
         <% if hk.properties.prefix -%>(prefix: <%=h hk.properties.prefix %>)<% end -%>
       </p>
       <ul class="admin-controls">
