@@ -1,0 +1,6 @@
+<% @fullscreen = true %>
+<%# title "Changeset #{@changeset.revision}, #{h(@changeset.message)}" %>
+
+<%= render :partial => "browser/control_center", :locals => { :node => @node } %>
+
+<%= unified_diff_for @node, :old_rev => params[:r] %>

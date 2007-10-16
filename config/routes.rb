@@ -1,6 +1,8 @@
 ActionController::Routing::Routes.draw do |map|
   map.connect ':asset/:plugin/*paths', :asset => /images|javascripts|stylesheets/, :controller => 'assets', :action => 'show'
 
+  map.diff 'changesets/diff/:rev/*paths', :controller => 'changesets', :action => 'diff', :rev => /r\d+/
+
   map.resources :bookmarks
   map.resources :plugins
   map.resources :hooks

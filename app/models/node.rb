@@ -113,34 +113,96 @@ class Node
 
   def unified_diff
     unless @unified_diff || !text?
-      differ = Svn::Fs::FileDiff.new(previous_root, path, root, path)
-  
-      if differ.binary?
-        @unified_diff = ''
-      else
-        old = "#{path} (revision #{previous_root.node_created_rev(path)})"
-        cur = "#{path} (revision #{root.node_created_rev(path)})"
-        @unified_diff = differ.unified(old, cur)
-      end
+      @unified_diff = self.class.unified_diff_for previous_root, root, path
     end
     @unified_diff
   end
 
-  protected
-    def root
-      @root ||= backend.fs.root(base_revision)
-    end
+  def unified_diff_for(old_rev, new_rev, diff_path)
+    old_rev  = find_revision old_rev, diff_path
+    new_rev  = find_revision new_rev, diff_path
+    sorted   = check_revisions(old_rev, new_rev)
+    old_root = find_root_for_revision(sorted[0], diff_path)
+    new_root = find_root_for_revision(sorted[1], diff_path)
+    
+    differ = Svn::Fs::FileDiff.new(old_root, diff_path, new_root, diff_path)
 
-    def prop(const, rev = nil)
-      backend.fs.prop(const, rev || revision)
+    if differ.binary?
+      ''
+    else
+      old = "#{diff_path} (revision #{old_root.node_created_rev(diff_path)})"
+      cur = "#{diff_path} (revision #{new_root.node_created_rev(diff_path)})"
+      differ.unified(old, cur)
     end
+  end
+  
+  def find_root_for_revision(rev, diff_path)
+    return rev           if rev.respond_to?(:node_prop)
+    return root          if rev ==  base_revision
+    return previous_root if rev == (base_revision - 1)
+    backend.fs.root find_revision(rev, diff_path)
+  end
+  
+  def find_revision(rev, diff_path)
+    return rev.node_created_rev(diff_path) if rev.respond_to?(:node_created_rev)
+    case rev
+      when /^\d+$/
+        rev.to_i
+      when Date
+        changeset = repository.changesets.find_by_date(rev)
+        changeset ? changeset.revision.to_i : nil
+      when Fixnum
+        rev
+      when String
+        rev
+      else raise "Invalid Revision: #{rev.inspect}"
+    end
+  end
+  
+  def check_revisions(old_rev, new_rev)
+    if old_rev.is_a?(String) && new_rev.is_a?(String)
+      raise "Can't have two relative revisions: #{old_rev.inspect} - #{new_rev.inspect}"
+    end
+    
+    if old_rev.is_a?(String)
+      old_rev = relative_revision_to(new_rev, old_rev)
+    elsif new_rev.is_a?(String)
+      new_rev = relative_revision_to(old_rev, new_rev)
+    end
+    
+    unless old_rev.is_a?(Fixnum) && new_rev.is_a?(Fixnum)
+      raise "Can't have two non-integer revisions: #{old_rev.inspect} - #{new_rev.inspect}"
+    end
+    [old_rev, new_rev].sort
+  end
+  
+  def relative_revision_to(revision, value)
+    case value
+      when /^h/i
+        repository.latest_revision
+      when /^p/i
+        revision - 1
+      when /^n/i
+        revision < repository.latest_revision ? (revision + 1) : revision
+      else
+        raise "Bad relative revision: #{value.inspect}.  Only HEAD/PREV/NEXT supported"
+    end
+  end
 
-    def previous_root
-      @previous_root ||= backend.fs.root(base_revision - 1)
-    end
+  def root
+    @root ||= backend.fs.root(base_revision)
+  end
 
-    def convert_to_utf8(content, content_charset)
-      return content if content_charset == 'utf-8'
-      Iconv.conv('utf-8', content_charset, content) rescue content
-    end
+  def prop(const, rev = nil)
+    backend.fs.prop(const, rev || revision)
+  end
+
+  def previous_root
+    @previous_root ||= backend.fs.root(base_revision - 1)
+  end
+
+  def convert_to_utf8(content, content_charset)
+    return content if content_charset == 'utf-8'
+    Iconv.conv('utf-8', content_charset, content) rescue content
+  end
 end

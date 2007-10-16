@@ -3,6 +3,7 @@ class ChangesetsController < ApplicationController
   before_filter :repository_subdomain_or_login_required, :only => :index
   before_filter :repository_member_required, :except => [:index, :public]
   before_filter :root_domain_required, :only => :public
+  before_filter :find_node, :only => :diff
 
   caches_action_content :index, :show, :public
   
@@ -125,5 +126,18 @@ class ChangesetsController < ApplicationController
         flash[:notice] = "Bad ?rev parameter: #{params[:rev].inspect}"
         redirect_to changesets_path
       end
+    end
+
+    def find_node
+      case params[:r]
+        when 'numb'
+          params[:r] = params[:n]
+        when 'date'
+          params[:r] = Date.new(params[:date][:year].to_i, params[:date][:month].to_i, params[:date][:day].to_i)
+        when nil
+          params[:r] = 'h'
+      end
+      @revision    = params[:rev][1..-1].to_i if params[:rev]
+      @node        = current_repository.node(params[:paths] * '/', @revision)
     end
 end

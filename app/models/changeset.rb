@@ -35,6 +35,10 @@ class Changeset < ActiveRecord::Base
   def self.find_by_paths(paths, options = {})
     with_paths(paths) { find :first, options }
   end
+  
+  def self.find_by_date(date)
+    find :first, :conditions => ['changesets.changed_at >= ?', date]
+  end
 
   def to_param
     revision.to_s

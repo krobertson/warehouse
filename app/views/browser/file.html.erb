@@ -28,6 +28,9 @@
 <div id="crumbs">
   <ul class="clearfix"><%= link_to_crumbs @node.path %></ul>
 </div>
+
+<%= render :partial => "control_center", :locals => { :node => @node } %>
+
 <% if @node.text? -%>
     <table class="diff sourcecode file-source" cellspacing="0" cellpadding="0">
       <thead>

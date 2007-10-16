@@ -19,28 +19,6 @@
 </div>
 <% end -%>
 
-<% if @changeset.diffable? -%>
-<div id="control-center">
-  <form action="/wee" id="diff-form">
-  Diff this changeset:
-  <select id="diff-with">
-    <option value="">with...</option>
-    <option value="head">with HEAD</option>
-    <option value="prev">with PREV</option>
-    <option value="base">with BASE</option>
-    <option value="comm">with COMMITTED</option>
-    <option value="date">with a specific date</option>
-    <option value="numb">with another changeset</option>
-  </select>
-  <input id="diff-num" value="" size="6" style="display:none" />
-  <span id="diff-date" style="display:none">
-    <%= select_date(Date.today, :order => [:month, :day, :year]) %>
-  </span>
-  <input type="submit" value="Go &raquo;" id="diff-submit" style="display:none" />
-  </form>
-</div>
-<% end -%>
-
 <ul id="change-list">
 <%= render :partial => "changes", :locals => { :changeset => @changeset, :changes => @changes } %>
 </ul>

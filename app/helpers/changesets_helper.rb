@@ -1,15 +1,32 @@
 # Parts were adapted from Retrospectiva
 # http://retrospectiva.org/browse/trunk/app/helpers/changesets_helper.rb?rev=141
 module ChangesetsHelper
-  def diff_for(change)
-    raw_diff = change.unified_diff
+  def link_to_diff(text, revision, *args)
+    options = args.last.is_a?(Hash) ? args.pop : {}
+    link_to text, diff_path("r#{revision}", args.first.split("/")), options
+  end
+
+  def unified_diff_for(node, options = {})
+    options[:old_rev] ||= node.previous_root
+    options[:new_rev] ||= node.root
+    options[:path]    ||= node.path
+
+    raw_diff = node.unified_diff_for options[:old_rev], options[:new_rev], options[:path]
+    puts "RAW DIFF:::::::: #{raw_diff.inspect}"
     diff_line_regex = %r{@@ -(\d+),?(\d*) \+(\d+),?(\d*) @@}
     lines = raw_diff.split("\n")
         
     original_revision_num = lines[0].scan(%r{(\d+)}).flatten.first
     current_revision_num = lines[1].scan(%r{(\d+)}).flatten.first
-    original_revision = link_to_node(original_revision_num, change.path, original_revision_num)
-    current_revision  = link_to_node(current_revision_num, change.path, current_revision_num)
+    original_revision = nil
+    current_revision  = nil
+    if controller.action_name == 'diff'
+      original_revision = link_to_diff(original_revision_num, original_revision_num, options[:path])
+      current_revision  = link_to_diff(current_revision_num,  current_revision_num,  options[:path])
+    else
+      original_revision = link_to_node(original_revision_num, options[:path], original_revision_num)
+      current_revision  = link_to_node(current_revision_num, options[:path], current_revision_num)
+    end
     
     th_pnum = content_tag('th', original_revision, :class => 'csnum')
     th_cnum = content_tag('th', current_revision, :class => 'csnum')  
@@ -43,14 +60,11 @@ module ChangesetsHelper
     
     %(
     <div class="diff-table">
-    <table class="diff" cellspacing="0" cellpadding="0" id="#{dom_id change}">
+    <table class="diff" cellspacing="0" cellpadding="0" id="#{options[:id]}">
       <thead>
         <tr class="controls">
           <td colspan="3">
-            <div class="control">
-              <span class="csfile">#{link_to_node change.path, change.node, current_revision_num}</span>
-              #{link_to 'diff', formatted_changeset_change_path(@changeset, change, :diff), :class => 'csdiff'}
-            </div>
+            <div class="control">#{yield original_revision_num, current_revision_num if block_given?}</div>
           </td>
         </tr>
         <tr>
@@ -63,5 +77,14 @@ module ChangesetsHelper
     </table>
     </div>
     )
+  end
+  
+  def diff_for(change)
+    unified_diff_for change.node, :id => dom_id(change) do |original_revision_num, current_revision_num|
+      %(
+      <span class="csfile">#{link_to_node change.path, change.node, current_revision_num}</span>
+      #{link_to 'diff', formatted_changeset_change_path(@changeset, change, :diff), :class => 'csdiff'}
+      )
+    end
   end
 end

@@ -256,7 +256,7 @@ Event.addBehavior({
   },
   
   '#diff-with:change': function(event) {
-    var activeValues = ['head', 'prev', 'base', 'comm'];
+    var activeValues = ['head', 'prev', 'next'];
     var curValue = $F(this);
     if(activeValues.include(curValue)) {
       $('diff-form').submit();
