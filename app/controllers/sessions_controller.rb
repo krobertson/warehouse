@@ -23,6 +23,7 @@ class SessionsController < ApplicationController
   
   def destroy
     reset_session
+    cookies[:login_token] = {:value => '', :expires => 1.year.ago}
     redirect_to root_path
   end
   

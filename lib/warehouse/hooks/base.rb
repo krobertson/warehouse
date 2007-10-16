@@ -9,7 +9,7 @@ module Warehouse
 
       def initialize(commit = nil, options = {}, &block)
         @commit   = commit
-        @repo     = commit.repo
+        @repo     = commit ? commit.repo : nil
         super(options, &block)
       end
 
