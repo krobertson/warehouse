@@ -214,7 +214,7 @@ li#all-history {
 
 li#all-history a {
   padding-left: 20px;
-  background: url(../images/app/icons/clock.png) 0 50% no-repeat;
+  background: url(../images/app/icons/clock.png) 0 50% no-repeat !important;
   display: block;
   color: #555;
 }
@@ -773,40 +773,9 @@ span.cp {
 #control-center {
   margin-bottom: 20px;
   position: relative;
-  height: 30px;
-}
-
-#control-center ul {
-  list-style: none;
-  position: absolute;
-  right: 0;
-}
-
-#control-center li {
-  display: inline;
-  font-size: 92%;
-}
-
-#control-center label {
+  padding: 10px;
+  background: #fff;
   font-weight: bold;
-  color: #555;
-}
-
-#control-center li a {
-  display: block;
-  padding: 3px 20px 3px 28px;
-  border-right: 1px dotted #ccc;
-  color: #555;
-  float: left;
-  font-weight: bold;
-  font-family: Verdana, Helvetica, Arial, sans-serif;
-  font-size: 82%;
-  text-shadow: 2px 2px #f1f1f1;
-  background: #ddd url(../images/app/icons/diff.png) 8px 50% no-repeat;
-}
-
-#control-center li a:hover {
-  background-color: #f7f7f7;
 }
 
 li#diffprev a {

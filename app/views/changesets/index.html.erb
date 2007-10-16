@@ -51,7 +51,7 @@
 </div>
 <% elsif repository_subdomain.blank? -%>
 <div class="sideblock">
-  <h3><%= 'Public ' if controller.action_name == 'public' %>Repositories</h3>
+  <h3><%= 'Public ' if controller.action_name == 'public' %>Repository Activity</h3>
   <ul id="repo-list" class="slist">
     <% if @repositories.uniq.sort_by(&:name).each do |repo| -%>
     <li><%= link_to h(repo.name), hosted_url(repo, :changesets) %></li>
@@ -59,9 +59,9 @@
     <li><a>No Repositories.</a></li>
     <% end -%>
     <% if controller.action_name == 'public' -%>
-    <li><%= link_to 'View Your Repository Activity', changesets_path %></li>
+    <li id="all-history"><%= link_to 'Repository activity &raquo;', changesets_path %></li>
     <% elsif logged_in? -%>
-    <li><%= link_to 'View Public Repository Activity', public_changesets_path %></li>
+    <li id="all-history"><%= link_to 'All public activity &raquo;', public_changesets_path %></li>
     <% end -%>
   </ul>
 </div>

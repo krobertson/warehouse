@@ -50,7 +50,6 @@ Importer.prototype = {
   },
   
   step: function(progress) {
-    console.log(progress);
     if(this.firstRun) progress = this.options.startProgress;
     if(progress < 100) {
       new Ajax.Request('/repositories/' + this.repoId + '/sync', {
@@ -256,15 +255,20 @@ Event.addBehavior({
     }
   },
   
-  '#diffnum form:submit': function(event) {
-    var field = this.down('input');
-    var match = $F(field).match(/\d+/);
-    if(match) {
-      location.href = "/changesets/" + match
+  '#diff-with:change': function(event) {
+    var activeValues = ['head', 'prev', 'base', 'comm'];
+    var curValue = $F(this);
+    if(activeValues.include(curValue)) {
+      $('diff-form').submit();
     } else {
-      field.value = "#";
+      $('diff-submit').show();
+      if(curValue == 'date') {
+        $('diff-num').hide();
+        $('diff-date').show();
+      } else if(curValue == 'numb') {
+        $('diff-date').hide();
+        $('diff-num').show();
     }
-    Event.stop(event);
   }
-  
+}
 });
