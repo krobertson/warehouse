@@ -16,6 +16,8 @@
         <%= cache_current_sheets %>
         <% if logged_in? -%>
         Sheet.Cache['profile-form'] = new Sheet('profile-form', 'profile');
+        Sheet.Cache['openid-form'] = new Sheet('reset-form', 'reset-profile-openid');
+        
         <% else -%>
         Sheet.Cache['reset-form'] = new Sheet('reset-form', 'reset-from-openid');
         Sheet.Cache['openid-form'] = new Sheet('openid-form', ['openid-toggle'<%= %(, 'login-link', 'cancel-reset') unless use_login_form? %>]);
@@ -42,7 +44,7 @@
           <%= s.password_field 'Confirm:', :password_confirmation, :size => 30 %>
           <%= s.text_field 'Email:', :email, :size => 30 %>
           <p>
-            <label>OpenID Address (<%= link_to 'reset', reset_path %>):</label>
+            <label>OpenID Address (<%= link_to 'reset', reset_path, :id => 'reset-profile-openid' %>):</label>
             <%=h current_user.identity_url %>
           </p>
           <p>
@@ -91,11 +93,10 @@
               <%= s.password_field_tag %(Password:), :password, params[:password], :class => 'big' %>
               <%  s.submit 'login.png' %>
             <% end -%>
-            
-            <% sheet_form_tag forget_path, :id => 'reset-form', :trigger => false do |s| %>
-              <h2>Reset your OpenID</h2>
-              <%= s.text_field_tag 'Email you signed up with: (<a href="#" id="cancel-reset">login</a>)', :email, '', :class => 'big' %>
-            <% end %>
+          <% end %>
+          <% sheet_form_tag forget_path, :id => 'reset-form', :trigger => false do |s| %>
+            <h2>Reset your OpenID</h2>
+            <%= s.text_field_tag %(Email you signed up with: #{'(<a href="#" id="cancel-reset">login</a>)' unless logged_in?}), :email, '', :class => 'big' %>
           <% end %>
         </div>
       <!-- /header -->

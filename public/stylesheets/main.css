@@ -167,6 +167,7 @@ div.errorExplanation h2, div#error h2 {
 #header h1 a {
   color: #fff;
   text-decoration: none;
+  font-size: 120%;
 }
 
 #nav {
