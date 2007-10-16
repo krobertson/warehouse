@@ -24,19 +24,25 @@ module Warehouse
   end
 
   def self.session_options
-    default_session_options.merge :session_domain => Warehouse.domain, :session_path => '/'
+    default_session_options.merge :session_domain => ".#{Warehouse.domain}", :session_path => '/'
   end
 
   class << self
     attr_accessor :domain, :forum_url, :permission_command, :password_command, :mail_from, :version, 
       :default_session_options, :smtp_settings, :sendmail_settings, :mail_type, :caching, :config_path, 
-      :syncing, :authentication_scheme, :authentication_realm
+      :syncing, :authentication_scheme, :authentication_realm, :setup
+    
+    def setup?
+      @setup == true
+    end
     
     def sync?
       syncing.nil? || syncing == '1'
     end
     
     def setup!(&block)
+      return if setup?
+      self.setup = true
       class_eval(&block) if block
       setup_mail!
       setup_caching!
@@ -99,15 +105,19 @@ module Warehouse
     end
   end
 
-  self.config_path = File.join(RAILS_ROOT, 'config', 'initializers', 'warehouse.rb')
-  self.default_session_options = {:session_key => '_warehouse_session_id', :secret => 'asMb0bEBw6TXU'}
-  self.domain    = ''
-  self.forum_url = "http://forum.activereload.net/licenses/%s/installs"
-  self.version   = Version.new(1, 1, 0)
-  self.smtp_settings = self.sendmail_settings = {}
-  self.authentication_scheme = 'basic' # plain / md5
-  self.authentication_realm  = ''
+  unless setup?
+    self.config_path = File.join(RAILS_ROOT, 'config', 'initializers', 'warehouse.rb')
+    self.default_session_options = {:session_key => '_warehouse_session_id', :secret => 'asMb0bEBw6TXU'}
+    self.domain    = ''
+    self.forum_url = "http://forum.activereload.net/licenses/%s/installs"
+    self.version   = Version.new(1, 1, 0)
+    self.smtp_settings = self.sendmail_settings = {}
+    self.authentication_scheme = 'basic' # plain / md5
+    self.authentication_realm  = ''
+  end
 end
+
+require 'config/initializers/warehouse' unless Warehouse.setup?
 
 if Object.const_defined?(:Dependencies)
   Dependencies.autoloaded_constants.delete 'Warehouse'

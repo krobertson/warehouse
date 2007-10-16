@@ -98,7 +98,6 @@ class ApplicationController < ActionController::Base
     end
     
     def retrieve_repository_admin
-      #debugger
       return true if admin?
       return nil unless current_repository
       return nil unless current_repository.public? || logged_in?

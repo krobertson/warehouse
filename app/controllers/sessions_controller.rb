@@ -23,7 +23,7 @@ class SessionsController < ApplicationController
   
   def destroy
     reset_session
-    cookies[:login_token] = {:value => '', :expires => 1.year.ago}
+    cookies[:login_token] = {:value => '', :expires => 1.year.ago, :domain => ".#{Warehouse.domain}", :path => '/'}
     redirect_to root_path
   end
   
@@ -65,7 +65,7 @@ class SessionsController < ApplicationController
 
 protected
   def successful_login
-    cookies[:login_token] = {:value => "#{current_user.id};#{current_user.token}", :expires => 1.year.from_now.utc, :domain => "#{Warehouse.domain}", :path => '/'}
+    cookies[:login_token] = {:value => "#{current_user.id};#{current_user.token}", :expires => 1.year.from_now.utc, :domain => ".#{Warehouse.domain}", :path => '/'}
     redirect_to root_path
   end
 end

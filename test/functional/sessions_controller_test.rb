@@ -13,6 +13,7 @@ context "Sessions Controller" do
     @controller = SessionsController.new
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
+    @request.host = "sera.test.host"
   end
 
   specify "should not try resetting forgotten account without valid email" do
@@ -86,5 +87,22 @@ context "Sessions Controller" do
       post :create
       assert_redirected_to root_path
     end
+  end
+  
+  specify "should log user out and redirect to home" do
+    delete :destroy
+    assert_redirected_to root_path
+  end
+  
+  specify "should log user out and reset session" do
+    @request.session = {:user_id => 5}
+    delete :destroy
+    session[:user_id].should == nil
+  end
+  
+  specify "should log user out and destroy login token cookie" do
+    @request.cookies[:login_token] = CGI::Cookie.new 'name' => :login_token, 'value' => '1;asdf', 'expires' => 1.year.from_now, 'domain' => '.test.host', 'path' => '/'
+    delete :destroy
+    cookies[:login_token].should == nil
   end
 end
