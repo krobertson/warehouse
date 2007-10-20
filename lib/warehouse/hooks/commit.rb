@@ -2,8 +2,6 @@ module Warehouse
   module Hooks
     class Commit
       class << self
-        attr_accessor :svnlook_path
-
         def run(repo, repo_path, revision, hook_options)
           commit = new(repo, repo_path, revision)
           hook_options.each do |(hook_class, options)|
@@ -41,8 +39,6 @@ module Warehouse
         @changed ||= svnlook :changed
       end
       
-      self.svnlook_path = '/usr/bin/svnlook'
-      
       def initialize(repo, repo_path, revision)
         @repo      = repo
         @repo_path = repo_path
@@ -51,7 +47,7 @@ module Warehouse
       
       protected
         def svnlook(cmd)
-          `#{self.class.svnlook_path} #{cmd} #{@repo_path} -r #{@revision}`.strip
+          `#{Warehouse.svnlook_path} #{cmd} #{@repo_path} -r #{@revision}`.strip
         end
     end
   end

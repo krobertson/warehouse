@@ -30,7 +30,7 @@ module Warehouse
   class << self
     attr_accessor :domain, :forum_url, :permission_command, :password_command, :mail_from, :version, 
       :default_session_options, :smtp_settings, :sendmail_settings, :mail_type, :caching, :config_path, 
-      :syncing, :authentication_scheme, :authentication_realm, :setup
+      :syncing, :authentication_scheme, :authentication_realm, :setup, :svnlook_path
     
     def setup?
       @setup == true
@@ -105,16 +105,15 @@ module Warehouse
     end
   end
 
-  unless setup?
-    self.config_path = File.join(RAILS_ROOT, 'config', 'initializers', 'warehouse.rb')
-    self.default_session_options = {:session_key => '_warehouse_session_id', :secret => 'asMb0bEBw6TXU'}
-    self.domain    = ''
-    self.forum_url = "http://forum.activereload.net/licenses/%s/installs"
-    self.version   = Version.new(1, 1, 0)
-    self.smtp_settings = self.sendmail_settings = {}
-    self.authentication_scheme = 'basic' # plain / md5
-    self.authentication_realm  = ''
-  end
+  self.config_path             ||= File.join(RAILS_ROOT, 'config', 'initializers', 'warehouse.rb')
+  self.default_session_options ||= {:session_key => '_warehouse_session_id', :secret => 'asMb0bEBw6TXU'}
+  self.domain                  ||= ''
+  self.forum_url               ||= "http://forum.activereload.net/licenses/%s/installs"
+  self.version                 ||= Version.new(1, 1, 0)
+  self.smtp_settings           ||= self.sendmail_settings ||= {}
+  self.authentication_scheme   ||= 'basic' # plain / md5
+  self.authentication_realm    ||= ''
+  self.svnlook_path            ||= '/usr/bin/svnlook'
 end
 
 require 'config/initializers/warehouse' unless Warehouse.setup?

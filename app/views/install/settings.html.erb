@@ -35,6 +35,8 @@
       :size => 40, :name => 'settings[mail_from]' %>
   </p>
   
+  <% if false %>
+  i haven't figured this out yet.  damn you threads
   <p class="command">
     <label>
       <%= check_box_tag :settings_syncing, params[:settings][:syncing] || Warehouse.sync? %>
@@ -42,6 +44,7 @@
       <span class="help">Leave unchecked and setup a post-commit hook in Subversion to make Warehouse faster</span>
     </label>
   </p>
+  <% end -%>
   
   <p class="command">
     <a id="as-toggle" href="#advanced-settings">More settings...</a>
@@ -53,7 +56,14 @@
         :name => 'settings[caching]' %> Use filesystem cache</label>
     <span class="help">Caches common pages to the filesystem for speed.  Cached files are located in <span style="color:#456"><%= File.join(RAILS_ROOT, 'tmp', 'cache') %></span>
   </p>
-  
+  <p class="command">
+    <label for="settings_svnlook_path">
+      System path to svnlook
+    </label>
+    <%= text_field_tag :settings_svnlook_path, params[:settings][:svnlook_path] || Warehouse.svnlook_path, 
+      :size => 40, :name => 'settings[svnlook_path]' %>
+  </p>
+
   <fieldset>
     <legend>Password Settings</legend>
     <p>This setting determines how the passwords are stored in the database, and how they are written to the svn password file.  Changing this setting will require all users to reset their passwords.</p>

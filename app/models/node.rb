@@ -173,7 +173,7 @@ class Node
     unless old_rev.is_a?(Fixnum) && new_rev.is_a?(Fixnum)
       raise "Can't have two non-integer revisions: #{old_rev.inspect} - #{new_rev.inspect}"
     end
-    [old_rev, new_rev].sort
+    [old_rev, new_rev]
   end
   
   def relative_revision_to(revision, value)
