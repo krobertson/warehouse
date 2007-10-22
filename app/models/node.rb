@@ -1,6 +1,7 @@
 # adapted from retrospectiva
 # http://retrospectiva.org/browse/trunk/app/models/repository_node.rb?rev=141
 class Node
+  class Error < StandardError; end
   include PathAccessibility
   @@default_mime_type = 'application/octet-stream'
   attr_reader :base_revision
@@ -149,19 +150,19 @@ class Node
       when /^\d+$/
         rev.to_i
       when Date
-        changeset = repository.changesets.find_by_date(rev)
+        changeset = repository.changesets.find_by_date_for_path(rev, diff_path)
         changeset ? changeset.revision.to_i : nil
       when Fixnum
         rev
       when String
         rev
-      else raise "Invalid Revision: #{rev.inspect}"
+      else raise Error, "Invalid Revision: #{rev.inspect}"
     end
   end
   
   def check_revisions(old_rev, new_rev)
     if old_rev.is_a?(String) && new_rev.is_a?(String)
-      raise "Can't have two relative revisions: #{old_rev.inspect} - #{new_rev.inspect}"
+      raise Error, "Can't have two relative revisions: #{old_rev.inspect} - #{new_rev.inspect}"
     end
     
     if old_rev.is_a?(String)
@@ -171,7 +172,7 @@ class Node
     end
     
     unless old_rev.is_a?(Fixnum) && new_rev.is_a?(Fixnum)
-      raise "Can't have two non-integer revisions: #{old_rev.inspect} - #{new_rev.inspect}"
+      raise Error, "Can't have two non-integer revisions: #{old_rev.inspect} - #{new_rev.inspect}"
     end
     [old_rev, new_rev]
   end
@@ -185,7 +186,7 @@ class Node
       when /^n/i
         revision < repository.latest_revision ? (revision + 1) : revision
       else
-        raise "Bad relative revision: #{value.inspect}.  Only HEAD/PREV/NEXT supported"
+        nil
     end
   end
 

@@ -14,9 +14,9 @@ class ChangesetsController < ApplicationController
     return global_index if repository_subdomain.blank? && logged_in?
 
     @changesets = case changeset_paths
-      when :all then current_repository.changesets.paginate(:page => params[:page], :order => 'changesets.changed_at desc')
+      when :all then current_repository.changesets.search(params[:q], :page => params[:page], :order => 'changesets.changed_at desc')
       when []   then []
-      else current_repository.changesets.paginate_by_paths(changeset_paths, :page => params[:page], :order => 'changesets.changed_at desc')
+      else current_repository.changesets.search_by_paths(params[:q], changeset_paths, :page => params[:page], :order => 'changesets.changed_at desc')
     end
     respond_for_changesets
   end
@@ -131,7 +131,7 @@ class ChangesetsController < ApplicationController
     def find_node
       case params[:r]
         when 'numb'
-          params[:r] = params[:n]
+          params[:r] = params[:n].to_i
         when 'date'
           params[:r] = Date.new(params[:date][:year].to_i, params[:date][:month].to_i, params[:date][:day].to_i)
         when nil

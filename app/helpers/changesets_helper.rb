@@ -12,7 +12,9 @@ module ChangesetsHelper
     options[:path]    ||= node.path
 
     raw_diff = node.unified_diff_for options[:old_rev], options[:new_rev], options[:path]
-    puts "RAW DIFF:::::::: #{raw_diff.inspect}"
+    if raw_diff.empty?
+      return nil
+    end
     diff_line_regex = %r{@@ -(\d+),?(\d*) \+(\d+),?(\d*) @@}
     lines = raw_diff.split("\n")
         

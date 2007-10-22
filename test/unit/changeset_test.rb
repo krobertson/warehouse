@@ -29,6 +29,14 @@ context "Changeset" do
     repositories(:sample).changesets.find_by_path('moon').should == changesets(:two)
   end
   
+  it "should search changesets" do
+    repositories(:sample).changesets.search('moon').entries.should == [changesets(:one), changesets(:two)]
+  end
+  
+  it "should search changests by path" do
+    repositories(:sample).changesets.search_by_paths('brb', %w(moon)).entries.should == [changesets(:one)]
+  end
+  
   specify "should find all changesets with root path" do
     Changeset.find_all_by_paths(:all).size.should == 4
   end

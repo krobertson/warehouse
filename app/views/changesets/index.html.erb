@@ -3,6 +3,10 @@
   do this in the administration user interface.  Command line syncing is much faster.</div>
 <% end -%>
 
+<% unless params[:q].blank? -%>
+<p>Searching changesets for "<%=h params[:q] %>"</p>
+<% end -%>
+
 <ul id="changesets">
   <% if @changesets.any? %>
   <% @changesets.each do |changeset| -%>

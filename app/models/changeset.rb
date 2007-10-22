@@ -7,6 +7,10 @@ class Changeset < ActiveRecord::Base
   delegate :backend, :to => :repository
   expiring_attr_reader :user, :retrieve_user
 
+  def self.search(query, options = {})
+    with_search(query) { paginate(options) }
+  end
+
   def self.paginate(options = {})
     options = {:count => 'distinct changesets.id'}.update(options)
     super
@@ -23,6 +27,10 @@ class Changeset < ActiveRecord::Base
   def self.find_by_path(path, options = {})
     with_paths([path]) { find :first, options }
   end
+  
+  def self.search_by_paths(query, paths, options = {})
+    with_search(query) { paginate_by_paths(paths, options = {}) }
+  end
 
   def self.paginate_by_paths(paths, options = {})
     with_paths(paths) { paginate(options) }
@@ -36,8 +44,8 @@ class Changeset < ActiveRecord::Base
     with_paths(paths) { find :first, options }
   end
   
-  def self.find_by_date(date)
-    find :first, :conditions => ['changesets.changed_at >= ?', date]
+  def self.find_by_date_for_path(date, path)
+    with_paths([path]) { find :first, :conditions => ['changesets.changed_at >= ?', date] }
   end
 
   def to_param
@@ -65,6 +73,14 @@ class Changeset < ActiveRecord::Base
         conditions = conditions_for_paths(paths)
         return [] if conditions.blank?
         with_scope :find => { :select => 'distinct changesets.*', :joins => 'inner join changes on changesets.id = changes.changeset_id', :conditions => conditions, :order => 'changesets.changed_at desc' }, &block
+      end
+    end
+    
+    def self.with_search(q, &block)
+      if q.blank?
+        block.call
+      else
+        with_scope :find => { :select => 'distinct changesets.*', :conditions => ['message LIKE ?', "%#{q}%"] }, &block
       end
     end
     

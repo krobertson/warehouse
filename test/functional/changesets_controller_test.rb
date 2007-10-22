@@ -62,13 +62,13 @@ context "Changesets Controller" do
   private
     def expect_paginate(value = [])
       changesets = stub
-      changesets.expects(:paginate).returns(value)
+      changesets.expects(:search).returns(value)
       Repository.any_instance.expects(:changesets).returns(changesets)
     end
 
     def expect_paginate_by_paths(value = [], paths = [], page = nil)
       changesets = stub
-      changesets.expects(:paginate_by_paths).with(paths, :page => page, :order => 'changesets.changed_at desc').returns(value)
+      changesets.expects(:search_by_paths).with(nil, paths, :page => page, :order => 'changesets.changed_at desc').returns(value)
       Repository.any_instance.expects(:changesets).returns(changesets)
     end
 end

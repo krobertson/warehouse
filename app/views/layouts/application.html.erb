@@ -68,6 +68,11 @@
             <% if admin? || repository_admin? %>
             <li id="admin"><%= link_to 'Admin', admin_path %></li>
             <% end %>
+            <li id="search">
+              <% form_tag changesets_path, :method => :get do -%>
+                <div><%= text_field_tag :q, params[:q] %></div>
+              <% end -%>
+            </li>
           </ul>
           <ul id="utils">
             <% if logged_in? -%>
