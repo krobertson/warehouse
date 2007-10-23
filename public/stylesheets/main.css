@@ -57,8 +57,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h2 {
-  background: #f4f4f4;
   padding: 5px;
+  font-size: 110%;
   margin-bottom: 10px;
   border-bottom: 1px solid #ccc;
 }
@@ -135,15 +135,9 @@ div.errorExplanation h2, div#error h2 {
 }
 
 #footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
   background: #ddd;
-  width: 100%;
   padding: 10px 0;
   font-size: 92%;
-  z-index: 2;
-  opacity: 0.8;
   border-top: 1px solid #bbb;
   text-align: right;
 }
@@ -392,6 +386,24 @@ ul a.list-del {
   padding: 7px 0;
 }
 
+#subscribe-history {
+  margin-bottom: 10px;
+  background: url(../images/app/subscribe-history-btn.png) no-repeat;
+}
+
+#search {
+  border-bottom: 1px dotted #aaa;
+  padding-bottom: 20px;
+}
+
+#search-btn {
+  vertical-align: top;
+}
+
+#search-box {
+  font-size: 110%;
+  vertical-align: bottom;
+}
 /* @end */
 
 /* @group Dashboard */

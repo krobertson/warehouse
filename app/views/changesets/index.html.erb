@@ -4,7 +4,7 @@
 <% end -%>
 
 <% unless params[:q].blank? -%>
-<p>Searching changesets for "<%=h params[:q] %>"</p>
+<h2>Results for "<%=h params[:q] %>"</h2>
 <% end -%>
 
 <ul id="changesets">
@@ -37,7 +37,6 @@
 <%= will_paginate @changesets unless @changesets.empty? %>
 
 <% content_for :sidebar do -%>
-<%= link_to 'Subscribe to Changesets', (controller.action_name == 'index' ? formatted_changesets_path(:atom) : formatted_public_changesets_path(:atom)), :id => 'subscribe-btn' %>
 <% if current_repository && current_repository.members.any? -%>
 <div class="sideblock">
   <h3>Active Members</h3>

@@ -68,11 +68,6 @@
             <% if admin? || repository_admin? %>
             <li id="admin"><%= link_to 'Admin', admin_path %></li>
             <% end %>
-            <li id="search">
-              <% form_tag changesets_path, :method => :get do -%>
-                <div><%= text_field_tag :q, params[:q] %></div>
-              <% end -%>
-            </li>
           </ul>
           <ul id="utils">
             <% if logged_in? -%>
@@ -115,6 +110,19 @@
         <% unless @fullscreen -%>
         <!-- sbar -->
         <div id="sbar">
+          <div id="search" class="sideblock">
+            <% form_tag changesets_path, :method => :get do -%>
+                <%= text_field_tag :q, params[:q], :size => 13, :id => 'search-box' %>
+                <input type="image" src="/images/app/btns/search.png" alt="Search" id="search-btn" />
+            <% end -%>
+          </div>
+          <%= link_to 'Subscribe to History', history_path(:paths => (params[:paths] << 'changesets.atom')), :id => 'subscribe-history' if controller.controller_name == 'history' %>
+          
+          <%= link_to 'Subscribe to Changesets', (controller.action_name == 'index' ? formatted_changesets_path(:atom) : formatted_public_changesets_path(:atom)), :id => 'subscribe-btn' %>
+          
+
+          <%= yield :sidebar %>
+          
           <% if Warehouse::Plugins.tabs? -%>
             <div class="sideblock" id="plugins">
               <h3>Plugins</h3>
@@ -126,7 +134,8 @@
             </div>
           <% end -%>
             
-          <%= yield :sidebar %>
+
+          
           <% cache CacheKey.bookmarks_for(current_repository) do -%>
           <div id="bookmarks" class="sideblock"<%= %( style="display:none") if current_repository.bookmarks.to_a.empty? %>>
             <h3>Bookmarks</h3>

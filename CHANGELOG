@@ -1,5 +1,7 @@
 * 1.1
 
+* Remove fixed positioning from footer.
+* Add search UI for changesets.
 * Show openID reset form when clicking reset from profile form.
 * Add simple formatting to changeset messages.  See http://forum.activereload.net/forums/9/topics/148
 * Add post-commit hook API
