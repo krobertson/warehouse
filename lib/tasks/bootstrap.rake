@@ -1,4 +1,5 @@
 namespace :warehouse do
+  desc "Upgrades Warehouse if it uses the recommended file/directory structure (see warehouse:setup).  Run from inside the release directory."
   task :upgrade => :check_structure do
     unless @in_structure || ENV['WAREHOUSE_FORCE']
       say "Warehouse is not setup to upgrade."
@@ -25,6 +26,7 @@ namespace :warehouse do
     end
   end
   
+  desc "Checks whether the current setup uses the recommended file/directory structure (see warehouse:setup)"
   task :check_structure => :init_highline do
     @app_root = Pathname.new(Dir.pwd)
     
@@ -33,6 +35,7 @@ namespace :warehouse do
       (@app_root.dirname.dirname + 'shared').exist?
   end
   
+  desc "Attempts to setup Warehouse with the recommended file/directory structure.  It lets you know what it's doing before making the change."
   task :setup => :check_structure do
     if @in_structure
       say "Warehouse is already setup correctly."
@@ -73,6 +76,7 @@ namespace :warehouse do
     end
   end
   
+  desc "Bootstraps Warehouse by checking for various libs, creating your database.yml, and reloading the database schema."
   task :bootstrap => :check_structure do
     say "Bootstrapping Warehouse v#{Warehouse.version}..."
     
