@@ -52,7 +52,9 @@ module Sequel
         if fields.empty?
           WILDCARD
         else
-          fields.map {|i| field_name(i)}.join(COMMA_SEPARATOR)
+          fields.map do |i|
+            i.is_a?(Hash) ? i.map {|kv| "#{literal(kv[0])} AS #{kv[1]}"} : literal(i)
+          end.join(COMMA_SEPARATOR)
         end
       end
 
@@ -61,8 +63,19 @@ module Sequel
         if source.nil? || source.empty?
           raise SequelError, 'No source specified for query'
         end
-        source.map {|i| i.is_a?(Dataset) ? i.to_table_reference : i}.
-          join(COMMA_SEPARATOR)
+        auto_alias_count = 0
+        source.map do |i|
+          case i
+          when Dataset:
+            auto_alias_count += 1
+            i.to_table_reference(auto_alias_count)
+          when Hash:
+            i.map {|k, v| "#{k.is_a?(Dataset) ? k.to_table_reference : k} #{v}"}.
+              join(COMMA_SEPARATOR)
+          else
+            i
+          end
+        end.join(COMMA_SEPARATOR)
       end
 
       NULL = "NULL".freeze
@@ -92,7 +105,7 @@ module Sequel
         when NilClass: NULL
         when TrueClass: TRUE
         when FalseClass: FALSE
-        when Symbol: v.to_field_name
+        when Symbol: quoted_field_name(v.to_field_name)
         when Array: v.empty? ? NULL : v.map {|i| literal(i)}.join(COMMA_SEPARATOR)
         when Time: v.strftime(TIMESTAMP_FORMAT)
         when Date: v.strftime(DATE_FORMAT)
@@ -111,7 +124,10 @@ module Sequel
         case expr
         when Hash:
           parenthesize = false if expr.size == 1
-          fmt = expr.map {|i| compare_expr(i[0], i[1])}.join(AND_SEPARATOR)
+          # fmt = expr.map {|i| compare_expr(i[0], i[1])}.join(AND_SEPARATOR)
+          # N.B.: We convert this to an array and sort it in order to have a fixed order for testability.
+          # Hash in Ruby 1.8 has no order, so Hash#map is indeterminate, which makes it hard to test.
+          fmt = expr.to_a.sort_by { |k, v| k.to_s }.map {|i| compare_expr(i[0], i[1])}.join(AND_SEPARATOR)
         when Array:
           fmt = expr.shift.gsub(QUESTION_MARK) {literal(expr.shift)}
         when Proc:
@@ -145,6 +161,8 @@ module Sequel
       def order(*order)
         clone_merge(:order => order)
       end
+      
+      alias_method :order_by, :order
 
       # Returns a copy of the dataset with the order reversed. If no order is
       # given, the existing order is inverted.
@@ -152,7 +170,7 @@ module Sequel
         order(*invert_order(order.empty? ? @opts[:order] : order))
       end
 
-      DESC_ORDER_REGEXP = /(.*)\sDESC/.freeze
+      DESC_ORDER_REGEXP = /(.*)\sDESC/i.freeze
 
       # Inverts the given order by breaking it into a list of field references
       # and inverting them.
@@ -165,7 +183,7 @@ module Sequel
         order.each do |f|
           f.to_s.split(',').map do |p|
             p.strip!
-            new_order << (p =~ DESC_ORDER_REGEXP ? $1 : p.to_sym.DESC)
+            new_order << ((p =~ DESC_ORDER_REGEXP ? $1 : p.to_sym.DESC).lit)
           end
         end
         new_order
@@ -176,6 +194,8 @@ module Sequel
       def group(*fields)
         clone_merge(:group => fields)
       end
+      
+      alias_method :group_by, :group
 
       # Returns a copy of the dataset with the given conditions imposed upon it.  
       # If the query has been grouped, then the conditions are imposed in the 
@@ -308,13 +328,13 @@ module Sequel
           raise SequelError, "Invalid join type: #{type}"
         end
 
-        join_expr = expr.map do |k, v|
-          l = qualified_field_name(k, table)
-          r = qualified_field_name(v, @opts[:last_joined_table] || @opts[:from].first)
-          "(#{l} = #{r})"
-        end.join(AND_SEPARATOR)
-
-        " #{join_type} #{table} ON #{join_expr}"
+        join_conditions = {}
+        expr.each do |k, v|
+          k = qualified_field_name(k, table).intern if k.is_a?(Symbol)
+          v = qualified_field_name(v, @opts[:last_joined_table] || @opts[:from].first).intern if v.is_a?(Symbol)
+          join_conditions[k] = v
+        end
+        " #{join_type} #{table} ON #{expression_list(join_conditions)}"
       end
 
       # Returns a joined dataset with the specified join type and condition.
@@ -423,7 +443,20 @@ module Sequel
         else
           values = values[0] if values.size == 1
           case values
+          when Array
+            if values.fields
+              if values.empty?
+                "INSERT INTO #{@opts[:from]} DEFAULT VALUES;"
+              else
+                fl = values.fields
+                vl = transform_save(values.values).map {|v| literal(v)}
+                "INSERT INTO #{@opts[:from]} (#{fl.join(COMMA_SEPARATOR)}) VALUES (#{vl.join(COMMA_SEPARATOR)});"
+              end
+            else
+              "INSERT INTO #{@opts[:from]} VALUES (#{literal(values)});"
+            end
           when Hash
+            values = transform_save(values) if @transform
             if values.empty?
               "INSERT INTO #{@opts[:from]} DEFAULT VALUES;"
             else
@@ -432,7 +465,7 @@ module Sequel
               "INSERT INTO #{@opts[:from]} (#{fl.join(COMMA_SEPARATOR)}) VALUES (#{vl.join(COMMA_SEPARATOR)});"
             end
           when Dataset
-            "INSERT INTO #{@opts[:from]} #{literal(values)}"
+            "INSERT INTO #{@opts[:from]} #{literal(values)};"
           else
             "INSERT INTO #{@opts[:from]} VALUES (#{literal(values)});"
           end
@@ -452,6 +485,10 @@ module Sequel
           raise SequelError, "Can't update a joined dataset"
         end
 
+        if values.is_a?(Array) && values.fields
+          values = values.to_hash
+        end
+        values = transform_save(values) if @transform
         set_list = values.map {|k, v| "#{field_name(k)} = #{literal(v)}"}.
           join(COMMA_SEPARATOR)
         sql = "UPDATE #{@opts[:from]} SET #{set_list}"
@@ -488,11 +525,11 @@ module Sequel
       # Returns a table reference for use in the FROM clause. If the dataset has
       # only a :from option refering to a single table, only the table name is 
       # returned. Otherwise a subquery is returned.
-      def to_table_reference
+      def to_table_reference(idx = nil)
         if opts.keys == [:from] && opts[:from].size == 1
           opts[:from].first.to_s
         else
-          "(#{sql})"
+          idx ? "(#{sql}) t#{idx}" : "(#{sql})"
         end
       end
 
@@ -517,7 +554,7 @@ module Sequel
         end
       end
       
-      SELECT_COUNT = {:select => ["COUNT(*)"], :order => nil}.freeze
+      SELECT_COUNT = {:select => ["COUNT(*)".lit], :order => nil}.freeze
 
       # Returns the number of records in the dataset.
       def count

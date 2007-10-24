@@ -1,49 +1,90 @@
 module Sequel
   class Model
-    # returns the database associated with the model class
+    # Returns the database associated with the Model class.
     def self.db
-      @db ||= ((superclass != Object) && (superclass.db)) || \
-        raise(SequelError, "No database associated with #{self}.")
+      @db ||= (superclass != Object) && superclass.db or
+      raise SequelError, "No database associated with #{self}"
     end
     
-    # sets the database associated with the model class
-    def self.db=(db); @db = db; end
+    # Sets the database associated with the Model class.
+    def self.db=(db)
+      @db = db
+    end
     
-    # called when a database is opened in order to automatically associate the
+    # Called when a database is opened in order to automatically associate the
     # first opened database with model classes.
     def self.database_opened(db)
       @db = db if self == Model && !@db
     end
 
-    # returns the dataset associated with the model class.
+    # Returns the dataset associated with the Model class.
     def self.dataset
-      @dataset || raise(SequelError, "No dataset associated with #{self}.")
+      @dataset || super_dataset or
+      raise SequelError, "No dataset associated with #{self}"
+    end
+    
+    def self.super_dataset # :nodoc:
+      superclass.dataset if superclass and superclass.respond_to? :dataset
+    end
+    
+    # Returns the columns in the result set in their original order.
+    #
+    # See Dataset#columns for more information.
+    def self.columns
+      @columns ||= @dataset.columns or
+      raise SequelError, "Could not fetch columns for #{self}"
     end
 
-    # Sets the dataset associated with the model class.
+    # Sets the dataset associated with the Model class.
     def self.set_dataset(ds)
       @db = ds.db
       @dataset = ds
       @dataset.set_model(self)
+      @dataset.transform(@transform) if @transform
     end
     
-    # Returns the dataset assoiated with the object's model class.
+    # Returns the database assoiated with the object's Model class.
     def db
-      @db ||= self.class.db
+      @db ||= model.db
     end
 
-    # Returns the dataset assoiated with the object's model class.
+    # Returns the dataset assoiated with the object's Model class.
+    #
+    # See Dataset for more information.
     def dataset
-      @dataset ||= self.class.dataset
+      model.dataset
+    end
+    
+    # Returns the columns associated with the object's Model class.
+    def columns
+      model.columns
     end
 
-    attr_reader :values, :pkey
-    
-    def model
-      @model ||= self.class
+    # Serializes column with YAML or through marshalling.
+    def self.serialize(*columns)
+      format = columns.pop[:format] if Hash === columns.last
+      format ||= :yaml
+      
+      @transform = columns.inject({}) do |m, c|
+        m[c] = format
+        m
+      end
+      @dataset.transform(@transform) if @dataset
     end
   end
 
+  # Lets you create a Model class with its table name already set or reopen
+  # an existing Model.
+  #
+  # Makes given dataset inherited.
+  #
+  # === Example:
+  #   class Comment < Sequel::Model(:comments)
+  #     table_name # => :comments
+  #
+  #     # ...
+  #
+  #   end
   def self.Model(source)
     @models ||= {}
     @models[source] ||= Class.new(Sequel::Model) do

@@ -3,6 +3,12 @@ require 'enumerator'
 module Sequel
   class Dataset
     module Convenience
+      # Iterates through each record, converting it into a hash.
+      def each_hash(&block)
+        each {|a| block[a.to_hash]}
+      end
+      
+      # Returns true if the record count is 0
       def empty?
         count == 0
       end
@@ -24,13 +30,16 @@ module Sequel
 
       # Returns the first record in the dataset. If the num argument is specified,
       # an array is returned with the first <i>num</i> records.
-      def first(*args)
+      def first(*args, &block)
+        if block
+          return filter(&block).single_record(:limit => 1)
+        end
         args = args.empty? ? 1 : (args.size == 1) ? args.first : args
         case args
         when 1: single_record(:limit => 1)
         when Fixnum: limit(args).all
         else
-          filter(args).single_record(:limit => 1)
+          filter(args, &block).single_record(:limit => 1)
         end
       end
 
@@ -168,6 +177,22 @@ module Sequel
         Sequel::PrettyTable.print(naked.all, cols.empty? ? columns : cols)
       end
       
+      COMMA_SEPARATOR = ', '.freeze
+      
+      # Returns a string in CSV format containing the dataset records. By 
+      # default the CSV representation includes the column titles in the
+      # first line. You can turn that off by passing false as the 
+      # include_column_titles argument.
+      def to_csv(include_column_titles = true)
+        records = naked.to_a
+        csv = ''
+        if include_column_titles
+          csv << "#{@columns.join(COMMA_SEPARATOR)}\r\n"
+        end
+        records.each {|r| csv << "#{r.join(COMMA_SEPARATOR)}\r\n"}
+        csv
+      end
+
       # Inserts multiple records into the associated table. This method can be
       # to efficiently insert a large amounts of records into a table. Inserts
       # are automatically wrapped in a transaction. If the :commit_every 
@@ -188,6 +213,48 @@ module Sequel
             # @db.execute(list.map {|r| insert_sql(r)}.join)
             list.each {|r| @db.execute(insert_sql(r))}
           end
+        end
+      end
+      
+      module QueryBlockCopy
+        def each(*args); raise SequelError, "#each cannot be invoked inside a query block."; end
+        def insert(*args); raise SequelError, "#insert cannot be invoked inside a query block."; end
+        def update(*args); raise SequelError, "#update cannot be invoked inside a query block."; end
+        def delete(*args); raise SequelError, "#delete cannot be invoked inside a query block."; end
+        
+        def clone_merge(opts)
+          @opts.merge!(opts)
+        end
+      end
+      
+      # Translates a query block into a dataset. Query blocks can be useful
+      # when expressing complex SELECT statements, e.g.:
+      #
+      #   dataset = DB[:items].query do
+      #     select :x, :y, :z
+      #     where {:x > 1 && :y > 2}
+      #     order_by :z.DESC
+      #   end
+      #
+      def query(&block)
+        copy = clone_merge({})
+        copy.extend(QueryBlockCopy)
+        copy.instance_eval(&block)
+        clone_merge(copy.opts)
+      end
+      
+      MUTATION_RE = /^(.+)!$/.freeze
+      
+      def method_missing(m, *args, &block)
+        if m.to_s =~ MUTATION_RE
+          m = $1.to_sym
+          super unless respond_to?(m)
+          copy = send(m, *args, &block)
+          super if copy.class != self.class
+          @opts.merge!(copy.opts)
+          self
+        else
+          super
         end
       end
     end

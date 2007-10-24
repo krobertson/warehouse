@@ -1,8 +1,8 @@
 require 'time'
 require 'date'
 
-require File.join(File.dirname(__FILE__), 'dataset/sequelizer')
 require File.join(File.dirname(__FILE__), 'dataset/sql')
+require File.join(File.dirname(__FILE__), 'dataset/sequelizer')
 require File.join(File.dirname(__FILE__), 'dataset/convenience')
 
 module Sequel
@@ -86,6 +86,7 @@ module Sequel
     def initialize(db, opts = nil)
       @db = db
       @opts = opts || {}
+      @row_proc = nil
     end
     
     # Returns a new instance of the dataset with with the give options merged.
@@ -146,17 +147,14 @@ module Sequel
       @columns || []
     end
     
+    # Inserts the supplied values into the associated table.
     def <<(*args)
       insert(*args)
     end
     
     # Iterates over the records in the dataset
     def each(opts = nil, &block)
-      if (opts && opts[:naked]) || !@row_filter
-        fetch_rows(select_sql(opts), &block)
-      else
-        fetch_rows(select_sql(opts)) {|r| block[@row_filter[r]]}
-      end
+      fetch_rows(select_sql(opts), &block)
     end
 
     # Returns the the model classes associated with the dataset as a hash.
@@ -224,18 +222,18 @@ module Sequel
       when nil: # set_model(nil) => no
         # no argument provided, so the dataset is denuded
         @opts.merge!(:naked => true, :models => nil, :polymorphic_key => nil)
-        remove_row_filter
+        remove_row_proc
         # extend_with_stock_each
       when Class:
         # isomorphic model
         @opts.merge!(:naked => nil, :models => {nil => key}, :polymorphic_key => nil)
-        set_row_filter {|h| key.new(h, *args)}
+        set_row_proc {|h| key.new(h, *args)}
         extend_with_destroy
       when Symbol:
         # polymorphic model
         hash = args.shift || raise(SequelError, "No class hash supplied for polymorphic model")
         @opts.merge!(:naked => true, :models => hash, :polymorphic_key => key)
-        set_row_filter do |h|
+        set_row_proc do |h|
           c = hash[h[key]] || hash[nil] || \
             raise(SequelError, "No matching model class for record (#{polymorphic_key} => #{h[polymorphic_key].inspect})")
           c.new(h, *args)
@@ -252,18 +250,123 @@ module Sequel
     # record. The filter should return a value which is then passed to the 
     # iterating block. In order to elucidate, here's a contrived example:
     #
-    #   dataset.set_row_filter {|h| h.merge(:xxx => 'yyy')}
+    #   dataset.set_row_proc {|h| h.merge(:xxx => 'yyy')}
     #   dataset.first[:xxx] #=> "yyy" # always!
     #
-    def set_row_filter(&filter)
-      @row_filter = filter
+    def set_row_proc(&filter)
+      @row_proc = filter
+      update_each_method
     end
     
-    def remove_row_filter
-      @row_filter = nil
+    # Removes the row making proc.
+    def remove_row_proc
+      @row_proc = nil
+      update_each_method
     end
     
-    private
+    STOCK_TRANSFORMS = {
+      :marshal => [proc {|v| Marshal.load(v)}, proc {|v| Marshal.dump(v)}],
+      :yaml => [proc {|v| YAML.load v if v}, proc {|v| v.to_yaml}]
+    }
+    
+    # Sets a value transform which is used to convert values loaded and saved
+    # to/from the database. The transform should be supplied as a hash. Each
+    # value in the hash should be an array containing two proc objects - one
+    # for transforming loaded values, and one for transforming saved values.
+    # The following example demonstrates how to store Ruby objects in a dataset
+    # using Marshal serialization:
+    #
+    #   dataset.transform(:obj => [
+    #     proc {|v| Marshal.load(v)},
+    #     proc {|v| Marshal.dump(v)}
+    #   ])
+    #
+    #   dataset.insert_sql(:obj => 1234) #=>
+    #   "INSERT INTO items (obj) VALUES ('\004\bi\002\322\004')"
+    #
+    # Another form of using transform is by specifying stock transforms:
+    # 
+    #   dataset.transform(:obj => :marshal)
+    #
+    # The currently supported stock transforms are :marshal and :yaml.
+    def transform(t)
+      @transform = t
+      t.each do |k, v|
+        case v
+        when Array:
+          if (v.size != 2) || !v.first.is_a?(Proc) && !v.last.is_a?(Proc)
+            raise SequelError, "Invalid transform specified"
+          end
+        else
+          unless v = STOCK_TRANSFORMS[v]
+            raise SequelError, "Invalid transform specified"
+          else
+            t[k] = v
+          end
+        end
+      end
+      update_each_method
+    end
+    
+    # Applies the value transform for data loaded from the database.
+    def transform_load(r)
+      @transform.each do |k, tt|
+        if r.has_key?(k)
+          r[k] = tt[0][r[k]]
+        end
+      end
+      r
+    end
+    
+    # Applies the value transform for data saved to the database.
+    def transform_save(r)
+      @transform.each do |k, tt|
+        if r.has_key?(k)
+          r[k] = tt[1][r[k]]
+        end
+      end
+      r
+    end
+    
+    # Updates the each method according to whether @row_proc and @transform are
+    # set or not.
+    def update_each_method
+      # warning: ugly code generation ahead
+      if @row_proc && @transform
+        class << self
+          def each(opts = nil, &block)
+            if opts && opts[:naked]
+              fetch_rows(select_sql(opts)) {|r| block[transform_load(r)]}
+            else
+              fetch_rows(select_sql(opts)) {|r| block[@row_proc[transform_load(r)]]}
+            end
+          end
+        end
+      elsif @row_proc
+        class << self
+          def each(opts = nil, &block)
+            if opts && opts[:naked]
+              fetch_rows(select_sql(opts), &block)
+            else
+              fetch_rows(select_sql(opts)) {|r| block[@row_proc[r]]}
+            end
+          end
+        end
+      elsif @transform
+        class << self
+          def each(opts = nil, &block)
+            fetch_rows(select_sql(opts)) {|r| block[transform_load(r)]}
+          end
+        end
+      else
+        class << self
+          def each(opts = nil, &block)
+            fetch_rows(select_sql(opts), &block)
+          end
+        end
+      end
+    end
+    
     # Extends the dataset with a destroy method, that calls destroy for each
     # record in the dataset.
     def extend_with_destroy
@@ -275,6 +378,16 @@ module Sequel
           count
         end
       end
+    end
+
+    @@dataset_classes = []
+
+    def self.dataset_classes
+      @@dataset_classes
+    end
+
+    def self.inherited(c)
+      @@dataset_classes << c
     end
   end
 end

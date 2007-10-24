@@ -9,7 +9,18 @@ context "Proc#to_sql" do
       DS.proc_to_sql(self)
     end
   end
-
+  
+  def DS.match_expr(l, r)
+    case r
+    when String:
+      "(#{literal(l)} LIKE #{literal(r)})"
+    when Regexp:
+      "(#{literal(l)} ~ #{literal(r.source)})"
+    else
+      raise SequelError, "Unsupported match pattern class (#{r.class})."
+    end
+  end
+  
   specify "should support <sym> <op> <lit>" do
     proc {:x > 100}.to_sql.should == '(x > 100)'
     proc {:x < 100}.to_sql.should == '(x < 100)'
@@ -45,6 +56,12 @@ context "Proc#to_sql" do
     def xyz; 321; end
     proc {:x == xyz}.to_sql.should == "(x = 321)"
     proc {:x == xyz.to_s}.to_sql.should == "(x = '321')"
+    
+    def y1(x); x; end
+    def y2; 111; end
+    
+    proc {:x == y1(222)}.to_sql.should == "(x = 222)"
+    proc {:x == y2}.to_sql.should == "(x = 111)"
   end
   
   specify "should support constants" do
@@ -73,11 +90,11 @@ context "Proc#to_sql" do
   specify "should support =~ operator" do
     # stock SQL version does not know about regexps
     proc {:x =~ '123'}.to_sql.should == "(x LIKE '123')"
+
+    proc {:x =~ /^123/}.to_sql.should == "(x ~ '^123')"
   end
   
   specify "should raise on =~ operator for unsupported types" do
-    # stock SQL version does not know about regexps
-    proc {proc {:x =~ /123/}.to_sql}.should raise_error(SequelError)
     proc {proc {:x =~ 123}.to_sql}.should raise_error(SequelError)
   end
   
@@ -266,5 +283,39 @@ context "Proc#to_sql" do
   specify "should support Regexp macros" do
     "abc" =~ /(ab)/
     proc {:x == $1}.to_sql.should == "(x = 'ab')"
+  end
+  
+  specify "should evaluate expression not referring to symbols or literal strings." do
+    proc {:x > 2 * 3}.to_sql.should == "(x > 6)"
+    y = 3
+    proc {:x > y * 4}.to_sql.should == "(x > 12)"
+
+    proc {:AVG[:x] > 4}.to_sql.should == "(AVG(x) > 4)"
+
+    proc {:AVG[:x] > 4}.to_sql.should == "(AVG(x) > 4)"
+    
+    proc {:y == (1 > 2)}.to_sql.should == "(y = 'f')"
+  end
+  
+  specify "should support ternary operator" do
+    y = true
+    proc {:x > (y ? 1 : 2)}.to_sql.should == "(x > 1)"
+    
+    proc {((1 > 2) ? :x : :y) > 3}.to_sql.should == "(y > 3)"
+  end
+  
+  specify "should support strings with embedded Ruby code in them and literalize them" do
+    proc {:n == "#{1+2}"}.to_sql.should == "(n = '3')"
+    
+    y = "12'34"
+    
+    proc {:x > "#{y}"}.to_sql.should == "(x > '12''34')"
+  end
+  
+  specify "should support format strings and literalize the result" do
+    prod = 1
+    proc {:x == "abc%d" % prod}.to_sql.should == "(x = 'abc1')"
+    
+    proc {:x == ("%d" % prod).lit}.to_sql.should == "(x = 1)"
   end
 end

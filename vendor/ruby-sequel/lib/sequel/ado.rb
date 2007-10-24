@@ -21,6 +21,10 @@ module Sequel
         handle.Open(dbname)
         handle
       end
+      
+      def disconnect
+        # how do we disconnect? couldn't find anything in the docs
+      end
     
       def dataset(opts = nil)
         ADO::Dataset.new(self, opts)
@@ -63,6 +67,19 @@ module Sequel
         end
       end
     
+      def array_tuples_fetch_rows(sql, &block)
+        @db.synchronize do
+          s = @db.execute sql
+          
+          fields = s.Fields.extend(Enumerable)
+          @columns = fields.map {|x| x.Name.to_sym}
+          
+          s.moveFirst
+          s.getRows.transpose.each {|r| r.fields = @columns; yield r}
+        end
+        self
+      end
+      
       def insert(*values)
         @db.do insert_sql(*values)
       end

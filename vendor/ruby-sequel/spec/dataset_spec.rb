@@ -105,12 +105,28 @@ context "A simple dataset" do
   specify "should format an insert statement with hash" do
     @dataset.insert_sql(:name => 'wxyz', :price => 342).
       should match(/INSERT INTO test \(name, price\) VALUES \('wxyz', 342\)|INSERT INTO test \(price, name\) VALUES \(342, 'wxyz'\)/)
+
+      @dataset.insert_sql({}).should == "INSERT INTO test DEFAULT VALUES;"
+  end
+
+  specify "should format an insert statement with array fields" do
+    v = [1, 2, 3]
+    v.fields = [:a, :b, :c]
+    @dataset.insert_sql(v).should == "INSERT INTO test (a, b, c) VALUES (1, 2, 3);"
+    
+    v = []
+    v.fields = [:a, :b]
+    @dataset.insert_sql(v).should == "INSERT INTO test DEFAULT VALUES;"
+  end
+  
+  specify "should format an insert statement with an arbitrary value" do
+    @dataset.insert_sql(123).should == "INSERT INTO test VALUES (123);"
   end
   
   specify "should format an insert statement with sub-query" do
     @sub = Sequel::Dataset.new(nil).from(:something).filter(:x => 2)
     @dataset.insert_sql(@sub).should == \
-      "INSERT INTO test (SELECT * FROM something WHERE (x = 2))"
+      "INSERT INTO test (SELECT * FROM something WHERE (x = 2));"
   end
   
   specify "should format an insert statement with array" do
@@ -121,6 +137,13 @@ context "A simple dataset" do
   specify "should format an update statement" do
     @dataset.update_sql(:name => 'abc').should ==
       "UPDATE test SET name = 'abc'"
+  end
+  
+  specify "should format an update statement with array fields" do
+    v = ['abc']
+    v.fields = [:name]
+    
+    @dataset.update_sql(v).should == "UPDATE test SET name = 'abc'"
   end
   
   specify "should be able to return rows for arbitrary SQL" do
@@ -244,6 +267,16 @@ context "Dataset#where" do
 
     @dataset.filter {:id.in?(4..7)}.sql.should ==
       'SELECT * FROM test WHERE (id >= 4 AND id <= 7)'
+
+    @dataset.filter(:table__id => 4..7).sql.should ==
+      'SELECT * FROM test WHERE (table.id >= 4 AND table.id <= 7)'
+    @dataset.filter(:table__id => 4...7).sql.should ==
+      'SELECT * FROM test WHERE (table.id >= 4 AND table.id < 7)'
+
+    @dataset.filter {:table__id == (4..7)}.sql.should ==
+      'SELECT * FROM test WHERE (table.id >= 4 AND table.id <= 7)'
+    @dataset.filter {:table__id.in?(4..7)}.sql.should ==
+      'SELECT * FROM test WHERE (table.id >= 4 AND table.id <= 7)'
   end
   
   specify "should accept nil" do
@@ -446,6 +479,24 @@ context "a grouped dataset" do
   end
 end
 
+context "Dataset#group_by" do
+  setup do
+    @dataset = Sequel::Dataset.new(nil).from(:test).group_by(:type_id)
+  end
+
+  specify "should raise when trying to generate an update statement" do
+    proc {@dataset.update_sql(:id => 0)}.should raise_error
+  end
+
+  specify "should raise when trying to generate a delete statement" do
+    proc {@dataset.delete_sql}.should raise_error
+  end
+
+  specify "should specify the grouping in generated select statement" do
+    @dataset.select_sql.should ==
+      "SELECT * FROM test GROUP BY type_id"
+  end
+end
 
 context "Dataset#literal" do
   setup do
@@ -519,7 +570,26 @@ context "Dataset#from" do
 
   specify "should format a Dataset as a subquery if it has had options set" do
     @dataset.from(@dataset.from(:a).where(:a=>1)).select_sql.should ==
-      "SELECT * FROM (SELECT * FROM a WHERE (a = 1))"
+      "SELECT * FROM (SELECT * FROM a WHERE (a = 1)) t1"
+  end
+  
+  specify "should automatically alias sub-queries" do
+    @dataset.from(@dataset.from(:a).group(:b)).select_sql.should ==
+      "SELECT * FROM (SELECT * FROM a GROUP BY b) t1"
+      
+    d1 = @dataset.from(:a).group(:b)
+    d2 = @dataset.from(:c).group(:d)
+    
+    @dataset.from(d1, d2).sql.should == 
+      "SELECT * FROM (SELECT * FROM a GROUP BY b) t1, (SELECT * FROM c GROUP BY d) t2"
+  end
+  
+  specify "should accept a hash for aliasing" do
+    @dataset.from(:a => :b).sql.should ==
+      "SELECT * FROM a b"
+      
+    @dataset.from(@dataset.from(:a).group(:b) => :c).sql.should ==
+      "SELECT * FROM (SELECT * FROM a GROUP BY b) c"
   end
 
   specify "should use the relevant table name if given a simple dataset" do
@@ -542,12 +612,12 @@ context "Dataset#select" do
     @d.select(:a, :b, :test__c).sql.should == 'SELECT a, b, test.c FROM test'
   end
   
-  specify "should accept mixed types (strings and symbols)" do
-    @d.select('aaa').sql.should == 'SELECT aaa FROM test'
-    @d.select(:a, 'b').sql.should == 'SELECT a, b FROM test'
-    @d.select(:test__cc, 'test.d AS e').sql.should == 
+  specify "should accept symbols and literal strings" do
+    @d.select('aaa'.lit).sql.should == 'SELECT aaa FROM test'
+    @d.select(:a, 'b'.lit).sql.should == 'SELECT a, b FROM test'
+    @d.select(:test__cc, 'test.d AS e'.lit).sql.should == 
       'SELECT test.cc, test.d AS e FROM test'
-    @d.select('test.d AS e', :test__cc).sql.should == 
+    @d.select('test.d AS e'.lit, :test__cc).sql.should == 
       'SELECT test.d AS e, test.cc FROM test'
 
     # symbol helpers      
@@ -572,6 +642,14 @@ context "Dataset#select" do
     @d.select(:a, :b, :c).select.sql.should == 'SELECT * FROM test'
     @d.select(:price).select(:name).sql.should == 'SELECT name FROM test'
   end
+  
+  specify "should accept arbitrary objects and literalize them correctly" do
+    @d.select(1, :a, 't').sql.should == "SELECT 1, a, 't' FROM test"
+
+    @d.select(nil, :sum[:t], :x___y).sql.should == "SELECT NULL, sum(t), x AS y FROM test"
+
+    @d.select(nil, 1, :x => :y).sql.should == "SELECT NULL, 1, x AS y FROM test"
+  end
 end
 
 context "Dataset#order" do
@@ -595,7 +673,33 @@ context "Dataset#order" do
   end
   
   specify "should accept a string" do
-    @dataset.order('dada ASC').sql.should ==
+    @dataset.order('dada ASC'.lit).sql.should ==
+      'SELECT * FROM test ORDER BY dada ASC'
+  end
+end
+
+context "Dataset#order_by" do
+  setup do
+    @dataset = Sequel::Dataset.new(nil).from(:test)
+  end
+  
+  specify "should include an ORDER BY clause in the select statement" do
+    @dataset.order_by(:name).sql.should == 
+      'SELECT * FROM test ORDER BY name'
+  end
+  
+  specify "should accept multiple arguments" do
+    @dataset.order_by(:name, :price.DESC).sql.should ==
+      'SELECT * FROM test ORDER BY name, price DESC'
+  end
+  
+  specify "should overrun a previous ordering" do
+    @dataset.order_by(:name).order(:stamp).sql.should ==
+      'SELECT * FROM test ORDER BY stamp'
+  end
+  
+  specify "should accept a string" do
+    @dataset.order_by('dada ASC'.lit).sql.should ==
       'SELECT * FROM test ORDER BY dada ASC'
   end
 end
@@ -871,6 +975,17 @@ context "Dataset#join_table" do
     @d.from('stats s').join('players p', :id => :player_id).sql.should ==
       'SELECT * FROM stats s INNER JOIN players p ON (p.id = s.player_id)'
   end
+  
+  specify "should allow for arbitrary conditions in the JOIN clause" do
+    @d.join_table(:left_outer, :categories, :id => :category_id, :status => 0).sql.should ==
+      'SELECT * FROM items LEFT OUTER JOIN categories ON (categories.id = items.category_id) AND (categories.status = 0)'
+    @d.join_table(:left_outer, :categories, :id => :category_id, :categorizable_type => "Post").sql.should ==
+      "SELECT * FROM items LEFT OUTER JOIN categories ON (categories.categorizable_type = 'Post') AND (categories.id = items.category_id)"
+    @d.join_table(:left_outer, :categories, :id => :category_id, :timestamp => "CURRENT_TIMESTAMP".lit).sql.should ==
+      "SELECT * FROM items LEFT OUTER JOIN categories ON (categories.id = items.category_id) AND (categories.timestamp = CURRENT_TIMESTAMP)"
+    @d.join_table(:left_outer, :categories, :id => :category_id, :status => [1, 2, 3]).sql.should ==
+      "SELECT * FROM items LEFT OUTER JOIN categories ON (categories.id = items.category_id) AND (categories.status IN (1, 2, 3))"
+  end
 end
 
 context "Dataset#[]=" do
@@ -983,6 +1098,11 @@ context "Dataset#first" do
 
     @d.first('z = ?', 15)
     @c.last_opts[:where].should == ('z = 15')
+  end
+  
+  specify "should return the first matching record if a block is given" do
+    @d.first {:z > 26}.should == {:a => 1, :b => 2}
+    @c.last_opts[:where].should == ('(z > 26)')
   end
   
   specify "should return a single record if no argument is given" do
@@ -1177,7 +1297,7 @@ context "Dataset#single_value" do
   end
 end
 
-context "Dataset#set_row_filter" do
+context "Dataset#set_row_proc" do
   setup do
     @c = Class.new(Sequel::Dataset) do
       def fetch_rows(sql, &block)
@@ -1189,7 +1309,7 @@ context "Dataset#set_row_filter" do
   end
   
   specify "should cause dataset to pass all rows through the filter" do
-    @dataset.set_row_filter {|h| h[:der] = h[:kind] + 2; h}
+    @dataset.set_row_proc {|h| h[:der] = h[:kind] + 2; h}
     
     rows = @dataset.all
     rows.size.should == 10
@@ -1198,7 +1318,7 @@ context "Dataset#set_row_filter" do
   end
   
   specify "should be copied over when dataset is cloned" do
-    @dataset.set_row_filter {|h| h[:der] = h[:kind] + 2; h}
+    @dataset.set_row_proc {|h| h[:der] = h[:kind] + 2; h}
     
     @dataset.filter(:a => 1).first.should == {:kind => 1, :der => 3}
   end
@@ -1616,5 +1736,330 @@ context "Dataset#multi_insert" do
       "INSERT INTO items (name) VALUES ('ghi');",
       'COMMIT;'
     ]
+  end
+end
+
+context "Dataset#query" do
+  setup do
+    @d = Sequel::Dataset.new(nil)
+  end
+  
+  specify "should support #from" do
+    q = @d.query {from :xxx}
+    q.class.should == @d.class
+    q.sql.should == "SELECT * FROM xxx"
+  end
+  
+  specify "should support #select" do
+    q = @d.query do
+      select :a, :b___mongo
+      from :yyy
+    end
+    q.class.should == @d.class
+    q.sql.should == "SELECT a, b AS mongo FROM yyy"
+  end
+  
+  specify "should support #where" do
+    q = @d.query do
+      from :zzz
+      where {:x + 2 > :y + 3}
+    end
+    q.class.should == @d.class
+    q.sql.should == "SELECT * FROM zzz WHERE ((x + 2) > (y + 3))"
+
+    q = @d.from(:zzz).query do
+      where {:x > 1 && :y > 2}
+    end
+    q.class.should == @d.class
+    q.sql.should == "SELECT * FROM zzz WHERE ((x > 1) AND (y > 2))"
+
+    q = @d.from(:zzz).query do
+      where :x => 33
+    end
+    q.class.should == @d.class
+    q.sql.should == "SELECT * FROM zzz WHERE (x = 33)"
+  end
+  
+  specify "should support #group_by and #having" do
+    q = @d.query do
+      from :abc
+      group_by :id
+      having {:x >= 2}
+    end
+    q.class.should == @d.class
+    q.sql.should == "SELECT * FROM abc GROUP BY id HAVING (x >= 2)"
+  end
+  
+  specify "should support #order, #order_by" do
+    q = @d.query do
+      from :xyz
+      order_by :stamp
+    end
+    q.class.should == @d.class
+    q.sql.should == "SELECT * FROM xyz ORDER BY stamp"
+  end
+  
+  specify "should raise on non-chainable method calls" do
+    proc {@d.query {count}}.should raise_error(SequelError)
+  end
+  
+  specify "should raise on each, insert, update, delete" do
+    proc {@d.query {each}}.should raise_error(SequelError)
+    proc {@d.query {insert(:x => 1)}}.should raise_error(SequelError)
+    proc {@d.query {update(:x => 1)}}.should raise_error(SequelError)
+    proc {@d.query {delete}}.should raise_error(SequelError)
+  end
+end
+
+context "Dataset" do
+  setup do
+    @d = Sequel::Dataset.new(nil).from(:x)
+  end
+
+  specify "should support self-changing select!" do
+    @d.select!(:y)
+    @d.sql.should == "SELECT y FROM x"
+  end
+  
+  specify "should support self-changing from!" do
+    @d.from!(:y)
+    @d.sql.should == "SELECT * FROM y"
+  end
+
+  specify "should support self-changing order!" do
+    @d.order!(:y)
+    @d.sql.should == "SELECT * FROM x ORDER BY y"
+  end
+  
+  specify "should support self-changing filter!" do
+    @d.filter!(:y => 1)
+    @d.sql.should == "SELECT * FROM x WHERE (y = 1)"
+  end
+
+  specify "should support self-changing filter! with block" do
+    @d.filter! {:y == 2}
+    @d.sql.should == "SELECT * FROM x WHERE (y = 2)"
+  end
+  
+  specify "should raise for ! methods that don't return a dataset" do
+    proc {@d.opts!}.should raise_error(NameError)
+  end
+  
+  specify "should raise for missing methods" do
+    proc {@d.xuyz}.should raise_error(NameError)
+    proc {@d.xyz!}.should raise_error(NameError)
+    proc {@d.xyz?}.should raise_error(NameError)
+  end
+  
+  specify "should support chaining of bang methods" do
+      @d.order!(:y)
+      @d.filter!(:y => 1)
+      @d.sql.should == "SELECT * FROM x WHERE (y = 1) ORDER BY y"
+  end
+end
+
+context "Dataset#transform" do
+  setup do
+    @c = Class.new(Sequel::Dataset) do
+      attr_accessor :raw
+      attr_accessor :sql
+      
+      def fetch_rows(sql, &block)
+        block[@raw]
+      end
+      
+      def insert(v)
+        @sql = insert_sql(v)
+      end
+      
+      def update(v)
+        @sql = update_sql(v)
+      end
+    end
+
+    @ds = @c.new(nil).from(:items)
+    @ds.transform(:x => [
+      proc {|v| Marshal.load(v)},
+      proc {|v| Marshal.dump(v)}
+    ])
+  end
+  
+  specify "should change the dataset to transform values loaded from the database" do
+    @ds.raw = {:x => Marshal.dump([1, 2, 3]), :y => 'hello'}
+    @ds.first.should == {:x => [1, 2, 3], :y => 'hello'}
+  end
+  
+  specify "should change the dataset to transform values saved to the database" do
+    @ds.insert(:x => :toast)
+    @ds.sql.should == "INSERT INTO items (x) VALUES ('#{Marshal.dump(:toast)}');"
+
+    @ds.insert(:y => 'butter')
+    @ds.sql.should == "INSERT INTO items (y) VALUES ('butter');"
+    
+    @ds.update(:x => ['dream'])
+    @ds.sql.should == "UPDATE items SET x = '#{Marshal.dump(['dream'])}'"
+  end
+  
+  specify "should be transferred to cloned datasets" do
+    @ds2 = @ds.filter(:a => 1)
+
+    @ds2.raw = {:x => Marshal.dump([1, 2, 3]), :y => 'hello'}
+    @ds2.first.should == {:x => [1, 2, 3], :y => 'hello'}
+
+    @ds2.insert(:x => :toast)
+    @ds2.sql.should == "INSERT INTO items (x) VALUES ('#{Marshal.dump(:toast)}');"
+  end
+  
+  specify "should work correctly together with set_row_proc" do
+    @ds.set_row_proc {|r| r[:z] = r[:x] * 2; r}
+    @ds.raw = {:x => Marshal.dump("wow"), :y => 'hello'}
+    @ds.first.should == {:x => "wow", :y => 'hello', :z => "wowwow"}
+
+    f = nil
+    @ds.raw = {:x => Marshal.dump("wow"), :y => 'hello'}
+    @ds.each(:naked => true) {|r| f = r}
+    f.should == {:x => "wow", :y => 'hello'}
+  end
+end
+
+context "Dataset#transform" do
+  setup do
+    @c = Class.new(Sequel::Dataset) do
+      attr_accessor :raw
+      attr_accessor :sql
+      
+      def fetch_rows(sql, &block)
+        block[@raw]
+      end
+      
+      def insert(v)
+        @sql = insert_sql(v)
+      end
+      
+      def update(v)
+        @sql = update_sql(v)
+      end
+    end
+
+    @ds = @c.new(nil).from(:items)
+  end
+  
+  specify "should raise SequelError for invalid transformations" do
+    proc {@ds.transform(:x => 'mau')}.should raise_error(SequelError)
+    proc {@ds.transform(:x => :mau)}.should raise_error(SequelError)
+    proc {@ds.transform(:x => [])}.should raise_error(SequelError)
+    proc {@ds.transform(:x => ['mau'])}.should raise_error(SequelError)
+    proc {@ds.transform(:x => [proc {|v|}, proc {|v|}])}.should_not raise_error(SequelError)
+  end
+  
+  specify "should support stock YAML transformation" do
+    @ds.transform(:x => :yaml)
+
+    @ds.raw = {:x => [1, 2, 3].to_yaml, :y => 'hello'}
+    @ds.first.should == {:x => [1, 2, 3], :y => 'hello'}
+
+    @ds.insert(:x => :toast)
+    @ds.sql.should == "INSERT INTO items (x) VALUES ('#{:toast.to_yaml}');"
+    @ds.insert(:y => 'butter')
+    @ds.sql.should == "INSERT INTO items (y) VALUES ('butter');"
+    @ds.update(:x => ['dream'])
+    @ds.sql.should == "UPDATE items SET x = '#{['dream'].to_yaml}'"
+
+    @ds2 = @ds.filter(:a => 1)
+    @ds2.raw = {:x => [1, 2, 3].to_yaml, :y => 'hello'}
+    @ds2.first.should == {:x => [1, 2, 3], :y => 'hello'}
+    @ds2.insert(:x => :toast)
+    @ds2.sql.should == "INSERT INTO items (x) VALUES ('#{:toast.to_yaml}');"
+
+    @ds.set_row_proc {|r| r[:z] = r[:x] * 2; r}
+    @ds.raw = {:x => "wow".to_yaml, :y => 'hello'}
+    @ds.first.should == {:x => "wow", :y => 'hello', :z => "wowwow"}
+    f = nil
+    @ds.raw = {:x => "wow".to_yaml, :y => 'hello'}
+    @ds.each(:naked => true) {|r| f = r}
+    f.should == {:x => "wow", :y => 'hello'}
+  end
+  
+  specify "should support stock Marshal transformation" do
+    @ds.transform(:x => :marshal)
+
+    @ds.raw = {:x => Marshal.dump([1, 2, 3]), :y => 'hello'}
+    @ds.first.should == {:x => [1, 2, 3], :y => 'hello'}
+
+    @ds.insert(:x => :toast)
+    @ds.sql.should == "INSERT INTO items (x) VALUES ('#{Marshal.dump(:toast)}');"
+    @ds.insert(:y => 'butter')
+    @ds.sql.should == "INSERT INTO items (y) VALUES ('butter');"
+    @ds.update(:x => ['dream'])
+    @ds.sql.should == "UPDATE items SET x = '#{Marshal.dump(['dream'])}'"
+
+    @ds2 = @ds.filter(:a => 1)
+    @ds2.raw = {:x => Marshal.dump([1, 2, 3]), :y => 'hello'}
+    @ds2.first.should == {:x => [1, 2, 3], :y => 'hello'}
+    @ds2.insert(:x => :toast)
+    @ds2.sql.should == "INSERT INTO items (x) VALUES ('#{Marshal.dump(:toast)}');"
+
+    @ds.set_row_proc {|r| r[:z] = r[:x] * 2; r}
+    @ds.raw = {:x => Marshal.dump("wow"), :y => 'hello'}
+    @ds.first.should == {:x => "wow", :y => 'hello', :z => "wowwow"}
+    f = nil
+    @ds.raw = {:x => Marshal.dump("wow"), :y => 'hello'}
+    @ds.each(:naked => true) {|r| f = r}
+    f.should == {:x => "wow", :y => 'hello'}
+  end
+end
+
+context "Dataset#to_csv" do
+  setup do
+    @c = Class.new(Sequel::Dataset) do
+      attr_accessor :data
+      attr_accessor :cols
+      
+      def fetch_rows(sql, &block)
+        @columns = @cols
+        @data.each {|r| r.fields = @columns; block[r]}
+      end
+      
+      # naked should return self here because to_csv wants a naked result set.
+      def naked
+        self
+      end
+    end
+    
+    @ds = @c.new(nil).from(:items)
+
+    @ds.cols = [:a, :b, :c]
+    @ds.data = [
+      [1, 2, 3], [4, 5, 6], [7, 8, 9]
+    ]
+  end
+  
+  specify "should format a CSV representation of the records" do
+    @ds.to_csv.should ==
+      "a, b, c\r\n1, 2, 3\r\n4, 5, 6\r\n7, 8, 9\r\n"
+  end
+
+  specify "should exclude column titles if so specified" do
+    @ds.to_csv(false).should ==
+      "1, 2, 3\r\n4, 5, 6\r\n7, 8, 9\r\n"
+  end
+end
+
+context "Dataset#each_hash" do
+  setup do
+    @c = Class.new(Sequel::Dataset) do
+      def each(&block)
+        a = [[1, 2, 3], [4, 5, 6]]
+        a.each {|r| r.fields = [:a, :b, :c]; block[r]}
+      end
+    end
+    
+    @ds = @c.new(nil).from(:items)
+  end
+  
+  specify "should yield records converted to hashes" do
+    hashes = []
+    @ds.each_hash {|h| hashes << h}
+    hashes.should == [{:a => 1, :b => 2, :c => 3}, {:a => 4, :b => 5, :c => 6}]
   end
 end

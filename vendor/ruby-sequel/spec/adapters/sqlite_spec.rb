@@ -72,12 +72,72 @@ context "An SQLite database" do
     
     @db[:t].order(:name).map(:name).should == ['abc', 'def']
   end
+  
+  specify "should be able to execute transactions" do
+    @db.transaction do
+      @db.create_table(:t) {text :name}
+    end
+    
+    @db.tables.should == [:t]
+
+    proc {@db.transaction do
+      @db.create_table(:u) {text :name}
+      raise ArgumentError
+    end}.should raise_error(ArgumentError)
+    # no commit
+    @db.tables.should == [:t]
+
+    proc {@db.transaction do
+      @db.create_table(:v) {text :name}
+      rollback!
+    end}.should_not raise_error
+    # no commit
+    @db.tables.should == [:t]
+  end
+
+  specify "should support nested transactions" do
+    @db.transaction do
+      @db.transaction do
+        @db.create_table(:t) {text :name}
+      end
+    end
+    
+    @db.tables.should == [:t]
+
+    proc {@db.transaction do
+      @db.create_table(:v) {text :name}
+      @db.transaction do
+        rollback! # should roll back the top-level transaction
+      end
+    end}.should_not raise_error
+    # no commit
+    @db.tables.should == [:t]
+  end
+  
+  specify "should provide disconnect functionality" do
+    @db.tables
+    @db.pool.size.should == 1
+    @db.disconnect
+    @db.pool.size.should == 0
+  end
 end
 
 context "An SQLite dataset" do
   setup do
     @d = SQLITE_DB[:items]
     @d.delete # remove all records
+  end
+  
+  specify "should return the correct records" do
+    @d.to_a.should == []
+    @d << {:name => 'abc', :value => 1.23}
+    @d << {:name => 'abc', :value => 4.56}
+    @d << {:name => 'def', :value => 7.89}
+    @d.select(:name, :value).to_a.sort_by {|h| h[:value]}.should == [
+      {:name => 'abc', :value => 1.23},
+      {:name => 'abc', :value => 4.56},
+      {:name => 'def', :value => 7.89}
+    ]
   end
   
   specify "should return the correct record count" do
@@ -87,7 +147,7 @@ context "An SQLite dataset" do
     @d << {:name => 'def', :value => 7.89}
     @d.count.should == 3
   end
-  
+
   specify "should return the last inserted id when inserting records" do
     id = @d << {:name => 'abc', :value => 1.23}
     id.should == @d.first[:id]
@@ -183,6 +243,58 @@ context "SQLite::Dataset#update" do
     @d.update(:value => 10).should == 3
     
     @d.filter(:name => 'xxx').update(:value => 23).should == 0
+  end
+end
+
+context "An SQLite dataset in array tuples mode" do
+  setup do
+    @d = SQLITE_DB[:items]
+    @d.delete # remove all records
+    
+    Sequel.use_array_tuples
+  end
+  
+  teardown do
+    Sequel.use_hash_tuples
+  end
+  
+  specify "should return the correct records" do
+    @d.to_a.should == []
+    @d << {:name => 'abc', :value => 1.23}
+    @d << {:name => 'abc', :value => 4.56}
+    @d << {:name => 'def', :value => 7.89}
+    @d.select(:name, :value).to_a.sort_by {|h| h[:value]}.should == [
+      Array.from_hash({:name => 'abc', :value => 1.23}),
+      Array.from_hash({:name => 'abc', :value => 4.56}),
+      Array.from_hash({:name => 'def', :value => 7.89})
+    ]
+  end
+end  
+
+context "SQLite dataset" do
+  setup do
+    SQLITE_DB.create_table :test do
+      integer :id, :primary_key => true, :auto_increment => true
+      text :name
+      float :value
+    end
+
+    @d = SQLITE_DB[:items]
+    @d.delete # remove all records
+    @d << {:name => 'abc', :value => 1.23}
+    @d << {:name => 'def', :value => 4.56}
+    @d << {:name => 'ghi', :value => 7.89}
+  end
+  
+  teardown do
+    SQLITE_DB.drop_table :test
+  end
+  
+  specify "should be able to insert from a subquery" do
+    SQLITE_DB[:test] << @d
+    SQLITE_DB[:test].count.should == 3
+    SQLITE_DB[:test].select(:name, :value).order(:value).to_a.should == \
+      @d.select(:name, :value).order(:value).to_a
   end
 end
 

@@ -5,7 +5,8 @@ module Sequel
   # The Database class is meant to be subclassed by database adapters in order
   # to provide the functionality needed for executing queries.
   class Database
-    attr_reader :opts, :pool, :logger
+    attr_reader :opts, :pool
+    attr_accessor :logger
     
     # Constructs a new instance of a database connection with the specified
     # options hash.
@@ -30,6 +31,10 @@ module Sequel
     
     def connect
       raise NotImplementedError, "#connect should be overriden by adapters"
+    end
+    
+    def disconnect
+      raise NotImplementedError, "#disconnect should be overriden by adapters"
     end
     
     def multi_threaded?
@@ -60,9 +65,28 @@ module Sequel
     
     # Returns a blank dataset
     def dataset
-      Sequel::Dataset.new(self)
+      ds = Sequel::Dataset.new(self)
     end
-
+    
+    def fetch(sql, *args, &block)
+      ds = dataset
+      sql = sql.gsub('?') {|m|  ds.literal(args.shift)}
+      if block
+        ds.fetch_rows(sql, &block)
+      else
+        ds.meta_def(:select_sql) {|*args| sql}
+        ds.meta_def(:sql) {|*args| sql}
+        ds
+      end
+    end
+    alias_method :>>, :fetch
+    
+    # Converts a query block into a dataset. For more information see 
+    # Dataset#query.
+    def query(&block)
+      dataset.query(&block)
+    end
+    
     # Returns a new dataset with the from method invoked. If a block is given,
     # it is used as a filter on the dataset.
     def from(*args, &block)
@@ -73,16 +97,18 @@ module Sequel
     # Returns a new dataset with the select method invoked.
     def select(*args); dataset.select(*args); end
     
-    alias_method :[], :from
-
+    def [](*args)
+      (String === args.first) ? fetch(*args) : from(*args)
+    end
+    
     def execute(sql)
       raise NotImplementedError
     end
     
-    # Executes the supplied SQL. The SQL can be supplied as a string or as an
-    # array of strings. Comments and excessive white space are removed. See
-    # also Array#to_sql.
-    def <<(sql); execute(sql.to_sql); end
+    # Executes the supplied SQL statement. The SQL can be supplied as a string
+    # or as an array of strings. If an array is give, comments and excessive 
+    # white space are removed. See also Array#to_sql.
+    def <<(sql); execute((Array === sql) ? sql.to_sql : sql); end
     
     # Acquires a database connection, yielding it to the passed block.
     def synchronize(&block)
@@ -155,7 +181,7 @@ module Sequel
           result
         rescue => e
           conn.execute(SQL_ROLLBACK)
-          raise e
+          raise e unless SequelRollbackError === e
         ensure
           @transactions.delete(Thread.current)
         end

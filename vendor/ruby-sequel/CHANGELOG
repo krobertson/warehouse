@@ -1,5 +1,137 @@
 === SVN
 
+* Implemented custom row fetchers in SQLite adapter.
+
+=== 0.3.0.1 (2007-10-20)
+
+* Changed Database#fetch to return a modified dataset.
+
+=== 0.3 (2007-10-20)
+
+* Added stock transforms to Dataset#transform. Refactored Model.serialize.
+
+* Added Database#logger= method for setting the database logger object.
+
+* Fixed Model.[] to act as shortcut to Model.find when a hash is given (#71).
+
+* Added support for old and new decimal types in MySQL adapter, and updated MYSQL_TYPES with MySQL 5.0 constants (#72).
+
+* Implemented Database#disconnect method for all adapters.
+
+* Fixed small bug in ArrayKeys module.
+
+* Implemented model caching by primary key.
+
+* Separated Model.find and Model.[] functionality. Model.find takes a filter. Model.[] is strictly for finding by primary keys.
+
+* Enhanced Dataset#first to accept a filter block. Model#find can also now accept a filter block.
+
+* Changed Database#[] to act as shortcut to #fetch if a string is given.
+
+* Renamed Database#each to #fetch. If no block is given, the method returns an enumerator.
+
+* Changed Dataset#join methods to correctly literalize values in join conditions (#70).
+
+* Fixed #filter with ranges to correctly literalize field names (#69).
+
+* Implemented Database#each method for quickly retrieving records with arbitrary SQL (thanks Aman Gupta).
+
+* Fixed bug in postgres adapter where a LiteralString would be literalized as a regular String.
+
+* Fixed SQLite insert with subquery (#68).
+
+* Reverted back to hashes as default mode. Added Sequel.use_array_tuples and Sequel.use_hash_tuples methods.
+
+* Fixed problem with arrays with keys when using #delete.
+
+* Implemented ArrayKeys as substitute for ArrayFields.
+
+* Added Dataset#each_hash method.
+
+* Rewrote SQLite::Database#transaction to use sqlite3-ruby library implementation of transactions.
+
+* Fixed Model.destroy_all to work correctly in cases where no before_destroy hook is defined and an after_destroy hook is defined.
+
+* Restored Model.has_hooks? implementation.
+
+* Changed Database#<< to strip comments and whitespace only when an array is given.
+
+* Changed Schema::Generator#primary_key to accept calls with the type argument omitted.
+
+* Hooks can now be prepended or appended by choice.
+
+* Changed Model.subset to define filter method on the underlying dataset instead of the model class.
+
+* Fixed Dataset#transform to work with array fields.
+
+* Added Dataset#to_csv method.
+
+* PrettyTable can now extract column names from arrayfields.
+
+* Converted ado, dbi, odbc adapters to use arrayfields instead of hashes.
+
+* Fixed composite key support.
+
+* Fixed Dataset#insert_sql, update_sql to support array fields.
+
+* Converted sqlite, mysql, postgres adapters to use arrayfields instead of hashes.
+
+* Extended Dataset#from to auto alias sub-queries.
+
+* Extended Dataset#from to accept hash for aliasing tables.
+
+* Added before_update, after_update hooks.
+
+=== 0.2.1.1 (2007-10-07)
+
+* Added Date literalization to sqlite adapter (#60).
+
+* Changed Model.serialize to allow calling it after the class is defined (#59).
+
+* Fixed after_create hooks to allow calling save inside the hook (#58).
+
+* Fixed MySQL quoting of sql functions (#57).
+
+* Implemented rollback! global method for cancelling transactions in progress.
+
+* Fixed =~ operator in Sequelizer.
+
+* Fixed ODBC::Dataset#fetch_rows (thanks Dusty).
+
+* Renamed Model.recreate_table to create_table!. recreate_table is deprecated and will issue a warning (#56).
+
+=== 0.2.1 (2007-09-24)
+
+* Added default implementation of Model.primary_key_hash.
+
+* Fixed Sequel::Model() to set dataset for inherited classes.
+
+* Rewrote Model.serialize to use Dataset#transform.
+
+* Implemented Dataset#transform.
+
+* Added gem spec for Windows (without ParseTree dependency).
+
+* Added support for dynamic strings in Sequelizer (#49).
+
+* Query branch merged into trunk.
+
+* Implemented self-changing methods.
+
+* Add support for ternary operator to Sequelizer.
+
+* Fixed sequelizer to evaluate expressions if they don't involve symbols or literal strings.
+
+* Added protection against using #each, #delete, #insert, #update inside query blocks.
+
+* Improved Model#method_missing to deal with invalid attributes.
+
+* Implemented Dataset#query.
+
+* Added Dataset#group_by as alias for Dataset#group.
+
+* Added Dataset#order_by as alias for Dataset#order.
+
 * More model refactoring. Added support for composite keys.
 
 * Added Dataset#empty? method (#46).

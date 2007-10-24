@@ -154,6 +154,10 @@ module Sequel
         end
         conn
       end
+      
+      def disconnect
+        @pool.disconnect {|c| c.close}
+      end
     
       def dataset(opts = nil)
         Postgres::Dataset.new(self, opts)
@@ -260,7 +264,7 @@ module Sequel
             rescue => e
               @logger.info(SQL_ROLLBACK) if @logger
               conn.async_exec(SQL_ROLLBACK) rescue nil
-              raise e
+              raise e unless SequelRollbackError === e
             ensure
               conn.transaction_in_progress = nil
             end
@@ -280,6 +284,7 @@ module Sequel
     class Dataset < Sequel::Dataset
       def literal(v)
         case v
+        when LiteralString: v
         when String, Fixnum, Float, TrueClass, FalseClass: PGconn.quote(v)
         else
           super
@@ -435,6 +440,46 @@ module Sequel
           end
         end
         eval("lambda {|r| {#{kvs.join(COMMA_SEPARATOR)}}}")
+      end
+
+      def array_tuples_fetch_rows(sql, &block)
+        @db.synchronize do
+          result = @db.execute(sql)
+          begin
+            conv = array_tuples_row_converter(result)
+            result.each {|r| yield conv[r]}
+          ensure
+            result.clear
+          end
+        end
+      end
+      
+      @@array_tuples_converters_mutex = Mutex.new
+      @@array_tuples_converters = {}
+
+      def array_tuples_row_converter(result)
+        fields = []; translators = []
+        result.fields.each_with_index do |f, idx|
+          fields << f.to_sym
+          translators << PG_TYPES[result.type(idx)]
+        end
+        @columns = fields
+        
+        # create result signature and memoize the converter
+        sig = [fields, translators].hash
+        @@array_tuples_converters_mutex.synchronize do
+          @@array_tuples_converters[sig] ||= array_tuples_compile_converter(fields, translators)
+        end
+      end
+    
+      def array_tuples_compile_converter(fields, translators)
+        tr = []
+        fields.each_with_index do |field, idx|
+          if t = translators[idx]
+            tr << "if (v = r[#{idx}]); r[#{idx}] = v.#{t}; end"
+          end
+        end
+        eval("lambda {|r| r.fields = fields; #{tr.join(';')}; r}")
       end
     end
   end

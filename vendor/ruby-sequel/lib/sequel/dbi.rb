@@ -14,6 +14,10 @@ module Sequel
         dbname = 'DBI:' + dbname unless dbname =~ /^DBI:/
         ::DBI.connect(dbname, @opts[:user], @opts[:password])
       end
+      
+      def disconnect
+        @pool.disconnect {|c| c.disconnect}
+      end
     
       def dataset(opts = nil)
         DBI::Dataset.new(self, opts)
@@ -49,6 +53,19 @@ module Sequel
           begin
             @columns = s.column_names.map {|c| c.to_sym}
             s.fetch {|r| yield hash_row(s, r)}
+          ensure
+            s.finish rescue nil
+          end
+        end
+        self
+      end
+      
+      def array_tuples_fetch_rows(sql, &block)
+        @db.synchronize do
+          s = @db.execute sql
+          begin
+            @columns = s.column_names.map {|c| c.to_sym}
+            s.fetch {|r| r.fields = @columns; yield r}
           ensure
             s.finish rescue nil
           end

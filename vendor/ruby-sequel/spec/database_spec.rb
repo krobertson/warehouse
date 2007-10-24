@@ -34,6 +34,12 @@ context "Database#connect" do
   end
 end
 
+context "Database#disconnect" do
+  specify "should raise NotImplementedError" do
+    proc {Sequel::Database.new.disconnect}.should raise_error(NotImplementedError)
+  end
+end
+
 context "Database#uri" do
   setup do
     @c = Class.new(Sequel::Database) do
@@ -125,15 +131,20 @@ context "Database#<<" do
       "CREATE TABLE items (a integer, b text, c integer); DROP TABLE old_items;"
   end
   
-  specify "should remove comments and whitespace from strings as well" do
+  specify "should remove comments and whitespace from arrays" do
     s = %[
       --
       CREATE TABLE items (a integer, /*b integer*/
         b text, c integer); \r\n
       DROP TABLE old_items;
-    ]
+    ].split($/)
     (@db << s).should == 
       "CREATE TABLE items (a integer, b text, c integer); DROP TABLE old_items;"
+  end
+  
+  specify "should not remove comments and whitespace from strings" do
+    s = "INSERT INTO items VALUES ('---abc')"
+    (@db << s).should == s
   end
 end
 
@@ -287,6 +298,16 @@ context "Database#transaction" do
     @db.sql.should == ['BEGIN', 'DROP TABLE test;', 'ROLLBACK']
     
     proc {@db.transaction {raise RuntimeError}}.should raise_error(RuntimeError)
+  end
+  
+  specify "should issue ROLLBACK if rollback! is called in the transaction" do
+    @db.transaction do
+      @db.drop_table(:a)
+      rollback!
+      @db.drop_table(:b)
+    end
+    
+    @db.sql.should == ['BEGIN', 'DROP TABLE a;', 'ROLLBACK']
   end
   
   specify "should be re-entrant" do
@@ -476,6 +497,95 @@ context "A database" do
     db = Sequel::Database.new(:max_options => 4)
     db.should be_single_threaded
     db.should_not be_multi_threaded
+  end
+  
+  specify "should accept a logger object" do
+    db = Sequel::Database.new
+    s = "I'm a logger"
+    db.logger = s
+    db.logger.should be(s)
+    db.logger = nil
+    db.logger.should be_nil
+  end
+end
+
+context "Database#dataset" do
+  setup do
+    @db = Sequel::Database.new
+  end
+  
+  specify "should delegate to Dataset#query if block is provided" do
+    @d = @db.query {select :x; from :y}
+    @d.should be_a_kind_of(Sequel::Dataset)
+    @d.sql.should == "SELECT x FROM y"
+  end
+end
+
+context "Database#fetch" do
+  setup do
+    @db = Sequel::Database.new
+    c = Class.new(Sequel::Dataset) do
+      def fetch_rows(sql); yield({:sql => sql}); end
+    end
+    @db.meta_def(:dataset) {c.new(self)}
+  end
+  
+  specify "should create a dataset and invoke its fetch_rows method with the given sql" do
+    sql = nil
+    @db.fetch('select * from xyz') {|r| sql = r[:sql]}
+    sql.should == 'select * from xyz'
+  end
+  
+  specify "should format the given sql with any additional arguments" do
+    sql = nil
+    @db.fetch('select * from xyz where x = ? and y = ?', 15, 'abc') {|r| sql = r[:sql]}
+    sql.should == "select * from xyz where x = 15 and y = 'abc'"
     
+    # and Aman Gupta's example
+    @db.fetch('select name from table where name = ? or id in (?)',
+    'aman', [3,4,7]) {|r| sql = r[:sql]}
+    sql.should == "select name from table where name = 'aman' or id in (3, 4, 7)"
+  end
+  
+  specify "should return the dataset if no block is given" do
+    @db.fetch('select * from xyz').should be_a_kind_of(Sequel::Dataset)
+    
+    @db.fetch('select a from b').map {|r| r[:sql]}.should == ['select a from b']
+
+    @db.fetch('select c from d').inject([]) {|m, r| m << r; m}.should == \
+      [{:sql => 'select c from d'}]
+  end
+  
+  specify "should return a dataset that always uses the given sql for SELECTs" do
+    ds = @db.fetch('select * from xyz')
+    ds.select_sql.should == 'select * from xyz'
+    ds.sql.should == 'select * from xyz'
+    
+    ds.filter! {:price < 100}
+    ds.select_sql.should == 'select * from xyz'
+    ds.sql.should == 'select * from xyz'
+  end
+end
+
+context "Database#[]" do
+  setup do
+    @db = Sequel::Database.new
+  end
+  
+  specify "should return a dataset when symbols are given" do
+    ds = @db[:items]
+    ds.class.should == Sequel::Dataset
+    ds.opts[:from].should == [:items]
+  end
+  
+  specify "should return an enumerator when a string is given" do
+    c = Class.new(Sequel::Dataset) do
+      def fetch_rows(sql); yield({:sql => sql}); end
+    end
+    @db.meta_def(:dataset) {c.new(self)}
+
+    sql = nil
+    @db['select * from xyz where x = ? and y = ?', 15, 'abc'].each {|r| sql = r[:sql]}
+    sql.should == "select * from xyz where x = 15 and y = 'abc'"
   end
 end

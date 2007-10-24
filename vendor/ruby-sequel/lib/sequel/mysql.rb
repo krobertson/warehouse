@@ -2,27 +2,40 @@ if !Object.const_defined?('Sequel')
   require File.join(File.dirname(__FILE__), '../sequel')
 end
 
+require "bigdecimal"
+require "bigdecimal/util"
 require 'mysql'
 
 # Monkey patch Mysql::Result to yield hashes with symbol keys
 class Mysql::Result
   MYSQL_TYPES = {
-    0 => :to_i,
-    1 => :to_i,
-    2 => :to_i,
-    3 => :to_i,
-    4 => :to_f,
-    5 => :to_f,
-    7 => :to_time,
-    8 => :to_i,
-    9 => :to_i,
-    10 => :to_time,
-    11 => :to_time,
-    12 => :to_time,
-    13 => :to_i,
-    14 => :to_time,
-    247 => :to_i,
-    248 => :to_i
+    0   => :to_d,     # MYSQL_TYPE_DECIMAL
+    1   => :to_i,     # MYSQL_TYPE_TINY
+    2   => :to_i,     # MYSQL_TYPE_SHORT
+    3   => :to_i,     # MYSQL_TYPE_LONG
+    4   => :to_f,     # MYSQL_TYPE_FLOAT
+    5   => :to_f,     # MYSQL_TYPE_DOUBLE
+    # 6   => ??,        # MYSQL_TYPE_NULL
+    7   => :to_time,  # MYSQL_TYPE_TIMESTAMP
+    8   => :to_i,     # MYSQL_TYPE_LONGLONG
+    9   => :to_i,     # MYSQL_TYPE_INT24
+    10  => :to_time,  # MYSQL_TYPE_DATE
+    11  => :to_time,  # MYSQL_TYPE_TIME
+    12  => :to_time,  # MYSQL_TYPE_DATETIME
+    13  => :to_i,     # MYSQL_TYPE_YEAR
+    14  => :to_time,  # MYSQL_TYPE_NEWDATE
+    # 15  => :to_s      # MYSQL_TYPE_VARCHAR
+    # 16  => :to_s,     # MYSQL_TYPE_BIT
+    246 => :to_d,     # MYSQL_TYPE_NEWDECIMAL
+    247 => :to_i,     # MYSQL_TYPE_ENUM
+    248 => :to_i      # MYSQL_TYPE_SET
+    # 249 => :to_s,     # MYSQL_TYPE_TINY_BLOB
+    # 250 => :to_s,     # MYSQL_TYPE_MEDIUM_BLOB
+    # 251 => :to_s,     # MYSQL_TYPE_LONG_BLOB
+    # 252 => :to_s,     # MYSQL_TYPE_BLOB
+    # 253 => :to_s,     # MYSQL_TYPE_VAR_STRING
+    # 254 => :to_s,     # MYSQL_TYPE_STRING
+    # 255 => :to_s      # MYSQL_TYPE_GEOMETRY
   }
   
   def convert_type(v, type)
@@ -40,7 +53,20 @@ class Mysql::Result
     @columns
   end
   
-  def each_hash(with_table=nil)
+  def each_array(with_table = nil)
+    c = columns
+    while row = fetch_row
+      c.each_with_index do |f, i|
+        if (t = MYSQL_TYPES[@column_types[i]]) && (v = row[i])
+          row[i] = v.send(t)
+        end
+      end
+      row.fields = c
+      yield row
+    end
+  end
+  
+  def each_hash(with_table = nil)
     c = columns
     while row = fetch_row
       h = {}
@@ -78,6 +104,10 @@ module Sequel
         conn
       end
       
+      def disconnect
+        @pool.disconnect {|c| c.close}
+      end
+      
       def tables
         @pool.hold do |conn|
           conn.list_tables.map {|t| t.to_sym}
@@ -95,7 +125,7 @@ module Sequel
         end
       end
       
-      def query(sql)
+      def execute_select(sql)
         @logger.info(sql) if @logger
         @pool.hold do |conn|
           conn.query(sql)
@@ -133,7 +163,7 @@ module Sequel
             result
           rescue => e
             conn.query(SQL_ROLLBACK)
-            raise e
+            raise e unless SequelRollbackError === e
           ensure
             @transactions.delete(Thread.current)
           end
@@ -144,10 +174,10 @@ module Sequel
     class Dataset < Sequel::Dataset
       UNQUOTABLE_FIELD_RE = /^(`(.+)`)|\*$/.freeze
       def quote_field(f)
-        f =~ UNQUOTABLE_FIELD_RE ? f : "`#{f}`"
+        (f.nil? || f.empty? || f =~ UNQUOTABLE_FIELD_RE) ? f : "`#{f}`"
       end
       
-      FIELD_EXPR_RE = /^([^\(]+\()?([^\.]+\.)?([^\s\)]+)(\))?(\sAS\s(.+))?$/i.freeze
+      FIELD_EXPR_RE = /^([^\(]+\()?([^\.]+\.)?([^\s\)]+)?(\))?(\sAS\s(.+))?$/i.freeze
       FIELD_ORDER_RE = /^(.*) (DESC|ASC)$/i.freeze
       def quoted_field_name(name)
         case name
@@ -166,6 +196,8 @@ module Sequel
       
       def literal(v)
         case v
+        when LiteralString: quoted_field_name(v)
+        when String: super(v.gsub(/\\/, '\&\&'))
         when true: TRUE
         when false: FALSE
         else
@@ -215,10 +247,23 @@ module Sequel
       
       def fetch_rows(sql)
         @db.synchronize do
-          r = @db.query(sql)
+          r = @db.execute_select(sql)
           begin
             @columns = r.columns
             r.each_hash {|row| yield row}
+          ensure
+            r.free
+          end
+        end
+        self
+      end
+
+      def array_tuples_fetch_rows(sql, &block)
+        @db.synchronize do
+          r = @db.execute_select(sql)
+          begin
+            @columns = r.columns
+            r.each_array(&block)
           ensure
             r.free
           end
