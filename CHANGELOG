@@ -1,5 +1,6 @@
 * 1.1
 
+* Update dom:loaded to change JS times to prevent content flashing.
 * Remove fixed positioning from footer.
 * Add search UI for changesets.
 * Show openID reset form when clicking reset from profile form.

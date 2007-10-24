@@ -235,10 +235,6 @@ Event.addBehavior({
     Permissions.remove(this.up());
   },
   
-  'span.time': function() {
-    this.innerHTML = Date.parseUTC(this.innerHTML).timeAgoInWords();
-  },
-  
   'a#as-toggle:click': function(event) {
     Event.stop(event);
     var as = $('advanced-settings'); as.toggle();
@@ -279,4 +275,10 @@ Event.addBehavior({
     }
   }
 }
+});
+
+document.observe('dom:loaded', function() {
+   $$('span.time').each(function(span) {
+     span.update(Date.parseUTC(span.innerHTML).timeAgoInWords());
+   });
 });

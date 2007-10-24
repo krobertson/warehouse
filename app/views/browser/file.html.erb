@@ -43,6 +43,7 @@
               </p>
               <ul class="formats">
                 <li><%= link_to_history 'History', @node %></li>
+                <li><%= link_to_history 'Blame', @node %></li>
                 <li<% unless @node.text? %> class="end"<% end %>><%= link_to 'Raw', raw_path(:paths => @node.paths) %></li>
                 <% if @node.text? -%><li class="end"><%= link_to 'Text', text_path(:paths => @node.paths) %></li><% end -%>
               </ul>

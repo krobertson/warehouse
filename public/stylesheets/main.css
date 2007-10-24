@@ -112,7 +112,7 @@ div.errorExplanation h2, div#error h2 {
   background: #232C30;
   margin: 0;
   text-align: left;
-  padding: 10px;
+  padding: 18px;
   position: relative;
 }
 
@@ -167,7 +167,7 @@ div.errorExplanation h2, div#error h2 {
 
 #nav {
   position: absolute;
-  top: 3px;
+  top: 11px;
   left: 162px;
   list-style: none;
 }
