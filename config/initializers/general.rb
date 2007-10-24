@@ -46,13 +46,6 @@ require 'plugin'
 require 'hook'
 
 begin
-  require 'rubygems' unless Object.const_defined?(:Gem)
-  require 'uv'
-rescue LoadError
-  puts "No Ultraviolet gem found, defaulting to javascript syntax highlighting.  Do not be afraid."
-end
-
-begin
   Warehouse::Hooks.discover
 rescue ActiveRecord::StatementInvalid
   puts "Error loading hooks: #{$!}"

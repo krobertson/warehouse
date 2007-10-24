@@ -24,7 +24,9 @@ module ApplicationHelper
     end
   end
   
-if Object.const_defined?(:Uv)
+begin
+  require 'rubygems' unless Object.const_defined?(:Gem)
+  require 'uv'
   def highlight_as(filename)
     case filename.split('.').last.downcase
       when 'js', 'as'               then 'javascript'
@@ -34,7 +36,7 @@ if Object.const_defined?(:Uv)
       else 'plain_text'
     end
   end
-else
+rescue LoadError
   def highlight_as(filename)
     case filename.split('.').last.downcase
       when 'js', 'as'               then 'javascript'
@@ -44,6 +46,7 @@ else
       else 'plain'
     end
   end
+  puts "No Ultraviolet gem found, defaulting to javascript syntax highlighting.  Do not be afraid."
 end
   
   def modified?(flag)
