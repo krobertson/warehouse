@@ -4,8 +4,18 @@
 <% end -%>
 
 <% unless params[:q].blank? -%>
-<h2>Results for "<%=h params[:q] %>"</h2>
-<% end -%>
+<h2>Changesets including the term "<%=h params[:q] %>"</h2>
+<% else -%>
+<h2>
+  Changeset activity in <%= current_repository.name %>
+  <% if false %>
+  <p id="views">
+    <a href="#" id="detail-view">Details</a> | 
+    <a href="#" id="list-view">List</a>
+  </p>
+  <% end %>
+</h2>
+<% end %>
 
 <ul id="changesets">
   <% if @changesets.any? %>

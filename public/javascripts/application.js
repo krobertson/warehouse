@@ -255,6 +255,14 @@ Event.addBehavior({
     }
   },
   
+  '#detail-view:click, #list-view:click': function() {
+    if(this.id == 'list-view') {
+      $('changesets').addClassName('list-view');
+    } else {
+      $('changesets').removeClassName('list-view');
+    }
+  },
+  
   '#diff-with:change': function(event) {
     var activeValues = ['head', 'prev', 'next'];
     var curValue = $F(this);

@@ -46,7 +46,7 @@ module ApplicationHelper
   end
   
   def class_for(options)
-    %(class="selected") if current_page?(options)
+    %( class="selected") if current_page?(options)
   end
   
   def avatar_for(user)

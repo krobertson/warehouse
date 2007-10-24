@@ -57,6 +57,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h2 {
+  position: relative;
   padding: 5px;
   font-size: 110%;
   margin-bottom: 10px;
@@ -176,9 +177,9 @@ div.errorExplanation h2, div#error h2 {
 }
 
 #nav li a {
-  border-top: 1px solid #fff;
-  background: #eee;
-  color: #333;
+  border-top: 1px solid #5C738A;
+  background-color: #456 !important;
+  color: #DEE9EE;
   font-size: 92%;
   font-weight: bold;
   margin-right: 5px;
@@ -189,16 +190,23 @@ div.errorExplanation h2, div#error h2 {
 }
 
 #nav li a:hover {
-  background-color: #ddd;
-  color: #222;
+  border-top-color: #7593B0;
+  background-color: #576C82 !important;
+  color: #fff;
+}
+
+#nav li.selected a {
+  border-top: 1px solid #fff;
+  background-color: #eee !important;
+  color: #333;
 }
 
 li#code a {
-  background: #eee url(../images/app/icons/code.png) 5px 50% no-repeat;
+  background:  url(../images/app/icons/code.png) 5px 50% no-repeat;
 }
 
 li#activity a {
-  background: #eee url(../images/app/icons/activity.png) 5px 50% no-repeat;
+  background:  url(../images/app/icons/activity.png) 5px 50% no-repeat;
 }
 
 li#all-history {
@@ -214,7 +222,7 @@ li#all-history a {
 }
 
 li#admin a {
-  background: #eee url(../images/app/icons/admin.png) 5px 50% no-repeat;
+  background:  url(../images/app/icons/admin.png) 5px 50% no-repeat;
 }
 
 #utils {
@@ -1476,6 +1484,37 @@ button {
   margin-bottom: 30px;
 }
 
+
+/* @end */
+
+/* @group Activity */
+#views {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  font-weight: normal;
+  color: #aaa;
+  font-size: 92%;
+}
+
+#views a {
+  text-decoration: underline;
+}
+
+.list-view li.changeset {
+  margin-bottom: 0;
+  border: none;
+  border-bottom: 1px solid #ccc;
+  background: none;
+}
+
+.list-view li.changeset .cs-log, .list-view li.changeset .cs-meta {
+  background: none;
+}
+
+.list-view li.changeset .avatar, .list-view li.changeset .timenauthor {
+  display: none;
+}
 
 /* @end */
 
