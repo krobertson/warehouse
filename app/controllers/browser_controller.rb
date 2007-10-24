@@ -12,6 +12,11 @@ class BrowserController < ApplicationController
     render :action => @node.node_type.downcase
   end
   
+  def blame
+    @bookmark   = Bookmark.new(:path => @node.path)
+    @changesets = current_repository.changesets.find_all_by_path(@node.path, :limit => 5, :order => 'changesets.changed_at desc')
+  end
+  
   def text
     if @node.dir?
       render :layout => false, :content_type => Mime::TEXT

@@ -43,7 +43,7 @@
               </p>
               <ul class="formats">
                 <li><%= link_to_history 'History', @node %></li>
-                <li><%= link_to_blame 'Blame', @node %></li>
+                <li><%= link_to_history 'Blame', @node %></li>
                 <li<% unless @node.text? %> class="end"<% end %>><%= link_to 'Raw', raw_path(:paths => @node.paths) %></li>
                 <% if @node.text? -%><li class="end"><%= link_to 'Text', text_path(:paths => @node.paths) %></li><% end -%>
               </ul>
@@ -55,11 +55,29 @@
         </tr>
       </thead>
     </table>
-    <% if Object.const_defined?(:Uv) -%>
-    <%= Uv.parse @node.content, "xhtml", highlight_as(@node.path.split("/").last), true, :pastels_on_dark %>
-    <% else -%>
-    <pre class="viewsource"><code class="<%= highlight_as(@node.path.split('/').last) %>"><%=h @node.content %></code></pre>
-    <% end -%>
+ <pre><span class="line-numbers">   1 </span> <span class="ControlStructures">class</span> ApplicationController &lt; ActionController::Base
+<span class="line-numbers">   2 </span>   init_gettext <span class="Strings"><span class="Strings">&quot;</span>beast<span class="Strings">&quot;</span></span> <span class="ControlStructures">if</span> Object.const_defined?(<span class="Constants"><span class="Constants">:</span>GetText</span>)
+<span class="line-numbers">   3 </span> 
+<span class="line-numbers">   4 </span>   <span class="Keywords">include</span> <span class="Variables">ExceptionLoggable</span>, <span class="Variables">BrowserFilters</span>, <span class="Variables">AuthenticationSystem</span>
+<span class="line-numbers">   5 </span>   session <span class="Constants"><span class="Constants">:</span>session_key</span> =&gt; <span class="Strings"><span class="Strings">'</span>_beast_session_id<span class="Strings">'</span></span>
+<span class="line-numbers">   6 </span> 
+<span class="line-numbers">   7 </span>   helper_method <span class="Constants"><span class="Constants">:</span>current_user</span>, <span class="Constants"><span class="Constants">:</span>logged_in?</span>, <span class="Constants"><span class="Constants">:</span>admin?</span>, <span class="Constants"><span class="Constants">:</span>last_active</span>
+<span class="line-numbers">   8 </span>   before_filter <span class="Constants"><span class="Constants">:</span>login_by_token</span>
+<span class="line-numbers">   9 </span> 
+<span class="line-numbers">  10 </span>   <span class="Keywords">protected</span>
+<span class="line-numbers">  11 </span>     <span class="ControlStructures">def</span> last_active
+<span class="line-numbers">  12 </span>       session[<span class="Constants"><span class="Constants">:</span>last_active</span>] <span class="Operators">||=</span> Time.now.utc
+<span class="line-numbers">  13 </span>     <span class="ControlStructures">end</span>
+<span class="line-numbers">  14 </span>     
+<span class="line-numbers">  15 </span>     <span class="ControlStructures">def</span> rescue_action(<span class="Variables">exception</span>)
+<span class="line-numbers">  16 </span>       exception.is_a?(ActiveRecord::RecordInvalid) <span class="Operators">?</span> render_invalid_record(exception.record) : <span class="ControlStructures">super</span>
+<span class="line-numbers">  17 </span>     <span class="ControlStructures">end</span>
+<span class="line-numbers">  18 </span> 
+<span class="line-numbers">  19 </span>     <span class="ControlStructures">def</span> render_invalid_record(<span class="Variables">record</span>)
+<span class="line-numbers">  20 </span>       render <span class="Constants"><span class="Constants">:</span>action</span> =&gt; (record.new_record? <span class="Operators">?</span> <span class="Strings"><span class="Strings">'</span>new<span class="Strings">'</span></span> : <span class="Strings"><span class="Strings">'</span>edit<span class="Strings">'</span></span>)
+<span class="line-numbers">  21 </span>     <span class="ControlStructures">end</span>
+<span class="line-numbers">  22 </span> <span class="ControlStructures">end</span>
+</pre>
     
 <% elsif @node.image? -%>
 
