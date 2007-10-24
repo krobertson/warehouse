@@ -4,8 +4,11 @@ module ApplicationHelper
     controller_path[0..path.length-1] == path
   end
   
+  def full_svn_url?
+    @full_svn_url || (current_repository && current_repository.full_url)
+  end
+  
   def full_svn_url
-    return nil if current_repository.nil? || current_repository.full_url.nil?
     @full_svn_url ||= current_repository.full_url.dup << (@node ? @node.path : '')
   end
   
