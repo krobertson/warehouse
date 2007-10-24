@@ -7,7 +7,11 @@
 <h2>Changesets including the term "<%=h params[:q] %>"</h2>
 <% else -%>
 <h2>
+  <% if current_repository %>
   Changeset activity in <%= current_repository.name %>
+  <% else %>
+  All Changeset activity
+  <% end %>
   <% if false %>
   <p id="views">
     <a href="#" id="detail-view">Details</a> | 

@@ -89,7 +89,7 @@ Sheet.prototype = {
     this.sheet = $(element);
     if(!this.sheet) return;
     this.sheetHeight = this.sheet.getHeight();
-    this.cancelBtn = document.getElementsByClassName('cancelbtn', this.sheet)[0];   
+    this.cancelBtn = this.sheet.down('.cancelbtn');    
     this.trigger = trigger;
     this.overlay;
     this.build(element);
