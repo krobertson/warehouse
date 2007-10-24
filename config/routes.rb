@@ -13,7 +13,6 @@ ActionController::Routing::Routes.draw do |map|
   map.resource  :profile, :controller => 'users'
 
   map.with_options :controller => 'browser' do |b|
-    b.blame       'blame/*paths', :action => 'blame'
     b.rev_browser 'browser/:rev/*paths', :rev => /r\d+/
     b.browser     'browser/*paths'
     b.text        'text/*paths', :action => 'text'
