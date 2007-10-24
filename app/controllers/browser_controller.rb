@@ -46,7 +46,7 @@ class BrowserController < ApplicationController
     end
     
     def current_changeset
-      @current_changeset ||= @revision ? current_repository.changesets.find_by_revision(@revision) : current_repository.latest_changeset
+      @current_changeset ||= current_repository.changesets.find_latest_changeset(@node.path, @revision)
     end
 
     def previous_changeset
