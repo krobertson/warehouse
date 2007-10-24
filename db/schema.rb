@@ -2,7 +2,7 @@
 # migrations feature of ActiveRecord to incrementally modify your database, and
 # then regenerate this schema definition.
 
-ActiveRecord::Schema.define(:version => 27) do
+ActiveRecord::Schema.define(:version => 28) do
 
   create_table "avatars", :force => true do |t|
     t.string  "content_type"
@@ -101,6 +101,7 @@ ActiveRecord::Schema.define(:version => 27) do
     t.string  "path"
     t.string  "subdomain"
     t.boolean "public"
+    t.string  "full_url"
   end
 
   add_index "repositories", ["subdomain"], :name => "index_repositories_on_subdomain"

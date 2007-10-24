@@ -4,6 +4,11 @@ module ApplicationHelper
     controller_path[0..path.length-1] == path
   end
   
+  def full_svn_url
+    return nil if current_repository.nil? || current_repository.full_url.nil?
+    @full_svn_url ||= current_repository.full_url.dup << (@node ? @node.path : '')
+  end
+  
   def use_login_form?
     @use_login_form ||= !cookies['use_svn'].blank? && cookies['use_svn'].value.to_s == '1'
   end

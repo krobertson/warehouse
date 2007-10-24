@@ -11,7 +11,7 @@ class Repository < ActiveRecord::Base
   include PermissionMethods, CommandSanitizer
   has_permalink :name, :subdomain
   validates_presence_of :name, :path, :subdomain
-  attr_accessible :name, :path, :subdomain, :public
+  attr_accessible :name, :path, :subdomain, :public, :full_url
   
   has_many :permissions, :conditions => ['active = ?', true] do
     def set(user_id, options = {})
@@ -31,7 +31,12 @@ class Repository < ActiveRecord::Base
   def path=(value)
     write_attribute :path, value.to_s.chomp('/')
   end
-
+  
+  def full_url=(value)
+    value << "/" unless value.last == "/" unless value.blank?
+    write_attribute :full_url, value
+  end
+  
   def member?(user, path = nil)
     return true if public? || (user.is_a?(User) && user.admin?)
     conditions = [[]]

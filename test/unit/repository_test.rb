@@ -12,6 +12,21 @@ context "Repository" do
     r.subdomain = 'foo'
     r.should.not.be.valid
   end
+  
+  specify "should normalize full_url" do
+    r = Repository.new :full_url => 'foo'
+    r.full_url.should == 'foo/'
+  end
+  
+  specify "should not normalize nil full_url" do
+    r = Repository.new :full_url => nil
+    r.full_url.should == nil
+  end
+  
+  specify "should not normalize normalized full_url" do
+    r = Repository.new :full_url => 'foo/'
+    r.full_url.should == 'foo/'
+  end
 
   specify "should sanitize path" do
     r = Repository.new(:path => 'foo/')
