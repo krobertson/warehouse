@@ -63,11 +63,11 @@
           <h1><%= link_to current_repository ? current_repository.name : "Warehouse", root_path %></h1>
           <ul id="nav">
             <% unless repository_subdomain.blank? -%>
-            <li id="code"<%= class_for(browser_path) %>><%= link_to 'Browser', browser_path %></li>
+            <li id="code"<%= selected_navigation?(:browser) %>><%= link_to 'Browser', browser_path %></li>
             <% end -%>
-            <li id="activity"<%= class_for((!repository_subdomain.blank? || logged_in? ? changesets_path : public_changesets_path)) %>><%= link_to 'Activity', (!repository_subdomain.blank? || logged_in? ? changesets_path : public_changesets_path) %></li>
+            <li id="activity"<%= selected_navigation?(:activity) %>><%= link_to 'Activity', (!repository_subdomain.blank? || logged_in? ? changesets_path : public_changesets_path) %></li>
             <% if admin? || repository_admin? %>
-            <li id="admin"<%= class_for(admin_path) %>><%= link_to 'Admin', admin_path %></li>
+            <li id="admin"<%= selected_navigation?(:admin) %>><%= link_to 'Admin', admin_path %></li>
             <% end %>
           </ul>
           <ul id="utils">

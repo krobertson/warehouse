@@ -19,6 +19,17 @@ module ApplicationHelper
     end
   end
   
+if Object.const_defined?(:Uv)
+  def highlight_as(filename)
+    case filename.split('.').last.downcase
+      when 'js', 'as'               then 'javascript'
+      when 'rb', 'rakefile', 'rake' then 'ruby'
+      when 'css'                    then 'css'
+      when 'rhtml', 'erb', 'html', 'xml', 'rxml', 'plist' then 'html'
+      else 'plain_text'
+    end
+  end
+else
   def highlight_as(filename)
     case filename.split('.').last.downcase
       when 'js', 'as'               then 'javascript'
@@ -28,6 +39,7 @@ module ApplicationHelper
       else 'plain'
     end
   end
+end
   
   def modified?(flag)
     flag.downcase == 'm'
@@ -45,8 +57,23 @@ module ApplicationHelper
     image_tag('/images/app/btns/cancel.png', {:class => 'imgbtn cancelbtn'}.merge(options))
   end
   
+  @@selected_attribute = %( class="selected").freeze
   def class_for(options)
-    %( class="selected") if current_page?(options)
+    @@selected_attribute if current_page?(options)
+  end
+  
+  def selected_navigation?(navigation)
+    @@selected_attribute if current_navigation?(navigation)
+  end
+  
+  def current_navigation?(navigation)
+    @current_navigation ||= \
+      case controller.controller_name
+        when /browser|history/ then :browser
+        when /change/          then :activity
+        else                        :admin
+      end
+    @current_navigation == navigation
   end
   
   def avatar_for(user)
