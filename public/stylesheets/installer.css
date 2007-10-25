@@ -43,6 +43,10 @@ div.overlay-form {
   background: url(../images/app/sheet.png) bottom left no-repeat;
 }
 
+div.sheet-back {
+  background: transparent url(../images/app/install/sheet-mid.png) 0 50% repeat-y;
+}
+
 #installer h1 {
   background: url(../images/app/install/splash.png)  no-repeat;
   height: 88px;
