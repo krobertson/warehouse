@@ -238,7 +238,7 @@ Event.addBehavior({
   'a#as-toggle:click': function(event) {
     Event.stop(event);
     var as = $('advanced-settings'); as.toggle();
-    as.visible() ? this.update('Less settings&hellip;') : this.update('More settings&hellip;')
+    as.visible() ? this.update('Fewer settings&hellip;') : this.update('More settings&hellip;')
   },
   
   '#settings-mail-type:change': function() {

@@ -116,7 +116,9 @@ module Warehouse
   self.svnlook_path            ||= '/usr/bin/svnlook'
 end
 
-require 'config/initializers/warehouse' unless Warehouse.setup?
+unless Warehouse.setup? || !File.exist?(File.join(RAILS_ROOT, 'config/initializers/warehouse'))
+  require 'config/initializers/warehouse'
+end
 
 if Object.const_defined?(:Dependencies)
   Dependencies.autoloaded_constants.delete 'Warehouse'

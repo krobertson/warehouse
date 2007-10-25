@@ -120,7 +120,7 @@
     </p>
   </fieldset>
 
-  <fieldset id="mail-sendmail"<%= %( style="display:none") if (params[:settings][:mail_type] || Warehouse.mail_type) == 'smtp' %>>
+  <fieldset id="mail-sendmail"<%= %( style="display:none") if (params[:settings][:mail_type] || Warehouse.mail_type) != 'sendmail' %>>
     <legend>Sendmail Settings</legend>
     <p>
       <label for="settings_mail_location">Location</label>
