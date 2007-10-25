@@ -2,6 +2,7 @@ class UsersController < ApplicationController
   skip_before_filter :check_for_repository
   before_filter :login_required, :only   => :update
   before_filter :admin_required, :except => :update
+  before_filter :strip_admin_value
   
   def index
     @users = User.paginate :all, :page => params[:page], :order => 'identity_url'
@@ -9,9 +10,7 @@ class UsersController < ApplicationController
   
   def create
     @user = User.new(params[:user])
-    if params[:user]
-      @user.admin = params[:user][:admin] == '1'
-    end
+    @user.admin = @is_admin
     
     render :update do |page|
       if @user.save
@@ -34,9 +33,7 @@ class UsersController < ApplicationController
       @sheet = "profile-#{dom_id @user}"
     end
     @user.attributes = params[:user]
-    if params[:id] && params[:user]
-      @user.admin = params[:user][:admin] == '1'
-    end
+    @user.admin = @is_admin if admin? && params[:id] && params[:user]
     @user.save
     CacheKey.sweep_cache
     Repository.rebuild_htpasswd_for(@user)
@@ -51,5 +48,11 @@ class UsersController < ApplicationController
     respond_to do |format|
       format.js
     end
+  end
+
+protected
+  def strip_admin_value
+    params[:user] ||= {}
+    @is_admin = params[:user].delete(:admin) == '1'
   end
 end
