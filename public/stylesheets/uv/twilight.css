@@ -50,8 +50,17 @@ pre.twilight .line-numbers {
    background-color: #ddd;
    border-left: 1px solid #ccc;
    color: #000000;
-   padding: 4px 0;
+   padding: 5px 0;
+   margin: 0;
 }
+
+pre.twilight .line-numbers a {
+  color: #777;
+  padding: 0;
+  margin: 0;
+  line-height: 100%;
+}
+
 pre.twilight .CssClass {
    color: #9B703F;
 }
