@@ -107,13 +107,11 @@
         <div id="main"<% if @fullscreen -%> style="width:100%"<% end -%>>
           <%= yield %>
           
-          <% if controller.controller_name == 'browser' %>
+          <% if full_svn_url? -%>
           <div id="svn-url">
-            <% if full_svn_url? -%>
             <p>Check out the code: <code>svn co <%= full_svn_url %></code></p>
-            <% end -%>
           </div>
-          <% end %>
+          <% end -%>
         </div>
         <!-- /main -->
         <% unless @fullscreen -%>

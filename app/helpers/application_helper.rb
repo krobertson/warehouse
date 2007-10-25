@@ -5,7 +5,7 @@ module ApplicationHelper
   end
   
   def full_svn_url?
-    @full_svn_url || (current_repository && current_repository.full_url)
+    @full_svn_url || (controller.controller_name == 'browser' && current_repository && current_repository.full_url)
   end
   
   def full_svn_url
