@@ -106,6 +106,13 @@
         <!-- main -->
         <div id="main"<% if @fullscreen -%> style="width:100%"<% end -%>>
           <%= yield %>
+          
+          <div id="svn-url">
+            <% if full_svn_url? -%>
+            <p>Check out the code: <%= full_svn_url %></p>
+            <% end -%>
+          </div>
+          
         </div>
         <!-- /main -->
         <% unless @fullscreen -%>
@@ -155,9 +162,6 @@
         <!-- <form action="/" method="post" id="command-line">
           <input id="commando" type="text" />
         </form> -->
-        <% if full_svn_url? -%>
-        <p><%= link_to 'Full SVN Url', full_svn_url %></p>
-        <% end -%>
         <a id="powered" href="http://warehouseapp.com" title="Warehouse v<%= Warehouse.version %>: web-based subversion browser"><img src="/images/app/warehouse-logo.png" title="Warehouse v<%= Warehouse.version %>: web-based Subversion Browser" alt="Warehouse logo" /></a>
       </div>
       <!-- /footer -->

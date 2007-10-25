@@ -50,7 +50,7 @@ Importer.prototype = {
   },
   
   step: function(progress) {
-    if(this.firstRun) progress = this.options.startProgress;
+    if(this.firstRun) progress = this.options.get('startProgress');
     if(progress < 100) {
       new Ajax.Request('/repositories/' + this.repoId + '/sync', {
         method: 'post',
@@ -58,7 +58,7 @@ Importer.prototype = {
           this.firstRun = false;
           var prog = transport.responseText;
           this.step(prog);
-          this.options.onStep.call(this, prog);
+          this.options.get('onStep').call(this, prog);
         }.bind(this),
         
         on500: function() {
@@ -66,7 +66,7 @@ Importer.prototype = {
         }
       });
     } else {
-      this.options.onImported.call(this);
+      this.options.get('onImported').call(this);
     }
   }
 }
