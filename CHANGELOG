@@ -3,6 +3,9 @@
 * Link line #'s in UV code.
 * Wrap long lines in UV parsed code and use twilight theme.
 * Fix importer to work with Prototype 1.6
+* Use Ultraviolet gem as new syntax highlighter
+* Add changeset log search
+* Add ability to create diffs for a file between 2 arbitrary revisions
 * Update dom:loaded to change JS times to prevent content flashing.
 * Remove fixed positioning from footer.
 * Add search UI for changesets.
