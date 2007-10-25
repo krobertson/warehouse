@@ -30,14 +30,22 @@ module ApplicationHelper
 begin
   require 'rubygems' unless Object.const_defined?(:Gem)
   require 'uv'
+  require 'uv_extensions'
+  Uv.syntax_list = %w(actionscript c c++ coldfusion css csv diff erlang haml haskell html html-asp html_for_asp.net html_mason html_rails icalendar java javascript json lisp markdown textile plain_text objective-c perl php python ragel ruby sql xml xsl yaml)
+  Uv.init_syntaxes
   def highlight_as(filename)
-    case filename.split('.').last.downcase
-      when 'js', 'as'               then 'javascript'
-      when 'rb', 'rakefile', 'rake' then 'ruby'
-      when 'css'                    then 'css'
-      when 'rhtml', 'erb', 'html', 'xml', 'rxml', 'plist' then 'html'
-      else 'plain_text'
+    Uv.syntax_for_file(filename) || 'plain_text'
+  end
+  
+  def highlight_syntax_in(node)
+    parsed = nil
+    benchmark "Highlighting #{node.path}" do
+      parsed = Uv.parse(node.content, "xhtml", highlight_as(node.path.split("/").last), true, :twilight)
+      parsed.gsub!(/<span class="line-numbers">(\s+\d+\s+)<\/span>/) do |s|
+        %(<span class="line-numbers" id="n-#{$1.to_i}"><a href="#n-#{$1.to_i}">#{$1}</a></span>)
+      end
     end
+    parsed
   end
 rescue LoadError
   def highlight_as(filename)
@@ -49,6 +57,11 @@ rescue LoadError
       else 'plain'
     end
   end
+  
+  def highlight_syntax_in(node)
+    %(<pre class="viewsource"><code class="#{highlight_as(node.path.split('/').last)}">#{h node.content}</code></pre>)
+  end
+  
   puts "No Ultraviolet gem found, defaulting to javascript syntax highlighting.  Do not be afraid."
 end
   
