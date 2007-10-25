@@ -114,7 +114,7 @@ class Node
 
   def unified_diff
     unless @unified_diff || !text?
-      @unified_diff = self.class.unified_diff_for previous_root, root, path
+      @unified_diff = unified_diff_for previous_root, root, path
     end
     @unified_diff
   end

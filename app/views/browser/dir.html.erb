@@ -48,7 +48,7 @@
   <tr>
     <td class="item"><%= link_to h(node.name), url_for_node(node), :class => css_class_for(node) %></td>
     <td>
-      <span class="rev<% if current_changeset.revision.to_i == node.revision %> changed<% end %>"><%= node.revision %></span>
+      <span class="rev<% if current_changeset && current_changeset.revision.to_i == node.revision %> changed<% end %>"><%= node.revision %></span>
       Updated by <%=h node.author %> <%= jstime node.changed_at.utc %>
       <span class="log"><%= node.message %></span>
     </td>
