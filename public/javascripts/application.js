@@ -121,7 +121,7 @@ Sheet.prototype = {
   },
   
   show: function(event) {
-    if(Sheet.Current && Sheet.Current.overlay.visible()) Sheet.Current.hide()
+    if(Sheet.Current && Sheet.Current.overlay.visible()) Sheet.Current.hide();
     Sheet.Current = this;
     Sheet.Current.overlay.show();
     this.sheet.show();
