@@ -1,5 +1,8 @@
 * 1.1
 
+* Link line #'s in UV code.
+* Wrap long lines in UV parsed code and use twilight theme.
+* Fix importer to work with Prototype 1.6
 * Update dom:loaded to change JS times to prevent content flashing.
 * Remove fixed positioning from footer.
 * Add search UI for changesets.

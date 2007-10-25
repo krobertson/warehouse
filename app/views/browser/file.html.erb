@@ -55,7 +55,13 @@
       </thead>
     </table>
     <% if Object.const_defined?(:Uv) -%>
-    <%= Uv.parse @node.content, "xhtml", highlight_as(@node.path.split("/").last), true, :pastels_on_dark %>
+    <%= Uv.parse @node.content, "xhtml", highlight_as(@node.path.split("/").last), true, :twilight %>
+    <% content_for :onready do %>
+    $$('span.line-numbers').each(function(n) {
+      var num = n.innerHTML.strip();
+      n.wrap('a', {href:'#n' + num, id:'n' + num});
+    });
+    <% end %>
     <% else -%>
     <pre class="viewsource"><code class="<%= highlight_as(@node.path.split('/').last) %>"><%=h @node.content %></code></pre>
     <% end -%>

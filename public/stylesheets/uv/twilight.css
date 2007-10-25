@@ -1,3 +1,14 @@
+pre.twilight {
+  margin-top: 0;
+  width: 100%;
+  background-color: #111;
+  white-space: pre-wrap; /* css-3 */
+  white-space: -moz-pre-wrap !important; /* Mozilla, since 1999 */
+  white-space: -pre-wrap; /* Opera 4-6 */
+  white-space: -o-pre-wrap; /* Opera 7 */
+  word-wrap: break-word; /* Internet Explorer 5.5+ */
+}
+
 pre.twilight .DiffInserted {
    background-color: #253B22;
    color: #F8F8F8;
@@ -36,8 +47,10 @@ pre.twilight .Storage {
    color: #F9EE98;
 }
 pre.twilight .line-numbers {
-   background-color: #DDF0FF;
+   background-color: #ddd;
+   border-left: 1px solid #ccc;
    color: #000000;
+   padding: 4px 0;
 }
 pre.twilight .CssClass {
    color: #9B703F;
