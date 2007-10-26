@@ -64,11 +64,8 @@ class InstallController < ApplicationController
   
   protected
     def check_installed
-      if current_repository && session[:installing].nil?
+      if Repository.count > 0 && session[:installing].nil?
         redirect_to root_path
-        false
-      else
-        true
       end
     end
 

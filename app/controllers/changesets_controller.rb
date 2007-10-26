@@ -137,7 +137,7 @@ class ChangesetsController < ApplicationController
         when nil
           params[:r] = 'h'
       end
-      @revision    = params[:rev][1..-1].to_i if params[:rev]
-      @node        = current_repository.node(params[:paths] * '/', @revision)
+      @revision = params[:rev][1..-1].to_i if params[:rev]
+      @node     = current_repository.node(params[:paths] * '/', @revision)
     end
 end
