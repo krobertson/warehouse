@@ -58,7 +58,7 @@ class User < ActiveRecord::Base
 
   def self.authenticate(login, password)
     user = find_by_login(login)
-    user && user.crypted_password == password.crypt(user.crypted_password[0,2]) ? user : nil
+    user && user.password_matches?(password) ? user : nil
   end
 
   def name
