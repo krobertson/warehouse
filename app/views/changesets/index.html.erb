@@ -33,7 +33,7 @@
       </p>
     </div>
     <div class="cs-log clearfix">      
-       <%= simple_format(changeset.message) %>
+       <%= simple_format(h(changeset.message)) %>
       <span class="timenauthor">by <%= changeset.author %>, <%= jstime changeset.changed_at %></span>
     </div>
   </li>
