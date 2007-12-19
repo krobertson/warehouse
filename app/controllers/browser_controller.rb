@@ -6,6 +6,10 @@ class BrowserController < ApplicationController
   
   helper_method :current_revision, :current_changeset, :previous_changeset, :next_changeset
 
+  expiring_attr_reader :current_changeset, :retrieve_current_changeset
+  expiring_attr_reader :previous_changeset, :retrieve_previous_changeset
+  expiring_attr_reader :next_changeset, :retrieve_next_changeset
+
   def index
     @bookmark   = Bookmark.new(:path => @node.path)
     @changesets = current_repository.changesets.find_all_by_path(@node.path, :limit => 5, :order => 'changesets.changed_at desc')
@@ -45,15 +49,17 @@ class BrowserController < ApplicationController
       @node     = current_repository.node(params[:paths] * '/', @revision)
     end
     
-    def current_changeset
-      @current_changeset ||= current_repository.changesets.find_latest_changeset(@node.path, @revision)
+    def retrieve_current_changeset
+      current_repository.changesets.find_latest_changeset(@node.path, @revision)
     end
 
-    def previous_changeset
-      @previous_changeset ||= current_repository.changesets.find_by_path(@node.path, :conditions => ['changed_at < ?', current_changeset.changed_at], :order => 'changesets.changed_at desc')
+    def retrieve_previous_changeset
+      return nil if current_changeset.nil?
+      current_repository.changesets.find_by_path(@node.path, :conditions => ['changed_at < ?', current_changeset.changed_at], :order => 'changesets.changed_at desc')
     end
     
-    def next_changeset
-      @next_changeset ||= current_repository.changesets.find_by_path(@node.path, :conditions => ['changed_at > ?', current_changeset.changed_at], :order => 'changesets.changed_at')
+    def retrieve_next_changeset
+      return nil if current_changeset.nil?
+      current_repository.changesets.find_by_path(@node.path, :conditions => ['changed_at > ?', current_changeset.changed_at], :order => 'changesets.changed_at')
     end
 end
