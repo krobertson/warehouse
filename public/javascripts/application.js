@@ -281,4 +281,11 @@ document.observe('dom:loaded', function() {
    $$('span.time').each(function(span) {
      span.update(Date.parseUTC(span.innerHTML).timeAgoInWords());
    });
+
+   var blame = $('blame');
+   if(blame) {
+     blame.observe('click', function() {
+       
+     });
+   }
 });

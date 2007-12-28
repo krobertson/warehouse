@@ -10,7 +10,6 @@
     <%= stylesheet_link_tag 'uv/twilight' %>
     
     <%= javascript_include_tag 'prototype', 'lowpro-lite', 'moo.fx.js', 'moo.fx.transitions.js', 'application', :cache => 'warehouse' %>
-    
     <%= yield :scripts %>
     <script type="text/javascript" charset="utf-8">
       Event.onReady(function() {
@@ -33,9 +32,10 @@
       <%= stylesheet_link_tag 'curbstomp' %>
     <![endif]-->
   </head>
-  <body>
+  <body<%= %( class="firefox") if request.user_agent =~ /Firefox/ %>>
     <!-- container -->
     <div id="container">
+      
       <% if logged_in? %>
         <% sheet_form_for current_user, :url => profile_path(:to => request.request_uri), :html => { :multipart => true, :id => 'profile-form', :method => :put }, :trigger => false do |s| -%>
           <h2>Edit your profile</h2>

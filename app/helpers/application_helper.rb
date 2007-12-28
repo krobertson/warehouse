@@ -42,7 +42,7 @@ begin
     benchmark "Highlighting #{node.path}" do
       parsed = Uv.parse(node.content, "xhtml", highlight_as(node.path.split("/").last), true, :twilight)
       parsed.gsub!(/<span class="line-numbers">(\s*\d+\s*)<\/span>/) do |s|
-        %(<span class="line-numbers" id="n-#{$1.to_i}"><a href="#n-#{$1.to_i}">#{$1}</a></span>)
+        %(<span class="line-numbers" id="n-#{$1.to_i}"><span class="blame" title="Justin fucked this up in revision #2323"> justin</span><a href="#n-#{$1.to_i}">#{$1}</a></span>)
       end
     end
     parsed
@@ -59,7 +59,9 @@ rescue LoadError
   end
   
   def highlight_syntax_in(node)
-    %(<pre class="viewsource"><code class="#{highlight_as(node.path.split('/').last)}">#{h node.content}</code></pre>)
+    %(<pre class="viewsource">
+      <code class="#{highlight_as(node.path.split('/').last)}">#{h node.content}</code>
+    </pre>)
   end
   
   puts "No Ultraviolet gem found, defaulting to javascript syntax highlighting.  Do not be afraid."

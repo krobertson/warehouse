@@ -1566,11 +1566,32 @@ span.line-numbers {
   background-color: #1c1c1c !important;
   margin-left: 0 !important;
   border-left: none !important;
-  border-bottom: 1px solid #292929 !important;
+  font-family: Courier, monospace;
+  line-height: 100% !important;
+  border-bottom: 1px solid #222;
 }
 
 span.line-numbers a {
-  padding: 0px 0 !important;
+  padding: 2px 0 !important;
+  margin: 0 !important;
+  line-height: 100% !important;
+}
+
+span.blame {
+  color: #666;
+  padding-left: 2px;
+}
+
+body.firefox span.line-numbers {
+  border-top: 1px solid #222;
+  vertical-align: middle;
   margin: 0 !important;
 }
 
+body.firefox span.line-numbers a {
+  padding: 0 !important;
+}
+
+.noblame span.blame {
+  display: none;
+}
