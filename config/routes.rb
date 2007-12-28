@@ -15,8 +15,9 @@ ActionController::Routing::Routes.draw do |map|
   map.with_options :controller => 'browser' do |b|
     b.rev_browser 'browser/:rev/*paths', :rev => /r\d+/
     b.browser     'browser/*paths'
-    b.text        'text/*paths', :action => 'text'
-    b.raw         'raw/*paths',  :action => 'raw'
+    b.blame       'blame/*paths', :action => 'blame'
+    b.text        'text/*paths',  :action => 'text'
+    b.raw         'raw/*paths',   :action => 'raw'
   end
   
   map.with_options :controller => 'sessions' do |s|

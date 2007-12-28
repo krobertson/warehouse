@@ -106,7 +106,7 @@ module Warehouse
   end
 
   self.config_path             ||= File.join(RAILS_ROOT, 'config', 'initializers', 'warehouse.rb')
-  self.default_session_options ||= {:session_key => '_warehouse_session_id', :secret => 'asMb0bEBw6TXU'}
+  self.default_session_options ||= {:session_key => '_warehouse_session_id', :secret => '4b3eaf64bfa62da140e0f45c9030f272'}
   self.domain                  ||= ''
   self.forum_url               ||= "http://forum.activereload.net/licenses/%s/installs"
   self.version                 ||= Version.new(1, 1, 2)
