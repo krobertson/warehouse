@@ -1,0 +1,5 @@
+config/initializers/warehouse.rb
+config/database.yml
+.rake_tasks
+tmp
+log
