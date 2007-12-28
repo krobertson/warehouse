@@ -19,6 +19,14 @@ body {
   background: #ebebeb;
   color: #333;
   min-width: 900px;
+  height: 100%;
+}
+
+#container {
+  min-height: 100%;
+  height: auto !important;
+  height: 100%;
+  margin: 0 auto -40px; /* the bottom margin is the negative value of the footer's height */
 }
 
 /* @group Utilities */
@@ -141,6 +149,7 @@ div.errorExplanation h2, div#error h2 {
   font-size: 92%;
   border-top: 1px solid #bbb;
   text-align: right;
+  height: 30px;
 }
 
 #powered {
@@ -1553,4 +1562,15 @@ button {
 
 /* @end */
 
+span.line-numbers {
+  background-color: #1c1c1c !important;
+  margin-left: 0 !important;
+  border-left: none !important;
+  border-bottom: 1px solid #292929 !important;
+}
+
+span.line-numbers a {
+  padding: 0px 0 !important;
+  margin: 0 !important;
+}
 

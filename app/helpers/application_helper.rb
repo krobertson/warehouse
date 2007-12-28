@@ -41,7 +41,7 @@ begin
     parsed = nil
     benchmark "Highlighting #{node.path}" do
       parsed = Uv.parse(node.content, "xhtml", highlight_as(node.path.split("/").last), true, :twilight)
-      parsed.gsub!(/<span class="line-numbers">(\s+\d+\s+)<\/span>/) do |s|
+      parsed.gsub!(/<span class="line-numbers">(\s*\d+\s*)<\/span>/) do |s|
         %(<span class="line-numbers" id="n-#{$1.to_i}"><a href="#n-#{$1.to_i}">#{$1}</a></span>)
       end
     end
