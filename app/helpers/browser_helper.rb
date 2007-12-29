@@ -11,6 +11,15 @@ module BrowserHelper
     rev ? rev_browser_path(:paths => paths, :rev => rev) : browser_path(:paths => paths)
   end
   
+  def link_to_blame(text, node)
+    link_to text, url_for_blame(node), :id => (Object.const_defined?(:Uv) ? :blame : nil)
+  end
+  
+  def url_for_blame(node)
+    paths = node.respond_to?(:paths) ? node.paths : node.to_s.split('/')
+    blame_path(:paths => paths)
+  end
+  
   def link_to_crumbs(path, rev = nil)
     pieces    = path.split '/'
     name      = pieces.pop

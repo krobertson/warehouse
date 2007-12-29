@@ -37,6 +37,18 @@ end
 REXML::Document.class_eval { def doctype() nil end }
 ActionContentFilter.preserved_instance_variables = %w(@title @onready @fullscreen @current_sheets @content_for_scripts @content_for_onready @content_for_javascript @content_for_sidebar)
 
+
+
+begin
+  require 'rubygems' unless Object.const_defined?(:Gem)
+  require 'uv'
+  require 'uv_extensions'
+  Uv.syntax_list = %w(actionscript c c++ coldfusion css csv diff erlang haml haskell html html-asp html_for_asp.net html_mason html_rails icalendar java javascript json lisp markdown textile plain_text objective-c perl php python ragel ruby sql xml xsl yaml)
+  Uv.init_syntaxes
+rescue LoadError
+  puts "No Ultraviolet gem found, defaulting to javascript syntax highlighting.  Do not be afraid."
+end
+
 require 'open3'
 require 'application'
 require 'warehouse'

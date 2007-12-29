@@ -42,7 +42,7 @@
                 <%= link_to_node 'forward', @node, next_changeset.revision, :class => 'forward' if @revision && next_changeset %>
               </p>
               <ul class="formats">
-                <li><a href="#blame" id="blame">Blame</a></li>
+                <li><%= link_to_blame 'Blame', @node %></li>
                 <li><%= link_to_history 'History', @node %></li>
                 <li<% unless @node.text? %> class="end"<% end %>><%= link_to 'Raw', raw_path(:paths => @node.paths) %></li>
                 <% if @node.text? -%><li class="end"><%= link_to 'Text', text_path(:paths => @node.paths) %></li><% end -%>
@@ -55,8 +55,11 @@
         </tr>
       </thead>
     </table>
+	<% if controller.action_name != 'blame' || Object.const_defined?(:Uv) -%>
     <%= highlight_syntax_in @node %>
-    
+	<% else -%>
+		<%= blame_for @node %>
+	<% end -%>
 <% elsif @node.image? -%>
 
 <table class="diff sourcecode file-source" cellspacing="0" cellpadding="0">

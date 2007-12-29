@@ -14,6 +14,16 @@ class Node
     @path          = path
     @base_revision = rev.nil? ? repository.latest_revision : rev.to_i
   end
+  
+  def blame
+    @blame ||= begin
+      lines = {}
+      client.blame("file://#{File.join repository.path, path}") do |num, rev, username, changed_at, line|
+        lines[num+1] = [rev, username]
+      end
+      lines
+    end
+  end
 
   def changeset
     @changeset ||= repository.changesets.find_by_revision(revision)
@@ -205,5 +215,9 @@ class Node
   def convert_to_utf8(content, content_charset)
     return content if content_charset == 'utf-8'
     Iconv.conv('utf-8', content_charset, content) rescue content
+  end
+  
+  def client
+    @client ||= Svn::Client::Context.new
   end
 end
