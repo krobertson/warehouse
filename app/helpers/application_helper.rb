@@ -116,6 +116,22 @@ end
     img = user && user.avatar? ? user.avatar_path : '/images/app/icons/member.png'
     tag('img', :src => img, :class => 'avatar', :alt => 'avatar')
   end
+  
+  def changeset_feed_url(repo = current_repository)
+    if repo
+      hosted_url(:formatted_changesets, :atom)
+    else
+      logged_in? && controller.action_name != 'public' ? formatted_root_changesets_path(:atom) : formatted_root_public_changesets_path(:atom)
+    end
+  end
+  
+  def activity_url(repo = current_repository)
+    if repo
+      hosted_url :changesets
+    else
+      logged_in? ? root_changesets_path : root_public_changesets_path
+    end
+  end
 
   @@default_jstime_format = "%d %b, %Y %I:%M %p"
   def jstime(time, format = nil)

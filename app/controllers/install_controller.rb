@@ -35,6 +35,7 @@ class InstallController < ApplicationController
     User.transaction do
       @repository.save!
       @user.save!
+      @repository.grant :user => @user, :path => '/'
     end
     
     cookies[:login_token] = {:value => "#{@user.id};#{@user.token}", :expires => 1.year.from_now.utc, :domain => ".#{Warehouse.domain}", :path => '/'}

@@ -1,4 +1,4 @@
-atom_feed(:url => hosted_url(controller.action_name == 'index' ? :formatted_changesets : :formatted_public_changesets, :atom)) do |feed|
+atom_feed(:url => hosted_url(controller.action_name == 'index' ? :formatted_root_changesets : :formatted_root_public_changesets, :atom)) do |feed|
   if current_repository
     feed.title("Changesets for #{current_repository.name}")
   else

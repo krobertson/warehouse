@@ -95,7 +95,7 @@ class ChangesetsController < ApplicationController
         if logged_in?
           true
         else
-          redirect_to hosted_url(:public_changesets)
+          redirect_to root_public_changesets_path
           false
         end
       else

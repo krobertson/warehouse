@@ -84,7 +84,7 @@ context "Changesets Controller on root domain" do
   
   specify "should redirect anon users to public changesets" do
     get :index
-    assert_redirected_to public_changesets_path
+    assert_redirected_to root_public_changesets_path
   end
   
   specify "should allow anon users to public changesets" do

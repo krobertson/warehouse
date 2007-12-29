@@ -17,6 +17,7 @@ class RepositoriesController < ApplicationController
   
   def create
     if @repository.save
+      @repository.grant :user => current_user, :path => '/'
       flash[:notice] = "Repository: #{@repository.name} created successfully."
       redirect_to hosted_url(:admin)
     else

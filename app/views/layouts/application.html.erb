@@ -28,7 +28,7 @@
       });
       <%= yield :javascript %>
     </script>
-    <%= auto_discovery_link_tag(:atom, hosted_url(:formatted_changesets, :atom)) %>
+    <%= auto_discovery_link_tag(:atom, changeset_feed_url) %>
     <!--[if lt IE 8]>
       <%= stylesheet_link_tag 'curbstomp' %>
     <![endif]-->
@@ -65,7 +65,7 @@
             <% unless repository_subdomain.blank? -%>
             <li id="code"<%= selected_navigation?(:browser) %>><%= link_to 'Browser', hosted_url(:browser) %></li>
             <% end -%>
-            <li id="activity"<%= selected_navigation?(:activity) %>><%= link_to 'Activity', (!repository_subdomain.blank? || logged_in? ? hosted_url(:changesets) : public_changesets_path) %></li>
+            <li id="activity"<%= selected_navigation?(:activity) %>><%= link_to 'Activity', activity_url %></li>
             <% if admin? || repository_admin? %>
             <li id="admin"<%= selected_navigation?(:admin) %>><%= link_to 'Admin', hosted_url(:admin) %></li>
             <% end %>
@@ -73,7 +73,7 @@
           <ul id="utils">
             <% if logged_in? -%>
               <li id="profile"><%= link_to 'Profile', hosted_url(:profile) %></li>
-              <li><%= link_to 'Logout', hosted_url(:logout) %></li>
+              <li><%= link_to 'Logout', logout_path %></li>
             <% else -%>
               <li id="login-link"><%= link_to 'Login', '#' %></li>
             <% end -%>
@@ -118,15 +118,14 @@
         <!-- sbar -->
         <div id="sbar">
           <div id="search" class="sideblock">
-            <% form_tag changesets_path, :method => :get do -%>
+            <% form_tag current_repository ? hosted_url(:changesets) : root_changesets_path, :method => :get do -%>
                 <%= text_field_tag :q, params[:q], :size => 13, :id => 'search-box' %>
                 <input type="image" src="/images/app/btns/search.png" alt="Search" id="search-btn" />
             <% end -%>
           </div>
           <%= link_to 'Subscribe to History', hosted_url(:history, :paths => (params[:paths] << 'changesets.atom')), :id => 'subscribe-history' if controller.controller_name == 'history' %>
           
-          <%= link_to 'Subscribe to Changesets', (controller.action_name == 'index' ? hosted_url(:formatted_changesets, :atom) : hosted_url(:formatted_public_changesets, :atom)), :id => 'subscribe-btn' %>
-          
+          <%= link_to 'Subscribe to Changesets', changeset_feed_url, :id => 'subscribe-btn' %>
 
           <%= yield :sidebar %>
           

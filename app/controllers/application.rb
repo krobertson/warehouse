@@ -1,6 +1,3 @@
-# Filters added to this controller apply to all controllers in the application.
-# Likewise, all the methods added will be available for all controllers.
-
 class ApplicationController < ActionController::Base
   helper :all # include all helpers, all the time
   helper_method :current_repository, :logged_in?, :current_user, :admin?, :controller_path, :repository_admin?, :repository_member?, :repository_subdomain, :hosted_url
@@ -119,15 +116,11 @@ class ApplicationController < ActionController::Base
     def retrieve_current_repository
       repository_subdomain.blank? ? nil : Repository.find_by_subdomain(repository_subdomain)
     end
-
-    def repository_subdomain
-      request.host.gsub %r(\.?#{Regexp.escape(Warehouse.domain)}), ''
-    end
   
     def check_for_repository
       return true if current_repository
       if !Warehouse.domain.blank? && Repository.count > 0
-        redirect_to(logged_in? ? hosted_url(:changesets) : hosted_url(:public_changesets))
+        redirect_to(logged_in? ? root_changesets_path : root_public_changesets_path)
       else
         reset_session
         redirect_to installer_path
@@ -143,20 +136,28 @@ class ApplicationController < ActionController::Base
       end
     end
 
+  if USE_REPO_PATHS
+    def repository_subdomain
+      params[:repo]
+    end
+
     def hosted_url(*args)
-      repository, name = nil
-      if args.first.is_a?(Symbol)
-        name = args.shift
-      else
-        repository, name = args.shift, args.shift
+      repository, name = extract_repository_and_args(args)
+      repository ||= current_repository
+      returning send("#{name}_path", *args) do |path|
+        if repository && name !~ REPO_ROOT_REGEX
+          path.insert 0, "/#{repository.subdomain}"
+        end
       end
-      
-      if REPO_ROUTING_SYTLE == :path || repository.nil?
-        if args.respond_to?(:unshift)
-          args.unshift repository
-        else
-          args[:repo] = repository
-        end if REPO_ROUTING_SYTLE == :path
+    end
+  else
+    def repository_subdomain
+      request.host.gsub %r(\.?#{Regexp.escape(Warehouse.domain)}), ''
+    end
+
+    def hosted_url(*args)
+      repository, name = extract_repository_and_args(args)
+      if repository.nil?
         send("#{name}_path", *args)
       else
         "http%s://%s%s%s" % [
@@ -165,6 +166,15 @@ class ApplicationController < ActionController::Base
           (':' + request.port.to_s unless request.port == request.standard_port),
           send("#{name}_path", *args)
           ]
+        end
+    end
+  end
+    
+    def extract_repository_and_args(args)
+      if args.first.is_a?(Symbol)
+        [nil, args.shift]
+      else
+        [args.shift, args.shift]
       end
     end
 

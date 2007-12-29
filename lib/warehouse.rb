@@ -46,6 +46,9 @@ module Warehouse
       class_eval(&block) if block
       setup_mail!
       setup_caching!
+      if USE_REPO_PATHS
+        puts "** Using paths for repositories, instead of subdomains.  http://#{Warehouse.domain || 'my-domain.com'}/my-repo/browser, etc."
+      end
     end
     
     def setup_mail!
@@ -116,11 +119,10 @@ module Warehouse
   self.svnlook_path            ||= '/usr/bin/svnlook'
 end
 
-unless Warehouse.setup? || !File.exist?(File.join(RAILS_ROOT, 'config/initializers/warehouse'))
+unless !File.exist?(File.join(RAILS_ROOT, 'config/initializers/warehouse'))
   require 'config/initializers/warehouse'
 end
 
 if Object.const_defined?(:Dependencies)
   Dependencies.autoloaded_constants.delete 'Warehouse'
 end
-  

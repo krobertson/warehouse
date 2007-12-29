@@ -44,7 +44,7 @@ begin
   Uv.syntax_list = %w(actionscript c c++ coldfusion css csv diff erlang haml haskell html html-asp html_for_asp.net html_mason html_rails icalendar java javascript json lisp markdown textile plain_text objective-c perl php python ragel ruby sql xml xsl yaml)
   Uv.init_syntaxes
 rescue LoadError
-  puts "No Ultraviolet gem found, defaulting to javascript syntax highlighting.  Do not be afraid."
+  puts "!! No Ultraviolet gem found, defaulting to javascript syntax highlighting.  Do not be afraid."
 end
 
 require 'open3'
@@ -58,18 +58,36 @@ require 'hook'
 begin
   Warehouse::Hooks.discover
 rescue ActiveRecord::StatementInvalid
-  puts "Error loading hooks: #{$!}"
-  puts "Make sure the database was created successfully and migrated."
+  puts "!! Error loading hooks: #{$!}"
+  puts "!! Make sure the database was created successfully and migrated."
 end
 
 begin
   Warehouse::Plugins.load
 rescue ActiveRecord::StatementInvalid
-  puts "Error loading plugins: #{$!}"
-  puts "Make sure the database was created successfully and migrated."
+  puts "!! Error loading plugins: #{$!}"
+  puts "!! Make sure the database was created successfully and migrated."
 end
 
 if RAILS_ENV == 'development'
   ENV["RAILS_ASSET_ID"] = ''
+end
+
+if USE_REPO_PATHS
+  class ActionController::Routing::RouteSet
+    def recognize_path_with_repo(path, environment = {})
+      repo = nil
+      if path !~ REPO_ROOT_REGEX && path =~ /^\/([^\/]+)/
+        path.gsub! /^\/([^\/]+)/ do |match|
+          repo = match[1..-1] ; nil
+        end
+      end
+      returning recognize_path_without_repo(path, environment) do |params|
+        params[:repo] = repo if repo
+      end
+    end
+    
+    alias_method_chain :recognize_path, :repo
+  end
 end
 

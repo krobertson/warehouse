@@ -1,4 +1,5 @@
-REPO_ROUTING_SYTLE = :subdomain unless Object.const_defined?(:REPO_ROUTING_SYTLE)
+USE_REPO_PATHS = ENV['USE_REPO_PATHS'] unless Object.const_defined?(:USE_REPO_PATHS)
+REPO_ROOT_REGEX    = /^(\/?(repositor|admin|profile|plugin|changeset|user|permission))/
 
 ActionController::Routing::Routes.draw do |map|
   map.connect ":asset/:plugin/*paths", :asset => /images|javascripts|stylesheets/, :controller => "assets", :action => "show"
@@ -8,11 +9,18 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :bookmarks
   map.resources :plugins
   map.resources :hooks
-  map.resources :repositories, :member => { :sync => :any }
   map.resources :permissions, :collection => { :anon => :any }
   map.resources :users, :has_one => [:permissions]
   map.resources :changesets, :has_many => :changes, :collection => { :public => :get }
   map.resource  :profile, :controller => "users"
+  map.resources :repositories, :member => { :sync => :any }
+
+  map.with_options :controller => 'changesets', :action => 'index' do |m|
+    m.root_changesets                  'changesets'
+    m.formatted_root_changesets        'changesets.:format', :format => 'xml'
+    m.root_public_changesets           'changesets/public', :action => 'public'
+    m.formatted_root_public_changesets 'changesets/public.:format', :action => 'public', :format => 'xml'
+  end
 
   map.with_options :controller => "browser" do |b|
     b.rev_browser "browser/:rev/*paths", :rev => /r\d+/

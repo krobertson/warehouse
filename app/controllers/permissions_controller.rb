@@ -99,7 +99,7 @@ class PermissionsController < ApplicationController
         @repositories = admin? ? Repository.find(:all) : current_user.administered_repositories
         render :template => 'shared/administered'
       elsif !Warehouse.domain.blank? && Repository.count > 0
-        redirect_to(logged_in? ? hosted_url(:changesets) : hosted_url(:public_changesets))
+        redirect_to(logged_in? ? root_changesets_path : root_public_changesets_path)
       else
         reset_session
         redirect_to installer_path
