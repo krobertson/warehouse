@@ -37,8 +37,6 @@ end
 REXML::Document.class_eval { def doctype() nil end }
 ActionContentFilter.preserved_instance_variables = %w(@title @onready @fullscreen @current_sheets @content_for_scripts @content_for_onready @content_for_javascript @content_for_sidebar)
 
-
-
 begin
   require 'rubygems' unless Object.const_defined?(:Gem)
   require 'uv'

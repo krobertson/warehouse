@@ -3,14 +3,14 @@
   <p><%= @message %></p>
   
   <% if current_repository.backend.nil? -%>
-    <p>The Repository Path is invalid and needs to be fixed in the <%= link_to 'Repository Admin', admin_path %></p>
+    <p>The Repository Path is invalid and needs to be fixed in the <%= link_to 'Repository Admin', hosted_url(:admin) %></p>
   <% elsif logged_in? -%>
     <% paths = current_user.permissions.paths_for(current_repository) -%>
     <% unless paths.empty? -%>
     <p>You have access to <%= paths.size == 1 ? 'this path' : 'these paths' %>:</p>
     <ul>
     <% paths.each do |path| -%>
-      <li><%= link_to path, browser_path(path.split('/')) %></li>
+      <li><%= link_to path, hosted_url(:browser, path.split('/')) %></li>
     <% end -%>
     </ul>
     <% end -%>

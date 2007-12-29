@@ -8,7 +8,7 @@ module BrowserHelper
     paths = node.respond_to?(:paths) ? node.paths : node.to_s.split('/')
     rev = rev ? rev.to_s : params[:rev]
     rev = "r#{rev}" unless rev.nil? || rev =~ /^r/
-    rev ? rev_browser_path(:paths => paths, :rev => rev) : browser_path(:paths => paths)
+    rev ? hosted_url(:rev_browser, :paths => paths, :rev => rev) : hosted_url(:browser, :paths => paths)
   end
   
   def link_to_blame(text, node)
@@ -17,13 +17,13 @@ module BrowserHelper
   
   def url_for_blame(node)
     paths = node.respond_to?(:paths) ? node.paths : node.to_s.split('/')
-    blame_path(:paths => paths)
+    hosted_url(:blame, :paths => paths)
   end
   
   def link_to_crumbs(path, rev = nil)
     pieces    = path.split '/'
     name      = pieces.pop
-    home_link = %(<li#{' class="crumb-divide-last"' if pieces.size == 0 && !name.nil?}>#{link_to '~', (rev ? rev_browser_path : browser_path)}</li>)
+    home_link = %(<li#{' class="crumb-divide-last"' if pieces.size == 0 && !name.nil?}>#{link_to '~', hosted_url(rev ? :rev_browser : :browser)}</li>)
     return home_link unless name
     prefix = ''
     crumbs = []

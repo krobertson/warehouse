@@ -1,5 +1,5 @@
 <div id="control-center">
-  <form action="<%= diff_path("r#{@node.revision}", @node.paths) %>" id="diff-form">
+  <form action="<%= hosted_url(:diff, "r#{@node.revision}", @node.paths) %>" id="diff-form">
   Diff this changeset:
   <select id="diff-with" name="r">
     <option value="">with...</option>

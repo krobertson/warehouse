@@ -15,7 +15,7 @@
       <li class="del"><%= link_to_function('Delete', "Permissions.removeMember('#{user ? user.id : :anon}')") %></li>
     </ul>
   </li>
-  <% sheet_form_for permissions.first, :url => (user ? user_permissions_path(user) : anon_permissions_path), :trigger => "perm-#{permissions.first.id}", :html => {:method => :put} do |s| %>
+  <% sheet_form_for permissions.first, :url => (user ? hosted_url(:user_permissions, user) : hosted_url(:anon_permissions)), :trigger => "perm-#{permissions.first.id}", :html => {:method => :put} do |s| %>
   <h2>Edit <%= user ? "#{user.name}'s" : "anonymous'" %> permissions</h2>
     <% permissions = [] unless defined?(permissions) -%>
     <%= s.check_box 'Administrator', 'Yes, this user can add and delete members.', :admin %>
@@ -40,7 +40,7 @@
 <% content_for :sidebar do %>
 <div class="sideblock">
   <h3>Access Permissions</h3>
-  <p>This is where you can grant members access to your repository.  If a member doesn't show up in the dropdown, an administrator can invite them from the <%= link_to 'members', users_path %> area.  The user can also create an account with their OpenID credentials by logging into the site.</p>
+  <p>This is where you can grant members access to your repository.  If a member doesn't show up in the dropdown, an administrator can invite them from the <%= link_to 'members', hosted_url(:users) %> area.  The user can also create an account with their OpenID credentials by logging into the site.</p>
   <p>Warehouse makes no distinction with read or read/write, they are only for the subversion configuration.</p>
 </div>
 

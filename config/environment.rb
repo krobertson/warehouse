@@ -7,6 +7,10 @@
 # Specifies gem version of Rails to use when vendor/rails is not present
 RAILS_GEM_VERSION = '2.0.2' unless defined? RAILS_GEM_VERSION
 
+# Set this to :path to have URLs like http://my-warehouse.com/repo1/* instead of 
+# http://repo1.my-warehouse.com/*
+# REPO_ROUTING_SYTLE = :subdomain || :path
+
 # Bootstrap the Rails environment, frameworks, and default configuration
 require File.join(File.dirname(__FILE__), 'boot')
 

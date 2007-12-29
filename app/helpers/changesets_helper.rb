@@ -3,7 +3,7 @@
 module ChangesetsHelper
   def link_to_diff(text, revision, *args)
     options = args.last.is_a?(Hash) ? args.pop : {}
-    link_to text, diff_path("r#{revision}", args.first.split("/")), options
+    link_to text, hosted_url(:diff, "r#{revision}", args.first.split("/")), options
   end
 
   def unified_diff_for(node, options = {})
@@ -85,7 +85,7 @@ module ChangesetsHelper
     unified_diff_for change.node, :id => dom_id(change) do |original_revision_num, current_revision_num|
       %(
       <span class="csfile">#{link_to_node change.path, change.node, current_revision_num}</span>
-      #{link_to 'diff', formatted_changeset_change_path(@changeset, change, :diff), :class => 'csdiff'}
+      #{link_to 'diff', hosted_url(:formatted_changeset_change, @changeset, change, :diff), :class => 'csdiff'}
       )
     end
   end

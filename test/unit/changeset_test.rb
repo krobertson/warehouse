@@ -30,7 +30,7 @@ context "Changeset" do
   end
   
   it "should search changesets" do
-    repositories(:sample).changesets.search('moon').entries.should == [changesets(:one), changesets(:two)]
+    repositories(:sample).changesets.search('moon').entries.should == [changesets(:two), changesets(:one)]
   end
   
   it "should search changests by path" do

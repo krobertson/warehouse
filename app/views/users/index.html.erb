@@ -12,11 +12,11 @@
     <span class="log"><%= user.sanitized_email || "No email set." %></span>
     <ul class="admin-controls">
       <li id="profile-<%= dom_id user %>" class="edit"><a href="#">Edit</a></li>
-      <li class="del"><%= link_to_remote('Delete', :url => user_path(user), 
+      <li class="del"><%= link_to_remote('Delete', :url => hosted_url(:user, user), 
         :with => "'_method=delete'", :confirm => "Are you sure you wish to delete this member?") %></li>
     </ul>
     
-  <% sheet_form_for user, :url => user_path(:id => user, :to => users_path), :trigger => "profile-#{dom_id user}", 
+  <% sheet_form_for user, :url => hosted_url(:user, :id => user, :to => users_path), :trigger => "profile-#{dom_id user}", 
        :html => {:multipart => true, :method => :put, :id => "sheet-#{dom_id user}"} do |s| -%>
   <h2>Edit <%=h user.name %></h2>
   <div id="error-<%= dom_id user %>" class="error" style="display:none"></div>

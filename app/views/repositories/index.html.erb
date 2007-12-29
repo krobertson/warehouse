@@ -47,7 +47,7 @@
       <li class="sync"><a href="#" title="Begin syncing" onclick="<%= v %>.step(); $('indicator-<%= repo.id %>').show(); return false;">Sync</a></li>
       <% end %>
       <li class="edit" id="repoedit-<%= repo.id %>"><a href="#">Edit</a></li>
-      <li class="del"><%= link_to_remote 'Delete', :url => repository_path(repo), :with => "'_method=delete'",
+      <li class="del"><%= link_to_remote 'Delete', :url => hosted_url(:repository, repo), :with => "'_method=delete'",
         :confirm => "Are you sure, this will clear all changes, bookmarks, and permissions.  This will NOT clear the actual repository from the server." %></li>
     </ul>
     <% sheet_form_for repo, {:trigger => "repoedit-#{repo.id}"} do |s| -%>

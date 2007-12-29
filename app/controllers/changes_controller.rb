@@ -1,6 +1,6 @@
 class ChangesController < ApplicationController
   def index
-    redirect_to changeset_path(params[:changeset_id])
+    redirect_to hosted_url(:changeset, params[:changeset_id])
   end
   
   def show

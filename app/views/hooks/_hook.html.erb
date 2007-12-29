@@ -1,5 +1,5 @@
 <li id="hook-<%= hook.plugin_name %>" class="listitem">
-  <% remote_sheet_form_for :hook, hook.properties, :url => hooks_path(:name => hook.plugin_name), 
+  <% remote_sheet_form_for :hook, hook.properties, :url => hosted_url(:hooks, :name => hook.plugin_name), 
          :trigger => "hooknew-#{hook.plugin_name}", :html => {:id => "hooksheet-#{hook.plugin_name}", :style => 'display:none'} do |s| %>
     <h2>Add <%= hook.title %> Instance</h2>
     <%= s.text_field "Label:", :label %>
@@ -30,10 +30,10 @@
       </p>
       <ul class="admin-controls">
         <li id="hooki-<%= hk.id %>" class="edit"><a href="#">Edit</a></li>
-        <li class="del"><%= link_to_remote('Delete', :url => hook_path(hk), :method => :delete, :confirm => "Are you sure you wish to delete this?  You can deactivate if you're not sure.") %></li>
+        <li class="del"><%= link_to_remote('Delete', :url => hosted_url(:hook, hk), :method => :delete, :confirm => "Are you sure you wish to delete this?  You can deactivate if you're not sure.") %></li>
       </ul>
       <!-- sheet -->
-      <% remote_sheet_form_for :hook, hk.properties, :url => hook_path(hk), :method => :put,
+      <% remote_sheet_form_for :hook, hk.properties, :url => hosted_url(:hook, hk), :method => :put,
              :trigger => "hooki-#{hk.id}", :html => {:id => "hooksheet-#{hk.id}", :style => 'display:none'} do |s| %>
         <h2>Edit <%= hook.title %>: <%= hk.label %></h2>
         <%= s.check_box  "Active:", "Sets whether this hook is active or not", :active %>

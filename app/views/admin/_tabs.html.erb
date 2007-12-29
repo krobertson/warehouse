@@ -1,13 +1,13 @@
 <ul id="admin-nav" class="clearfix">
-  <li id="nrepo"<%= class_for(admin_path) %>><%= link_to 'Repos', admin_path %></li>
-  <li id="naccess"<%= class_for(permissions_path) %>><%= link_to 'Access', permissions_path %></li>
+  <li id="nrepo"<%= class_for(hosted_url(:admin)) %>><%= link_to 'Repos', hosted_url(:admin) %></li>
+  <li id="naccess"<%= class_for(hosted_url(:permissions)) %>><%= link_to 'Access', hosted_url(:permissions) %></li>
   <% if admin? -%>
-  <li id="nmembers"<%= class_for(users_path) %>><%= link_to 'Members', users_path %></li>
+  <li id="nmembers"<%= class_for(users_path) %>><%= link_to 'Members', hosted_url(:users) %></li>
   <% if current_repository -%>
-  <li id="nhooks"<%= class_for(hooks_path) %>><%= link_to 'Hooks', hooks_path %></li>
+  <li id="nhooks"<%= class_for(hosted_url(:hooks)) %>><%= link_to 'Hooks', hosted_url(:hooks) %></li>
   <% end -%>
-  <li id="nplugin"<%= class_for(plugins_path) %>><%= link_to 'Plugins', plugins_path %></li>
-  <li id="nsettings"<%= class_for(settings_path) %>><%= link_to 'Settings', settings_path %></li>
+  <li id="nplugin"<%= class_for(hosted_url(:plugins)) %>><%= link_to 'Plugins', hosted_url(:plugins) %></li>
+  <li id="nsettings"<%= class_for(hosted_url(:settings)) %>><%= link_to 'Settings', hosted_url(:settings) %></li>
   <% end -%>
 </ul>
 <% unless @content_for_admin_tab.blank? -%>

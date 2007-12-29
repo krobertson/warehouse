@@ -107,7 +107,7 @@ class ChangesetsController < ApplicationController
       if repository_subdomain.blank?
         true
       else
-        redirect_to changesets_path
+        redirect_to hosted_url(:changesets)
         false
       end
     end
@@ -121,10 +121,10 @@ class ChangesetsController < ApplicationController
     def check_for_changeset_rev
       return unless params[:rev]
       if num = params[:rev].scan(/\d+/).first
-        redirect_to changeset_path(num)
+        redirect_to hosted_url(:changeset, num)
       else
         flash[:notice] = "Bad ?rev parameter: #{params[:rev].inspect}"
-        redirect_to changesets_path
+        redirect_to hosted_url(:changesets)
       end
     end
 

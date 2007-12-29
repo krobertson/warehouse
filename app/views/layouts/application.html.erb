@@ -10,6 +10,7 @@
     <%= stylesheet_link_tag 'uv/twilight' %>
     
     <%= javascript_include_tag 'prototype', 'lowpro-lite', 'moo.fx.js', 'moo.fx.transitions.js', 'application', :cache => 'warehouse' %>
+    
     <%= yield :scripts %>
     <script type="text/javascript" charset="utf-8">
       Event.onReady(function() {
@@ -27,17 +28,16 @@
       });
       <%= yield :javascript %>
     </script>
-    <%= auto_discovery_link_tag(:atom, formatted_changesets_path(:atom)) %>
+    <%= auto_discovery_link_tag(:atom, hosted_url(:formatted_changesets, :atom)) %>
     <!--[if lt IE 8]>
       <%= stylesheet_link_tag 'curbstomp' %>
     <![endif]-->
   </head>
-  <body<%= %( class="firefox") if request.user_agent =~ /Firefox/ %>>
+  <body>
     <!-- container -->
     <div id="container">
-      
       <% if logged_in? %>
-        <% sheet_form_for current_user, :url => profile_path(:to => request.request_uri), :html => { :multipart => true, :id => 'profile-form', :method => :put }, :trigger => false do |s| -%>
+        <% sheet_form_for current_user, :url => hosted_url(:profile, :to => request.request_uri), :html => { :multipart => true, :id => 'profile-form', :method => :put }, :trigger => false do |s| -%>
           <h2>Edit your profile</h2>
           <%= content_tag 'p', flash[:error] if flash[:error] %>
           <%= s.text_field 'SVN Login:', :login, :size => 30 %>
@@ -63,17 +63,17 @@
           <h1><%= link_to current_repository ? current_repository.name : "Warehouse", root_path %></h1>
           <ul id="nav">
             <% unless repository_subdomain.blank? -%>
-            <li id="code"<%= selected_navigation?(:browser) %>><%= link_to 'Browser', browser_path %></li>
+            <li id="code"<%= selected_navigation?(:browser) %>><%= link_to 'Browser', hosted_url(:browser) %></li>
             <% end -%>
-            <li id="activity"<%= selected_navigation?(:activity) %>><%= link_to 'Activity', (!repository_subdomain.blank? || logged_in? ? changesets_path : public_changesets_path) %></li>
+            <li id="activity"<%= selected_navigation?(:activity) %>><%= link_to 'Activity', (!repository_subdomain.blank? || logged_in? ? hosted_url(:changesets) : public_changesets_path) %></li>
             <% if admin? || repository_admin? %>
-            <li id="admin"<%= selected_navigation?(:admin) %>><%= link_to 'Admin', admin_path %></li>
+            <li id="admin"<%= selected_navigation?(:admin) %>><%= link_to 'Admin', hosted_url(:admin) %></li>
             <% end %>
           </ul>
           <ul id="utils">
             <% if logged_in? -%>
-              <li id="profile"><%= link_to 'Profile', profile_path %></li>
-              <li><%= link_to 'Logout', logout_path %></li>
+              <li id="profile"><%= link_to 'Profile', hosted_url(:profile) %></li>
+              <li><%= link_to 'Logout', hosted_url(:logout) %></li>
             <% else -%>
               <li id="login-link"><%= link_to 'Login', '#' %></li>
             <% end -%>
@@ -123,9 +123,9 @@
                 <input type="image" src="/images/app/btns/search.png" alt="Search" id="search-btn" />
             <% end -%>
           </div>
-          <%= link_to 'Subscribe to History', history_path(:paths => (params[:paths] << 'changesets.atom')), :id => 'subscribe-history' if controller.controller_name == 'history' %>
+          <%= link_to 'Subscribe to History', hosted_url(:history, :paths => (params[:paths] << 'changesets.atom')), :id => 'subscribe-history' if controller.controller_name == 'history' %>
           
-          <%= link_to 'Subscribe to Changesets', (controller.action_name == 'index' ? formatted_changesets_path(:atom) : formatted_public_changesets_path(:atom)), :id => 'subscribe-btn' %>
+          <%= link_to 'Subscribe to Changesets', (controller.action_name == 'index' ? hosted_url(:formatted_changesets, :atom) : hosted_url(:formatted_public_changesets, :atom)), :id => 'subscribe-btn' %>
           
 
           <%= yield :sidebar %>
@@ -156,16 +156,16 @@
         <% end -%>
       </div>
       <!-- /content -->
+      <!-- footer -->
+      <div id="footer">
+        <!-- <form action="/" method="post" id="command-line">
+          <input id="commando" type="text" />
+        </form> -->
+        <a id="powered" href="http://warehouseapp.com" title="Warehouse v<%= Warehouse.version %>: web-based subversion browser"><img src="/images/app/warehouse-logo.png" title="Warehouse v<%= Warehouse.version %>: web-based Subversion Browser" alt="Warehouse logo" /></a>
+      </div>
+      <!-- /footer -->
       
     </div>
     <!-- /container -->
-    <!-- footer -->
-    <div id="footer">
-      <!-- <form action="/" method="post" id="command-line">
-        <input id="commando" type="text" />
-      </form> -->
-      <a id="powered" href="http://warehouseapp.com" title="Warehouse v<%= Warehouse.version %>: web-based subversion browser"><img src="/images/app/warehouse-logo.png" title="Warehouse v<%= Warehouse.version %>: web-based Subversion Browser" alt="Warehouse logo" /></a>
-    </div>
-    <!-- /footer -->
   </body>
 </html>

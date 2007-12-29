@@ -3,10 +3,10 @@
   <p><%= @message %></p>
   
   <% if current_repository.backend.nil? -%>
-    <p>The Repository Path is invalid and needs to be fixed in the <%= link_to 'Repository Admin', admin_path %></p>
+    <p>The Repository Path is invalid and needs to be fixed in the <%= link_to 'Repository Admin', hosted_url(:admin) %></p>
   <% elsif logged_in? -%>
   <p>
-    You can browse <%= link_to 'all changesets', changesets_path %> that you have access to, 
+    You can browse <%= link_to 'all changesets', hosted_url(:changesets) %> that you have access to, 
     or try contacting the owner of this subversion repository to get access.
   </p>
   <% else -%>

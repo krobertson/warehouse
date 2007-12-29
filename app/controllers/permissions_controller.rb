@@ -35,7 +35,7 @@ class PermissionsController < ApplicationController
     current_repository.permissions.set(@user, params[:permission])
     after_permission_update
     flash[:notice] = "Permissions updated"
-    redirect_to permissions_path
+    redirect_to hosted_url(:permissions)
   end
     
   def anon

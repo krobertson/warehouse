@@ -18,7 +18,7 @@ class RepositoriesController < ApplicationController
   def create
     if @repository.save
       flash[:notice] = "Repository: #{@repository.name} created successfully."
-      redirect_to admin_path
+      redirect_to hosted_url(:admin)
     else
       flash[:error] = "Repository did not save."
       render :action => 'show'
@@ -28,7 +28,7 @@ class RepositoriesController < ApplicationController
   def update
     if @repository.save
       flash[:notice] = "Repository: #{@repository.name} saved successfully."
-      redirect_to admin_path
+      redirect_to hosted_url(:admin)
     else
       flash[:error] = "Repository did not save."
       render :action => 'show'

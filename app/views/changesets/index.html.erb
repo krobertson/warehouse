@@ -76,9 +76,9 @@
     <li><a>No Repositories.</a></li>
     <% end -%>
     <% if controller.action_name == 'public' -%>
-    <li id="all-history"><%= link_to 'Repository activity &raquo;', changesets_path %></li>
+    <li id="all-history"><%= link_to 'Repository activity &raquo;', hosted_url(:changesets) %></li>
     <% elsif logged_in? -%>
-    <li id="all-history"><%= link_to 'All public activity &raquo;', public_changesets_path %></li>
+    <li id="all-history"><%= link_to 'All public activity &raquo;', hosted_url(:public_changesets) %></li>
     <% end -%>
   </ul>
 </div>

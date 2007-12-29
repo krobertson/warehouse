@@ -84,7 +84,7 @@ class ApplicationController < ActionController::Base
       end
     end
 
-    def repository_path
+    def node_directory_path
       return nil if @node.nil?
       @node.dir? ? @node.path : File.dirname(@node.path)
     end
@@ -94,7 +94,7 @@ class ApplicationController < ActionController::Base
       return nil unless current_repository
       return true if current_repository.public?
       return nil unless logged_in?
-      current_repository.member?(current_user, repository_path)
+      current_repository.member?(current_user, node_directory_path)
     end
     
     def retrieve_repository_admin
@@ -144,16 +144,28 @@ class ApplicationController < ActionController::Base
     end
 
     def hosted_url(*args)
-      options    = args.last.is_a?(Hash) ? args.pop : {}
-      name       = args.pop
-      repository = args.pop
-      route_args = options.empty? ? [] : [options]
-      "http%s://%s%s%s" % [
-        ('s' if request.ssl?),
-        (repository ? repository.domain : Warehouse.domain),
-        (':' + request.port.to_s unless request.port == request.standard_port),
-        send("#{name}_path", *route_args)
-        ]
+      repository, name = nil
+      if args.first.is_a?(Symbol)
+        name = args.shift
+      else
+        repository, name = args.shift, args.shift
+      end
+      
+      if REPO_ROUTING_SYTLE == :path || repository.nil?
+        if args.respond_to?(:unshift)
+          args.unshift repository
+        else
+          args[:repo] = repository
+        end if REPO_ROUTING_SYTLE == :path
+        send("#{name}_path", *args)
+      else
+        "http%s://%s%s%s" % [
+          ('s' if request.ssl?),
+          (repository ? repository.domain : Warehouse.domain),
+          (':' + request.port.to_s unless request.port == request.standard_port),
+          send("#{name}_path", *args)
+          ]
+      end
     end
 
     # stores cache fragments that have already been read by

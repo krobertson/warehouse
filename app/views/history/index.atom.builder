@@ -1,4 +1,4 @@
-atom_feed(:url => history_url(:paths => params[:paths])) do |feed|
+atom_feed(:url => hosted_url(:history, :paths => params[:paths])) do |feed|
   feed.title("Changesets for #{current_repository.name} in #{@node.path}")
   feed.updated((@changesets.first ? @changesets.first.changed_at : Time.now.utc).xmlschema)
 

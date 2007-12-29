@@ -2,7 +2,7 @@
 <p><%= flash[:error] %></p>
 <% end -%>
 
-<% form_tag login_path do -%>
+<% form_tag hosted_url(:login) do -%>
   <p>
     <label for="openid_url">OpenID:</label>
     <%= text_field_tag :openid_url %>

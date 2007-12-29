@@ -12,7 +12,7 @@
   <div class="cs-meta">
     <%= avatar_for(current_changeset.user) %>
     <p>
-      <span class="change-number"><%= link_to(current_changeset.revision, changeset_path(current_changeset.revision)) %></span>
+      <span class="change-number"><%= link_to(current_changeset.revision, hosted_url(:changeset, current_changeset.revision)) %></span>
     </p>
   </div>
   <div class="cs-log clearfix">      
@@ -44,8 +44,8 @@
               <ul class="formats">
                 <li><%= link_to_blame 'Blame', @node %></li>
                 <li><%= link_to_history 'History', @node %></li>
-                <li<% unless @node.text? %> class="end"<% end %>><%= link_to 'Raw', raw_path(:paths => @node.paths) %></li>
-                <% if @node.text? -%><li class="end"><%= link_to 'Text', text_path(:paths => @node.paths) %></li><% end -%>
+                <li<% unless @node.text? %> class="end"<% end %>><%= link_to 'Raw', hosted_url(:raw, :paths => @node.paths) %></li>
+                <% if @node.text? -%><li class="end"><%= link_to 'Text', hosted_url(:text, :paths => @node.paths) %></li><% end -%>
               </ul>
             </div>
           </td>
@@ -73,7 +73,7 @@
           </p>
           <ul class="formats">
             <li><%= link_to_history 'History', @node %></li>
-            <li class="end"><%= link_to 'Raw', raw_path(:paths => @node.paths) %></li>
+            <li class="end"><%= link_to 'Raw', hosted_url(:raw, :paths => @node.paths) %></li>
           </ul>
         </div>
       </td>
@@ -84,12 +84,12 @@
   </thead>
   <tbody>
     <tr>
-      <td id="imagefile"><%= image_tag raw_path(:paths => @node.paths) %></td>
+      <td id="imagefile"><%= image_tag hosted_url(:raw, :paths => @node.paths) %></td>
     </tr>
   </tbody>
 </table>
 <% elsif @node.exists? %>
-  <p>Download <%= link_to h(@node.path), raw_path(:paths => @node.paths) %>.</p>
+  <p>Download <%= link_to h(@node.path), hosted_url(:raw, :paths => @node.paths) %>.</p>
 <% else -%>
   <p>This file does not exist.</p>
 <% end -%>

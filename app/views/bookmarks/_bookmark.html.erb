@@ -1,5 +1,5 @@
 <li id="<%= dom_id bookmark %>">
-  <% if repository_admin? -%><%= link_to_remote 'Delete', {:url => bookmark_path(bookmark), :with => "'_method=delete'", 
+  <% if repository_admin? -%><%= link_to_remote 'Delete', {:url => hosted_url(:bookmark, bookmark), :with => "'_method=delete'", 
     :confirm => "Are you sure you want to delete this bookmark?"}, :class => 'trash list-del' %><% end -%>
-  <%= link_to h(bookmark.label), browser_path(:paths => bookmark.paths), :title => h(bookmark.description) %>
+  <%= link_to h(bookmark.label), hosted_url(:browser, :paths => bookmark.paths), :title => h(bookmark.description) %>
 </li>

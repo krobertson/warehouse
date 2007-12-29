@@ -4,7 +4,7 @@
   <div class="cs-meta">
     <%= avatar_for(current_changeset.user) %>
     <p>
-      <span class="change-number"><%= link_to(current_changeset.revision, changeset_path(current_changeset.revision)) %></span>
+      <span class="change-number"><%= link_to(current_changeset.revision, hosted_url(:changeset, current_changeset.revision)) %></span>
     </p>
   </div>
   <div class="cs-log clearfix">      
@@ -63,7 +63,7 @@
   <p>You have access to these paths:</p>
   <ul>
     <% current_user.permissions.for_repository(current_repository).each do |permission| -%>
-    <li><%= link_to h(permission.path), browser_path(:paths => permission.paths) %></li>
+    <li><%= link_to h(permission.path), hosted_url(:browser, :paths => permission.paths) %></li>
     <% end -%>
   </ul>
   <% end -%>
@@ -85,9 +85,9 @@
   <h3>Activity in <%= @node.path.split('/').last || '~' %></h3>
   <ul id="recent-activity">
   <% @changesets.each do |changeset| -%>
-  <li><%= link_to %(<span class="author">#{h changeset.author}:</span> #{truncate(h(changeset.message), 50)}), changeset_path(changeset), :title => "Changeset [#{changeset.revision}] @ #{changeset.changed_at.to_s(:short)}" %></li>
+  <li><%= link_to %(<span class="author">#{h changeset.author}:</span> #{truncate(h(changeset.message), 50)}), hosted_url(:changeset, changeset), :title => "Changeset [#{changeset.revision}] @ #{changeset.changed_at.to_s(:short)}" %></li>
   <% end -%>
-  <li id="all-history"><%= link_to "Complete history &raquo;", history_path(:paths => params[:paths]) %></li>
+  <li id="all-history"><%= link_to "Complete history &raquo;", hosted_url(:history, :paths => params[:paths]) %></li>
  </ul>
 </div>
 <% end unless @changesets.blank? %>
