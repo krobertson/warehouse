@@ -61,7 +61,7 @@ else
     end
   end
   
-  def highlight_syntax_in(node)
+  def highlight_syntax_in(node, show_blame=false)
     %(<pre class="viewsource">
       <code class="#{highlight_as(node.path.split('/').last)}">#{h node.content}</code>
     </pre>)
