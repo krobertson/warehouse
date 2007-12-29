@@ -27,20 +27,26 @@ module ApplicationHelper
     end
   end
   
+  def nb_pad(s, num)
+    s.to_s.ljust(num).gsub(' ', '&nbsp;')
+  end
+  
 if Object.const_defined?(:Uv)
   def highlight_as(filename)
     Uv.syntax_for_file(filename) || 'plain_text'
   end
   
-  def highlight_syntax_in(node)
+  def highlight_syntax_in(node, show_blame=false)
     parsed = nil
     benchmark "Highlighting #{node.path}" do
       parsed = Uv.parse(node.content, "xhtml", highlight_as(node.path.split("/").last), true, :twilight)
       parsed.gsub!(/<span class="line-numbers">(\s+\d+\s+)<\/span>/) do |s|
         line_num = $1.to_i
+        line_len = node.blame.size.to_s.length
         rev, username = node.blame[line_num]
-        %(<span class="line-numbers" id="n-#{line_num}"><span class="blame" title="#{username} modified this code in ##{rev}"> #{username}</span><a href="#n-#{line_num}">#{$1}</a></span>)
+        %(<span class="line-numbers" id="n-#{line_num}"> <a href="#n-#{line_num}"><span class="blame" title="#{username} modified this code in ##{rev}">#{nb_pad username, node.blame[:username_length]}&nbsp;</span>#{nb_pad line_num, line_len} </a></span>)
       end
+      parsed.gsub! /^<pre class="/, %(<pre class="noblame ) unless show_blame
     end
     parsed
   end
@@ -63,10 +69,9 @@ else
   
   def blame_for(node)
     lines = node.content.split("\n")
-    longest_line = node.blame.values.max { |(rev, username)| username.length }[1].length
     lines.each_with_index do |line, i|
       rev, username = node.blame[i+1]
-      line.replace "#{rev} #{username.ljust(longest_line)} #{line}"
+      line.replace "#{rev} #{username.ljust(node.blame[:username_length])} #{line}"
     end
     %(<pre><code>#{h lines.join("\n")}</code></pre>)
   end

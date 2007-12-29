@@ -56,7 +56,7 @@
       </thead>
     </table>
 	<% if controller.action_name != 'blame' || Object.const_defined?(:Uv) -%>
-    <%= highlight_syntax_in @node %>
+    <%= highlight_syntax_in @node, controller.action_name == 'blame' %>
 	<% else -%>
 		<%= blame_for @node %>
 	<% end -%>

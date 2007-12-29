@@ -17,9 +17,10 @@ class Node
   
   def blame
     @blame ||= begin
-      lines = {}
+      lines = {:username_length => 0}
       client.blame("file://#{File.join repository.path, path}") do |num, rev, username, changed_at, line|
         lines[num+1] = [rev, username]
+        lines[:username_length] = [lines[:username_length], username.length].max
       end
       lines
     end
