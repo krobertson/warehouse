@@ -284,8 +284,9 @@ document.observe('dom:loaded', function() {
 
    var blame = $('blame');
    if(blame) {
-     blame.observe('click', function() {
-       
+     blame.observe('click', function(event) {
+       event.stop();
+       $("source-code").toggleClassName("noblame");
      });
    }
 });
