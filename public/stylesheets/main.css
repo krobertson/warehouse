@@ -1569,6 +1569,7 @@ span.line-numbers {
   font-family: Courier, monospace;
   line-height: 100% !important;
   border-bottom: 1px solid #222;
+  padding: 1px 0 !important;
 }
 
 span.line-numbers a {
