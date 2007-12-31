@@ -140,8 +140,6 @@
             </div>
           <% end -%>
             
-
-          
           <% cache CacheKey.bookmarks_for(current_repository) do -%>
           <div id="bookmarks" class="sideblock"<%= %( style="display:none") if current_repository.bookmarks.to_a.empty? %>>
             <h3>Bookmarks</h3>

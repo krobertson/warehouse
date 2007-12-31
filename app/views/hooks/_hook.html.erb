@@ -8,7 +8,7 @@
       <%= s.text_field %(#{h name.titleize}:), name %>
     <% end -%>
   <% end -%>
-  <h3><%= link_to hook.properties.title, {} %></h3>
+  <h3><%=h hook.properties.title %></h3>
   <span class="log"><%=h hook.properties.notes %></span>
   <div class="hook-help">
     <ul>

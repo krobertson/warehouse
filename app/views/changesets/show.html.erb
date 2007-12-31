@@ -13,8 +13,8 @@
     <span class="timenauthor">by <%= @changeset.author %>, <%= jstime @changeset.changed_at %></span>
   </div>
   <ul class="changeset-nav">
-    <li class="prev"><%= link_to 'Previous Changeset', previous_changeset, :class => 'back' if previous_changeset %></li>
-    <li class="next"><%= link_to 'Next Changeset', next_changeset, :class => 'forward' if next_changeset %></li>
+    <li class="prev"><%= link_to 'Previous Changeset', hosted_url(:changeset, previous_changeset), :class => 'back' if previous_changeset %></li>
+    <li class="next"><%= link_to 'Next Changeset', hosted_url(:changeset, next_changeset), :class => 'forward' if next_changeset %></li>
   </ul>
 </div>
 <% end -%>
