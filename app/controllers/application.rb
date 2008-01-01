@@ -184,6 +184,7 @@ class ApplicationController < ActionController::Base
     end
     
     def hosted_url_for(repository, *args)
+      args.unshift repository unless repository.is_a?(Repository) || repository.nil?
       url_for(*args)
     end
   end
