@@ -114,7 +114,7 @@ class ChangesetsController < ApplicationController
 
     @@global_actions = %w(index public)
     def check_for_repository
-      return true if repository_subdomain.blank? && @@global_actions.include?(action_name)
+      return true if installed? && repository_subdomain.blank? && @@global_actions.include?(action_name)
       super
     end
     

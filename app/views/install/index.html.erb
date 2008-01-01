@@ -73,9 +73,13 @@
 </div>
 
 <% content_for :onready do %>
- var finaldomain = $('finaldomain');
- var domain = $('domain');
- new Form.Element.Observer('repository_name', 0.2, function(e, v) {
-   finaldomain.update("<span>Your first repo will be located at:</span> " + v.toLowerCase().strip().gsub(/\s+/, '-').dasherize() + "." + $F(domain));
- });
+  var finaldomain = $('finaldomain');
+  var domain = $('domain');
+  new Form.Element.Observer('repository_name', 0.2, function(e, v) {
+  <% if USE_REPO_PATHS -%>
+    finaldomain.update("<span>Your first repo will be located at:</span> " + $F(domain) + '/' + v.toLowerCase().strip().gsub(/\s+/, '-').dasherize() + "/...");
+	<% else -%>
+    finaldomain.update("<span>Your first repo will be located at:</span> " + v.toLowerCase().strip().gsub(/\s+/, '-').dasherize() + "." + $F(domain) + "/...");
+	<% end -%>
+  });
 <% end %>

@@ -1,19 +1,22 @@
 USE_REPO_PATHS = ENV['USE_REPO_PATHS'] unless Object.const_defined?(:USE_REPO_PATHS)
-REPO_ROOT_REGEX    = /^(\/?(repositor|admin|profile|plugin|changeset|user|permission))/
+REPO_ROOT_REGEX    = /^(\/?(admin|changesets|browser|install))(\/|$)/
 
 ActionController::Routing::Routes.draw do |map|
   map.connect ":asset/:plugin/*paths", :asset => /images|javascripts|stylesheets/, :controller => "assets", :action => "show"
 
   map.diff "changesets/diff/:rev/*paths", :controller => "changesets", :action => "diff", :rev => /r\d+/
 
-  map.resources :bookmarks
-  map.resources :plugins
-  map.resources :hooks
-  map.resources :permissions, :collection => { :anon => :any }
-  map.resources :users, :has_one => [:permissions]
   map.resources :changesets, :has_many => :changes, :collection => { :public => :get }
-  map.resource  :profile, :controller => "users"
-  map.resources :repositories, :member => { :sync => :any }
+  
+  map.with_options :path_prefix => 'admin' do |admin|
+    admin.resources :bookmarks
+    admin.resources :plugins
+    admin.resources :hooks
+    admin.resources :permissions, :collection => { :anon => :any }
+    admin.resources :users, :has_one => [:permissions]
+    admin.resource  :profile, :controller => "users"
+    admin.resources :repositories, :member => { :sync => :any }
+  end
 
   map.with_options :controller => 'changesets', :action => 'index' do |m|
     m.root_changesets                  'changesets'

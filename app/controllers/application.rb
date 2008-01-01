@@ -116,14 +116,22 @@ class ApplicationController < ActionController::Base
     def retrieve_current_repository
       repository_subdomain.blank? ? nil : Repository.find_by_subdomain(repository_subdomain)
     end
+    
+    def installed?
+      !Warehouse.domain.blank? && Repository.count > 0
+    end
+    
+    def install
+      reset_session
+      redirect_to installer_path
+    end
   
     def check_for_repository
       return true if current_repository
-      if !Warehouse.domain.blank? && Repository.count > 0
+      if installed?
         redirect_to(logged_in? ? root_changesets_path : root_public_changesets_path)
       else
-        reset_session
-        redirect_to installer_path
+        install
       end
       false
     end

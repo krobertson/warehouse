@@ -46,7 +46,7 @@ module Warehouse
       class_eval(&block) if block
       setup_mail!
       setup_caching!
-      if USE_REPO_PATHS
+      if Object.const_defined?(:USE_REPO_PATHS) && USE_REPO_PATHS
         puts "** Using paths for repositories, instead of subdomains.  http://#{Warehouse.domain || 'my-domain.com'}/my-repo/browser, etc."
       end
     end

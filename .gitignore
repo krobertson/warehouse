@@ -1,5 +1,6 @@
 config/initializers/warehouse.rb
 config/database.yml
+public/javascripts/warehouse.js
 .rake_tasks
 tmp
 log

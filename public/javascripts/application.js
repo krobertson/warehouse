@@ -52,7 +52,7 @@ Importer.prototype = {
   step: function(progress) {
     if(this.firstRun) progress = this.options.get('startProgress');
     if(progress < 100) {
-      new Ajax.Request('/repositories/' + this.repoId + '/sync', {
+      new Ajax.Request('/admin/repositories/' + this.repoId + '/sync', {
         method: 'post',
         onSuccess: function(transport) {
           this.firstRun = false;
