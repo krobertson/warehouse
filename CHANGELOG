@@ -1,3 +1,8 @@
+* 1.1.5
+
+* Add SVN Annotation/Blame support
+* Support for repo names specified in subdirectories instead of subdomains
+
 * 1.1
 
 * Link line #'s in UV code.

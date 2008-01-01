@@ -17,7 +17,7 @@ Warehouse::Hooks.define :campfire do
   END_NOTES
   
   option :campfire, "Your campfire subdomain"
-  option :room, "(optional) Your Campfire room name."
+  option :room, "(optional) Your Campfire room ID."
   option :user, "Email used to log into campfire.  (You should use a dedicated account for this)"
   option :password, "Your campfire password"
   option :url, "A string format for a direct link to a changeset.  ex: 'http://%s.wh.yourdomain.com/changesets/%s'"
