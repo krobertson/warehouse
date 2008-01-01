@@ -1,6 +1,6 @@
 class ApplicationController < ActionController::Base
   helper :all # include all helpers, all the time
-  helper_method :current_repository, :logged_in?, :current_user, :admin?, :controller_path, :repository_admin?, :repository_member?, :repository_subdomain, :hosted_url
+  helper_method :current_repository, :logged_in?, :current_user, :admin?, :controller_path, :repository_admin?, :repository_member?, :repository_subdomain, :hosted_url, :hosted_url_for
   
   session(Warehouse.session_options) unless Warehouse.domain.blank?
   
@@ -146,16 +146,22 @@ class ApplicationController < ActionController::Base
 
   if USE_REPO_PATHS
     def repository_subdomain
-      params[:repo]
+      @repository_subdomain ||= params.delete(:repo)
     end
 
     def hosted_url(*args)
       repository, name = extract_repository_and_args(args)
+      hosted_url_for repository, send("#{name}_path", *args)
+    end
+    
+    def hosted_url_for(repository, *args)
+      unless repository.is_a?(Repository) || repository.nil?
+        args.unshift repository
+        repository = nil
+      end
       repository ||= current_repository
-      returning send("#{name}_path", *args) do |path|
-        if repository && name !~ REPO_ROOT_REGEX
-          path.insert 0, "/#{repository.subdomain}"
-        end
+      returning url_for(*args) do |path|
+        path.insert 0, "/#{repository.subdomain}" if repository
       end
     end
   else
@@ -175,6 +181,10 @@ class ApplicationController < ActionController::Base
           send("#{name}_path", *args)
           ]
         end
+    end
+    
+    def hosted_url_for(repository, *args)
+      url_for(*args)
     end
   end
     
