@@ -11,7 +11,7 @@ begin
   require "openid"
 rescue LoadError
   require "rubygems"
-  require_gem "ruby-openid"
+  require 'ruby-openid'
 end
 
 ################ start config ##########################

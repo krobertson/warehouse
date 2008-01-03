@@ -5,7 +5,8 @@ require "openid/parse"
 # try and use the yadis gem, falling back to system yadis
 begin
   require 'rubygems'
-  require_gem 'ruby-yadis', ">=0.3.3"  
+  gem 'ruby-yadis', ">=0.3.3"
+  require 'ruby-yadis'
 rescue LoadError
   require "yadis"
 end

@@ -41,7 +41,7 @@ Or, if you installed via rubygems:
  $> irb
  irb$> require "rubygems"
  => true
- irb$> require_gem "ruby-openid" 
+ irb$> require "ruby-openid" 
  => true
 
 == Run the test suite

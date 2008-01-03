@@ -4,7 +4,8 @@ require "cgi"
 # load the openid library
 begin
   require "rubygems"
-  require_gem "ruby-openid", ">= 1.0.2"
+  gem "ruby-openid", ">= 1.0.2"
+  require 'ruby-openid'
 rescue LoadError
   require "openid"
 end

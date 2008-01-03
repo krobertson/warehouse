@@ -93,7 +93,7 @@ module Warehouse
         #
         # Your views will then be stored in #{YOUR_PLUGIN}/views/admin/foo/*.rhtml.
         def controller(title, name = nil, options = {})
-          returning (name || title.underscore).to_sym do |controller_name|
+          returning((name || title.underscore).to_sym) do |controller_name|
             link_options = {:style => "background-image:url(/images/#{controller_name}/#{options.delete(:icon)})"}
             view_paths[controller_name] = File.join(plugin_path, 'views').to_s
             tab title, {:controller => controller_name.to_s}.update(options), link_options

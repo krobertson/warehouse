@@ -3,7 +3,8 @@ require 'pathname'
 # load the openid library, first trying rubygems
 begin
   require "rubygems"
-  require_gem "ruby-openid", ">= 1.0"
+  gem "ruby-openid", ">= 1.0"
+  require 'ruby-openid'
 rescue LoadError
   require "openid"
 end

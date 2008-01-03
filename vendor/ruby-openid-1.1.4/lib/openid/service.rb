@@ -4,7 +4,7 @@ begin
   require 'yadis'
 rescue LoadError
   require 'rubygems'
-  require_gem 'ruby-yadis'
+  require 'ruby-yadis'
 end
 
 module OpenID
