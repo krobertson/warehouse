@@ -51,6 +51,15 @@
   </p>
   
   <div id="advanced-settings" style="display:none">
+	<% if Object.const_defined?(:Uv) -%>
+	<p class="command">
+		<label for="settings_source_highlight_theme">Source code highlight theme</label>
+		<%= select_tag :settings_source_highlight_theme, 
+					options_for_select(Warehouse.source_highlight_themes, 
+					(params[:settings][:source_highlight_theme] || Warehouse.source_highlight_theme).to_s),
+					:name => 'settings[source_highlight_theme]' %>
+	</p>
+	<% end -%>
   <p class="command">
     <label><%= check_box_tag :settings_caching, 'fs', (params[:settings][:caching] || Warehouse.caching) == 'fs', 
         :name => 'settings[caching]' %> Use filesystem cache</label>

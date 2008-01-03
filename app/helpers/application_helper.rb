@@ -39,7 +39,7 @@ if Object.const_defined?(:Uv)
   def highlight_syntax_in(node, show_blame=false)
     parsed = nil
     benchmark "Highlighting #{node.path}" do
-      parsed = Uv.parse(node.content, "xhtml", highlight_as(node.path.split("/").last), true, :twilight)
+      parsed = Uv.parse(node.content, "xhtml", highlight_as(node.path.split("/").last), true, Warehouse.source_highlight_theme)
       parsed.gsub!(/<span class="line-numbers">(\s+\d+\s+)<\/span>/) do |s|
         line_num = $1.to_i
         line_len = node.blame.size.to_s.length

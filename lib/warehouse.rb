@@ -27,10 +27,16 @@ module Warehouse
     default_session_options.merge :session_domain => ".#{Warehouse.domain}", :session_path => '/'
   end
 
+  def self.source_highlight_themes
+    Dir.chdir File.join(RAILS_ROOT, 'public', 'stylesheets', 'uv') do
+      Dir["*.css"].collect! { |theme| theme.sub!(/\.css$/, ''); [theme.titleize, theme] }
+    end
+  end
+
   class << self
     attr_accessor :domain, :forum_url, :permission_command, :password_command, :mail_from, :version, 
       :default_session_options, :smtp_settings, :sendmail_settings, :mail_type, :caching, :config_path, 
-      :syncing, :authentication_scheme, :authentication_realm, :setup, :svnlook_path
+      :syncing, :authentication_scheme, :authentication_realm, :setup, :svnlook_path, :source_highlight_theme
     
     def setup?
       @setup == true
@@ -117,6 +123,7 @@ module Warehouse
   self.authentication_scheme   ||= 'basic' # plain / md5
   self.authentication_realm    ||= ''
   self.svnlook_path            ||= '/usr/bin/svnlook'
+  self.source_highlight_theme  ||= :twilight
 end
 
 unless !File.exist?(File.join(RAILS_ROOT, 'config/initializers/warehouse'))

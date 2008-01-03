@@ -7,7 +7,7 @@
     <link rel="shortcut icon" href="/favicon.png" type="image/png" />
     <%= stylesheet_link_tag 'main' %>
     <%= stylesheet_link_tag 'code' %>
-    <%= stylesheet_link_tag 'uv/twilight' %>
+    <%= stylesheet_link_tag "uv/#{Warehouse.source_highlight_theme}" %>
     
     <%= javascript_include_tag 'prototype', 'lowpro-lite', 'moo.fx.js', 'moo.fx.transitions.js', 'application', :cache => 'warehouse' %>
     
