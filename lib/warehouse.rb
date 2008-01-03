@@ -112,7 +112,7 @@ module Warehouse
   self.default_session_options ||= {:session_key => '_warehouse_session_id', :secret => '4b3eaf64bfa62da140e0f45c9030f272'}
   self.domain                  ||= ''
   self.forum_url               ||= "http://forum.activereload.net/licenses/%s/installs"
-  self.version                 ||= Version.new(1, 1, 2)
+  self.version                 ||= Version.new(1, 1, 4.9)
   self.smtp_settings           ||= self.sendmail_settings ||= {}
   self.authentication_scheme   ||= 'basic' # plain / md5
   self.authentication_realm    ||= ''

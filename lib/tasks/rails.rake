@@ -1,10 +1,3 @@
-begin
-  require 'vlad'
-  Vlad.load :app => :monit, :scm => :git
-rescue LoadError
-  # no vlad, guess you're not deploying!
-end
-
 desc "freeze rails edge"
 
 task :test do
