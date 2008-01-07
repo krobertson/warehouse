@@ -13,7 +13,7 @@ module ApplicationHelper
   end
   
   def use_login_form?
-    @use_login_form ||= !cookies['use_svn'].blank? && cookies['use_svn'].value.to_s == '1'
+    @use_login_form ||= !cookies['use_svn'].blank? && cookies['use_svn'].to_s == '1'
   end
   
   def word_for_change(change)
@@ -44,7 +44,7 @@ if Object.const_defined?(:Uv)
         line_num = $1.to_i
         line_len = node.blame.size.to_s.length
         rev, username = node.blame[line_num]
-        %(<span class="line-numbers" id="n-#{line_num}"> <a href="#n-#{line_num}"><span class="blame" title="#{username} modified this code in ##{rev}">#{nb_pad username, node.blame[:username_length]}&nbsp;</span>#{nb_pad line_num, line_len} </a></span>)
+        %(<span class="line-numbers" id="n-#{line_num}"><span class="blame" title="#{username} modified this code in ##{rev}">#{link_to("#{nb_pad username, node.blame[:username_length]}", hosted_url(current_repository, :changeset, :id => rev))}&nbsp;</span><a href="#n-#{line_num}">#{nb_pad line_num, line_len}</a></span>)
       end
       parsed.gsub! /^<pre class="/, %(<pre id="source-code" class="#{'noblame ' unless show_blame})
     end

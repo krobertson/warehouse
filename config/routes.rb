@@ -1,5 +1,5 @@
-USE_REPO_PATHS = ENV['USE_REPO_PATHS'] unless Object.const_defined?(:USE_REPO_PATHS)
-REPO_ROOT_REGEX    = /^(\/?(admin|changesets|browser|install))(\/|$)/
+USE_REPO_PATHS  = ENV['USE_REPO_PATHS'] unless Object.const_defined?(:USE_REPO_PATHS)
+REPO_ROOT_REGEX = /^(\/?(admin|changesets|browser|install|login|logout|reset|forget))(\/|$)/
 
 ActionController::Routing::Routes.draw do |map|
   map.connect ":asset/:plugin/*paths", :asset => /images|javascripts|stylesheets/, :controller => "assets", :action => "show"

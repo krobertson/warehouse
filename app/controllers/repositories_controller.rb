@@ -37,7 +37,7 @@ class RepositoriesController < ApplicationController
   end
   
   def sync
-    progress, error = @repository.sync_revisions(100)
+    progress, error = @repository.sync_revisions(10)
 
     if error.blank?
       render :text => ((progress.split("\n").last.to_f / @repository.latest_revision.to_f) * 100).ceil.to_s
