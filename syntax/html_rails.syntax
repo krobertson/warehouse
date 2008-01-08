@@ -2,6 +2,9 @@
 name: HTML (Rails)
 fileTypes: 
 - rhtml
+- html.erb
+- xml.erb
+- js.erb
 scopeName: text.html.ruby
 uuid: 45D7E1FC-7D0B-4105-A1A2-3D10BB555A5C
 foldingStartMarker: |-

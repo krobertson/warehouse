@@ -2,6 +2,7 @@
 name: Ruby on Rails
 fileTypes: 
 - rxml
+- builder
 scopeName: source.ruby.rails
 uuid: 54D6E91E-8F31-11D9-90C5-0011242E4184
 foldingStartMarker: "(?x)^\n\

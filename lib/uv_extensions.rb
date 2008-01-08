@@ -37,6 +37,12 @@ module Uv
 
   def Uv.syntax_for_file file_name
     init_syntaxes unless @syntax_index
-    @syntax_index[File.extname(file_name)[1..-1]]
+    ext = File.extname(file_name)[1..-1]
+    # if the extension isn't in there, look for the 'full' extension,
+    # like '.html.erb'
+    if @syntax_index[ext].nil? && file_name =~ /[^\.]+\.(.*$)/
+      ext = $1 if ext != $1 
+    end
+    @syntax_index[ext]
   end
 end
