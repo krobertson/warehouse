@@ -1,5 +1,5 @@
   <%= form.text_field 'Name:', :name %>
-  <%= form.text_field 'Path:', :path %>
-  <%= form.text_field 'Subdomain:', :subdomain %>
-  <%= form.text_field 'Full URL:', :full_url %>
+  <%= form.text_field 'System Path:', :path %>
+  <%= form.text_field(USE_REPO_PATHS ? "Relative Path:" : 'Subdomain:', :subdomain) %>
+  <%= form.text_field 'External URL:', :full_url %>
   <%= form.check_box  'Public:', 'Yes, the public can browse this repository.', :public %>
