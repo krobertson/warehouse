@@ -8,7 +8,7 @@ repository:
     endCaptures: 
       "0": 
         name: punctuation.definition.string.end.php
-    begin: (?x)'/ (?= (\\.|[^'/])+/[imsxeADSUXu]*' )
+    begin: (?x)'/ (?= (\\.|[^'/])++/[imsxeADSUXu]*' )
     beginCaptures: 
       "0": 
         name: punctuation.definition.string.begin.php
@@ -750,7 +750,7 @@ repository:
     endCaptures: 
       "0": 
         name: punctuation.definition.string.end.php
-    begin: (?x)"/ (?= (\\.|[^"/])+/[imsxeADSUXu]*" )
+    begin: (?x)'/ (?= (\\.|[^'/])++/[imsxeADSUXu]*' )
     beginCaptures: 
       "0": 
         name: punctuation.definition.string.begin.php
