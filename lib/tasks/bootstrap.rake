@@ -71,7 +71,7 @@ namespace :warehouse do
         
         Dir.chdir rel_path
         ENV['WAREHOUSE_FORCE'] = '1'
-        Rake::Task["warehouse:upgrade"].execute
+        Rake::Task["warehouse:upgrade"].invoke
       end
     end
   end
@@ -172,7 +172,7 @@ namespace :warehouse do
     warehouse_path = File.join(RAILS_ROOT, 'config', 'initializers', 'warehouse.rb')
     rm warehouse_path if File.exist?(warehouse_path)
     
-    %w(environment db:schema:load tmp:create).each { |t| Rake::Task[t].execute }
+    %w(environment db:schema:load tmp:create).each { |t| Rake::Task[t].invoke }
     
     say '=' * 80
     puts
