@@ -28,7 +28,7 @@
 <% end -%>
 </ul>
 
-  <% sheet_form_for @permission, :html => { :id => 'add-member' }, :trigger => 'addperm' do |s| -%>
+  <% sheet_form_for @permission, :url => hosted_url(:permissions), :html => { :id => 'add-member' }, :trigger => 'addperm' do |s| -%>
     <h2>Add a new Subversion permission</h2>
     <%= s.select "Permissions for", :user_id, invitee_options_for(@invitees) %>
     <%= s.check_box 'Administrator', 'Yes, this user can add and delete members.', :admin %>

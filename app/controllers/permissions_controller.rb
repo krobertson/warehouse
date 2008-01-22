@@ -6,9 +6,9 @@ class PermissionsController < ApplicationController
   before_filter :load_all_repositories, :only => [:index, :create]
 
   def index
-    @permission ||= Permission.new
-    @invitees     = User.find(:all, :order => 'login, email')
-    @members      = current_repository.permissions.group_by &:user
+    @permission = Permission.new
+    @invitees   = User.find(:all, :order => 'login, email')
+    @members    = current_repository.permissions.group_by &:user
     @invitees.delete_if { |i| @members.keys.include?(i) }
     render :action => 'index'
   end

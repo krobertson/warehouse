@@ -1,3 +1,9 @@
+* 1.1.6
+
+* Rake 0.8 compatibility fix
+* Fix bug with import_users task
+* Fix issues with bad permissions URLs.
+
 * 1.1.5
 
 * Add SVN Annotation/Blame support

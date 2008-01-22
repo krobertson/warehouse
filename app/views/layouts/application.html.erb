@@ -27,6 +27,7 @@
         <%= yield :onready %>
       });
       <%= yield :javascript %>
+			<% if USE_REPO_PATHS && current_repository -%>Warehouse.root = '/<%= current_repository.subdomain %>';<% end -%>
     </script>
     <%= auto_discovery_link_tag(:atom, changeset_feed_url) %>
     <!--[if lt IE 8]>

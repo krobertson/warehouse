@@ -1,18 +1,20 @@
-
+var Warehouse = {
+	root: ''
+}
 
 Permissions = {
   removeMember: function(user_id) {
     if(!confirm("Are you sure you wish to remove this member?")) return
     if(user_id == 'anon')
-      new Ajax.Request("/permissions/anon", {method:'delete'});
+      new Ajax.Request(Warehouse.root + "/admin/permissions/anon", {method:'delete'});
     else
-      new Ajax.Request("/users/" + user_id + "/permissions", {method:'delete'});
+      new Ajax.Request(Warehouse.root + "/admin/users/" + user_id + "/permissions", {method:'delete'});
   },
   
   remove: function(line) {
     if(line.readAttribute('id')) {
       if(!confirm("Are you sure you wish to remove this permission?")) return;
-      new Ajax.Request("/permissions/" + line.readAttribute('id').match(/(\d+)$/)[0], {method:'delete'});
+      new Ajax.Request(Warehouse.root + "/admin/permissions/" + line.readAttribute('id').match(/(\d+)$/)[0], {method:'delete'});
     } else {
       line.remove();
     }
@@ -52,7 +54,7 @@ Importer.prototype = {
   step: function(progress) {
     if(this.firstRun) progress = this.options.get('startProgress');
     if(progress < 100) {
-      new Ajax.Request('/admin/repositories/' + this.repoId + '/sync', {
+      new Ajax.Request(Warehouse.root + '/admin/repositories/' + this.repoId + '/sync', {
         method: 'post',
         onSuccess: function(transport) {
           this.firstRun = false;
