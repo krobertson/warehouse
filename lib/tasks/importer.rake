@@ -78,7 +78,7 @@ namespace :warehouse do
   # REPO
   # REPO_PATH
   # REPO_ACCESS r/rw
-  task :import_users => :environment do
+  task :import_users => :init do
     raise "Need an htpasswd file to import.  CONFIG=/path/to/htpasswd" unless ENV['CONFIG']
     @command.import_users_from_htpasswd ENV['CONFIG'], ENV['EMAIL'], ENV['REPO'], ENV['REPO_PATH'], ENV['REPO_ACCESS']
   end
