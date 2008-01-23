@@ -32,8 +32,13 @@ describe Silo::Node do
     @node.name.should == 'foo/'
   end
   
+  it "creates paths for node" do
+    @repo.node_at("/foo/bar").paths.should == %w(foo bar)
+  end
+  
   %w(png jpg jpeg gif).each do |type|
     it "knows if 'image/#{type}' is an image" do
+      @node.stub!(:dir?).and_return(false)
       @node.stub!(:mime_type).and_return("image/#{type}")
       @node.should be_image
     end
@@ -41,6 +46,7 @@ describe Silo::Node do
   
   %w(txt text/plain text/html).each do |type|
     it "knows if '#{type}' is a text file" do
+      @node.stub!(:dir?).and_return(false)
       @node.stub!(:mime_type).and_return("image/#{type}")
       @node.should be_text
     end
@@ -87,12 +93,17 @@ describe Silo::Node do
   end
 
   it "generates unified diff for nodes" do
-    @repo.should_receive(:unified_diff_for).with(@repo.node_at('test.html', 2), @repo.node_at('test.html', 1)).and_return(@@sample_diff)
+    @repo.should_receive(:unified_diff_for).with(2, 1, 'test.html').and_return(@@sample_diff)
+    @repo.node_at('test.html').unified_diff_with(1).should == @@sample_diff
+  end
+
+  it "generates unified diff for nodes" do
+    @repo.should_receive(:unified_diff_for).with(2, 1, 'test.html').and_return(@@sample_diff)
     @repo.node_at('test.html').unified_diff_with(@repo.node_at('test.html', 1)).should == @@sample_diff
   end
 
   it "generates unified diff for node against previous version" do
-    @repo.should_receive(:unified_diff_for).with(@repo.node_at('test.html', 2), @repo.node_at('test.html', 1)).and_return(@@sample_diff)
+    @repo.should_receive(:unified_diff_for).with(2, 1, 'test.html').and_return(@@sample_diff)
     @repo.node_at('test.html').unified_diff.should == @@sample_diff
   end
 

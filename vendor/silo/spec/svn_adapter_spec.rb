@@ -15,14 +15,6 @@ describe Silo::Adapters::Svn do
   it "retrieves latest revision" do
     @repo.latest_revision.should == 2
   end
-  
-  it "retrieves mime type from adapter if possible" do
-    @repo.mime_type_for(@repo.node_at('test.html')).should =~ /html/
-  end
-  
-  it "retrieves mime type from file name as a fallback" do
-    @repo.mime_type_for(@repo.node_at("foo/bar/baz.txt")).should == 'txt'
-  end
 
   it "checks if node exists" do
     @repo.exists?(@repo.node_at("foo")).should     == true
@@ -52,6 +44,20 @@ describe Silo::Adapters::Svn do
   end
   
   it "reads contents of node" do
-    @repo.content_for(@repo.node_at("config.yml")).should == IO.read(File.join(File.dirname(__FILE__), 'mock_repo', 'config.yml'))
+    @repo.node_at("config.yml").content.should == IO.read(File.join(File.dirname(__FILE__), 'mock_repo', 'config.yml'))
+  end
+  
+  it "reads contents of nodes by version" do
+    current_test = @repo.node_at('test.html').content
+    old_test     = @repo.node_at('test.html', 1).content
+    current_test.should_not == old_test
+    current_test.should     match(/bar/)
+    current_test.should_not match(/baz/)
+  end
+  
+  it "gets unified diff" do
+    diff = @repo.node_at("test.html", 1).unified_diff_with(@repo.node_at("test.html", 2))
+    diff.should match(/-baz/)
+    diff.should match(/\+bar/)
   end
 end

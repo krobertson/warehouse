@@ -8,7 +8,7 @@ module Silo
       end
 
       def mime_type_for(node)
-        base_mime_type_for(node, info_for(node)[:mime_type])
+        info_for(node)[:mime_type]
       end
       
       def dir?(node)

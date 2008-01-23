@@ -6,8 +6,7 @@ module Silo
       end
 
       def mime_type_for(node)
-        base_mime_type_for node, 
-          (node.exists? && !node.dir?) ? node.root.node_prop(node.path, ::Svn::Core::PROP_MIME_TYPE) : nil
+        (node.exists? && !node.dir?) ? node.root.node_prop(node.path, ::Svn::Core::PROP_MIME_TYPE) : nil
       end
       
       def dir?(node)
@@ -51,14 +50,35 @@ module Silo
         node.exists? ? prop(::Svn::Core::PROP_REVISION_DATE, node).utc : nil
       end
       
-      def content_for(node)
+      def content_for(node, &block)
+        total = []
         node.root.file_contents(node.path) do |s|
           data = s.read
-          GC.start
-          data
-        end      
+          block ? block.call(data) : total << data
+        end
+        GC.start
+        block ? nil : total.join
+      end
+
+      def unified_diff_for(old_rev, new_rev, diff_path)
+        old_root = backend.fs.root old_rev
+        new_root = backend.fs.root new_rev
+        
+        differ = ::Svn::Fs::FileDiff.new(old_root, diff_path, new_root, diff_path)
+      
+        if differ.binary?
+          ''
+        else
+          old = "#{diff_path} (revision #{old_root.node_created_rev(diff_path)})"
+          cur = "#{diff_path} (revision #{new_root.node_created_rev(diff_path)})"
+          differ.unified(old, cur)
+        end
       end
       
+      def inspect
+        "#<Silo::Repository @path=#{@options[:path].inspect}>"
+      end
+    
     protected
       def client
         @client ||= ::Svn::Client::Context.new
@@ -87,13 +107,50 @@ class Silo::Node
   def previous_root
     @previous_root ||= @repository.send(:backend).fs.root(revision - 1)
   end
+  
+  def added_directories
+    changed_editor.added_dirs
+  end
+  
+  def added_files
+    changed_editor.added_files
+  end
+  
+  def updated_directories
+    changed_editor.updated_dirs
+  end
+  
+  def updated_files
+    changed_editor.updated_files
+  end
+  
+  def copied_directories
+    changed_editor.copied_dirs
+  end
+  
+  def copied_files
+    changed_editor.copied_files
+  end
+  
+  def deleted_directories
+    changed_editor.deleted_dirs
+  end
+  
+  def deleted_files
+    changed_editor.deleted_files
+  end
+
+protected
+  def changed_editor
+    unless @changed_editor
+      @changed_editor = Svn::Delta::ChangedEditor.new(root, base_root)
+      previous_root.dir_delta('', '', root, '', @changed_editor)
+    end
+    @changed_editor
+  end
 end
 
-require 'svn/core'
-require 'svn/repos'
-require 'svn/delta'
-require 'svn/client'
-require 'svn/wc'
+%w(core error repos delta client wc).each { |lib| require "svn/#{lib}" }
 
 # SVN Manual Garbage Collection
 # http://retrospectiva.org/browse/trunk/lib/patches.rb?format=txt&rev=141

@@ -1,7 +1,10 @@
 module Silo
   class Node
+    class Error < StandardError; end
     include Comparable
     
+    @@default_mime_type = 'application/octet-stream'
+    @@image_mime_regex  = /(png|jpe?g|gif)/i
     attr_reader :path, :repository
 
     def initialize(repository, path, revision = nil)
@@ -10,7 +13,11 @@ module Silo
     end
     
     def name
-      @name ||= File.basename(@path) << (self.dir? ? '/' : '')
+      @name ||= File.basename(@path) + (self.dir? ? '/' : '')
+    end
+    
+    def paths
+      @paths ||= @path.split("/")
     end
     
     def full_path
@@ -25,16 +32,20 @@ module Silo
       @repository.dir?(self)
     end
     
+    def node_type
+      dir? ? 'dir' : 'file'
+    end
+    
     def mime_type
       @mime_type ||= @repository.mime_type_for(self)
     end
     
     def text?
-      mime_type.to_s =~ /te?xt/i
+      !dir? && mime_type != @@default_mime_type
     end
     
     def image?
-      mime_type.to_s =~ /(png|jpe?g|gif)/i
+      !dir? && (mime_type.to_s =~ @@image_mime_regex || @path =~ @@image_mime_regex)
     end
     
     def child_node_names
@@ -65,16 +76,16 @@ module Silo
       @child_nodes
     end
     
-    def content
-      @repository.content_for self
+    def content(&block)
+      @repository.content_for self, &block
     end
     
     def unified_diff
-      unified_diff_with(Node.new(@repository, @path, revision-1))
+      unified_diff_with(revision - 1)
     end
     
-    def unified_diff_with(other)
-      @repository.unified_diff_for(self, other)
+    def unified_diff_with(other_rev)
+      @repository.unified_diff_for(revision, other_rev.respond_to?(:revision) ? other_rev.revision : other_rev, @path)
     end
     
     def ==(other)

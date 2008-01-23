@@ -20,10 +20,6 @@ describe Silo::Adapters::Mock do
     @repo.mime_type_for(@repo.node_at('test.html')).should =~ /html/
   end
   
-  it "retrieves mime type from file name as a fallback" do
-    @repo.mime_type_for(@repo.node_at("foo/bar/baz.txt")).should == 'txt'
-  end
-  
   it "reads repo config data" do
     @repo.send(:config).should be_kind_of(Hash)
   end
