@@ -14,8 +14,8 @@ class Change < ActiveRecord::Base
     node ? node.diffable? : false
   end
   
-  def backend
-    changeset.repository.backend
+  def silo
+    changeset.repository.silo
   end
   
   def modified?

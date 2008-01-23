@@ -71,6 +71,7 @@ context "Repositories Controller on root domain" do
 
   specify "should grant access to admin" do
     login_as :rick
+    Repository.any_instance.stubs(:sync?).returns(false)
     get :index
     assert_template 'index'
     assigns(:repositories).size.should == 2
@@ -78,6 +79,7 @@ context "Repositories Controller on root domain" do
 
   specify "should grant access to repository admin" do
     User.any_instance.stubs(:admin?).returns(false)
+    Repository.any_instance.stubs(:sync?).returns(false)
     login_as :rick
     get :index
     assert_template 'index'

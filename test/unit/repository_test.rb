@@ -41,7 +41,7 @@ context "Repository" do
   
   specify "should get initial revisions to sync" do
     r = Repository.new
-    r.expects(:backend).returns(true)
+    r.expects(:silo).returns(true)
     r.expects(:latest_changeset).returns(nil)
     r.expects(:latest_revision).returns(5)
     r.revisions_to_sync.should == (1..5)
@@ -49,7 +49,7 @@ context "Repository" do
   
   specify "should get new revisions to sync" do
     repo = Repository.new
-    repo.expects(:backend).returns(stub(:youngest_rev => 5))
+    repo.expects(:silo).returns(stub(:latest_revision => 5))
     repo.expects(:latest_changeset).times(4).returns(stub(:revision => 3))
     repo.expects(:latest_revision).times(2).returns(5)
     repo.revisions_to_sync.to_a.should == [4,5]
@@ -58,7 +58,7 @@ context "Repository" do
   
   specify "should want to sync with revisions to sync" do
     repo = Repository.new
-    repo.stubs(:backend).returns(stub(:youngest_rev => 5))
+    repo.stubs(:silo).returns(stub(:latest_revision => 5))
     repo.stubs(:synced_revision).returns(1)
     repo.revisions_to_sync.to_a.should == [1,2,3,4,5]
     repo.should.be.sync
@@ -67,7 +67,7 @@ context "Repository" do
   
   specify "should want to sync with 1 revision to sync" do
     repo = Repository.new
-    repo.stubs(:backend).returns(stub(:youngest_rev => 1))
+    repo.stubs(:silo).returns(stub(:latest_revision => 1))
     repo.stubs(:synced_revision).returns(1)
     repo.revisions_to_sync.to_a.should == [1]
     repo.should.be.sync
@@ -76,7 +76,7 @@ context "Repository" do
   
   specify "should not want to sync with no revisions to sync" do
     repo = Repository.new
-    repo.stubs(:backend).returns(stub(:youngest_rev => 5))
+    repo.stubs(:silo).returns(stub(:latest_revision => 5))
     repo.stubs(:synced_revision).returns(6)
     repo.revisions_to_sync.to_a.should == []
     repo.should.not.be.sync

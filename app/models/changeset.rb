@@ -4,7 +4,7 @@ class Changeset < ActiveRecord::Base
   validates_presence_of   :repository_id, :revision
   validates_uniqueness_of :revision, :scope => :repository_id
 
-  delegate :backend, :to => :repository
+  delegate :silo, :to => :repository
   expiring_attr_reader :user, :retrieve_user
 
   def self.search(query, options = {})
