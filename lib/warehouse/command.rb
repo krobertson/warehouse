@@ -48,7 +48,7 @@ module Warehouse
         puts "no repository found for the '#{repo_subdomain}' subdomain", :warn
         return
       end
-      unless backend_for(repo)
+      unless silo_for(repo)
         puts "No SVN repository found for '#{repo[:subdomain]}' in '#{repo[:path]}'", :warn
         return
       end
@@ -209,12 +209,12 @@ module Warehouse
       end
 
       def latest_revision_for(repo)
-        backend = backend_for(repo)
-        backend && backend.youngest_rev
+        silo = silo_for(repo)
+        silo && silo.latest_revision
       end
     
-      def backend_for(repo)
-        (@backends ||= {})[repo[:path]] ||= Svn::Repos.open(repo[:path])
+      def silo_for(repo)
+        (@silos ||= {})[repo[:path]] ||= Silo::Repository.new(:svn, repo[:path])
       rescue Svn::Error
         nil
       end
@@ -226,55 +226,51 @@ module Warehouse
       end
       
       def create_changeset(repo, revision)
-        backend = backend_for(repo)
+        silo = silo_for(repo)
+        node    = silo.node_at('', revision)
         changeset = { 
           :repository_id => repo[:id],
           :revision      => revision,
-          :author        => backend.fs.prop(Svn::Core::PROP_REVISION_AUTHOR, revision),
-          :message       => backend.fs.prop(Svn::Core::PROP_REVISION_LOG,    revision),
-          :changed_at    => backend.fs.prop(Svn::Core::PROP_REVISION_DATE,   revision).utc}
+          :author        => node.author,
+          :message       => node.message,
+          :changed_at    => node.changed_at}
         changeset_id   = connection[:changesets] << changeset
         changes = {:all => [], :diffable => []}
-        create_change_from_changeset(backend, changeset.update(:id => changeset_id), changes)
+        create_change_from_changeset(node, changeset.update(:id => changeset_id), changes)
         connection[:changesets].filter(:id => changeset_id).update(:diffable => 1) if changes[:diffable].size > 0
         changeset
       end
       
-      def create_change_from_changeset(backend, changeset, changes)
-        root           = backend.fs.root(changeset[:revision].to_i)
-        base_root      = backend.fs.root(changeset[:revision].to_i-1)
-        changed_editor = Svn::Delta::ChangedEditor.new(root, base_root)
-        base_root.dir_delta('', '', root, '', changed_editor)
-
-        (changed_editor.added_dirs + changed_editor.added_files).each do |path|
-          process_change_path_and_save(backend, changeset, 'A', path, changes)
+      def create_change_from_changeset(node, changeset, changes)
+        (node.added_dirs + node.added_files).each do |path|
+          process_change_path_and_save(node, changeset, 'A', path, changes)
         end
         
-        (changed_editor.updated_dirs + changed_editor.updated_files).each do |path|
-          process_change_path_and_save(backend, changeset, 'M', path, changes)
+        (node.updated_dirs + node.updated_files).each do |path|
+          process_change_path_and_save(node, changeset, 'M', path, changes)
         end
         
-        deleted_files = changed_editor.deleted_dirs + changed_editor.deleted_files
-        moved_files, copied_files  = (changed_editor.copied_dirs  + changed_editor.copied_files).partition do |path|
+        deleted_files = node.deleted_dirs + node.deleted_files
+        moved_files, copied_files  = (node.copied_dirs  + node.copied_files).partition do |path|
           deleted_files.delete(path[1])
         end
         
         moved_files.each do |path|
-          process_change_path_and_save(backend, changeset, 'MV', path, changes)
+          process_change_path_and_save(node, changeset, 'MV', path, changes)
         end
         
         copied_files.each do |path|
-          process_change_path_and_save(backend, changeset, 'CP', path, changes)
+          process_change_path_and_save(node, changeset, 'CP', path, changes)
         end
         
         deleted_files.each do |path|
-          process_change_path_and_save(backend, changeset, 'D', path, changes)
+          process_change_path_and_save(node, changeset, 'D', path, changes)
         end
       end
       
       @@extra_change_names = Set.new(%w(MV CP))
       @@undiffable_change_names = Set.new(%w(D))
-      def process_change_path_and_save(backend, changeset, name, path, changes)
+      def process_change_path_and_save(node, changeset, name, path, changes)
         change = {:changeset_id => changeset[:id], :name => name, :path => path}
         if @@extra_change_names.include?(name)
           change[:path]          = path[0]
@@ -282,9 +278,7 @@ module Warehouse
           change[:from_revision] = path[2]
         end
         unless @@undiffable_change_names.include?(change[:name]) || changeset[:diffable] == 1
-          root          = backend.fs.root(changeset[:revision])
-          mime_type     = root.check_path(change[:path]) == Svn::Core::NODE_DIR ? nil : root.node_prop(change[:path], Svn::Core::PROP_MIME_TYPE)
-          changes[:diffable] << change unless mime_type == 'application/octet-stream'
+          changes[:diffable] << change unless node.mime_type == 'application/octet-stream'
         end
         changes[:all] << change
         connection[:changes] << change
