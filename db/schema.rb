@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 28) do
+ActiveRecord::Schema.define(:version => 29) do
 
   create_table "avatars", :force => true do |t|
     t.string  "content_type"
@@ -109,6 +109,7 @@ ActiveRecord::Schema.define(:version => 28) do
     t.string  "subdomain"
     t.boolean "public"
     t.string  "full_url"
+    t.string  "scm_type",  :default => "svn"
   end
 
   add_index "repositories", ["subdomain"], :name => "index_repositories_on_subdomain"
@@ -123,6 +124,7 @@ ActiveRecord::Schema.define(:version => 28) do
     t.string  "token"
     t.string  "login"
     t.string  "crypted_password"
+    t.text    "public_key"
   end
 
   add_index "users", ["token"], :name => "index_users_on_token"
