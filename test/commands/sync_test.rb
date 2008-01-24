@@ -112,13 +112,13 @@ context "Command Syncing" do
   end
   
   specify "should process changeset changes" do
-    @node.stubs(:added_dirs).returns(['/foo'])
+    @node.stubs(:added_directories).returns(['/foo'])
     @node.stubs(:added_files).returns(['/foo/bar.txt'])
-    @node.stubs(:updated_dirs).returns(['/foo'])
+    @node.stubs(:updated_directories).returns(['/foo'])
     @node.stubs(:updated_files).returns(['/foo/bar.txt'])
-    @node.stubs(:deleted_dirs).returns(['/copied', '/deleted'])
+    @node.stubs(:deleted_directories).returns(['/copied', '/deleted'])
     @node.stubs(:deleted_files).returns(['/copied/file', '/deleted/file'])
-    @node.stubs(:copied_dirs).returns([%w(a /copied b), %w(a /original b)])
+    @node.stubs(:copied_directories).returns([%w(a /copied b), %w(a /original b)])
     @node.stubs(:copied_files).returns([%w(a /copied/file b), %w(a /original/file b)])
     
     @changes = {:all => []}

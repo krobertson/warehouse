@@ -125,26 +125,7 @@ module Warehouse
       users = indexed_users_from(permissions.values.collect { |index| index.values }.flatten)
       
       open config_path, 'w' do |file|
-        repositories.each do |repo|
-          perms_hash = permissions[repo[:id].to_s]
-          next if perms_hash.nil?
-          perms_hash.each do |path, perms|
-            file.write("[%s:/%s]\n" % [base_path(repo[:path]), path])
-            perms.each do |p|
-              if p[:user_id].nil?
-                file.write('*')
-              else
-                login = users[p[:user_id].to_s][:login] rescue nil
-                next if login.nil? || login.size == 0
-                file.write(login)
-              end
-              file.write(' = r')
-              file.write('w') if p[:full_access].to_i == 1
-              file.write("\n")
-            end
-            file.write("\n")
-          end
-        end
+        file.write SvnAccessBuilder.new(repositories, permissions, users).render
       end
       puts "Wrote access config file to '#{config_path}'"
     end
@@ -189,154 +170,156 @@ module Warehouse
       connection.transaction { [changes, changesets].each { |ds| ds.delete } }
       puts repo ? "All revisions for #{repo[:name].inspect} were cleared." : "All revisions for all repositories were cleared"
     end
+      
+    def repos_from_user(user)
+      user = connection[:users][:id => user] unless user.is_a?(Hash)
+      repository_ids = connection[:permissions].select(:repository_id).where(:user_id => user[:id]).uniq
+      connection[:repositories].where :id => repository_ids
+    end
     
-    protected
-      def find_repo(value)
-        return nil if value.nil?
-        return value if value.is_a?(Hash) || value.is_a?(Sequel::Dataset)
-        key   = value.to_i > 0 ? :id : :subdomain
-        connection[:repositories][key => value]
-      end
-    
-      def paginated_revisions(repo, num)
-        revisions = (recorded_revision_for(repo)..latest_revision_for(repo)).to_a
-        num > 0 ? revisions[0..num-1] : revisions
-      end
-
-      def recorded_revision_for(repo)
-        changeset = connection[:changesets].where(:repository_id => repo[:id]).reverse_order(:changed_at).first
-        @recorded_revision = (changeset ? changeset[:revision] : 0).to_i + 1
-      end
-
-      def latest_revision_for(repo)
-        silo = silo_for(repo)
-        silo && silo.latest_revision
-      end
-    
-      def silo_for(repo)
-        (@silos ||= {})[repo[:path]] ||= Silo::Repository.new(:svn, repo[:path])
-      rescue Svn::Error
-        nil
-      end
-
-      def update_user_activity(repo, user, changed_at)
-        changesets_count = connection[:changesets].where(:repository_id => repo[:id], :author => user[:login]).select(:id.COUNT)
-        connection[:permissions].where(:user_id => user[:id], :repository_id => repo[:id]).update \
-              :last_changed_at => changed_at, :changesets_count => changesets_count
-      end
-      
-      def create_changeset(repo, revision)
-        silo = silo_for(repo)
-        node    = silo.node_at('', revision)
-        changeset = { 
-          :repository_id => repo[:id],
-          :revision      => revision,
-          :author        => node.author,
-          :message       => node.message,
-          :changed_at    => node.changed_at}
-        changeset_id   = connection[:changesets] << changeset
-        changes = {:all => [], :diffable => []}
-        create_change_from_changeset(node, changeset.update(:id => changeset_id), changes)
-        connection[:changesets].filter(:id => changeset_id).update(:diffable => 1) if changes[:diffable].size > 0
-        changeset
-      end
-      
-      def create_change_from_changeset(node, changeset, changes)
-        (node.added_dirs + node.added_files).each do |path|
-          process_change_path_and_save(node, changeset, 'A', path, changes)
-        end
-        
-        (node.updated_dirs + node.updated_files).each do |path|
-          process_change_path_and_save(node, changeset, 'M', path, changes)
-        end
-        
-        deleted_files = node.deleted_dirs + node.deleted_files
-        moved_files, copied_files  = (node.copied_dirs  + node.copied_files).partition do |path|
-          deleted_files.delete(path[1])
-        end
-        
-        moved_files.each do |path|
-          process_change_path_and_save(node, changeset, 'MV', path, changes)
-        end
-        
-        copied_files.each do |path|
-          process_change_path_and_save(node, changeset, 'CP', path, changes)
-        end
-        
-        deleted_files.each do |path|
-          process_change_path_and_save(node, changeset, 'D', path, changes)
-        end
-      end
-      
-      @@extra_change_names = Set.new(%w(MV CP))
-      @@undiffable_change_names = Set.new(%w(D))
-      def process_change_path_and_save(node, changeset, name, path, changes)
-        change = {:changeset_id => changeset[:id], :name => name, :path => path}
-        if @@extra_change_names.include?(name)
-          change[:path]          = path[0]
-          change[:from_path]     = path[1]
-          change[:from_revision] = path[2]
-        end
-        unless @@undiffable_change_names.include?(change[:name]) || changeset[:diffable] == 1
-          changes[:diffable] << change unless node.mime_type == 'application/octet-stream'
-        end
-        changes[:all] << change
-        connection[:changes] << change
-      end
-
-      def hooks_for(repo)
-        connection[:hooks].where(:repository_id => repo[:id], :active => true).order(:name)
-      end
-    
-      def indexed_hooks(hooks)
-        hooks.inject [] do |memo, hook|
-          memo << [Warehouse::Hooks[hook[:name]], YAML.load(hook[:options])]
-        end
-      end
-
-      def grouped_permissions_for(repositories)
-        connection[:permissions].where(:active => 1, :repository_id => repositories.map { |r| r[:id] }).inject({}) do |memo, perm|
-          (memo[perm[:repository_id].to_s] ||= []) << perm; memo
-        end
-      end
-      
-      def grouped_permission_paths_for(repositories)
-        permissions = grouped_permissions_for(repositories)
-        permissions.each do |repo_id, perms|
-          permissions[repo_id] = perms.inject({}) do |memo, p|
-            (memo[p[:path]] ||= []) << p; memo
-          end
-        end
-        permissions
-      end
-      
-      def indexed_users_from(permissions)
-        (permissions.any? ? connection[:users].where(:id => permissions.map { |p| p[:user_id] }) : []).inject({}) do |memo, user|
-          memo.update user[:id].to_s => user
-        end
-      end
-      
-      def repos_from_user(user)
-        user = connection[:users][:id => user] unless user.is_a?(Hash)
-        repository_ids = connection[:permissions].select(:repository_id).where(:user_id => user[:id]).uniq
-        connection[:repositories].where :id => repository_ids
-      end
-      
-      def users_from_repo(repo)
-        user_ids = connection[:permissions].select(:user_id).where(:active => 1, :repository_id => repo[:id]).uniq
-        connection[:users].where(:id => user_ids)
-      end
-      
-      def base_path(path)
-        path.to_s.split("/").last.to_s
-      end
-      
-      def puts(str, level = :info)
-        if level == :raw
-          super(str)
+  protected
+    def find_repo(value)
+      case value
+        when Hash, Sequel::Dataset, NilClass then value
         else
-          self.class.logger && self.class.logger.send(level, str)
+          key   = value.to_i > 0 ? :id : :subdomain
+          connection[:repositories][key => value]
+      end
+    end
+    
+    def paginated_revisions(repo, num)
+      revisions = (recorded_revision_for(repo)..latest_revision_for(repo)).to_a
+      num > 0 ? revisions[0..num-1] : revisions
+    end
+    
+    def recorded_revision_for(repo)
+      changeset = connection[:changesets].where(:repository_id => repo[:id]).reverse_order(:changed_at).first
+      @recorded_revision = (changeset ? changeset[:revision] : 0).to_i + 1
+    end
+    
+    def latest_revision_for(repo)
+      silo = silo_for(repo)
+      silo && silo.latest_revision
+    end
+    
+    def silo_for(repo)
+      (@silos ||= {})[repo[:path]] ||= Silo::Repository.new(:svn, :path => repo[:path])
+    rescue Svn::Error
+      nil
+    end
+    
+    def update_user_activity(repo, user, changed_at)
+      changesets_count = connection[:changesets].where(:repository_id => repo[:id], :author => user[:login]).select(:id.COUNT)
+      connection[:permissions].where(:user_id => user[:id], :repository_id => repo[:id]).update \
+            :last_changed_at => changed_at, :changesets_count => changesets_count
+    end
+    
+    def create_changeset(repo, revision)
+      silo = silo_for(repo)
+      node    = silo.node_at('', revision)
+      changeset = { 
+        :repository_id => repo[:id],
+        :revision      => revision,
+        :author        => node.author,
+        :message       => node.message,
+        :changed_at    => node.changed_at}
+      changeset_id   = connection[:changesets] << changeset
+      changes = {:all => [], :diffable => []}
+      create_change_from_changeset(node, changeset.update(:id => changeset_id), changes)
+      connection[:changesets].filter(:id => changeset_id).update(:diffable => 1) if changes[:diffable].size > 0
+      changeset
+    end
+    
+    def create_change_from_changeset(node, changeset, changes)
+      (node.added_directories + node.added_files).each do |path|
+        process_change_path_and_save(node, changeset, 'A', path, changes)
+      end
+      
+      (node.updated_directories + node.updated_files).each do |path|
+        process_change_path_and_save(node, changeset, 'M', path, changes)
+      end
+      
+      deleted_files = node.deleted_directories + node.deleted_files
+      moved_files, copied_files  = (node.copied_directories  + node.copied_files).partition do |path|
+        deleted_files.delete(path[1])
+      end
+      
+      moved_files.each do |path|
+        process_change_path_and_save(node, changeset, 'MV', path, changes)
+      end
+      
+      copied_files.each do |path|
+        process_change_path_and_save(node, changeset, 'CP', path, changes)
+      end
+      
+      deleted_files.each do |path|
+        process_change_path_and_save(node, changeset, 'D', path, changes)
+      end
+    end
+    
+    @@extra_change_names = Set.new(%w(MV CP))
+    @@undiffable_change_names = Set.new(%w(D))
+    def process_change_path_and_save(node, changeset, name, path, changes)
+      change = {:changeset_id => changeset[:id], :name => name, :path => path}
+      if @@extra_change_names.include?(name)
+        change[:path]          = path[0]
+        change[:from_path]     = path[1]
+        change[:from_revision] = path[2]
+      end
+      unless @@undiffable_change_names.include?(change[:name]) || changeset[:diffable] == 1
+        changes[:diffable] << change unless node.mime_type == 'application/octet-stream'
+      end
+      changes[:all] << change
+      connection[:changes] << change
+    end
+    
+    def hooks_for(repo)
+      connection[:hooks].where(:repository_id => repo[:id], :active => true).order(:name)
+    end
+    
+    def indexed_hooks(hooks)
+      hooks.inject [] do |memo, hook|
+        memo << [Warehouse::Hooks[hook[:name]], YAML.load(hook[:options])]
+      end
+    end
+    
+    def grouped_permissions_for(repositories)
+      connection[:permissions].where(:active => 1, :repository_id => repositories.map { |r| r[:id] }).inject({}) do |memo, perm|
+        (memo[perm[:repository_id].to_s] ||= []) << perm; memo
+      end
+    end
+    
+    def grouped_permission_paths_for(repositories)
+      permissions = grouped_permissions_for(repositories)
+      permissions.each do |repo_id, perms|
+        permissions[repo_id] = perms.inject({}) do |memo, p|
+          (memo[p[:path]] ||= []) << p; memo
         end
       end
+      permissions
+    end
+    
+    def indexed_users_from(permissions)
+      (permissions.any? ? connection[:users].where(:id => permissions.map { |p| p[:user_id] }) : []).inject({}) do |memo, user|
+        memo.update user[:id].to_s => user
+      end
+    end
+    
+    def users_from_repo(repo)
+      user_ids = connection[:permissions].select(:user_id).where(:active => 1, :repository_id => repo[:id]).uniq
+      connection[:users].where(:id => user_ids)
+    end
+    
+    def base_path(path)
+      path.to_s.split("/").last.to_s
+    end
+    
+    def puts(str, level = :info)
+      if level == :raw
+        super(str)
+      else
+        self.class.logger && self.class.logger.send(level, str)
+      end
+    end
   end
 end

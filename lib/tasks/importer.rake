@@ -31,6 +31,7 @@ namespace :warehouse do
     require 'silo'
     require 'lib/warehouse'
     require 'config/initializers/warehouse'
+    require 'lib/warehouse/svn_access_builder'
     require 'lib/warehouse/mailer'
     require 'lib/warehouse/command'
     require 'lib/warehouse/extension'
@@ -70,7 +71,10 @@ namespace :warehouse do
   task :build_user_htpasswd => :init do
     raise "Need htpasswd config path with :repo variable.  CONFIG=/svn/:repo/.htaccess" unless ENV['CONFIG'].to_s[/:repo/]
     raise "Need single user id. USER=234" unless ENV['USER']
-    @command.write_repo_users_to_htpasswd @command.repos_from_user(:id => user), ENV['CONFIG']
+    repos = @command.repos_from_user(:id => ENV['USER']).to_a
+    repos.each do |repo|
+      @command.write_repo_users_to_htpasswd repo, ENV['CONFIG']
+    end
   end
   
   # CONFIG
