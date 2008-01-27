@@ -3,6 +3,9 @@ require 'yaml'
 module Silo
   module Adapters
     module Mock
+      module NodeMethods
+      end
+
       def latest_revision
         config[:latest_revision]
       end

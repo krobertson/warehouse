@@ -1,6 +1,7 @@
 module Silo
   class Repository
     attr_reader :options
+    attr_reader :adapter
     
     def initialize(adapter_type = :mock, options = {})
       set_adapter(adapter_type, options)
@@ -12,8 +13,13 @@ module Silo
 
     def set_adapter(adapter_type = :mock, options = {})
       @options = options
-      require "silo/adapters/#{adapter_type}"
-      extend Silo::Adapters.const_get(adapter_type.to_s.capitalize)
+      @adapter = adapter_type.to_sym
+      require "silo/adapters/#{@adapter}"
+      extend adapter_module
+    end
+    
+    def adapter_module
+      @adapter_module ||= Silo::Adapters.const_get(@adapter.to_s.capitalize)
     end
 
   protected

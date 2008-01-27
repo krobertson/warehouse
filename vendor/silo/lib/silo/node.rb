@@ -8,8 +8,10 @@ module Silo
     attr_reader :path, :repository
 
     def initialize(repository, path, revision = nil)
-      path.gsub! /(^\/)|(\/$)/, ''
-      @repository, @path, @revision = repository, path, revision
+      extend repository.adapter_module::NodeMethods
+      self.repository = repository
+      self.path       = path
+      self.revision   = revision
     end
     
     def name
@@ -44,6 +46,14 @@ module Silo
       !dir? && mime_type != @@default_mime_type
     end
     
+    def diffable?
+      text? && previous_node.text?
+    end
+    
+    def previous_node
+      @previous_node ||= @repository.node_at @path, revision - 1
+    end
+    
     def image?
       !dir? && (mime_type.to_s =~ @@image_mime_regex || @path =~ @@image_mime_regex)
     end
@@ -57,7 +67,14 @@ module Silo
     end
     
     def revision
-      @revision ||= @repository.latest_revision_for(self)
+      @revision ||= begin
+        @latest   = true
+        @repository.latest_revision_for(self)
+      end
+    end
+
+    def latest?
+      @latest || revision == @repository.latest_revision
     end
 
     [:author, :message, :changed_at].each do |attr|
@@ -102,6 +119,19 @@ module Silo
       else
         1
       end
+    end
+
+  protected    
+    def repository=(value)
+      @repository = value
+    end
+    
+    def path=(value)
+      @path = value.gsub /(^\/)|(\/$)/, ''
+    end
+    
+    def revision=(value)
+      @revision = value
     end
   end
 end

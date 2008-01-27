@@ -129,14 +129,13 @@ class ChangesetsController < ApplicationController
     end
 
     def find_node
-      case params[:r]
-        when 'numb'
-          params[:r] = params[:n].to_i
-        when 'date'
-          params[:r] = Date.new(params[:date][:year].to_i, params[:date][:month].to_i, params[:date][:day].to_i)
-        when nil
-          params[:r] = 'h'
-      end
+      params[:r] =
+        case params[:r]
+          when 'rev'  then params[:n]
+          when 'date' then Date.new(params[:date][:year].to_i, params[:date][:month].to_i, params[:date][:day].to_i)
+          when nil    then 'head'
+          else params[:r]
+        end
       @revision = params[:rev][1..-1].to_i if params[:rev]
       @node     = current_repository.node(params[:paths] * '/', @revision)
     end

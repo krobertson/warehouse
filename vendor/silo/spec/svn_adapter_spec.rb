@@ -15,6 +15,10 @@ describe Silo::Adapters::Svn do
   it "retrieves latest revision" do
     @repo.latest_revision.should == 2
   end
+  
+  it "ensures revision is an integer" do
+    @repo.node_at("foo", "5").revision.should == 5
+  end
 
   it "checks if node exists" do
     @repo.exists?(@repo.node_at("foo")).should     == true
@@ -28,6 +32,11 @@ describe Silo::Adapters::Svn do
 
   it "retrieves blame information" do
     @repo.blame_for(@repo.node_at("test.html")).should == {1 => [1, 'rick'], 2 => [2, 'rick'], :username_length => 4}
+  end
+  
+  it "checks diffable? status" do
+    @repo.node_at("test.html").should be_diffable
+    @repo.node_at("foo").should_not be_diffable
   end
   
   it "retrieves child node names" do
@@ -59,5 +68,42 @@ describe Silo::Adapters::Svn do
     diff = @repo.node_at("test.html", 1).unified_diff_with(@repo.node_at("test.html", 2))
     diff.should match(/-baz/)
     diff.should match(/\+bar/)
+  end
+  
+  it "knows '6' is a revision" do
+    @repo.revision?('6').should == 6
+  end
+  
+  it "knows 6 is a revision" do
+    @repo.revision?(6).should == 6
+  end
+  
+  it "knows 'HEAD' is not a revision" do
+    @repo.revision?('HEAD').should be_nil
+  end
+  
+  it "tracks latest? status" do
+    @repo.node_at("test.html", 1).should_not be_latest
+    @repo.node_at("test.html", 2).should     be_latest
+  end
+
+  it "finds revision relative to 'HEAD'" do
+    @node = @repo.node_at "test.html", 1
+    @node.revision_relative_to("HEAD").should == 2
+  end
+  
+  it "finds revision relative to 'PREV'" do
+    @node = @repo.node_at "test.html", 2
+    @node.revision_relative_to("PREV").should == 1
+  end
+  
+  it "finds revision relative to 'NEXT'" do
+    @node = @repo.node_at "test.html", 1
+    @node.revision_relative_to("NEXT").should == 2
+  end
+  
+  it "finds revision relative to 'NEXT' when latest" do
+    @node = @repo.node_at "test.html", 2
+    @node.revision_relative_to("NEXT").should be_nil
   end
 end

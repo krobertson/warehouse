@@ -17,6 +17,29 @@ describe Silo::Node do
     @node = @repo.node_at '/foo'
   end
   
+  it "retrieves previous_node" do
+    @node = @repo.node_at '/foo', 5
+    @node.previous_node.path.should == @node.path
+    @node.previous_node.revision.should == @node.revision - 1
+  end
+  
+  it "is not diffable if !text?" do
+    @node.should_receive(:text?).and_return(false)
+    @node.should_not be_diffable
+  end
+  
+  it "is not diffable if !previous_node.text?" do
+    @node.should_receive(:text?).and_return(true)
+    @node.previous_node.should_receive(:text?).and_return(false)
+    @node.should_not be_diffable
+  end
+  
+  it "is diffable if text? && previous_node.text?" do
+    @node.should_receive(:text?).and_return(true)
+    @node.previous_node.should_receive(:text?).and_return(true)
+    @node.should be_diffable
+  end
+  
   it "strips beginning and ending '/' from paths" do
     @repo.node_at("/").path.should == ''
     @repo.node_at("/foo/").path.should == 'foo'

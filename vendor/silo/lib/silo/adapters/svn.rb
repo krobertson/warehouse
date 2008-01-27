@@ -1,12 +1,88 @@
 module Silo
   module Adapters
     module Svn
+      module NodeMethods
+        def type_code
+          @type_code ||= root.check_path(@path)
+        end
+
+        def root
+          @root ||= @repository.send(:backend).fs.root(@revision || @repository.latest_revision)
+        end
+  
+        def previous_root
+          @previous_root ||= @repository.send(:backend).fs.root(revision - 1)
+        end
+  
+        def added_directories
+          changed_editor.added_dirs
+        end
+  
+        def added_files
+          changed_editor.added_files
+        end
+  
+        def updated_directories
+          changed_editor.updated_dirs
+        end
+  
+        def updated_files
+          changed_editor.updated_files
+        end
+  
+        def copied_directories
+          changed_editor.copied_dirs
+        end
+  
+        def copied_files
+          changed_editor.copied_files
+        end
+  
+        def deleted_directories
+          changed_editor.deleted_dirs
+        end
+  
+        def deleted_files
+          changed_editor.deleted_files
+        end
+
+        def revision_relative_to(value)
+          case value.to_s
+            when /^head/i then @repository.latest_revision
+            when /^prev/i then revision - 1
+            when /^next/i then latest? ? nil : (revision + 1)
+            else nil
+          end
+        end
+
+      protected
+        def revision=(value)
+          @revision = value.nil? ? nil : value.to_i
+        end
+
+        def changed_editor
+          unless @changed_editor
+            @changed_editor = Svn::Delta::ChangedEditor.new(root, previous_root)
+            previous_root.dir_delta('', '', root, '', @changed_editor)
+          end
+          @changed_editor
+        end
+      end
+
       def latest_revision
         backend && backend.youngest_rev
       end
 
       def mime_type_for(node)
         (node.exists? && !node.dir?) ? node.root.node_prop(node.path, ::Svn::Core::PROP_MIME_TYPE) : nil
+      end
+      
+      def revision?(rev)
+        case rev
+          when /^\d+$/ then rev.to_i
+          when Fixnum  then rev
+          else nil
+        end
       end
       
       def dir?(node)
@@ -35,7 +111,7 @@ module Silo
       end
       
       def latest_revision_for(node)
-        node.root.node_created_rev(node.path)
+        node.root.node_created_rev(node.path).to_i
       end
       
       def author_for(node)
@@ -69,8 +145,8 @@ module Silo
         if differ.binary?
           ''
         else
-          old = "#{diff_path} (revision #{old_root.node_created_rev(diff_path)})"
-          cur = "#{diff_path} (revision #{new_root.node_created_rev(diff_path)})"
+          old = "#{diff_path} (revision #{old_rev})"
+          cur = "#{diff_path} (revision #{new_rev})"
           differ.unified(old, cur)
         end
       end
@@ -92,61 +168,6 @@ module Silo
         backend.fs.prop(const, node.revision)
       end
     end
-  end
-end
-
-class Silo::Node
-  def type_code
-    @type_code ||= root.check_path(@path)
-  end
-
-  def root
-    @root ||= @repository.send(:backend).fs.root(@revision || @repository.latest_revision)
-  end
-  
-  def previous_root
-    @previous_root ||= @repository.send(:backend).fs.root(revision - 1)
-  end
-  
-  def added_directories
-    changed_editor.added_dirs
-  end
-  
-  def added_files
-    changed_editor.added_files
-  end
-  
-  def updated_directories
-    changed_editor.updated_dirs
-  end
-  
-  def updated_files
-    changed_editor.updated_files
-  end
-  
-  def copied_directories
-    changed_editor.copied_dirs
-  end
-  
-  def copied_files
-    changed_editor.copied_files
-  end
-  
-  def deleted_directories
-    changed_editor.deleted_dirs
-  end
-  
-  def deleted_files
-    changed_editor.deleted_files
-  end
-
-protected
-  def changed_editor
-    unless @changed_editor
-      @changed_editor = Svn::Delta::ChangedEditor.new(root, previous_root)
-      previous_root.dir_delta('', '', root, '', @changed_editor)
-    end
-    @changed_editor
   end
 end
 
