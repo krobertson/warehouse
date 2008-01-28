@@ -53,31 +53,7 @@ module Warehouse
         return
       end
 
-      revisions = paginated_revisions(repo, num)
-      connection.transaction do
-        authors = {}
-        puts "Syncing Revisions ##{revisions.first} - ##{revisions.last}", :debug
-        
-        revisions.each do |rev|
-          if rev > 1 && rev % 100 == 0
-            connection.execute "COMMIT"
-            connection.execute "BEGIN"
-            puts "##{rev}", :debug
-          end
-          changeset = create_changeset(repo, rev)
-          authors[changeset[:author]] = Time.now.utc
-        end
-        users = connection[:users].where(:login => authors.keys).inject({}) do |memo, user|
-          memo.update(user[:login] => user[:id])
-        end
-        
-        authors.each do |login, changed_at|
-          next unless users[login]
-          update_user_activity repo, {:id => users[login], :login => login}, changed_at
-        end
-        CacheKey.sweep_cache
-        puts revisions.last, :raw
-      end unless revisions.empty?
+      Warehouse::Syncer.const_get(repo[:scm_type].capitalize + "Syncer").process(connection, repo, silo_for(repo), num)
     end
     
     def process_hooks_for(repo_subdomain, repo_path, revision)
@@ -187,90 +163,15 @@ module Warehouse
       end
     end
     
-    def paginated_revisions(repo, num)
-      revisions = (recorded_revision_for(repo)..latest_revision_for(repo)).to_a
-      num > 0 ? revisions[0..num-1] : revisions
-    end
-    
-    def recorded_revision_for(repo)
-      changeset = connection[:changesets].where(:repository_id => repo[:id]).reverse_order(:changed_at).first
-      @recorded_revision = (changeset ? changeset[:revision] : 0).to_i + 1
-    end
-    
     def latest_revision_for(repo)
       silo = silo_for(repo)
       silo && silo.latest_revision
     end
     
     def silo_for(repo)
-      (@silos ||= {})[repo[:path]] ||= Silo::Repository.new(:svn, :path => repo[:path])
+      (@silos ||= {})[repo[:path]] ||= Silo::Repository.new(repo[:scm_path], :path => repo[:path])
     rescue Svn::Error
       nil
-    end
-    
-    def update_user_activity(repo, user, changed_at)
-      changesets_count = connection[:changesets].where(:repository_id => repo[:id], :author => user[:login]).select(:id.COUNT)
-      connection[:permissions].where(:user_id => user[:id], :repository_id => repo[:id]).update \
-            :last_changed_at => changed_at, :changesets_count => changesets_count
-    end
-    
-    def create_changeset(repo, revision)
-      silo = silo_for(repo)
-      node    = silo.node_at('', revision)
-      changeset = { 
-        :repository_id => repo[:id],
-        :revision      => revision,
-        :author        => node.author,
-        :message       => node.message,
-        :changed_at    => node.changed_at}
-      changeset_id   = connection[:changesets] << changeset
-      changes = {:all => [], :diffable => []}
-      create_change_from_changeset(node, changeset.update(:id => changeset_id), changes)
-      connection[:changesets].filter(:id => changeset_id).update(:diffable => 1) if changes[:diffable].size > 0
-      changeset
-    end
-    
-    def create_change_from_changeset(node, changeset, changes)
-      (node.added_directories + node.added_files).each do |path|
-        process_change_path_and_save(node, changeset, 'A', path, changes)
-      end
-      
-      (node.updated_directories + node.updated_files).each do |path|
-        process_change_path_and_save(node, changeset, 'M', path, changes)
-      end
-      
-      deleted_files = node.deleted_directories + node.deleted_files
-      moved_files, copied_files  = (node.copied_directories  + node.copied_files).partition do |path|
-        deleted_files.delete(path[1])
-      end
-      
-      moved_files.each do |path|
-        process_change_path_and_save(node, changeset, 'MV', path, changes)
-      end
-      
-      copied_files.each do |path|
-        process_change_path_and_save(node, changeset, 'CP', path, changes)
-      end
-      
-      deleted_files.each do |path|
-        process_change_path_and_save(node, changeset, 'D', path, changes)
-      end
-    end
-    
-    @@extra_change_names = Set.new(%w(MV CP))
-    @@undiffable_change_names = Set.new(%w(D))
-    def process_change_path_and_save(node, changeset, name, path, changes)
-      change = {:changeset_id => changeset[:id], :name => name, :path => path}
-      if @@extra_change_names.include?(name)
-        change[:path]          = path[0]
-        change[:from_path]     = path[1]
-        change[:from_revision] = path[2]
-      end
-      unless @@undiffable_change_names.include?(change[:name]) || changeset[:diffable] == 1
-        changes[:diffable] << change unless node.mime_type == 'application/octet-stream'
-      end
-      changes[:all] << change
-      connection[:changes] << change
     end
     
     def hooks_for(repo)
