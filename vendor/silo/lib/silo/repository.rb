@@ -22,6 +22,14 @@ module Silo
       @adapter_module ||= Silo::Adapters.const_get(@adapter.to_s.capitalize)
     end
 
+    def inspect
+      "#<Silo::Repository(#{@adapter}) @path=#{@options[:path].inspect}>"
+    end
+
+    def mime_type_for(node)
+      nil
+    end
+
   protected
     def convert_to_utf8(content, mime_type, content_charset = 'utf-8')
       unless mime_type.nil? || mime_type.size.zero?

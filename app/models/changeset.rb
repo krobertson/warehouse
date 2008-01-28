@@ -52,6 +52,14 @@ class Changeset < ActiveRecord::Base
     latest_changeset = lambda { revision ? find_by_revision(revision) : find(:first, :order => 'changesets.changed_at desc') }
     path.blank? ? latest_changeset.call : with_paths([path], &latest_changeset)
   end
+  
+  def self.find_before(paths, changeset)
+    find_by_paths(paths, :conditions => ['id != ? and changed_at <= ?', changeset.id, changeset.changed_at], :order => 'changed_at desc')
+  end
+  
+  def self.find_after(paths, changeset)
+    find_by_paths(paths, :conditions => ['id != ? and changed_at >= ?', changeset.id, changeset.changed_at], :order => 'changed_at desc')
+  end
 
   def to_param
     revision.to_s

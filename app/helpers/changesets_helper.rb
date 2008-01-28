@@ -97,8 +97,18 @@ module ChangesetsHelper
       return changeset ? changeset.revision : nil
     end
     
-    node.repository.revision?(other)   || 
-      node.revision_relative_to(other) ||
+    node.repository.revision?(other)     || 
+      relative_revision_for(node, other) ||
       raise(Silo::Node::Error, "Invalid Revision: #{other.inspect}")
+  end
+  
+  def relative_revision_for(node, other)
+    changeset = \
+      case other
+        when /^head/i then current_repository.changesets.find(:first)
+        when /^next/i then current_repository.changesets.find_after(changeset_paths, @changeset)
+        when /^prev/i then current_repository.changesets.find_before(changeset_paths, @changeset)
+      end
+    changeset ? changeset.revision : nil
   end
 end

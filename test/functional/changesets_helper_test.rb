@@ -6,6 +6,7 @@ context "ChangesetsHelper#find_revision_for(node, other) with SVN" do
   include ChangesetsHelper
 
   setup do
+    @changeset = "CHANGESET"
     @repo = Silo::Repository.new(:svn, :path => 'foo')
     @repo.stubs(:changesets).returns([])
     @node = @repo.node_at("/foo", 5)
@@ -30,8 +31,18 @@ context "ChangesetsHelper#find_revision_for(node, other) with SVN" do
   end
   
   it "finds relative revision from 'HEAD'" do
-    @repo.expects(:latest_revision).returns(70)
+    @repo.changesets.expects(:find).with(:first).returns(stub(:revision => 70))
     find_revision_for(@node, "HEAD").should == 70
+  end
+  
+  it "finds relative revision from 'PREV'" do
+    @repo.changesets.expects(:find_before).with(changeset_paths, @changeset).returns(stub(:revision => 70))
+    find_revision_for(@node, "PREV").should == 70
+  end
+  
+  it "finds relative revision from 'NEXT'" do
+    @repo.changesets.expects(:find_after).with(changeset_paths, @changeset).returns(stub(:revision => 70))
+    find_revision_for(@node, "NEXT").should == 70
   end
   
   it "raises Silo::Node::Error on invalid relative revision" do
@@ -42,5 +53,9 @@ context "ChangesetsHelper#find_revision_for(node, other) with SVN" do
   
   def current_repository
     @repo
+  end
+  
+  def changeset_paths
+    []
   end
 end

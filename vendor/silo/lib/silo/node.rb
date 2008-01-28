@@ -1,9 +1,10 @@
+require 'set'
 module Silo
   class Node
     class Error < StandardError; end
     include Comparable
     
-    @@default_mime_type = 'application/octet-stream'
+    @@file_extensions = Set.new(%w(txt rb php python rhtml erb phps phtml shtml html c js json atom xml htm bas css yml))
     @@image_mime_regex  = /(png|jpe?g|gif)/i
     attr_reader :path, :repository
 
@@ -33,17 +34,22 @@ module Silo
     def dir?
       @repository.dir?(self)
     end
+
+    def file?
+      @repository.file?(self)
+    end
     
     def node_type
       dir? ? 'dir' : 'file'
     end
     
     def mime_type
-      @mime_type ||= @repository.mime_type_for(self)
+      @mime_type ||= file? ? File.extname(name)[1..-1] : nil
     end
     
     def text?
-      !dir? && mime_type != @@default_mime_type
+      return false unless file?
+      @@file_extensions.include?(mime_type) || name =~ /^\.?[^\.]+$/
     end
     
     def diffable?
@@ -55,7 +61,7 @@ module Silo
     end
     
     def image?
-      !dir? && (mime_type.to_s =~ @@image_mime_regex || @path =~ @@image_mime_regex)
+      mime_type && mime_type =~ @@image_mime_regex
     end
     
     def child_node_names
@@ -63,21 +69,22 @@ module Silo
     end
     
     def blame
+      return nil unless file?
       @blame ||= @repository.blame_for(self)
     end
     
     def revision
       @revision ||= begin
         @latest   = true
-        @repository.latest_revision_for(self)
+        @repository.latest_revision
       end
     end
 
     def latest?
-      @latest || revision == @repository.latest_revision
+      (@latest ||= revision == latest_revision || :false) != :false
     end
 
-    [:author, :message, :changed_at].each do |attr|
+    [:author, :message, :changed_at, :latest_revision, :child_node_names].each do |attr|
       define_method attr do
         instance_variable_get("@#{attr}") || instance_variable_set("@#{attr}", @repository.send("#{attr}_for", self))
       end
@@ -85,7 +92,7 @@ module Silo
 
     def child_nodes
       if @child_nodes.nil?
-        @child_nodes = @repository.child_node_names_for(self).collect do |child_path|
+        @child_nodes = child_node_names.collect do |child_path|
           self.class.new(@repository, @path.size.zero? ? child_path : File.join(@path, child_path))
         end
         @child_nodes.sort!

@@ -2,6 +2,48 @@ module Silo
   module Adapters
     module Svn
       module NodeMethods
+        def dir?
+          type_code == ::Svn::Core::NODE_DIR
+        end
+        
+        def file?
+          type_code == ::Svn::Core::NODE_FILE
+        end
+        
+        def exists?
+          type_code != ::Svn::Core::NODE_NONE
+        end
+        
+        def child_node_names
+          dir? ? root.dir_entries(path).keys : []
+        end
+        
+        def blame
+          return nil unless file?
+          @blame ||= begin
+            lines = {:username_length => 0}
+            client.blame("file://#{full_path}") do |num, rev, username, changed_at, line|
+              lines[num+1] = [rev, username]
+              lines[:username_length] = [lines[:username_length], username.length].max
+            end
+            lines
+          end
+        end
+        
+        def latest_revision
+          @repository.node_at(path).revision
+        end
+        
+        def content(&block)
+          total = []
+          root.file_contents(path) do |s|
+            data = s.read
+            block ? block.call(data) : total << data
+          end
+          GC.start
+          block ? nil : total.join
+        end
+
         def type_code
           @type_code ||= root.check_path(@path)
         end
@@ -46,16 +88,11 @@ module Silo
           changed_editor.deleted_files
         end
 
-        def revision_relative_to(value)
-          case value.to_s
-            when /^head/i then @repository.latest_revision
-            when /^prev/i then revision - 1
-            when /^next/i then latest? ? nil : (revision + 1)
-            else nil
-          end
+      protected
+        def client
+          @client ||= ::Svn::Client::Context.new
         end
 
-      protected
         def revision=(value)
           @revision = value.nil? ? nil : value.to_i
         end
@@ -72,10 +109,6 @@ module Silo
       def latest_revision
         backend && backend.youngest_rev
       end
-
-      def mime_type_for(node)
-        (node.exists? && !node.dir?) ? node.root.node_prop(node.path, ::Svn::Core::PROP_MIME_TYPE) : nil
-      end
       
       def revision?(rev)
         case rev
@@ -84,34 +117,9 @@ module Silo
           else nil
         end
       end
-      
-      def dir?(node)
-        node.type_code == ::Svn::Core::NODE_DIR
-      end
-      
-      def exists?(node)
-        node.type_code != ::Svn::Core::NODE_NONE
-      end
-      
-      def child_node_names_for(node)
-        node.dir? ? node.root.dir_entries(node.path).keys : []
-      end
 
-      def blame_for(node)
-        lines = {:username_length => 0}
-        client.blame("file://#{node.full_path}") do |num, rev, username, changed_at, line|
-          lines[num+1] = [rev, username]
-          lines[:username_length] = [lines[:username_length], username.length].max
-        end
-        lines
-      end
-      
       def full_path_for(node)
         File.join(@options[:path], node.path)
-      end
-      
-      def latest_revision_for(node)
-        node.root.node_created_rev(node.path).to_i
       end
       
       def author_for(node)
@@ -124,16 +132,6 @@ module Silo
       
       def changed_at_for(node)
         node.exists? ? prop(::Svn::Core::PROP_REVISION_DATE, node).utc : nil
-      end
-      
-      def content_for(node, &block)
-        total = []
-        node.root.file_contents(node.path) do |s|
-          data = s.read
-          block ? block.call(data) : total << data
-        end
-        GC.start
-        block ? nil : total.join
       end
 
       def unified_diff_for(old_rev, new_rev, diff_path)
@@ -151,15 +149,7 @@ module Silo
         end
       end
       
-      def inspect
-        "#<Silo::Repository @path=#{@options[:path].inspect}>"
-      end
-    
     protected
-      def client
-        @client ||= ::Svn::Client::Context.new
-      end
-      
       def backend
         @backend ||= @options[:path].to_s.size.zero? ? nil : ::Svn::Repos.open(@options[:path])
       end

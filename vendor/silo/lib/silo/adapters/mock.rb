@@ -9,13 +9,13 @@ module Silo
       def latest_revision
         config[:latest_revision]
       end
-
-      def mime_type_for(node)
-        info_for(node)[:mime_type]
-      end
       
       def dir?(node)
         File.directory?(node.full_path)
+      end
+      
+      def file?(node)
+        File.file?(node.full_path)
       end
       
       def exists?(node)
@@ -47,9 +47,7 @@ module Silo
       end
       
       def content_for(node)
-        if exists?(node) && !dir?(node)
-          convert_to_utf8 IO.read(node.full_path), mime_type_for(node)
-        end
+        IO.read(node.full_path) if file?(node)
       end
       
     protected

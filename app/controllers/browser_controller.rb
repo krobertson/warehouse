@@ -52,11 +52,11 @@ class BrowserController < ApplicationController
 
     def retrieve_previous_changeset
       return nil if current_changeset.nil?
-      current_repository.changesets.find_by_path(@node.path, :conditions => ['changed_at < ?', current_changeset.changed_at], :order => 'changesets.changed_at desc')
+      current_repository.changesets.find_before([@node.path], current_changeset)
     end
     
     def retrieve_next_changeset
       return nil if current_changeset.nil?
-      current_repository.changesets.find_by_path(@node.path, :conditions => ['changed_at > ?', current_changeset.changed_at], :order => 'changesets.changed_at')
+      current_repository.changesets.find_after([@node.path], current_changeset)
     end
 end
