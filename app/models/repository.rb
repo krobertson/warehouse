@@ -136,7 +136,7 @@ class Repository < ActiveRecord::Base
     end
 
     def retrieve_silo
-      path.blank? ? nil : Silo::Repository.new(:svn, :path => path)
+      path.blank? ? nil : Silo::Repository.new(scm_type, :path => path)
     rescue Svn::Error
       logger.warn $!.message
       nil

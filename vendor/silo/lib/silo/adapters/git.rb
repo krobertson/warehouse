@@ -96,31 +96,39 @@ module Silo
         def previous_node
           @previous_node ||= begin
             parent = commit.parents.first
-            parent ? @repository.node_at([@branch, @path] * "/", parent.id) : nil
+            parent ? @repository.node_at(@path, parent.id) : nil
           end
         end
 
         def branch
           @branch
         end
+        
+        def only_path
+          @only_path
+        end
 
         def grit_object
-          @grit_object ||= (path.size.zero? ? head : head / path) || :none
+          @grit_object ||= begin
+            only_paths = paths.dup ; only_paths.shift
+            only_paths.inject(head) { |tree, path| tree / path } || :none
+          end
           @grit_object == :none ? nil : @grit_object
         end
         
         def head
-          @head ||= @revision ? @repository.find_commit(@revision).tree : @repository.tree(branch)
+          @head ||= @revision ? @repository.find_commit(@revision).tree : @repository.tree(@branch)
         end
 
       protected
         def path=(value)
+          value.gsub! /(^\/)|(\/$)/, ''
           pieces = value.to_s.split("/")
           while pieces.size > 0 && (@branch.nil? || @branch.size == 0)
             @branch = pieces.shift
           end
-          @paths = pieces
-          @path  = pieces * "/"
+          @only_path = pieces * "/"
+          @path      = value
         end
         
         def revision_for(commit)
@@ -144,7 +152,7 @@ module Silo
         return nil unless node.file?
         blame = {:username_length => 0}
         num = 0
-        Grit::Blob.blame(backend, node.revision, node.path).each do |(commit, lines)|
+        Grit::Blob.blame(backend, node.revision, node.only_path).each do |(commit, lines)|
           lines.each do |line|
             num += 1
             username = commit.committer.name
@@ -165,7 +173,7 @@ module Silo
       end
 
       def full_path_for(node)
-        File.join(@options[:path], node.path)
+        File.join(@options[:path], node.only_path)
       end
       
       def find_commit(id)
@@ -173,7 +181,7 @@ module Silo
       end
       
       def latest_commit_for(node)
-        backend.log(node.branch, node.path, :max_count => 1).first
+        backend.log(node.branch, node.only_path, :max_count => 1).first
       end
       
       def revision_for(commit)
