@@ -36,6 +36,7 @@ namespace :warehouse do
     require 'lib/warehouse/command'
     require 'lib/warehouse/syncer/base'
     require 'lib/warehouse/syncer/svn_syncer'
+    require 'lib/warehouse/syncer/git_syncer'
     require 'lib/warehouse/extension'
     require 'lib/warehouse/hooks'
     require 'lib/warehouse/hooks/base'
