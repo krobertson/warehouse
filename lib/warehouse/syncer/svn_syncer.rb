@@ -14,10 +14,8 @@ module Warehouse
             rev = recorded_rev
             until rev >= latest_rev || (@num > 0 && i >= @num) do
               rev += 1
-              puts "rev: #{rev}", :raw
               changeset = create_changeset(rev)
               if i > 1 && i % 100 == 0
-                puts "caching #{rev} 100 + #{@repo[:changesets_count]}", :raw
                 update_repository_progress rev, changeset, 100
                 @connection.execute "COMMIT"
                 @connection.execute "BEGIN"
@@ -56,16 +54,16 @@ module Warehouse
       end
     
       def create_change_from_changeset(node, changeset, changes)
-        (node.added_directories + node.added_files).each do |path|
+        (node.added_files).each do |path|
           process_change_path_and_save(node, changeset, 'A', path, changes)
         end
       
-        (node.updated_directories + node.updated_files).each do |path|
+        (node.updated_files).each do |path|
           process_change_path_and_save(node, changeset, 'M', path, changes)
         end
       
-        deleted_files = node.deleted_directories + node.deleted_files
-        moved_files, copied_files  = (node.copied_directories  + node.copied_files).partition do |path|
+        deleted_files = node.deleted_files
+        moved_files, copied_files  = (node.copied_files).partition do |path|
           deleted_files.delete(path[1])
         end
       

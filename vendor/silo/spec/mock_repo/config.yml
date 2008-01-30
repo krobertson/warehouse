@@ -1,0 +1,16 @@
+:latest_revision: 5
+:files:
+  "test.html":
+    :author: rick
+    :changed_at: 2008-01-02 22:35:55.0 Z
+    :message: booya
+    :revision: 2
+    :mime_type: "text/html"
+    :blame:
+      1:
+        - 1
+        - rick
+      2:
+        - 2
+        - rick
+      :username_length: 4

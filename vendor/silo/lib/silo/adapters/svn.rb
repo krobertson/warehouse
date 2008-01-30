@@ -56,36 +56,20 @@ module Silo
           @previous_root ||= @repository.send(:backend).fs.root(revision - 1)
         end
   
-        def added_directories
-          changed_editor.added_dirs
-        end
-  
         def added_files
-          changed_editor.added_files
-        end
-  
-        def updated_directories
-          changed_editor.updated_dirs
+          @added_files ||= changed_editor.added_dirs + changed_editor.added_files
         end
   
         def updated_files
-          changed_editor.updated_files
-        end
-  
-        def copied_directories
-          changed_editor.copied_dirs
+          @updated_files ||= changed_editor.updated_dirs + changed_editor.updated_files
         end
   
         def copied_files
-          changed_editor.copied_files
+          @copied_files ||= changed_editor.copied_dirs + changed_editor.copied_files
         end
-  
-        def deleted_directories
-          changed_editor.deleted_dirs
-        end
-  
+
         def deleted_files
-          changed_editor.deleted_files
+          @deleted_files = changed_editor.deleted_dirs + changed_editor.deleted_files
         end
 
       protected

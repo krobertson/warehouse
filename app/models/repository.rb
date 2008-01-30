@@ -88,6 +88,14 @@ class Repository < ActiveRecord::Base
     scm_type_mixin.instance_method(:revisions_to_sync).bind(self).call
   end
   
+  def sync_progress
+    return 0.0 if silo.nil?
+    # the module hasn't been extended yet.
+    # calling silo extends it, but we need to call
+    # the module's unbound method
+    scm_type_mixin.instance_method(:sync_progress).bind(self).call
+  end
+  
   def sync?
     silo && synced_revision != latest_revision
   end

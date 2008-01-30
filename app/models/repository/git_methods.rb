@@ -9,7 +9,7 @@ module Repository::GitMethods
 
   def revisions_to_sync
     @revisions_to_sync ||= begin
-      branch_prefix = latest_revision.blank? ? '' : latest_revision.to_s + ".."
+      branch_prefix = synced_revision.blank? ? '' : synced_revision.to_s + ".."
       silo.send(:backend).git.rev_list({}, silo.send(:backend).heads.collect { |h| branch_prefix + h.name }).split
     end
   end

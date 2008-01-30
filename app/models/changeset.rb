@@ -54,11 +54,11 @@ class Changeset < ActiveRecord::Base
   end
   
   def self.find_before(paths, changeset)
-    find_by_paths(paths, :conditions => ['id != ? and changed_at <= ?', changeset.id, changeset.changed_at], :order => 'changed_at desc')
+    find_by_paths(paths, :conditions => ['changesets.id != ? and changesets.changed_at <= ?', changeset.id, changeset.changed_at], :order => 'changesets.changed_at desc')
   end
   
   def self.find_after(paths, changeset)
-    find_by_paths(paths, :conditions => ['id != ? and changed_at >= ?', changeset.id, changeset.changed_at], :order => 'changed_at desc')
+    find_by_paths(paths, :conditions => ['changesets.id != ? and changesets.changed_at >= ?', changeset.id, changeset.changed_at], :order => 'changesets.changed_at desc')
   end
 
   def to_param

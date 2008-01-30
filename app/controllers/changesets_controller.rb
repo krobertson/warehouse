@@ -68,11 +68,11 @@ class ChangesetsController < ApplicationController
     %w(previous_changeset next_changeset changeset_paths).each { |m| expiring_attr_reader m, "find_#{m}" ; helper_method m }
     
     def find_previous_changeset
-      current_repository.changesets.find_before(changeset_paths, @changeset.changed_at)
+      current_repository.changesets.find_before(changeset_paths, @changeset)
     end
     
     def find_next_changeset
-      current_repository.changesets.find_after(changeset_paths, @changeset.changed_at)
+      current_repository.changesets.find_after(changeset_paths, @changeset)
     end
     
     def find_changeset_paths

@@ -1,0 +1,41 @@
+id: 4.1.r4/0
+type: dir
+pred: 4.0.r3/202
+count: 1
+text: 3 151 38 38 a1cc7670ac2c7b49ad29e72d5c577425
+cpath: /copied
+copyfrom: 3 /added
+
+PLAIN
+K 10
+config.yml
+V 15
+file 1.0.r1/438
+K 6
+copied
+V 12
+dir 4.1.r4/0
+K 3
+foo
+V 14
+dir 2.0.r1/377
+K 9
+test.html
+V 14
+file 3.0.r2/40
+END
+ENDREP
+id: 0.0.r4/280
+type: dir
+pred: 0.0.r3/462
+count: 4
+text: 4 135 132 132 33d3c8e4d01e83df07b9e3d518737472
+cpath: /
+copyroot: 0 /
+
+4.0.r3/202 delete false false /added
+
+4._0.t3-1 add false false /copied
+3 /added
+
+280 408

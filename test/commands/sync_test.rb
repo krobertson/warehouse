@@ -22,7 +22,7 @@ context "Command Syncing" do
   specify "should sync revisions" do
     changesets = [@changeset.merge(:revision => 4)]
     @connection.update \
-      :users => stub(:where => [@user.merge(:login => @changeset[:author])]),
+      :users => stub(:where => [@user.merge(:login => @changeset[:author])]), :repositories => stub(:where => @repo),
       :changesets => stub(:where => stub(:order => changesets))
     @connection.expects(:transaction).yields
     @syncer.expects(:create_changeset).with(@changeset[:revision]).returns(@changeset)

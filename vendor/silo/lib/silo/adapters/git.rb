@@ -45,29 +45,27 @@ module Silo
             grit_object.data
           end
         end
-
-        def added_directories
-        end
   
         def added_files
-        end
-  
-        def updated_directories
+          @added_files ||= collect_diffs { |d| d.new_file }
         end
   
         def updated_files
-        end
-  
-        def copied_directories
+          @added_files ||= collect_diffs { |d| !d.new_file && !d.deleted_file && d.a_path == d.b_path }
         end
   
         def copied_files
-        end
-  
-        def deleted_directories
+          @copied_files ||= collect_diffs { |d| !d.new_file && !d.deleted_file && d.a_path != d.b_path }
         end
   
         def deleted_files
+          @deleted_files ||= collect_diffs { |d| d.deleted_file }
+        end
+
+        def collect_diffs(&block)
+          commit.diffs.inject [] do |diffs, diff|
+            block.call(diff) ? diffs << diff.a_path : diffs
+          end
         end
 
         def commit
