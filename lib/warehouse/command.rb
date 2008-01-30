@@ -139,11 +139,15 @@ module Warehouse
       end
       changesets = connection[:changesets]
       changes    = connection[:changes]
+      repos      = connection[:repositories]
       if repo
         changesets = changesets.where(:repository_id => repo) 
         changes    = changes.where(:changeset_id => changesets.select(:id))
       end
-      connection.transaction { [changes, changesets].each { |ds| ds.delete } }
+      connection.transaction do
+        [changes, changesets].each { |ds| ds.delete }
+        (repo || repos).update :synced_changed_at => nil, :synced_revision => nil, :changesets_count => 0
+      end
       puts repo ? "All revisions for #{repo[:name].inspect} were cleared." : "All revisions for all repositories were cleared"
     end
       
@@ -169,9 +173,7 @@ module Warehouse
     end
     
     def silo_for(repo)
-      (@silos ||= {})[repo[:path]] ||= Silo::Repository.new(repo[:scm_path], :path => repo[:path])
-    rescue Svn::Error
-      nil
+      (@silos ||= {})[repo[:path]] ||= Silo::Repository.new(repo[:scm_type], :path => repo[:path])
     end
     
     def hooks_for(repo)

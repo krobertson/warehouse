@@ -7,27 +7,39 @@ module Warehouse
       def process
         super do |authors|
           latest_changeset = @connection[:changesets].where(:repository_id => @repo[:id]).order(:changed_at.DESC).first
-          recorded_rev     = latest_changeset[:revision].to_i
+          recorded_rev     = latest_changeset ? latest_changeset[:revision].to_i : 0
           latest_rev       = @silo.latest_revision
           @connection.transaction do    
             i = 0
-            rev = recorded_rev + 1 
-            until rev >= latest_rev || i >= @num do
+            rev = recorded_rev
+            until rev >= latest_rev || (@num > 0 && i >= @num) do
+              rev += 1
+              puts "rev: #{rev}", :raw
+              changeset = create_changeset(rev)
               if i > 1 && i % 100 == 0
+                puts "caching #{rev} 100 + #{@repo[:changesets_count]}", :raw
+                update_repository_progress rev, changeset, 100
                 @connection.execute "COMMIT"
                 @connection.execute "BEGIN"
+                i = -1
                 puts "##{rev}", :debug
               end
-              changeset = create_changeset(rev)
               authors[changeset[:author]] = changeset[:changed_at]
-              i   += 1
-              rev += 1
+              i += 1
             end
+            update_repository_progress rev, changeset, i
           end
         end
       end
 
     protected
+      def update_repository_progress(revision, changeset, num)
+        return if num < 1
+        @repo[:changesets_count] = @repo[:changesets_count].to_i + num
+        @connection[:repositories].where(:id => @repo[:id]).update :changesets_count => @repo[:changesets_count],
+          :synced_changed_at => changeset[:changed_at], :synced_revision => revision
+      end
+
       def create_changeset(revision)
         node      = @silo.node_at('', revision)
         changeset = { 

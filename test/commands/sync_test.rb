@@ -12,7 +12,7 @@ context "Command Syncing" do
     @changes    = []
     @connection = {:changes => @changes}
     @command.stubs(:connection).returns(@connection)
-    @repo = {:id => 1, :scm_type => 'svn'}
+    @repo = {:id => 1, :scm_type => 'svn', :changesets_count => 0}
     @changeset = {:id => 7, :revision => 5, :repository_id => @repo[:id], :author => 'rick', :message => 'brb going to moon', :changed_at => (Time.now - 300).utc}
     @user = {:id => 6, :login => 'justin'}
     @command.stubs(:silo_for).with(@repo).returns(@silo)
@@ -29,6 +29,7 @@ context "Command Syncing" do
     @syncer.expects(:update_user_activity).with({:id => @user[:id], :login => @changeset[:author]}, @changeset[:changed_at])
     Warehouse::Syncer::SvnSyncer.expects(:new).with(@connection, @repo, @silo, 1).returns(@syncer)
     @command.send(:sync_revisions_for, @repo, 1)
+    @repo[:changesets_count].should == 1
   end
 
   specify "should skip syncing if there are no revisions to sync" do

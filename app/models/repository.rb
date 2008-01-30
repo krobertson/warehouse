@@ -80,32 +80,20 @@ class Repository < ActiveRecord::Base
     silo ? silo.node_at(path, rev) : nil
   end
 
-  def revisions_to_sync(refresh = false)
-    return nil if silo.nil?
-    unless refresh || @revisions_to_sync
-      @revisions_to_sync = synced_revision..latest_revision
-    end
-    @revisions_to_sync
+  def revisions_to_sync
+    return [] if silo.nil?
+    # the module hasn't been extended yet.
+    # calling silo extends it, but we need to call
+    # the module's unbound method
+    scm_type_mixin.instance_method(:revisions_to_sync).bind(self).call
   end
   
   def sync?
-    silo && revisions_to_sync.first <= revisions_to_sync.last
+    silo && synced_revision != latest_revision
   end
 
   def latest_revision
     @latest_revision ||= silo && silo.latest_revision
-  end
-
-  def latest_changed_at
-    latest_changeset ? latest_changeset.changed_at : nil
-  end
-  
-  def synced_revision
-    latest_changeset ? latest_changeset.revision.to_i + 1 : 1
-  end
-
-  def sync_progress
-    (((synced_revision - 1).to_f / latest_revision.to_f) * 100).floor
   end
 
   def sync_revisions(num)
@@ -136,9 +124,18 @@ class Repository < ActiveRecord::Base
     end
 
     def retrieve_silo
+      scm_type_mixin
       path.blank? ? nil : Silo::Repository.new(scm_type, :path => path)
     rescue Svn::Error
       logger.warn $!.message
       nil
+    end
+    
+    def scm_type_mixin
+      if @scm_type_mixin.nil?
+        @scm_type_mixin = self.class.const_get(scm_type.to_s.capitalize + "Methods")
+        extend @scm_type_mixin
+      end
+      @scm_type_mixin
     end
 end

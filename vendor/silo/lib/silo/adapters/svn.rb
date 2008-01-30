@@ -99,7 +99,7 @@ module Silo
 
         def changed_editor
           unless @changed_editor
-            @changed_editor = Svn::Delta::ChangedEditor.new(root, previous_root)
+            @changed_editor = ::Svn::Delta::ChangedEditor.new(root, previous_root)
             previous_root.dir_delta('', '', root, '', @changed_editor)
           end
           @changed_editor

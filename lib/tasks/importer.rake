@@ -34,6 +34,8 @@ namespace :warehouse do
     require 'lib/warehouse/svn_access_builder'
     require 'lib/warehouse/mailer'
     require 'lib/warehouse/command'
+    require 'lib/warehouse/syncer/base'
+    require 'lib/warehouse/syncer/svn_syncer'
     require 'lib/warehouse/extension'
     require 'lib/warehouse/hooks'
     require 'lib/warehouse/hooks/base'
