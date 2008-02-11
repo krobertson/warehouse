@@ -75,6 +75,14 @@ class TestRepo < Test::Unit::TestCase
     assert_equal "Merge branch 'site'", c.message
   end
   
+  # commit_count
+  
+  def test_commit_count
+    Git.any_instance.expects(:rev_list).with({}, 'master').returns(fixture('rev_list_count'))
+    
+    assert_equal 655, @r.commit_count('master')
+  end
+  
   # commit
   
   def test_commit
@@ -204,7 +212,7 @@ class TestRepo < Test::Unit::TestCase
   end
 
   def test_log_with_path_and_options
-    Git.any_instance.expects(:log).with({:pretty => 'raw', :max_count => 1}, 'master -- file.rb').returns(fixture('rev_list'))
+    Git.any_instance.expects(:log).with({:pretty => 'raw', :max_count => 1}, 'master', '--', 'file.rb').returns(fixture('rev_list'))
     @r.log('master', 'file.rb', :max_count => 1)
   end
 end

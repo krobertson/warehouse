@@ -6,28 +6,24 @@ module ChangesetsHelper
   end
 
   def unified_diff_for(node, options = {})
-    options[:old_rev] ||= node.previous_node.revision
     old_rev = find_revision_for(node, options[:old_rev])
-
-    return nil if old_rev.nil?
 
     raw_diff = node.unified_diff_with(old_rev)
     if raw_diff.empty?
       return nil
     end
+
     diff_line_regex = %r{@@ -(\d+),?(\d*) \+(\d+),?(\d*) @@}
     lines = raw_diff.split("\n")
-        
-    original_revision_num = node.revision.to_s
-    current_revision_num  = old_rev
-    original_revision = nil
-    current_revision  = nil
+    
+    original_revision, original_revision_num = nil, node.revision.to_s
+    current_revision,  current_revision_num  = nil, old_rev
     if controller.action_name == 'diff'
-      original_revision = link_to_diff(original_revision_num, original_revision_num, node.path)
-      current_revision  = link_to_diff(current_revision_num,  current_revision_num,  node.path)
+      original_revision = link_to_diff(truncate(original_revision_num, 7, ''), original_revision_num, node.path)
+      current_revision  = link_to_diff(truncate(current_revision_num, 7, ''),  current_revision_num,  node.path)
     else
-      original_revision = link_to_node(original_revision_num, node, original_revision_num)
-      current_revision  = link_to_node(current_revision_num,  node, current_revision_num)
+      original_revision = link_to_node(truncate(original_revision_num, 7, ''), node, original_revision_num)
+      current_revision  = link_to_node(truncate(current_revision_num, 7, ''),  node, current_revision_num)
     end
     
     th_pnum = content_tag('th', original_revision, :class => 'csnum')
@@ -81,6 +77,7 @@ module ChangesetsHelper
     )
   end
   
+  # wraps a change's diff and specifies a header.
   def diff_for(change)
     unified_diff_for change.node, :id => dom_id(change) do |original_revision_num, current_revision_num|
       %(
@@ -91,7 +88,11 @@ module ChangesetsHelper
   end
   
   def find_revision_for(node, other)
-    return other if other.is_a?(Silo::Node)
+    if current_repository.scm_type == 'git' && other.nil?
+      other = node.commit.parents.first.to_s
+    end
+
+    return other if other.nil? || other.is_a?(Silo::Node)
     if other.is_a?(Date)
       changeset = current_repository.changesets.find_by_date_for_path(other, node.path)
       return changeset ? changeset.revision : nil

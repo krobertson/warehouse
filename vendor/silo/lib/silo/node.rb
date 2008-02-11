@@ -105,17 +105,17 @@ module Silo
     end
     
     def unified_diff
-      unified_diff_with(revision - 1)
+      unified_diff_with nil
     end
     
-    def unified_diff_with(other_rev)
-      @repository.unified_diff_for(revision, other_rev.respond_to?(:revision) ? other_rev.revision : other_rev, @path)
+    def unified_diff_with(other_rev = nil)
+      @repository.unified_diff_for(revision, other_rev, @path)
     end
     
     def ==(other)
-      repository == other.repository &&
-        path     == other.path       &&
-        revision == other.revision
+      other.respond_to?(:repository) && repository == other.repository &&
+        other.respond_to?(:path)     && path       == other.path       &&
+        other.respond_to?(:revision) && revision   == other.revision
     end
     
     def <=>(other)
@@ -128,7 +128,7 @@ module Silo
       end
     end
 
-  protected    
+  protected
     def repository=(value)
       @repository = value
     end

@@ -54,6 +54,11 @@ namespace :warehouse do
     Warehouse::Command.logger ||= Logger.new(ENV['LOGGER'] || STDOUT) unless ENV['LOGGER'] == 'none'
     Warehouse::Command.logger.level = Logger.const_get((ENV['LOG_LEVEL'] || 'INFO').upcase) if Warehouse::Command.logger
     @command = Warehouse::Command.new(config)
+    begin
+      require 'ruby-debug'
+      Debugger.start
+    rescue LoadError
+    end if ENV["DEBUG"]
   end
 
   task :post_commit do

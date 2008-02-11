@@ -10,10 +10,6 @@ class Change < ActiveRecord::Base
     @node ||= changeset.repository.node(path, revision)
   end
   
-  def diffable?
-    node ? node.diffable? : false
-  end
-  
   def silo
     changeset.repository.silo
   end

@@ -119,8 +119,12 @@ module Silo
       end
 
       def unified_diff_for(old_rev, new_rev, diff_path)
-        old_root = backend.fs.root old_rev
-        new_root = backend.fs.root new_rev
+        case new_rev
+          when nil        then new_rev = old_rev - 1
+          when Silo::Node then new_rev = new_rev.revision
+        end
+        old_root  = backend.fs.root old_rev
+        new_root  = backend.fs.root new_rev
         
         differ = ::Svn::Fs::FileDiff.new(old_root, diff_path, new_root, diff_path)
       

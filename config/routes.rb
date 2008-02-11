@@ -26,7 +26,7 @@ ActionController::Routing::Routes.draw do |map|
   end
 
   map.with_options :controller => "browser" do |b|
-    b.rev_browser "browser/:rev/*paths", :rev => /r\d+/
+    b.rev_browser "browser/:rev/*paths", :rev => /r\w+/
     b.browser     "browser/*paths"
     b.blame       "blame/*paths", :action => "blame"
     b.text        "text/*paths",  :action => "text"

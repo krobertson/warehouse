@@ -1,16 +1,0 @@
-8
-
-dir
-5
-file:///Users/rick/p/silo/spec/svn_repo/foo
-file:///Users/rick/p/silo/spec/svn_repo
-
-
-
-2008-01-03T00:46:27.140743Z
-1
-rick
-
-
-svn:special svn:externals svn:needs-lock
-

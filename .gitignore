@@ -4,3 +4,4 @@ public/javascripts/warehouse.js
 .rake_tasks
 tmp
 log
+.DS_Store

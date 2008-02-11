@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 30) do
+ActiveRecord::Schema.define(:version => 31) do
 
   create_table "avatars", :force => true do |t|
     t.string  "content_type"
@@ -36,6 +36,7 @@ ActiveRecord::Schema.define(:version => 30) do
     t.text    "path"
     t.text    "from_path"
     t.integer "from_revision"
+    t.boolean "diffable",      :default => false
   end
 
   add_index "changes", ["changeset_id"], :name => "index_changes_on_changeset_id"

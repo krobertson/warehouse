@@ -45,7 +45,12 @@ module Silo
             grit_object.data
           end
         end
-  
+
+        def unified_diff_with(other_rev = nil)
+          other_rev ||= commit.parents.first.to_s
+          @repository.unified_diff_for(other_rev, revision, @only_path)
+        end
+
         def added_files
           @added_files ||= collect_diffs { |d| d.new_file }
         end
@@ -61,11 +66,9 @@ module Silo
         def deleted_files
           @deleted_files ||= collect_diffs { |d| d.deleted_file }
         end
-
-        def collect_diffs(&block)
-          commit.diffs.inject [] do |diffs, diff|
-            block.call(diff) ? diffs << diff.a_path : diffs
-          end
+        
+        def diffs
+          @repository.cached_diffs[commit] ||= commit.diffs
         end
 
         def commit
@@ -109,7 +112,7 @@ module Silo
         def grit_object
           @grit_object ||= begin
             only_paths = paths.dup ; only_paths.shift
-            only_paths.inject(head) { |tree, path| tree / path } || :none
+            only_paths.inject(head) { |tree, path| tree ? (tree / path) : tree } || :none
           end
           @grit_object == :none ? nil : @grit_object
         end
@@ -131,6 +134,14 @@ module Silo
         
         def revision_for(commit)
           @repository.revision_for(commit)
+        end
+        
+        def collect_diffs(&block)
+          collected = []
+          diffs.each do |diff|
+            collected << diff.a_path if block.call(diff)
+          end
+          collected
         end
       end
 
@@ -175,11 +186,11 @@ module Silo
       end
       
       def find_commit(id)
-        backend.commit(id)
+        cached_commits[id] ||= backend.commit(id)
       end
       
       def latest_commit_for(node)
-        backend.log(node.branch, node.only_path, :max_count => 1).first
+        cached_commits[[node.branch, node.only_path]] ||= backend.log(node.branch, node.only_path, :max_count => 1).first
       end
       
       def revision_for(commit)
@@ -187,13 +198,26 @@ module Silo
       end
 
       def unified_diff_for(old_rev, new_rev, diff_path)
-        Grit::Commit.diff(backend, old_rev, new_rev).collect do |d| 
-          "diff --git a/#{d.a_path} b/#{d.b_path}\nindex #{d.a_commit.id_abbrev}..#{d.b_commit.id_abbrev}\n#{d.diff}"
+        new_rev = new_rev.revision if new_rev.respond_to?(:revision)
+        old_rev = old_rev.revision if old_rev.respond_to?(:revision)
+        Grit::Commit.diff(backend, old_rev, new_rev, Array(diff_path)).collect do |d|
+          next '' unless d.a_path[diff_path]
+          a_id = d.a_commit ? d.a_commit.id[0..6] : '0000000'
+          b_id = d.b_commit ? d.b_commit.id[0..6] : '0000000'
+          "diff --git a/#{d.a_path} b/#{d.b_path}\nindex #{a_id}..#{b_id}\n#{d.diff}"
         end.join("\n")
       end
 
       def tree(*args)
         backend && backend.tree(*args)
+      end
+      
+      def cached_commits
+        @cached_commits ||= {}
+      end
+      
+      def cached_diffs
+        @cached_diffs ||= {}
       end
     
     protected

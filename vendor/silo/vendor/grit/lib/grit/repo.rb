@@ -88,6 +88,14 @@ module Grit
       Commit.find_all(self, start, options)
     end
     
+    # The number of commits reachable by the given branch/commit
+    #   +start+ is the branch/commit name (default 'master')
+    #
+    # Returns Integer
+    def commit_count(start = 'master')
+      Commit.count(self, start)
+    end
+    
     # The Commit object for the specified id
     #   +id+ is the SHA1 identifier of the commit
     #
@@ -103,7 +111,7 @@ module Grit
     #   +paths+ is an optional Array of directory paths to restrict the tree (deafult [])
     #
     # Examples
-    #   Repo.tree('master', ['lib/'])
+    #   repo.tree('master', ['lib/'])
     #
     # Returns Grit::Tree (baked)
     def tree(treeish = 'master', paths = [])
@@ -124,8 +132,8 @@ module Grit
     def log(commit = 'master', path = nil, options = {})
       default_options = {:pretty => "raw"}
       actual_options  = default_options.merge(options)
-      arg = path ? "#{commit} -- #{path}" : commit
-      commits = self.git.log(actual_options, arg)
+      arg = path ? [commit, '--', path] : [commit]
+      commits = self.git.log(actual_options, *arg)
       Commit.list_from_string(self, commits)
     end
     

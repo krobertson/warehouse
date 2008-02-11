@@ -62,19 +62,21 @@ module Warehouse
           :message       => node.message,
           :changed_at    => node.changed_at}
         changeset_id   = @connection[:changesets] << changeset
-        changes = {:all => [], :diffable => []}
+        changes = {:all => [], :diffable => false}
         create_change_from_changeset(node, changeset.update(:id => changeset_id), changes)
-        @connection[:changesets].filter(:id => changeset_id).update(:diffable => 1) if changes[:diffable].size > 0
+        @connection[:changesets].filter(:id => changeset_id).update(:diffable => 1) if changes[:diffable]
         changeset
       end
     
       def create_change_from_changeset(node, changeset, changes)
         (node.added_files).each do |path|
-          process_change_path_and_save(node, changeset, 'A', path, changes)
+          diff_node = node.repository.node_at(path, node.revision)
+          process_change_path_and_save(node, changeset, 'A', diff_node, changes)
         end
       
         (node.updated_files).each do |path|
-          process_change_path_and_save(node, changeset, 'M', path, changes)
+          diff_node = node.repository.node_at(path, node.revision)
+          process_change_path_and_save(node, changeset, 'M', diff_node, changes)
         end
       
         deleted_files = node.deleted_files
@@ -83,27 +85,30 @@ module Warehouse
         end
       
         moved_files.each do |path|
-          process_change_path_and_save(node, changeset, 'MV', path, changes)
+          diff_node = node.repository.node_at(path, node.revision)
+          process_change_path_and_save(node, changeset, 'MV', diff_node, changes)
         end
       
         copied_files.each do |path|
-          process_change_path_and_save(node, changeset, 'CP', path, changes)
+          diff_node = node.repository.node_at(path, node.revision)
+          process_change_path_and_save(node, changeset, 'CP', diff_node, changes)
         end
       
         deleted_files.each do |path|
-          process_change_path_and_save(node, changeset, 'D', path, changes)
+          diff_node = node.repository.node_at(path, node.revision)
+          process_change_path_and_save(node, changeset, 'D', diff_node, changes)
         end
       end
 
-      def process_change_path_and_save(node, changeset, name, path, changes)
-        change = {:changeset_id => changeset[:id], :name => name, :path => path}
+      def process_change_path_and_save(node, changeset, name, diff_node, changes)
+        change = {:changeset_id => changeset[:id], :name => name, :path => diff_node.path, :diffable => diff_node.text?}
         if @@extra_change_names.include?(name)
           change[:path]          = path[0]
           change[:from_path]     = path[1]
           change[:from_revision] = path[2]
         end
         unless @@undiffable_change_names.include?(change[:name]) || changeset[:diffable] == 1
-          changes[:diffable] << true unless node.text?
+          changes[:diffable] = true if change[:diffable]
         end
         @connection[:changes] << change
       end
