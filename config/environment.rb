@@ -57,6 +57,7 @@ Rails::Initializer.run do |config|
   # -- all .rb files in that directory is automatically loaded
   
   config.after_initialize do
+    require 'diff-display'
     Silo::Node.send :include, PathAccessibility
   end
 end

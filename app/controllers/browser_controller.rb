@@ -42,7 +42,7 @@ class BrowserController < ApplicationController
     end
 
     def find_node
-      @revision = params[:rev][1..-1].to_i if params[:rev]
+      @revision = params[:rev][1..-1] if params[:rev]
       @node     = current_repository.node(params[:paths] * '/', @revision)
     end
     
