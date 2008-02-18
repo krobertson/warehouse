@@ -109,7 +109,8 @@ module Silo
     end
     
     def unified_diff_with(other_rev = nil)
-      @repository.unified_diff_for(revision, other_rev, @path)
+      args = (other_rev ? [revision, other_rev] : [other_rev, revision]) << @path
+      @repository.unified_diff_for(*args)
     end
     
     def ==(other)

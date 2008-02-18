@@ -45,10 +45,10 @@ module Silo
             grit_object.data
           end
         end
-
+    
         def unified_diff_with(other_rev = nil)
-          other_rev ||= commit.parents.first.to_s
-          @repository.unified_diff_for(other_rev, revision, @only_path)
+          args = (other_rev ? [revision, other_rev] : [other_rev, revision]) << @only_path
+          @repository.unified_diff_for(*args)
         end
 
         def added_files
@@ -56,7 +56,7 @@ module Silo
         end
   
         def updated_files
-          @added_files ||= collect_diffs { |d| !d.new_file && !d.deleted_file && d.a_path == d.b_path }
+          @updated_files ||= collect_diffs { |d| !d.new_file && !d.deleted_file && d.a_path == d.b_path }
         end
   
         def copied_files
@@ -137,11 +137,9 @@ module Silo
         end
         
         def collect_diffs(&block)
-          collected = []
-          diffs.each do |diff|
-            collected << diff.a_path if block.call(diff)
+          diffs.inject [] do |collected, diff|
+            block.call(diff) ? collected << diff.a_path : collected
           end
-          collected
         end
       end
 
@@ -200,12 +198,14 @@ module Silo
       def unified_diff_for(old_rev, new_rev, diff_path)
         new_rev = new_rev.revision if new_rev.respond_to?(:revision)
         old_rev = old_rev.revision if old_rev.respond_to?(:revision)
-        Grit::Commit.diff(backend, old_rev, new_rev, Array(diff_path)).collect do |d|
+        old_rev = find_commit(new_rev).parents.first.to_s if old_rev.nil?
+        diff    = Grit::Commit.diff(backend, old_rev, new_rev, Array(diff_path)).collect do |d|
           next '' unless d.a_path[diff_path]
           a_id = d.a_commit ? d.a_commit.id[0..6] : '0000000'
           b_id = d.b_commit ? d.b_commit.id[0..6] : '0000000'
           "diff --git a/#{d.a_path} b/#{d.b_path}\nindex #{a_id}..#{b_id}\n#{d.diff}"
-        end.join("\n")
+        end
+        [old_rev, new_rev, diff * "\n"]
       end
 
       def tree(*args)

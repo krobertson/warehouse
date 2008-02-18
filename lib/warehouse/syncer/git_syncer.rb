@@ -37,7 +37,7 @@ module Warehouse
       end
       
     protected
-      def process_change_path_and_save(node, changeset, name, diff_node, changes)
+      def process_change_path_and_save(node, path, changeset, name, diff_node, changes)
         orig_path = diff_node.path
         super unless @heads.detect do |head|
           diff_node = node.repository.node_at("#{head}/#{orig_path}", node.revision)

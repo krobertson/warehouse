@@ -8,52 +8,20 @@ module ChangesetsHelper
   def unified_diff_for(node, options = {})
     old_rev = find_revision_for(node, options[:old_rev])
 
-    raw_diff = node.unified_diff_with(old_rev)
+    old_rev, new_rev, raw_diff = node.unified_diff_with(old_rev)
     if raw_diff.empty?
       return nil
     end
-
-    diff_line_regex = %r{@@ -(\d+),?(\d*) \+(\d+),?(\d*) @@}
-    lines = raw_diff.split("\n")
     
-    original_revision, original_revision_num = nil, node.revision.to_s
-    current_revision,  current_revision_num  = nil, old_rev
+    unified = Diff::Display::Unified.new(raw_diff)
+    
+    old_link, new_link = nil, nil
     if controller.action_name == 'diff'
-      original_revision = link_to_diff(truncate(original_revision_num, 7, ''), original_revision_num, node.path)
-      current_revision  = link_to_diff(truncate(current_revision_num, 7, ''),  current_revision_num,  node.path)
+      old_link = link_to_diff(truncate(old_rev, 7, ''), old_rev, node.path)
+      new_link = link_to_diff(truncate(new_rev, 7, ''),  new_rev,  node.path)
     else
-      original_revision = link_to_node(truncate(original_revision_num, 7, ''), node, original_revision_num)
-      current_revision  = link_to_node(truncate(current_revision_num, 7, ''),  node, current_revision_num)
-    end
-    
-    th_pnum = content_tag('th', original_revision, :class => 'csnum')
-    th_cnum = content_tag('th', current_revision,  :class => 'csnum')  
-    table_rows = []  
-        
-    lines = lines[2..lines.length].collect{ |line| h(line) }
-  
-    ln = [0, 0]   # line counter
-    lines = lines.collect do |line|      
-      if line.starts_with?('-')        
-        [ln[0] += 1, '', ' ' + line[1..line.length], 'delete']
-      elsif line.starts_with?('+')
-        ['', ln[1] += 1, ' ' + line[1..line.length], 'insert']
-      elsif line_defs = line.match(diff_line_regex)
-              ln[0] = line_defs[1].to_i - 1
-              ln[1] = line_defs[3].to_i - 1
-        ['---', '---', '', nil]
-      elsif line.match('\ No newline at end of file')
-        nil
-      else
-        [ln[0] += 1, ln[1] += 1, line, nil]
-      end     
-    end.compact
-    
-    lines[1..lines.length].collect do |line|
-      pnum = content_tag('td', line[0], :class => 'ln')
-      cnum = content_tag('td', line[1], :class => 'ln')    
-      code = content_tag('td', line[2].gsub(/ /, '&nbsp;'), :class => 'code' + (line[3] ? " #{line[3]}" : ''))
-      table_rows << content_tag('tr', pnum + cnum + code)
+      old_link = link_to_node(truncate(old_rev, 7, ''), node, old_rev)
+      new_link = link_to_node(truncate(new_rev, 7, ''),  node, new_rev)
     end
     
     %(
@@ -62,16 +30,18 @@ module ChangesetsHelper
       <thead>
         <tr class="controls">
           <td colspan="3">
-            <div class="control">#{yield original_revision_num, current_revision_num if block_given?}</div>
+            <div class="control">#{yield old_rev, new_rev if block_given?}</div>
           </td>
         </tr>
         <tr>
-          #{th_pnum}
-          #{th_cnum}
+          <th class="csnum">#{old_link}</th>
+          <th class="csnum">#{new_link}</th>
           <th>&nbsp;</th>
         </tr>
       </thead>
-      #{table_rows.join("\n")}
+      <tbody>
+      #{unified.render(Warehouse::DiffRenderer.new)}
+      </tbody>
     </table>
     </div>
     )
@@ -88,10 +58,6 @@ module ChangesetsHelper
   end
   
   def find_revision_for(node, other)
-    if current_repository.scm_type == 'git' && other.nil?
-      other = node.commit.parents.first.to_s
-    end
-
     return other if other.nil? || other.is_a?(Silo::Node)
     if other.is_a?(Date)
       changeset = current_repository.changesets.find_by_date_for_path(other, node.path)
