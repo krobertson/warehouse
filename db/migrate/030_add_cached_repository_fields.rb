@@ -7,7 +7,7 @@ class AddCachedRepositoryFields < ActiveRecord::Migration
   def self.up
     add_column :repositories, :synced_changed_at, :datetime
     add_column :repositories, :synced_revision, :string
-    add_column :repositories, :changesets_count, :integer
+    add_column :repositories, :changesets_count, :integer, :default => 0
     Repository.find(:all).each do |repo|
       synced, count = 
         Changeset.send :with_scope, :find => {:conditions => {:repository_id => repo.id}} do
