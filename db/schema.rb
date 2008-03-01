@@ -113,7 +113,7 @@ ActiveRecord::Schema.define(:version => 31) do
     t.string   "scm_type",          :default => "svn"
     t.datetime "synced_changed_at"
     t.string   "synced_revision"
-    t.integer  "changesets_count"
+    t.integer  "changesets_count",  :default => 0
   end
 
   add_index "repositories", ["subdomain"], :name => "index_repositories_on_subdomain"
