@@ -6,7 +6,7 @@ Warehouse::Syncer::SvnSyncer.send :public, :num=
 
 context "Command Syncing" do
   setup do
-    @node       = stub
+    @node       = stub(:text? => true, :revision => 5)
     @silo       = stub(:fs => stub, :latest_revision => 50, :node_at => @node)
     @command    = Warehouse::Command.new
     @changes    = []
@@ -69,7 +69,7 @@ context "Command Syncing" do
     @node.expects(:author).returns(@changeset[:author])
     @node.expects(:message).returns(@changeset[:message])
     @node.expects(:changed_at).returns(@changeset[:changed_at].localtime)
-    @syncer.expects(:create_change_from_changeset).with(@node, @changeset, {:all => [], :diffable => []})
+    @syncer.expects(:create_change_from_changeset).with(@node, @changeset, {:all => [], :diffable => false})
     
     @syncer.send(:create_changeset, @changeset[:revision]).should == @changeset
   end
@@ -77,41 +77,37 @@ context "Command Syncing" do
   %w(A D M MVP).each do |name|
     specify "should create change with #{name}" do
       @changes.clear
-      @syncer.send(:process_change_path_and_save, @node, {:id => 1, :revision => 5, :diffable => 1}, name, "/foo", {:all => []})
-      @changes.should == [{:changeset_id => 1, :name => name, :path => "/foo"}]
+      @syncer.send(:process_change_path_and_save, @node, "/foo", {:id => 1, :revision => 5, :diffable => 1}, name, {:all => []})
+      @changes.should == [{:changeset_id => 1, :name => name, :path => "/foo", :diffable => true}]
     end
   end
   
   %w(MV CP).each do |change_type|
     specify "should create change with #{change_type}" do
       @changes.clear
-      @syncer.send(:process_change_path_and_save, @node, {:id => 1, :revision => 5, :diffable => 1}, change_type, [1,2,3], {:all => []})
-      @changes.should == [{:changeset_id => 1, :name => change_type, :path => 1, :from_path => 2, :from_revision => 3}]
+      @syncer.send(:process_change_path_and_save, @node, [1,2,3], {:id => 1, :revision => 5, :diffable => 1}, change_type, {:all => []})
+      @changes.should == [{:changeset_id => 1, :name => change_type, :path => 1, :from_path => 2, :from_revision => 3, :diffable => true}]
     end
   end
   
   specify "should process changeset changes" do
-    @node.stubs(:added_directories).returns(['/foo'])
-    @node.stubs(:added_files).returns(['/foo/bar.txt'])
-    @node.stubs(:updated_directories).returns(['/foo'])
-    @node.stubs(:updated_files).returns(['/foo/bar.txt'])
-    @node.stubs(:deleted_directories).returns(['/copied', '/deleted'])
-    @node.stubs(:deleted_files).returns(['/copied/file', '/deleted/file'])
-    @node.stubs(:copied_directories).returns([%w(a /copied b), %w(a /original b)])
-    @node.stubs(:copied_files).returns([%w(a /copied/file b), %w(a /original/file b)])
+    @node.stubs(:added_files).returns(%w(/foo /foo/bar.txt))
+    @node.stubs(:updated_files).returns(%w(/foo /foo/bar.txt))
+    @node.stubs(:deleted_files).returns(%w(/copied /deleted /copied/file /deleted/file))
+    @node.stubs(:copied_files).returns([%w(a /copied b), %w(a /original b), %w(a /copied/file b), %w(a /original/file b)])
     
-    @changes = {:all => []}
+    @changes = {:all => [], :diffable => false}
     
-    @syncer.expects(:process_change_path_and_save).with(@node, @changeset, 'A',  '/foo', @changes)
-    @syncer.expects(:process_change_path_and_save).with(@node, @changeset, 'A',  '/foo/bar.txt', @changes)
-    @syncer.expects(:process_change_path_and_save).with(@node, @changeset, 'M',  '/foo', @changes)
-    @syncer.expects(:process_change_path_and_save).with(@node, @changeset, 'M',  '/foo/bar.txt', @changes)
-    @syncer.expects(:process_change_path_and_save).with(@node, @changeset, 'D',  '/deleted', @changes)
-    @syncer.expects(:process_change_path_and_save).with(@node, @changeset, 'D',  '/deleted/file', @changes)
-    @syncer.expects(:process_change_path_and_save).with(@node, @changeset, 'MV', %w(a /copied b), @changes)
-    @syncer.expects(:process_change_path_and_save).with(@node, @changeset, 'MV', %w(a /copied/file b), @changes)
-    @syncer.expects(:process_change_path_and_save).with(@node, @changeset, 'CP', %w(a /original b), @changes)
-    @syncer.expects(:process_change_path_and_save).with(@node, @changeset, 'CP', %w(a /original/file b), @changes)
+    @syncer.expects(:process_change_path_and_save).with(@node, '/foo', @changeset, 'A', @changes)
+    @syncer.expects(:process_change_path_and_save).with(@node, '/foo/bar.txt', @changeset, 'A', @changes)
+    @syncer.expects(:process_change_path_and_save).with(@node, '/foo', @changeset, 'M', @changes)
+    @syncer.expects(:process_change_path_and_save).with(@node, '/foo/bar.txt', @changeset, 'M', @changes)
+    @syncer.expects(:process_change_path_and_save).with(@node, '/deleted', @changeset, 'D', @changes)
+    @syncer.expects(:process_change_path_and_save).with(@node, '/deleted/file', @changeset, 'D', @changes)
+    @syncer.expects(:process_change_path_and_save).with(@node, %w(a /copied b), @changeset, 'MV', @changes)
+    @syncer.expects(:process_change_path_and_save).with(@node, %w(a /copied/file b), @changeset, 'MV', @changes)
+    @syncer.expects(:process_change_path_and_save).with(@node, %w(a /original b), @changeset, 'CP', @changes)
+    @syncer.expects(:process_change_path_and_save).with(@node, %w(a /original/file b), @changeset, 'CP', @changes)
     
     @syncer.send(:create_change_from_changeset, @node, @changeset, @changes)
   end

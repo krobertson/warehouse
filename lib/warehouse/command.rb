@@ -132,7 +132,7 @@ module Warehouse
     end
     
     def clear_changesets_for(repo_subdomain)
-      repo = repo_subdomain && connection[:repositories].where(:subdomain => repo_subdomain).first
+      repo = repo_subdomain && find_repo(repo_subdomain)
       if repo_subdomain && repo.nil?
         puts "No repo(s) found, REPO=#{repo_subdomain.inspect} given."
         return
@@ -141,7 +141,7 @@ module Warehouse
       changes    = connection[:changes]
       repos      = connection[:repositories]
       if repo
-        changesets = changesets.where(:repository_id => repo) 
+        changesets = changesets.where(:repository_id => repo[:id]) 
         changes    = changes.where(:changeset_id => changesets.select(:id))
       end
       connection.transaction do

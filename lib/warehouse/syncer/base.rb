@@ -70,13 +70,11 @@ module Warehouse
     
       def create_change_from_changeset(node, changeset, changes)
         (node.added_files).each do |path|
-          diff_node = node.repository.node_at(path, node.revision)
-          process_change_path_and_save(node, path, changeset, 'A', diff_node, changes)
+          process_change_path_and_save(node, path, changeset, 'A', changes)
         end
       
         (node.updated_files).each do |path|
-          diff_node = node.repository.node_at(path, node.revision)
-          process_change_path_and_save(node, path, changeset, 'M', diff_node, changes)
+          process_change_path_and_save(node, path, changeset, 'M', changes)
         end
       
         deleted_files = node.deleted_files
@@ -85,28 +83,30 @@ module Warehouse
         end
       
         moved_files.each do |path|
-          diff_node = node.repository.node_at(path.first, node.revision)
-          process_change_path_and_save(node, path, changeset, 'MV', diff_node, changes)
+          process_change_path_and_save(node, path, changeset, 'MV', changes)
         end
       
         copied_files.each do |path|
-          diff_node = node.repository.node_at(path.first, node.revision)
-          process_change_path_and_save(node, path, changeset, 'CP', diff_node, changes)
+          process_change_path_and_save(node, path, changeset, 'CP', changes)
         end
       
         deleted_files.each do |path|
-          diff_node = node.repository.node_at(path, node.revision)
-          process_change_path_and_save(node, path, changeset, 'D', diff_node, changes)
+          process_change_path_and_save(node, path, changeset, 'D', changes)
         end
       end
 
-      def process_change_path_and_save(node, path, changeset, name, diff_node, changes)
-        change = {:changeset_id => changeset[:id], :name => name, :path => diff_node.path, :diffable => diff_node.text?}
+      def process_change_path_and_save(node, path, changeset, name, changes)
+        diff_node = nil
+        change = {:changeset_id => changeset[:id], :name => name, :path => path}
         if @@extra_change_names.include?(name)
           change[:path]          = path[0]
           change[:from_path]     = path[1]
           change[:from_revision] = path[2]
+          diff_node = @silo.node_at(path[0], node.revision)
+        else
+          diff_node = @silo.node_at(path, node.revision)
         end
+        change[:diffable] = diff_node.text?
         unless @@undiffable_change_names.include?(change[:name]) || changeset[:diffable] == 1
           changes[:diffable] = true if change[:diffable]
         end

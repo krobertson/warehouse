@@ -6,15 +6,14 @@ module Warehouse
         super do |authors|
           latest_changeset = @connection[:changesets].where(:repository_id => @repo[:id]).order(:changed_at.DESC).first
           latest_rev       = @silo.latest_revision
-          branch_prefix    = @repo[:synced_revision].to_s.size.zero? ? '' : @repo[:synced_revision] + ".."
           @heads           = @silo.send(:backend).heads.collect { |h| h.name }
           if @heads.include?('master')
             @heads.delete 'master'
             @heads.unshift 'master'
           end
-          arguments        = @heads.collect { |name| branch_prefix + name }
+          arguments = @heads.dup
           arguments << "--since=#{@repo[:synced_changed_at].utc.xmlschema}" if @repo[:synced_changed_at]
-          revisions        = @silo.send(:backend).git.rev_list({}, arguments).split
+          revisions = @silo.send(:backend).git.rev_list({}, *arguments).split
           revisions.reverse!
           @connection.transaction do    
             i = 0
