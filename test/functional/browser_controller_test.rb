@@ -14,7 +14,7 @@ context "Browser Controller Permissions" do
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
     @request.host = "sample.test.host"
-    Repository.any_instance.stubs(:silo).returns(true)
+    Repository.any_instance.stubs(:backend).returns(true)
     class << @controller
       def status_message(type, message = nil, template = nil)
         render :text => "#{type}: #{message.inspect}"

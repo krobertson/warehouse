@@ -15,7 +15,7 @@ body {
   margin: 0;
   text-align: center;
   padding: 0;
-  font: normal 12px/1.5em "Helvetica Neue", Helvetica, "Lucida Grande", "Helvetica Neue", Arial, sans-serif;
+  font: normal 12px/1.5em "Lucida Grande", "Helvetica Neue", Arial, sans-serif;
   background: #ebebeb;
   color: #333;
   min-width: 900px;
@@ -270,7 +270,7 @@ li#admin a {
 
 .block h3 a {
   color: #333;
-  text-shadow: 1px 1px #f7f7f7;
+  text-shadow: 2px 2px #f7f7f7;
 }
 
 /* @end */
@@ -307,7 +307,7 @@ li#admin a {
   background: url(../images/app/icons/box-small.png) 0 50% no-repeat;
   padding: 8px 5px 8px 20px;
   color: #333;
-  text-shadow: 1px 1px #fff;
+  text-shadow: 2px 2px #fff;
   display: block;
   border-bottom: 1px solid #ccc;
   border-top: 1px solid #fff;
@@ -576,7 +576,7 @@ div#crumbs ul  {
 }
 
 #crumbs li a {
-  text-shadow: 1px 1px #fff;
+  text-shadow: 2px 2px #fff;
   background: url(../images/app/crumb-divide.gif) top right no-repeat;
   display: block;
   color: #555;
@@ -597,7 +597,7 @@ li.crumb-divide-last a {
  color: #fff;
  font-size: 92%;
  float: left;
- text-shadow: 1px 1px #777;
+ text-shadow: 2px 2px #777;
  background: url(../images/app/crumb-current.gif) repeat-x;
  padding: 4px 10px 7px 10px;
  border-right: 1px solid #999;
@@ -665,7 +665,7 @@ div p.rcontrols {
 
 .cs-meta .change-number a {
   color: #481;
-  text-shadow: 1px 1px #f7f7f7;
+  text-shadow: 2px 2px #f7f7f7;
   float: none;
   padding-right: 0;
   margin-top: 3px;
@@ -718,7 +718,7 @@ li.prev a {
   border-bottom-color: #ccc;
   border-right-color: #ccc;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 110%;
+  font-size: 120%;
   font-weight: bold;
 }
 
@@ -740,6 +740,7 @@ li.prev a {
 .changeset .timenauthor {
   color: #888;
   font-weight: normal;
+  font-size: 92%;
   display: block;
 }
 
@@ -844,7 +845,7 @@ a.csdiff {
   font-size: 92%;
   font-weight: bold;
   color: #333;
-  text-shadow: 1px 1px #eee;
+  text-shadow: 2px 2px #eee;
   display: block;
   padding-left: 20px;
   background: url(../images/app/icons/arrow-small.png) 0 50% no-repeat;
@@ -936,7 +937,7 @@ ul.formats li a {
   display: block;
   padding: 3px 5px 4px 5px;
   color: #777;
-  text-shadow: 1px 1px #fff;
+  text-shadow: 2px 2px #fff;
   font-weight: bold;
 }
 
@@ -1038,7 +1039,7 @@ li#nmembers  a { background: url(../images/app/icons/members.png) 50% 0 no-repea
 
 #admin-nav li.selected {
   background: url(../images/app/nav-selected.png) bottom left no-repeat;
-  text-shadow: 1px 1px #eee;
+  text-shadow: 2px 2px #eee;
 }
 
 #admin-nav li.selected a {
@@ -1066,7 +1067,7 @@ li#nmembers  a { background: url(../images/app/icons/members.png) 50% 0 no-repea
   color: #555;
   font-weight: bold;
   text-align: center;
-  text-shadow: 1px 1px #f7f7f7;
+  text-shadow: 2px 2px #f7f7f7;
 }
 
 #second-nav li a:hover {
@@ -1236,7 +1237,7 @@ input.path {
 
 .sync-percent {
   color: #333;
-  text-shadow: 1px 1px #fff;
+  text-shadow: 2px 2px #fff;
   font-weight: bold;
   float: right;
 }
@@ -1391,7 +1392,7 @@ input.path {
 
 .overlay-form h2 {
   margin-right: 8px;
-  text-shadow: 1px 1px #fff;
+  text-shadow: 2px 2px #fff;
   border-bottom: 1px solid #bbb;
   padding: 10px;
 }
@@ -1409,7 +1410,7 @@ div.oform p label {
   font-weight: bold;
   margin-top:  10px;
   padding: 5px 0;
-  text-shadow: 1px 1px #fff;
+  text-shadow: 2px 2px #fff;
 }
 
 .oform p {
@@ -1538,20 +1539,6 @@ button {
   display: none;
 }
 
-#changesets li.changeset {
-  background: none;
-  border: none;
-  border-bottom: 1px solid #ccc;
-}
-
-#changesets .cs-log {
-  background: none;
-}
-
-#changesets .cs-meta {
-  background: none;
-  border-right: none;
-}
 /* @end */
 
 /* @group Command Line */

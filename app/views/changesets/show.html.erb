@@ -5,7 +5,7 @@
   <div class="cs-meta">
     <%= avatar_for(@changeset.user) %>
     <p>
-      <span class="change-number"><%= link_to(truncate(@changeset.revision, 7, ''), hosted_url(:changeset, @changeset.revision)) %></span>
+      <span class="change-number"><%= link_to(@changeset.revision, hosted_url(:changeset, @changeset.revision)) %></span>
     </p>
   </div>
   <div class="cs-log clearfix">      

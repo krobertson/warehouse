@@ -2,7 +2,7 @@
   <h2>Sorry, you're not authorized to view this page</h2>
   <p><%= @message %></p>
   
-  <% if current_repository.silo.nil? -%>
+  <% if current_repository.backend.nil? -%>
     <p>The Repository Path is invalid and needs to be fixed in the <%= link_to 'Repository Admin', hosted_url(:admin) %></p>
   <% elsif logged_in? -%>
     <% paths = current_user.permissions.paths_for(current_repository) -%>

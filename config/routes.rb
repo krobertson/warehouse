@@ -4,7 +4,7 @@ REPO_ROOT_REGEX = /^(\/?(admin|changesets|browser|install|login|logout|reset|for
 ActionController::Routing::Routes.draw do |map|
   map.connect ":asset/:plugin/*paths", :asset => /images|javascripts|stylesheets/, :controller => "assets", :action => "show"
 
-  map.diff "changesets/diff/:rev/*paths", :controller => "changesets", :action => "diff", :rev => /r\w+/
+  map.diff "changesets/diff/:rev/*paths", :controller => "changesets", :action => "diff", :rev => /r\d+/
 
   map.resources :changesets, :has_many => :changes, :collection => { :public => :get }
   
@@ -26,7 +26,7 @@ ActionController::Routing::Routes.draw do |map|
   end
 
   map.with_options :controller => "browser" do |b|
-    b.rev_browser "browser/:rev/*paths", :rev => /r\w+/
+    b.rev_browser "browser/:rev/*paths", :rev => /r\d+/
     b.browser     "browser/*paths"
     b.blame       "blame/*paths", :action => "blame"
     b.text        "text/*paths",  :action => "text"

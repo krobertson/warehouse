@@ -6,7 +6,7 @@
   <%= link_to_node "@#{changeset.revision}", @node, changeset.revision, :class => 'file-history' %>
   <div class="cs-meta">
     <%= avatar_for(user) %>
-    <span class="change-number"><%= link_to(truncate(changeset.revision, 7, ''), hosted_url(:changeset, changeset.revision)) %></span>
+    <span class="change-number"><%= link_to(changeset.revision, hosted_url(:changeset, changeset.revision)) %></span>
   </div>
   <div class="cs-log clearfix">      
      <%= simple_format(h(changeset.message)) %>
@@ -17,3 +17,6 @@
 </ul>
 
 <%= will_paginate @changesets %>
+
+<% content_for :sidebar do -%>
+<% end -%>

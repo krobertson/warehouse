@@ -3,16 +3,8 @@ sample:
   name: Sample
   path: <%= File.expand_path(File.dirname(__FILE__)) %>/db/sample
   subdomain: sample
-  scm_type: svn
-  synced_changed_at: 2007-05-18 22:27:43
-  synced_revision: 2
-  changesets_count: 2
 example:
   id: 2
   name: Example
   path: <%= File.expand_path(File.dirname(__FILE__)) %>/db/example
   subdomain: example
-  scm_type: svn
-  synced_changed_at: 2007-05-19 22:27:43
-  synced_revision: 2
-  changesets_count: 2

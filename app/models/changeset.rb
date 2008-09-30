@@ -4,7 +4,7 @@ class Changeset < ActiveRecord::Base
   validates_presence_of   :repository_id, :revision
   validates_uniqueness_of :revision, :scope => :repository_id
 
-  delegate :silo, :to => :repository
+  delegate :backend, :to => :repository
   expiring_attr_reader :user, :retrieve_user
 
   def self.search(query, options = {})
@@ -51,14 +51,6 @@ class Changeset < ActiveRecord::Base
   def self.find_latest_changeset(path = nil, revision = nil)
     latest_changeset = lambda { revision ? find_by_revision(revision) : find(:first, :order => 'changesets.changed_at desc') }
     path.blank? ? latest_changeset.call : with_paths([path], &latest_changeset)
-  end
-  
-  def self.find_before(paths, changeset)
-    find_by_paths(paths, :conditions => ['changesets.id != ? and changesets.changed_at <= ?', changeset.id, changeset.changed_at], :order => 'changesets.changed_at desc')
-  end
-  
-  def self.find_after(paths, changeset)
-    find_by_paths(paths, :conditions => ['changesets.id != ? and changesets.changed_at >= ?', changeset.id, changeset.changed_at], :order => 'changesets.changed_at desc')
   end
 
   def to_param

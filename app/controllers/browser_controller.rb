@@ -42,7 +42,7 @@ class BrowserController < ApplicationController
     end
 
     def find_node
-      @revision = params[:rev][1..-1] if params[:rev]
+      @revision = params[:rev][1..-1].to_i if params[:rev]
       @node     = current_repository.node(params[:paths] * '/', @revision)
     end
     
@@ -52,11 +52,11 @@ class BrowserController < ApplicationController
 
     def retrieve_previous_changeset
       return nil if current_changeset.nil?
-      current_repository.changesets.find_before([@node.path], current_changeset)
+      current_repository.changesets.find_by_path(@node.path, :conditions => ['changed_at < ?', current_changeset.changed_at], :order => 'changesets.changed_at desc')
     end
     
     def retrieve_next_changeset
       return nil if current_changeset.nil?
-      current_repository.changesets.find_after([@node.path], current_changeset)
+      current_repository.changesets.find_by_path(@node.path, :conditions => ['changed_at > ?', current_changeset.changed_at], :order => 'changesets.changed_at')
     end
 end

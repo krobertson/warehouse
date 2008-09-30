@@ -21,10 +21,9 @@
     <%= link_to h(repo.name), hosted_url(repo, :admin) %>
     <span class="log"><%= repo.path %></span>
   <% if repo.sync? %>
-  <% unless repo.sync_progress == 100 %>
-  
     <div class="need-sync" id="sync-<%= repo.id %>">
       <span id="percent-<%= repo.id %>" class="sync-percent"><%= repo.sync_progress %>%</span>
+
       The changeset(s)
       <%= repo.revisions_to_sync.first %><%= "-#{repo.revisions_to_sync.last}" if repo.revisions_to_sync.first != repo.revisions_to_sync.last %>
       need to be synced.
@@ -42,7 +41,6 @@
         });
       <% end -%>
     </div>
-    <% end %>
   <% end -%>
     <ul class="admin-controls">
       <% if repo.sync? %>

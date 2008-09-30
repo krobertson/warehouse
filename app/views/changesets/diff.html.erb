@@ -1,8 +1,9 @@
 <% @fullscreen = true %>
+<%# title "Changeset #{@changeset.revision}, #{h(@changeset.message)}" %>
 
 <%= render :partial => "browser/control_center", :locals => { :node => @node } %>
 
 <%= unified_diff = unified_diff_for @node, :old_rev => params[:r] -%>
 <% if unified_diff.blank? -%>
-  <p>No diff data found for <%=h @path %> Rev <%=h @node.revision %> -&gt; <%=h params[:r] %></p>
+  <p>No diff data found for <%=h @path %> <%= @node.check_revisions(params[:r], @node.revision) * "-" %></p>
 <% end -%>

@@ -13,7 +13,7 @@
     <option value="next"<%= %( selected="selected") if params[:r] =~ /^n/i %>>with NEXT</option>
     <% end -%>
     <option value="date"<%= %( selected="selected") if params[:r] =~ /^d/i %>>with a specific date</option>
-    <option value="rev"<%= %( selected="selected") if params[:r] =~ /^\d+$/i %>>with another changeset</option>
+    <option value="numb"<%= %( selected="selected") if params[:r] =~ /^\d+$/i %>>with another changeset</option>
   </select>
   <input id="diff-num" name="n" value="" size="6" style="display:none" />
   <span id="diff-date"<%= %( style="display:none") unless params[:r] =~ /^d/i %>>

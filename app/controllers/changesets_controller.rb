@@ -3,9 +3,12 @@ class ChangesetsController < ApplicationController
   before_filter :repository_subdomain_or_login_required, :only => :index
   before_filter :repository_member_required, :except => [:index, :public]
   before_filter :root_domain_required, :only => :public
-  before_filter :find_changeset, :only => [:show, :diff]
+  before_filter :find_node, :only => :diff
 
   caches_action_content :index, :show, :public
+  
+  helper_method :previous_changeset, :next_changeset
+  expiring_attr_reader :changeset_paths, :find_changeset_paths
 
   def index
     return global_index if repository_subdomain.blank? && logged_in?
@@ -32,23 +35,15 @@ class ChangesetsController < ApplicationController
   end
   
   def show
+    @changeset = current_repository.changesets.find_by_paths(changeset_paths, :conditions => ['revision = ?', params[:id]])
+    unless @changeset
+      return status_message(:error, "You must be a member of this repository to visit this page.", "changesets/error")
+    end
     @changes = @changeset.changes.paginate(:page => params[:page])
     respond_to do |format|
       format.html
       format.diff { render :action => 'show', :layout => false }
     end
-  end
-
-  def diff
-    params[:r] =
-      case params[:r]
-        when 'rev'  then params[:n]
-        when 'date' then Date.new(params[:date][:year].to_i, params[:date][:month].to_i, params[:date][:day].to_i)
-        when nil    then 'head'
-        else params[:r]
-      end
-    @revision = params[:rev][1..-1].to_i if params[:rev]
-    @node     = current_repository.node(params[:paths] * '/', @revision)
   end
 
   def action_url_to_id
@@ -65,14 +60,14 @@ class ChangesetsController < ApplicationController
   end
 
   protected
-    %w(previous_changeset next_changeset changeset_paths).each { |m| expiring_attr_reader m, "find_#{m}" ; helper_method m }
+    %w(previous_changeset next_changeset changeset_paths).each { |m| expiring_attr_reader m, "find_#{m}" }
     
     def find_previous_changeset
-      current_repository.changesets.find_before(changeset_paths, @changeset)
+      current_repository.changesets.find_by_paths(changeset_paths, :conditions => ['changed_at < ?', @changeset.changed_at], :order => 'changed_at desc')
     end
     
     def find_next_changeset
-      current_repository.changesets.find_after(changeset_paths, @changeset)
+      current_repository.changesets.find_by_paths(changeset_paths, :conditions => ['changed_at > ?', @changeset.changed_at], :order => 'changed_at')
     end
     
     def find_changeset_paths
@@ -133,10 +128,16 @@ class ChangesetsController < ApplicationController
       end
     end
 
-    def find_changeset
-      @changeset = current_repository.changesets.find_by_paths(changeset_paths, :conditions => ['revision = ?', params[:id]])
-      unless @changeset
-        status_message(:error, "You must be a member of this repository to visit this page.", "changesets/error")
+    def find_node
+      case params[:r]
+        when 'numb'
+          params[:r] = params[:n].to_i
+        when 'date'
+          params[:r] = Date.new(params[:date][:year].to_i, params[:date][:month].to_i, params[:date][:day].to_i)
+        when nil
+          params[:r] = 'h'
       end
+      @revision = params[:rev][1..-1].to_i if params[:rev]
+      @node     = current_repository.node(params[:paths] * '/', @revision)
     end
 end

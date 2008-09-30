@@ -65,4 +65,4 @@ context "Node finding revision" do
       @node.check_revisions 5, nil
     end
   end
-end if false # node be gone!
+end

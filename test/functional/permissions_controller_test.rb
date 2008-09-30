@@ -37,7 +37,6 @@ context "Permissions Controller" do
   end
 
   specify "should grant new permission to repo" do
-    Permission.destroy_all
     assert_difference "Permission.count" do
       assert_no_difference "User.count" do
         post :create, :permission => {:user_id => 2, :path => 'blah'}
@@ -45,8 +44,8 @@ context "Permissions Controller" do
       end
     end
     
-    p = repositories(:sample).permissions.find_by_user_id(2)
-    p.path.should == '/blah'
+    assigns(:permission).user.should.not.be.new_record
+    p = repositories(:sample).permissions.find_by_user_id(assigns(:permission).user.id)
     p.should.be.active
     p.should.not.be.admin
   end
@@ -59,7 +58,8 @@ context "Permissions Controller" do
       end
     end
     
-    perms = repositories(:sample).permissions.find_all_by_user_id(2).sort_by(&:path)
+    assigns(:permission).user.should.not.be.new_record
+    perms = repositories(:sample).permissions.find_all_by_user_id(assigns(:permission).user.id).sort_by(&:path)
     perms[0].should.be.active
     perms[0].should.not.be.admin
     perms[0].path.should == '/'

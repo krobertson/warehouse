@@ -1,27 +1,63 @@
 # Parts were adapted from Retrospectiva
 # http://retrospectiva.org/browse/trunk/app/helpers/changesets_helper.rb?rev=141
 module ChangesetsHelper
-  def link_to_diff(text, revision, path, options = {})
-    link_to text, hosted_url(:diff, "r#{revision}", path.split("/")), options
+  def link_to_diff(text, revision, *args)
+    options = args.last.is_a?(Hash) ? args.pop : {}
+    link_to text, hosted_url(:diff, "r#{revision}", args.first.split("/")), options
   end
 
   def unified_diff_for(node, options = {})
-    old_rev = find_revision_for(node, options[:old_rev])
+    options[:old_rev] ||= node.previous_root
+    options[:new_rev] ||= node.root
+    options[:path]    ||= node.path
 
-    old_rev, new_rev, raw_diff = node.unified_diff_with(old_rev)
+    raw_diff = node.unified_diff_for options[:old_rev], options[:new_rev], options[:path]
     if raw_diff.empty?
       return nil
     end
-    
-    unified = Diff::Display::Unified.new(raw_diff)
-    
-    old_link, new_link = nil, nil
+    diff_line_regex = %r{@@ -(\d+),?(\d*) \+(\d+),?(\d*) @@}
+    lines = raw_diff.split("\n")
+        
+    original_revision_num = lines[0].scan(%r{(\d+)}).flatten.first
+    current_revision_num = lines[1].scan(%r{(\d+)}).flatten.first
+    original_revision = nil
+    current_revision  = nil
     if controller.action_name == 'diff'
-      old_link = link_to_diff(truncate(old_rev, 7, ''), old_rev, node.path)
-      new_link = link_to_diff(truncate(new_rev, 7, ''),  new_rev,  node.path)
+      original_revision = link_to_diff(original_revision_num, original_revision_num, options[:path])
+      current_revision  = link_to_diff(current_revision_num,  current_revision_num,  options[:path])
     else
-      old_link = link_to_node(truncate(old_rev, 7, ''), node, old_rev)
-      new_link = link_to_node(truncate(new_rev, 7, ''),  node, new_rev)
+      original_revision = link_to_node(original_revision_num, options[:path], original_revision_num)
+      current_revision  = link_to_node(current_revision_num, options[:path], current_revision_num)
+    end
+    
+    th_pnum = content_tag('th', original_revision, :class => 'csnum')
+    th_cnum = content_tag('th', current_revision, :class => 'csnum')  
+    table_rows = []  
+        
+    lines = lines[2..lines.length].collect{ |line| h(line) }
+  
+    ln = [0, 0]   # line counter
+    lines = lines.collect do |line|      
+      if line.starts_with?('-')        
+        [ln[0] += 1, '', ' ' + line[1..line.length], 'delete']
+      elsif line.starts_with?('+')
+        ['', ln[1] += 1, ' ' + line[1..line.length], 'insert']
+      elsif line_defs = line.match(diff_line_regex)
+              ln[0] = line_defs[1].to_i - 1
+              ln[1] = line_defs[3].to_i - 1
+        ['---', '---', '', nil]
+      elsif line.match('\ No newline at end of file')
+        nil
+      else
+        [ln[0] += 1, ln[1] += 1, line, nil]
+      end     
+    end.compact
+    
+    lines[1..lines.length].collect do |line|
+      pnum = content_tag('td', line[0], :class => 'ln')
+      cnum = content_tag('td', line[1], :class => 'ln')    
+      code = content_tag('td', line[2].gsub(/ /, '&nbsp;'), :class => 'code' + (line[3] ? " #{line[3]}" : ''))
+      table_rows << content_tag('tr', pnum + cnum + code)
     end
     
     %(
@@ -30,24 +66,21 @@ module ChangesetsHelper
       <thead>
         <tr class="controls">
           <td colspan="3">
-            <div class="control">#{yield old_rev, new_rev if block_given?}</div>
+            <div class="control">#{yield original_revision_num, current_revision_num if block_given?}</div>
           </td>
         </tr>
         <tr>
-          <th class="csnum">#{old_link}</th>
-          <th class="csnum">#{new_link}</th>
+          #{th_pnum}
+          #{th_cnum}
           <th>&nbsp;</th>
         </tr>
       </thead>
-      <tbody>
-      #{unified.render(Warehouse::DiffRenderer.new)}
-      </tbody>
+      #{table_rows.join("\n")}
     </table>
     </div>
     )
   end
   
-  # wraps a change's diff and specifies a header.
   def diff_for(change)
     unified_diff_for change.node, :id => dom_id(change) do |original_revision_num, current_revision_num|
       %(
@@ -55,27 +88,5 @@ module ChangesetsHelper
       #{link_to 'diff', hosted_url(:formatted_changeset_change, @changeset, change, :diff), :class => 'csdiff'}
       )
     end
-  end
-  
-  def find_revision_for(node, other)
-    return other if other.nil? || other.is_a?(Silo::Node)
-    if other.is_a?(Date)
-      changeset = current_repository.changesets.find_by_date_for_path(other, node.path)
-      return changeset ? changeset.revision : nil
-    end
-    
-    node.repository.revision?(other)     || 
-      relative_revision_for(node, other) ||
-      raise(Silo::Node::Error, "Invalid Revision: #{other.inspect}")
-  end
-  
-  def relative_revision_for(node, other)
-    changeset = \
-      case other
-        when /^head/i then current_repository.changesets.find(:first)
-        when /^next/i then current_repository.changesets.find_after(changeset_paths, @changeset)
-        when /^prev/i then current_repository.changesets.find_before(changeset_paths, @changeset)
-      end
-    changeset ? changeset.revision : nil
   end
 end

@@ -1,49 +1,67 @@
 require File.dirname(__FILE__) + '/../test_helper'
 Warehouse::Command.configure(ActiveRecord::Base.configurations['test'].symbolize_keys)
 
-Warehouse::Syncer::SvnSyncer.send :attr_writer, :num
-Warehouse::Syncer::SvnSyncer.send :public, :num=
-
 context "Command Syncing" do
   setup do
-    @node       = stub(:text? => true, :revision => 5)
-    @silo       = stub(:fs => stub, :latest_revision => 50, :node_at => @node)
-    @command    = Warehouse::Command.new
-    @changes    = []
-    @connection = {:changes => @changes}
-    @command.stubs(:connection).returns(@connection)
-    @repo = {:id => 1, :scm_type => 'svn', :changesets_count => 0}
+    @backend = stub(:fs => stub) 
+    @command = Warehouse::Command.new
+    @changes = []
+    @command.stubs(:connection).returns(:changes => @changes)
+    @repo = {:id => 1}
     @changeset = {:id => 7, :revision => 5, :repository_id => @repo[:id], :author => 'rick', :message => 'brb going to moon', :changed_at => (Time.now - 300).utc}
     @user = {:id => 6, :login => 'justin'}
-    @command.stubs(:silo_for).with(@repo).returns(@silo)
-    @syncer = Warehouse::Syncer::SvnSyncer.new(@command.connection, @repo, @silo, 1)
+    @command.stubs(:backend_for).with(@repo).returns(@backend)
   end
 
   specify "should sync revisions" do
-    changesets = [@changeset.merge(:revision => 4)]
-    @connection.update \
-      :users => stub(:where => [@user.merge(:login => @changeset[:author])]), :repositories => stub(:where => @repo),
-      :changesets => stub(:where => stub(:order => changesets))
+    Time.expects(:now).returns(@changeset[:changed_at].localtime)
+    @connection = {:users => stub(:where => [@user.merge(:login => @changeset[:author])])}
     @connection.expects(:transaction).yields
-    @syncer.expects(:create_changeset).with(@changeset[:revision]).returns(@changeset)
-    @syncer.expects(:update_user_activity).with({:id => @user[:id], :login => @changeset[:author]}, @changeset[:changed_at])
-    Warehouse::Syncer::SvnSyncer.expects(:new).with(@connection, @repo, @silo, 1).returns(@syncer)
+    @command.stubs(:connection).returns(@connection)
+    @command.expects(:paginated_revisions).with(@repo, 1).returns([@changeset[:revision]])
+    @command.expects(:create_changeset).with(@repo, @changeset[:revision]).returns(@changeset)
+    @command.expects(:update_user_activity).with(@repo, {:id => @user[:id], :login => @changeset[:author]}, @changeset[:changed_at])
     @command.send(:sync_revisions_for, @repo, 1)
-    @repo[:changesets_count].should == 1
   end
 
   specify "should skip syncing if there are no revisions to sync" do
-    @silo.stubs(:latest_revision).returns(5)
-    changesets = [@changeset]
-    @connection.update :changesets => stub(:where => stub(:order => changesets))
-    @command.connection.expects(:transaction)
-    @syncer.expects(:create_changeset).times(0)
-    Warehouse::Syncer::SvnSyncer.expects(:new).with(@connection, @repo, @silo, 1).returns(@syncer)
-    @command.sync_revisions_for(@repo, 1)
+    @command.connection.expects(:transaction).times(0)
+    @command.expects(:paginated_revisions).with(@repo, 23).returns([])
+    @command.sync_revisions_for(@repo, 23)
+  end
+
+  specify "should paginate revisions" do
+    @command.expects(:recorded_revision_for).with(@repo).returns 75
+    @command.expects(:latest_revision_for).with(@repo).returns 100
+    @command.send(:paginated_revisions, @repo, 5).should == (75..79).to_a
+  end
+  
+  specify "should list all revisions" do
+    @command.expects(:recorded_revision_for).with(@repo).returns 75
+    @command.expects(:latest_revision_for).with(@repo).returns 100
+    @command.send(:paginated_revisions, @repo, 0).should == (75..100).to_a
+  end
+
+  specify "should get recorded revision" do
+    @changesets_where = stub
+    @changesets_where.expects(:reverse_order).with(:changed_at).returns(stub(:first => {:revision => 1}))
+    @changesets = stub
+    @changesets.expects(:where).with(:repository_id => @repo[:id]).returns(@changesets_where)
+    @command.expects(:connection).returns(:changesets => @changesets)
+    @command.send(:recorded_revision_for, @repo).should == 2
+  end
+
+  specify "should get initial revision" do
+    @changesets_where = stub
+    @changesets_where.expects(:reverse_order).with(:changed_at).returns(stub(:first => nil))
+    @changesets = stub
+    @changesets.expects(:where).with(:repository_id => @repo[:id]).returns(@changesets_where)
+    @command.expects(:connection).returns(:changesets => @changesets)
+    @command.send(:recorded_revision_for, @repo).should == 1
   end
 
   specify "should get latest revision" do
-    @silo.expects(:latest_revision).returns(75)
+    @backend.expects(:youngest_rev).returns(75)
     @command.send(:latest_revision_for, @repo).should == 75
   end
   
@@ -58,64 +76,76 @@ context "Command Syncing" do
     @permissions = stub
     @permissions.expects(:where).with(:user_id => @user[:id], :repository_id => @repo[:id]).returns(@permissions_where)
     
-    @connection.update(:permissions => @permissions, :changesets => @changesets)
-    @syncer.send(:update_user_activity, @user, @changeset[:changed_at]).should == 77
+    @command.stubs(:connection).returns(:permissions => @permissions, :changesets => @changesets)
+    @command.send(:update_user_activity, @repo, @user, @changeset[:changed_at]).should == 77
   end
   
   specify "should create changeset from revision" do
     @changesets = stub
     @changesets.expects(:<<).returns(@changeset[:id])
-    @connection.update(:changesets => @changesets)
-    @node.expects(:author).returns(@changeset[:author])
-    @node.expects(:message).returns(@changeset[:message])
-    @node.expects(:changed_at).returns(@changeset[:changed_at].localtime)
-    @syncer.expects(:create_change_from_changeset).with(@node, @changeset, {:all => [], :diffable => false})
+    @command.stubs(:connection).returns(:changesets => @changesets)
+    @command.expects(:backend_for).with(@repo).returns(@backend)
+    @backend.fs.expects(:prop).with(Svn::Core::PROP_REVISION_AUTHOR, 5).returns(@changeset[:author])
+    @backend.fs.expects(:prop).with(Svn::Core::PROP_REVISION_LOG,    5).returns(@changeset[:message])
+    @backend.fs.expects(:prop).with(Svn::Core::PROP_REVISION_DATE,   5).returns(@changeset[:changed_at].localtime)
+    @command.expects(:create_change_from_changeset).with(@backend, @changeset, {:all => [], :diffable => []})
     
-    @syncer.send(:create_changeset, @changeset[:revision]).should == @changeset
+    @command.send(:create_changeset, @repo, @changeset[:revision]).should == @changeset
   end
   
   %w(A D M MVP).each do |name|
     specify "should create change with #{name}" do
       @changes.clear
-      @syncer.send(:process_change_path_and_save, @node, "/foo", {:id => 1, :revision => 5, :diffable => 1}, name, {:all => []})
-      @changes.should == [{:changeset_id => 1, :name => name, :path => "/foo", :diffable => true}]
+      @command.send(:process_change_path_and_save, @backend, {:id => 1, :revision => 5, :diffable => 1}, name, "/foo", {:all => []})
+      @changes.should == [{:changeset_id => 1, :name => name, :path => "/foo"}]
     end
   end
   
   %w(MV CP).each do |change_type|
     specify "should create change with #{change_type}" do
       @changes.clear
-      @syncer.send(:process_change_path_and_save, @node, [1,2,3], {:id => 1, :revision => 5, :diffable => 1}, change_type, {:all => []})
-      @changes.should == [{:changeset_id => 1, :name => change_type, :path => 1, :from_path => 2, :from_revision => 3, :diffable => true}]
+      @command.send(:process_change_path_and_save, @backend, {:id => 1, :revision => 5, :diffable => 1}, change_type, [1,2,3], {:all => []})
+      @changes.should == [{:changeset_id => 1, :name => change_type, :path => 1, :from_path => 2, :from_revision => 3}]
     end
   end
   
   specify "should process changeset changes" do
-    @node.stubs(:added_files).returns(%w(/foo /foo/bar.txt))
-    @node.stubs(:updated_files).returns(%w(/foo /foo/bar.txt))
-    @node.stubs(:deleted_files).returns(%w(/copied /deleted /copied/file /deleted/file))
-    @node.stubs(:copied_files).returns([%w(a /copied b), %w(a /original b), %w(a /copied/file b), %w(a /original/file b)])
+    @root           = stub
+    @base_root      = stub
+    @changed_editor = stub
+    @backend.fs.stubs(:root).with(5).returns(@root)
+    @backend.fs.stubs(:root).with(4).returns(@base_root)
+    Svn::Delta::ChangedEditor.stubs(:new).with(@root, @base_root).returns(@changed_editor)
+    @changed_editor.stubs(:added_dirs).returns(['/foo'])
+    @changed_editor.stubs(:added_files).returns(['/foo/bar.txt'])
+    @changed_editor.stubs(:updated_dirs).returns(['/foo'])
+    @changed_editor.stubs(:updated_files).returns(['/foo/bar.txt'])
+    @changed_editor.stubs(:deleted_dirs).returns(['/copied', '/deleted'])
+    @changed_editor.stubs(:deleted_files).returns(['/copied/file', '/deleted/file'])
+    @changed_editor.stubs(:copied_dirs).returns([%w(a /copied b), %w(a /original b)])
+    @changed_editor.stubs(:copied_files).returns([%w(a /copied/file b), %w(a /original/file b)])
     
-    @changes = {:all => [], :diffable => false}
+    @changes = {:all => []}
     
-    @syncer.expects(:process_change_path_and_save).with(@node, '/foo', @changeset, 'A', @changes)
-    @syncer.expects(:process_change_path_and_save).with(@node, '/foo/bar.txt', @changeset, 'A', @changes)
-    @syncer.expects(:process_change_path_and_save).with(@node, '/foo', @changeset, 'M', @changes)
-    @syncer.expects(:process_change_path_and_save).with(@node, '/foo/bar.txt', @changeset, 'M', @changes)
-    @syncer.expects(:process_change_path_and_save).with(@node, '/deleted', @changeset, 'D', @changes)
-    @syncer.expects(:process_change_path_and_save).with(@node, '/deleted/file', @changeset, 'D', @changes)
-    @syncer.expects(:process_change_path_and_save).with(@node, %w(a /copied b), @changeset, 'MV', @changes)
-    @syncer.expects(:process_change_path_and_save).with(@node, %w(a /copied/file b), @changeset, 'MV', @changes)
-    @syncer.expects(:process_change_path_and_save).with(@node, %w(a /original b), @changeset, 'CP', @changes)
-    @syncer.expects(:process_change_path_and_save).with(@node, %w(a /original/file b), @changeset, 'CP', @changes)
+    @base_root.expects :dir_delta
+    @command.expects(:process_change_path_and_save).with(@backend, @changeset, 'A',  '/foo', @changes)
+    @command.expects(:process_change_path_and_save).with(@backend, @changeset, 'A',  '/foo/bar.txt', @changes)
+    @command.expects(:process_change_path_and_save).with(@backend, @changeset, 'M',  '/foo', @changes)
+    @command.expects(:process_change_path_and_save).with(@backend, @changeset, 'M',  '/foo/bar.txt', @changes)
+    @command.expects(:process_change_path_and_save).with(@backend, @changeset, 'D',  '/deleted', @changes)
+    @command.expects(:process_change_path_and_save).with(@backend, @changeset, 'D',  '/deleted/file', @changes)
+    @command.expects(:process_change_path_and_save).with(@backend, @changeset, 'MV', %w(a /copied b), @changes)
+    @command.expects(:process_change_path_and_save).with(@backend, @changeset, 'MV', %w(a /copied/file b), @changes)
+    @command.expects(:process_change_path_and_save).with(@backend, @changeset, 'CP', %w(a /original b), @changes)
+    @command.expects(:process_change_path_and_save).with(@backend, @changeset, 'CP', %w(a /original/file b), @changes)
     
-    @syncer.send(:create_change_from_changeset, @node, @changeset, @changes)
+    @command.send(:create_change_from_changeset, @backend, @changeset, @changes)
   end
 end
 
 context "Command Clearing" do
   setup do
-    @silo = stub(:fs => stub) 
+    @backend = stub(:fs => stub) 
     @command = Warehouse::Command.new
   end
   specify "should fail early for bad repo subdomain" do

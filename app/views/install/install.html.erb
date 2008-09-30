@@ -3,7 +3,7 @@
   <div class="overlay-content">
     <h2>Thanks for installing Warehouse, enjoy!</h2>
     
-    <% if @repository.silo -%>
+    <% if @repository.backend -%>
     <div class="overlay-form oform">
       <h3 style="padding:10px">Sync your repository</h3>
       <p>In order to view the changesets of this repository you need to sync <%= pluralize @repository.latest_revision, 'revision' %>.</p>

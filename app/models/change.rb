@@ -1,5 +1,4 @@
 class Change < ActiveRecord::Base
-  def self.per_page() 15 end
   include PathAccessibility
   validates_presence_of :changeset_id, :name
   belongs_to :changeset
@@ -11,8 +10,12 @@ class Change < ActiveRecord::Base
     @node ||= changeset.repository.node(path, revision)
   end
   
-  def silo
-    changeset.repository.silo
+  def diffable?
+    node ? node.diffable? : false
+  end
+  
+  def backend
+    changeset.repository.backend
   end
   
   def modified?

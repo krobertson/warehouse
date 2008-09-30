@@ -26,17 +26,13 @@ namespace :warehouse do
     require 'set'
     require 'logger'
     require 'yaml'
+    require 'config/initializers/svn'
     require 'lib/cache_key'
-    $LOAD_PATH << 'vendor/ruby-sequel/lib' << 'vendor/metaid-1.0' << 'vendor/mailfactory-1.2.3/lib' << 'vendor/silo/lib'
-    require 'silo'
+    $LOAD_PATH << 'vendor/ruby-sequel/lib' << 'vendor/metaid-1.0' << 'vendor/mailfactory-1.2.3/lib'
     require 'lib/warehouse'
     require 'config/initializers/warehouse'
-    require 'lib/warehouse/svn_access_builder'
     require 'lib/warehouse/mailer'
     require 'lib/warehouse/command'
-    require 'lib/warehouse/syncer/base'
-    require 'lib/warehouse/syncer/svn_syncer'
-    require 'lib/warehouse/syncer/git_syncer'
     require 'lib/warehouse/extension'
     require 'lib/warehouse/hooks'
     require 'lib/warehouse/hooks/base'
@@ -54,14 +50,9 @@ namespace :warehouse do
     Warehouse::Command.logger ||= Logger.new(ENV['LOGGER'] || STDOUT) unless ENV['LOGGER'] == 'none'
     Warehouse::Command.logger.level = Logger.const_get((ENV['LOG_LEVEL'] || 'INFO').upcase) if Warehouse::Command.logger
     @command = Warehouse::Command.new(config)
-    begin
-      require 'ruby-debug'
-      Debugger.start
-    rescue LoadError
-    end if ENV["DEBUG"]
   end
 
-  task :post_commit do
+  task :post_commit => :init do
     ENV['REPO'] ||= ENV['REPO_PATH'].split('/').last if ENV['REPO_PATH']
     Rake::Task['warehouse:sync'].invoke
     Warehouse::Hooks.discover
@@ -79,10 +70,7 @@ namespace :warehouse do
   task :build_user_htpasswd => :init do
     raise "Need htpasswd config path with :repo variable.  CONFIG=/svn/:repo/.htaccess" unless ENV['CONFIG'].to_s[/:repo/]
     raise "Need single user id. USER=234" unless ENV['USER']
-    repos = @command.repos_from_user(:id => ENV['USER']).to_a
-    repos.each do |repo|
-      @command.write_repo_users_to_htpasswd repo, ENV['CONFIG']
-    end
+    @command.write_repo_users_to_htpasswd @command.repos_from_user(:id => user), ENV['CONFIG']
   end
   
   # CONFIG

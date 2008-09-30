@@ -1,5 +1,5 @@
 <% if repository_admin? && current_repository && current_repository.sync? -%>
-<div class="info"><%= pluralize current_repository.revisions_to_sync.size, 'revision' %> need to be synced.  You can do this from the command line or you can 
+<div class="info">Revisions <%= current_repository.revisions_to_sync.inspect.sub(/\.\./, '-') %> need to be synced.  You can do this from the command line or you can 
   do this in the administration user interface.  Command line syncing is much faster.</div>
 <% end -%>
 
@@ -29,12 +29,12 @@
     <div class="cs-meta">
       <%= avatar_for(user) %>
       <p>
-        <span class="change-number"><%= link_to(truncate(changeset.revision, 7, ''), hosted_url(changeset.repository, :changeset, :id => changeset.revision)) %></span>
+        <span class="change-number"><%= link_to(changeset.revision, hosted_url(changeset.repository, :changeset, :id => changeset.revision)) %></span>
       </p>
     </div>
     <div class="cs-log clearfix">      
        <%= simple_format(h(changeset.message)) %>
-      <span class="timenauthor">by <%= changeset.author %>, <%= jstime changeset.changed_at %> in <%= link_to(h(changeset.repository.name), hosted_url(changeset.repository, :changesets)) %></span>
+      <span class="timenauthor">by <%= changeset.author %>, <%= jstime changeset.changed_at %></span>
     </div>
   </li>
   <% end -%>
@@ -66,7 +66,6 @@
     <% end %>
   </ul>
 </div>
-
 <% elsif repository_subdomain.blank? -%>
 <div class="sideblock">
   <h3><%= 'Public ' if controller.action_name == 'public' %>Repository Activity</h3>

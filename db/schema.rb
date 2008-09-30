@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 31) do
+ActiveRecord::Schema.define(:version => 28) do
 
   create_table "avatars", :force => true do |t|
     t.string  "content_type"
@@ -36,7 +36,6 @@ ActiveRecord::Schema.define(:version => 31) do
     t.text    "path"
     t.text    "from_path"
     t.integer "from_revision"
-    t.boolean "diffable",      :default => false
   end
 
   add_index "changes", ["changeset_id"], :name => "index_changes_on_changeset_id"
@@ -105,15 +104,11 @@ ActiveRecord::Schema.define(:version => 31) do
   end
 
   create_table "repositories", :force => true do |t|
-    t.string   "name"
-    t.string   "path"
-    t.string   "subdomain"
-    t.boolean  "public"
-    t.string   "full_url"
-    t.string   "scm_type",          :default => "svn"
-    t.datetime "synced_changed_at"
-    t.string   "synced_revision"
-    t.integer  "changesets_count",  :default => 0
+    t.string  "name"
+    t.string  "path"
+    t.string  "subdomain"
+    t.boolean "public"
+    t.string  "full_url"
   end
 
   add_index "repositories", ["subdomain"], :name => "index_repositories_on_subdomain"
@@ -128,7 +123,6 @@ ActiveRecord::Schema.define(:version => 31) do
     t.string  "token"
     t.string  "login"
     t.string  "crypted_password"
-    t.text    "public_key"
   end
 
   add_index "users", ["token"], :name => "index_users_on_token"
