@@ -21,15 +21,6 @@ class InstallController < ApplicationController
       return
     end
 
-    require 'net/http'
-    license_uri = URI.parse(Warehouse.forum_url % params[:license])
-    proxy       = ENV['http_proxy'] && URI.parse(ENV['http_proxy'])
-    http        = proxy ? Net::HTTP::Proxy(proxy.host, proxy.port, proxy.user, proxy.password) : Net::HTTP
-    res         = http.post_form(license_uri, 'install[domain]' => params[:domain])
-    if res.code != '200'
-      raise res.body
-    end
-
     Warehouse.write_config_file :domain => params[:domain]
 
     User.transaction do
