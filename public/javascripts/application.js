@@ -225,6 +225,14 @@ Date.parseUTC = function(value) {
   return new Date(utcSeconds);
 }
 
+function updateRepos(v,bUrl,rUrl)
+{
+	var b = document.getElementById(bUrl);
+	var r = document.getElementById(rUrl);
+	b.update(v.value);
+	r.update(v.value);
+}
+
 Event.addBehavior({
   
   'a.addpath:click': function(event) {

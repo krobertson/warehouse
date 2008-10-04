@@ -16,8 +16,9 @@ class RepositoriesController < ApplicationController
   end
   
   def create
+    @repository.subdomain = params[:short_name]
     if @repository.save
-      @repository.grant :user => current_user, :path => '/'
+      @repository.grant :user => current_user, :path => '/', :full_access => true
       flash[:notice] = "Repository: #{@repository.name} created successfully."
       redirect_to hosted_url(:admin)
     else
@@ -27,7 +28,10 @@ class RepositoriesController < ApplicationController
   end
   
   def update
+    original_path = @repository.path
+    @repository.subdomain = params[:short_name]
     if @repository.save
+      FileUtils.mv(original_path, @repository.path) if original_path != @repository.path
       flash[:notice] = "Repository: #{@repository.name} saved successfully."
       redirect_to hosted_url(:admin)
     else

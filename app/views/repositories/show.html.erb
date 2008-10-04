@@ -3,14 +3,14 @@
 
 <%= error_messages_for :repository %>
 <ul id="repos">
-  <li class="repo" id="repo-<%= @repository.id %>">
-    <span class="log"><%=h @repository.path %></span>
-  </li>
   <li class="repo repoedit" id="repo-edit-<%= @repository.id %>">
     <% form_for @repository do |f| -%>
-      <%= render :partial => "form", :object => f %>
+      <p><span class="log"><label for="repository_name">Name:</label><%= f.text_field(:name, { }) %></span></p>
+      <p><span class="log"><label for="repository_short_name">Short Name:</label><%=Warehouse.domain %><%= text_field_tag('short_name', @repository.subdomain) %></span></p>
+      <p><span class="log"><label for="repository_public"><%= f.check_box  :public %> Yes, this repository can be viewed by the public</span></p>
       <p class="btns">
-        <%= submit_tag 'Save', :disable_with => 'Saving...' %>
+        <a href="<%=url_for :controller => :repositories %>"><img src="<%=image_path 'app/btns/cancel.png' %>" border="0" /></a>
+        <%= submit_image 'save.png' %>
       </p>
     <% end -%>
   </li>

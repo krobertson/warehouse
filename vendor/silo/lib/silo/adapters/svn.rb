@@ -1,6 +1,26 @@
 module Silo
   module Adapters
     module Svn
+
+      def create_repository(id)
+        ::Svn::Repos::create(@options[:path])
+        write_post_commit(id)
+      end
+
+      def write_post_commit(id)
+    		root = RAILS_ENV == 'production' ? '/var/www/versionized.com/current' : RAILS_ROOT
+        postcommit = File.open(@options[:path] + '/hooks/post-commit', 'w')
+        postcommit.puts "#!/bin/sh"
+        postcommit.puts "cd #{root}"
+        postcommit.puts "rake warehouse:post_commit HOME=#{File.expand_path('~')} REPO=#{id} NUM=$2 REVISION=$2 REPO_PATH=#{@options[:path]} RAILS_ENV=#{RAILS_ENV}"
+        postcommit.close
+        FileUtils.chmod 0711, @options[:path] + '/hooks/post-commit'
+      end
+
+      def remove_repository
+        ::Svn::Repos::delete(@options[:path])
+      end
+
       module NodeMethods
         def dir?
           type_code == ::Svn::Core::NODE_DIR

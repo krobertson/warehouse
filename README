@@ -1,6 +1,6 @@
 # quickie install directions
 cp config/database.sample.yml config/database.yml
-mkdir log 
+mkdir log repos
 rake tmp:create
 rake db:schema:load
 

@@ -27,6 +27,8 @@ class Repository < ActiveRecord::Base
   has_many :hooks, :dependent => :destroy
   has_one  :latest_changeset, :class_name => 'Changeset', :foreign_key => 'repository_id', :order => 'changed_at desc'
   before_destroy :clear_changesets
+  after_create :create_repository
+  after_destroy :remove_repository
   expiring_attr_reader :silo, :retrieve_silo
 
   def path=(value)
@@ -36,6 +38,12 @@ class Repository < ActiveRecord::Base
   def full_url=(value)
     value << "/" unless value.last == "/" unless value.blank?
     write_attribute :full_url, value
+  end
+
+  def subdomain=(value)
+    write_attribute :full_url, Warehouse.repository_url % [Warehouse.domain, value.downcase]
+    write_attribute :path, File.join(Warehouse.repository_path, value.downcase)
+    write_attribute :subdomain, value.downcase
   end
   
   def member?(user, path = nil)
@@ -125,6 +133,14 @@ class Repository < ActiveRecord::Base
   end
 
   protected
+    def create_repository
+      silo.create_repository(id)
+    end
+    
+    def remove_repository
+      silo.remove_repository
+    end
+
     # more efficient method of clearing out changesets and changes
     def clear_changesets
       Change.delete_all ['changeset_id in (select id from changesets where repository_id = ?)', id]

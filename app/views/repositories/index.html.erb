@@ -8,9 +8,15 @@
   <% sheet_form_for @repository, {:trigger => 'new-repo'} do |s| %>
     <h2>Create a new repository</h2>
     <%= s.text_field 'Name:', :name %>
-    <%= s.text_field 'Path:', :path %>
-    <%= s.text_field 'Subdomain:', :subdomain %>
-    <%= s.check_box  'Public:', 'Yes, this repository can be viewed by the public', :public %>
+    <p>
+		<label for="repository_short_name">Short Name:</label>
+		This name will be used in the URL for browsing the source online and for the repository URL.<br/>
+		<%= text_field_tag 'short_name', '', :onkeyup => 'updateRepos(this,\'browser_url\', \'repo_url\');' %><br/>
+		Browser URL: <%=Warehouse.domain %><span id='browser_url'></span><br/>
+		Repository URL: <%= Warehouse.repository_url % [Warehouse.domain, nil] %><span id='repo_url'></span>
+	</p>
+    <p><%= s.check_box  'Public:', 'Yes, this repository can be viewed by the public', :public %></p>
+	<br/>
   <% end %>
 <% end %>
 
@@ -19,7 +25,7 @@
 <% @repositories.each do |repo| -%>
   <li class="repo" id="repo-<%= repo.id %>">
     <%= link_to h(repo.name), hosted_url(repo, :admin) %>
-    <span class="log"><%= repo.path %></span>
+    <span class="log"><%= repo.full_url %></span>
   <% if repo.sync? %>
   <% unless repo.sync_progress == 100 %>
   
@@ -50,7 +56,7 @@
       <% end %>
       <li class="edit" id="repoedit-<%= repo.id %>"><a href="#">Edit</a></li>
       <li class="del"><%= link_to_remote 'Delete', :url => repository_path(repo), :with => "'_method=delete'",
-        :confirm => "Are you sure, this will clear all changes, bookmarks, and permissions.  This will NOT clear the actual repository from the server." %></li>
+        :confirm => "Are you sure, this will clear all changes, bookmarks, permissions, and this WILL delete your repository from the server!  Permanently!" %></li>
     </ul>
     <% sheet_form_for repo, {:trigger => "repoedit-#{repo.id}"} do |s| -%>
       <h2>Edit this Repository</h2>
