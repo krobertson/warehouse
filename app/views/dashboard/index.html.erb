@@ -1,76 +1,27 @@
-<div id="last-log">
-    <p>
-      <span class="change-number">234</span>
-      This was my last changeset message...
-      <span class="log">10 days ago</span>
-    </p>
+<h2>Repositories</h2>
+
+<% if @repositories.any? -%>
+<p>The following repositories are available:</p>
+
+<div id="repositories">
+<ul id="repos">
+<% @repositories.each do |repo| -%>
+  <li class="repo" id="repo-<%= repo.id %>">
+    <%= link_to h(repo.name), hosted_url(repo, :changesets) %>
+    <% if repo.latest_changeset -%>
+      <span class="log" style="float: right">revision <%= repo.latest_changeset.revision %></span>
+	  <span class="log">last commit by <%= repo.latest_changeset.author %>, <%= jstime repo.latest_changeset.changed_at %></span>
+	<% else -%>
+	  <span class="log">&nbsp;</span>
+    <% end -%>
+  </li>
+<% end -%>
+</ul>
 </div>
 
-<table id="browser" cellspacing="0" cellpadding="0">
-  <thead>
-    <tr id="controls">
-      <td colspan="2">
-        <div class="control-head">
-          <p class="controlblock">
-            <a href="#" class="back">back</a>
-            <a href="#" class="forward">forward</a>
-          </p>
-          &nbsp; <!-- Safari needs this? -->
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <th>File name</th>
-      <th>Revision</th>
-    </tr>
-  </thead>
-  <tr>
-    <td><a href="#" class="folder">trunk</a></td>
-    <td>
-      Updated by rick 10 minutes ago
-      <span class="log">Made some swanky changes...</span>
-    </td>
-  </tr>
-  <tr>
-    <td><a href="#" class="folder">acts_as_authenticated</a></td>
-    <td>
-      Updated by rick 10 minutes ago
-      <span class="log">Made some swanky changes...</span>
-    </td>
-  </tr>
-  <tr>
-    <td><a href="#" class="folder">csrf_killer</a></td>
-    <td>
-      Updated by rick 10 minutes ago
-      <span class="log">Made some swanky changes...</span>
-    </td>
-  </tr>
-  <tr>
-    <td><a href="#" class="folder">acts_as_paranoid</a></td>
-    <td>
-      Updated by rick 10 minutes ago
-      <span class="log">Made some swanky changes...</span>
-    </td>
-  </tr>
-  <tr>
-    <td><a href="#" class="script">init.rb</a></td>
-    <td>
-      Updated by rick 10 minutes ago
-      <span class="log">Made some swanky changes...</span>
-    </td>
-  </tr>
-  <tr>
-    <td><a href="#" class="file">README</a></td>
-    <td>
-      Updated by rick 1 month ago
-      <span class="log">Made some swanky changes...</span>
-    </td>
-  </tr>
-  <tr>
-    <td><a href="#" class="txt">install.txt</a></td>
-    <td>
-      Updated by rick 10 minutes ago
-      <span class="log">Made some swanky changes...</span>
-    </td>
-  </tr>
-</table>
+<% else -%>
+<p>No repositories are currently available.</p>
+<% end -%>
+
+<% content_for :sidebar do -%>
+<% end -%>
