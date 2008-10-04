@@ -118,7 +118,7 @@ class ApplicationController < ActionController::Base
     end
     
     def installed?
-      !Warehouse.domain.blank? && Repository.count > 0
+      !Warehouse.domain.blank?
     end
     
     def install

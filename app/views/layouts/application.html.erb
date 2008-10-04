@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
   	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title><%= current_repository.name rescue 'Warehouse: ' %> <%= @title rescue '' %></title>
+    <title><%= current_repository.name rescue 'Warehouse' %><%= @title ? ': ' + @title : '' %></title>
     <link rel="shortcut icon" href="/favicon.png" type="image/png" />
     <%= stylesheet_link_tag 'main' %>
     <%= stylesheet_link_tag 'code' %>
@@ -63,16 +63,23 @@
         <div id="hdr-cnt">
           <h1><%= link_to current_repository ? current_repository.name : "Warehouse", root_path %></h1>
           <ul id="nav">
-            <% unless repository_subdomain.blank? -%>
-            <li id="code"<%= selected_navigation?(:browser) %>><%= link_to 'Browser', hosted_url(:browser) %></li>
+			<% unless current_repository -%>
+            <li id="dashboard"<%= selected_navigation?(:dashboard) %>><%= link_to 'Dashboard', :controller => :dashboard %></li>
+			<% end -%>
+           	<li id="activity"<%= selected_navigation?(:activity) %>><%= link_to 'Activity', activity_url %></li>
+            <% if current_repository -%>
+            	<li id="code"<%= selected_navigation?(:browser) %>><%= link_to 'Browser', hosted_url(:browser) %></li>
             <% end -%>
-            <li id="activity"<%= selected_navigation?(:activity) %>><%= link_to 'Activity', activity_url %></li>
             <% if admin? || repository_admin? %>
             <li id="admin"<%= selected_navigation?(:admin) %>><%= link_to 'Admin', hosted_url(:admin) %></li>
             <% end %>
           </ul>
           <ul id="utils">
             <% if logged_in? -%>
+		        	<li>Hello, <%=current_user.name %></li>
+					  	<% unless repository_subdomain.blank? -%>
+		        		<li><%= link_to 'Dashboard', :controller => :dashboard %></li>
+							<% end -%>
               <li id="profile"><%= link_to 'Profile', hosted_url(:profile) %></li>
               <li><%= link_to 'Logout', logout_path %></li>
             <% else -%>

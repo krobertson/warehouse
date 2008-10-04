@@ -105,9 +105,10 @@ end
   def current_navigation?(navigation)
     @current_navigation ||= \
       case controller.controller_name
-        when /browser|history/ then :browser
-        when /change/          then :activity
-        else                        :admin
+        when /browser|history/  then :browser
+        when /change/           then :activity
+        when /dashboard/	  	  then :dashboard
+        else                    :admin
       end
     @current_navigation == navigation
   end
