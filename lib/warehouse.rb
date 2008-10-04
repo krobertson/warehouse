@@ -36,7 +36,8 @@ module Warehouse
   class << self
     attr_accessor :domain, :forum_url, :permission_command, :password_command, :mail_from, :version, 
       :default_session_options, :smtp_settings, :sendmail_settings, :mail_type, :caching, :config_path, 
-      :syncing, :authentication_scheme, :authentication_realm, :setup, :svnlook_path, :source_highlight_theme
+      :syncing, :authentication_scheme, :authentication_realm, :setup, :svnlook_path, :source_highlight_theme,
+      :repository_path, :repository_url, :hook_env_dir
     
     def setup?
       @setup == true
