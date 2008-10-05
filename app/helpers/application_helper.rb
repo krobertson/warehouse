@@ -71,7 +71,7 @@ else
     lines = node.content.split("\n")
     lines.each_with_index do |line, i|
       rev, username = node.blame[i+1]
-      line.replace "#{rev} #{username.ljust(node.blame[:username_length])} #{line}"
+      line.replace "#{i+1} #{truncate(rev, 7, '')} #{username.ljust(node.blame[:username_length])} #{line}"
     end
     %(<pre><code>#{h lines.join("\n")}</code></pre>)
   end

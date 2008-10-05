@@ -9,7 +9,7 @@
   <li class="repo" id="repo-<%= repo.id %>">
     <%= link_to h(repo.name), hosted_url(repo, :changesets) %>
     <% if repo.latest_changeset -%>
-      <span class="log" style="float: right">revision <%= repo.latest_changeset.revision %></span>
+      <span class="log" style="float: right">revision <%= truncate(repo.latest_changeset.revision, 7, '') %></span>
 	  <span class="log">last commit by <%= repo.latest_changeset.author %>, <%= jstime repo.latest_changeset.changed_at %></span>
 	<% else -%>
 	  <span class="log">&nbsp;</span>
