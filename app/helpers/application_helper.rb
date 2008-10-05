@@ -82,7 +82,7 @@ end
   end
   
   def title(ttl)
-    @title = ttl || ' '
+    @title = ttl.nil? || ttl.blank? ? nil : ttl
   end
   
   def submit_image(img, options = {})
