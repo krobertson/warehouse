@@ -32,9 +32,12 @@
         <span class="change-number"><%= link_to(truncate(changeset.revision, 7, ''), hosted_url(changeset.repository, :changeset, :id => changeset.revision)) %></span>
       </p>
     </div>
-    <div class="cs-log clearfix">      
+    <div class="cs-log clearfix">
        <%= simple_format(h(changeset.message)) %>
-      <span class="timenauthor">by <%= changeset.author %>, <%= jstime changeset.changed_at %> in <%= link_to(h(changeset.repository.name), hosted_url(changeset.repository, :changesets)) %></span>
+      <span class="timenauthor">by <%= changeset.author %>, <%= jstime changeset.changed_at %>
+				<% unless current_repository %>
+					in <%= link_to(h(changeset.repository.name), hosted_url(changeset.repository, :changesets)) %></span>
+				<% end %>
     </div>
   </li>
   <% end -%>
@@ -51,6 +54,12 @@
 <%= will_paginate @changesets unless @changesets.empty? %>
 
 <% content_for :sidebar do -%>
+<% if current_repository -%>
+	<div class="sideblock">
+		<h3>Repository URL</h3>
+		<p><%=text_field_tag 'repo_url', full_svn_url, { :style => 'width: 100%', :onclick => 'this.select();' } %></p>
+	</div>
+<% end -%>
 <% if current_repository && current_repository.members.any? -%>
 <div class="sideblock">
   <h3>Active Members</h3>
