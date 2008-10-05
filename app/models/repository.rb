@@ -105,7 +105,7 @@ class Repository < ActiveRecord::Base
   end
   
   def sync?
-    silo && synced_revision && synced_revision != latest_revision
+    silo && synced_revision && synced_revision != latest_revision.to_s
   end
 
   def latest_revision
