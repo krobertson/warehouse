@@ -132,5 +132,5 @@ unless !File.exist?(File.join(RAILS_ROOT, 'config/initializers/warehouse'))
 end
 
 if Object.const_defined?(:Dependencies)
-  Dependencies.autoloaded_constants.delete 'Warehouse'
+  ActiveSupport::Dependencies.autoloaded_constants.delete 'Warehouse'
 end
