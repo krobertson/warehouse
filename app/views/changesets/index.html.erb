@@ -1,4 +1,4 @@
-<% if repository_admin? && current_repository && current_repository.sync? && current_repository.revisions_to_sync.size > 0 -%>
+<% if repository_admin? && current_repository && current_repository.sync? -%>
 <div class="info"><%= pluralize current_repository.revisions_to_sync.size, 'revision' %> need to be synced.  You can do this from the command line or you can 
   do this in the administration user interface.  Command line syncing is much faster.</div>
 <% end -%>

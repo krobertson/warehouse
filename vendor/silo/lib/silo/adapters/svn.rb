@@ -51,7 +51,7 @@ module Silo
         end
         
         def latest_revision
-          @repository.node_at(path).revision
+          @repository.node_at(path).revision.to_s
         end
         
         def content(&block)
@@ -111,7 +111,7 @@ module Silo
       end
 
       def latest_revision
-        backend && backend.youngest_rev
+        backend && backend.youngest_rev.to_s
       end
       
       def revision?(rev)
