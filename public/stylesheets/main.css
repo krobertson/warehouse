@@ -121,6 +121,7 @@ div.errorExplanation h2, div#error h2 {
   margin: 0;
   text-align: left;
   padding: 18px;
+  padding-bottom: 33px;
   position: relative;
 }
 
@@ -176,7 +177,7 @@ div.errorExplanation h2, div#error h2 {
 
 #nav {
   position: absolute;
-  top: 11px;
+  top: 26px;
   left: 162px;
   list-style: none;
 }
@@ -528,10 +529,14 @@ a.txt, a.file {
   background: url(../images/app/icons/text-small.png) 0 50% no-repeat;
 }
 
-td span.log, #repos span.log, #permissions span.log, .listbox span.log, p.desc {
+td span.log, #repos span.log, #permissions span.log, .listbox span.log, p.desc, span.log label {
   font-size: 92%;
   display: block;
   color: #888;
+}
+
+span.log label {
+	font-weight: bold;
 }
 
 p.desc { font-weight:  normal; }
@@ -1468,6 +1473,7 @@ button {
 
 .sideblock p {
   padding: 5px;
+  padding-right: 7px;
 }
 
 .sideblock h3 {
