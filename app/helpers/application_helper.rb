@@ -13,7 +13,7 @@ module ApplicationHelper
   end
   
   def use_login_form?
-    @use_login_form ||= !cookies['use_svn'].blank? && cookies['use_svn'].to_s == '1'
+    @use_login_form ||= !(!cookies['use_svn'].blank? && cookies['use_svn'].to_s == '1')
   end
   
   def word_for_change(change)

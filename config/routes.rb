@@ -34,6 +34,7 @@ ActionController::Routing::Routes.draw do |map|
   end
   
   map.with_options :controller => "sessions" do |s|
+    s.slogin  "new",          :action => "new"
     s.login   "login",        :action => "create"
     s.logout  "logout",       :action => "destroy"
     s.forget  "forget",       :action => "forget"

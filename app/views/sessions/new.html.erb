@@ -1,14 +1,9 @@
-<% if flash[:error] -%>
-<p><%= flash[:error] %></p>
-<% end -%>
+<% @fullscreen = true %>
 
-<% form_tag login_path do -%>
-  <p>
-    <label for="openid_url">OpenID:</label>
-    <%= text_field_tag :openid_url %>
-  </p>
-  
-  <p>
-    <%= submit_tag 'Log in', :disable_with => 'Logging in...' %>
-  </p>
+<style>
+.cancelbtn { display: none; }
+</style>
+
+<% content_for :onready do -%>
+	Sheet.Cache['login-form'].show();
 <% end -%>
