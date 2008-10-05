@@ -30,7 +30,10 @@
     <tr id="controls">
       <td colspan="2">
         <div id="bookmark-control" class="control-head" style="display:none">
-          &nbsp; <!-- Safari needs this? -->
+          <p class="controlblock">
+            .<%= link_to_node 'back', @node, previous_changeset.revision, :class => 'back' if previous_changeset %>
+            .<%= link_to_node 'forward', @node, next_changeset.revision, :class => 'forward' if @revision && next_changeset %>.
+          </p>
           <% if params[:paths].any? && !current_repository.bookmarks.any? { |b| b.path == @node.path } -%>
           <p class="formats rcontrols">
             <a id="bookmark" class="bookmark" href="#" title="Bookmark this directory">Bookmark This</a>
@@ -48,13 +51,26 @@
   <tr>
     <td class="item"><%= link_to h(node.name), url_for_node(node), :class => css_class_for(node) %></td>
     <td>
-      <span class="rev<% if current_changeset && current_changeset.revision.to_i == node.revision %> changed<% end %>"><%= truncate(node.revision, 7, '') %></span>
+      <span class="rev<% if current_changeset && current_changeset.revision.to_i == node.revision %> changed<% end %>"><%= truncate(node.revision.to_s, 7, '') %></span>
       Updated by <%=h node.author %> <%= jstime node.changed_at.utc %>
       <span class="log"><%= h node.message %></span>
     </td>
   </tr>
   <% end -%>
 </table>
+
+<% if @node.child_node_names.include?('README') -%>
+
+    <table class="diff sourcecode file-source readme" cellspacing="0" cellpadding="0">
+      <thead>
+        <tr>
+          <th>README</th>
+        </tr>
+      </thead>
+    </table>
+	 <%= highlight_syntax_in current_repository.node(@node.path + '/README', @revision), false %>
+
+<% end -%>
 <% else -%>
 <p><%=h @message %></p>
 <% if logged_in? -%>

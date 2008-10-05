@@ -1616,3 +1616,7 @@ body.firefox span.line-numbers a {
 .noblame span.blame {
   display: none;
 }
+
+.readme {
+	margin-top: 15px;
+}
