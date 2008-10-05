@@ -4,6 +4,16 @@ require 'grit'
 module Silo
   module Adapters
     module Git
+
+      def create_repository(id)
+        FileUtils.mkdir(@options[:path])
+        ::Grit::Repo.init_bare(File.join(@options[:path], '.git'))
+      end
+
+      def remove_repository
+        FileUtils.rm_rf(@options[:path])
+      end
+
       module NodeMethods
         def dir?
           grit_object.is_a?(Grit::Tree)
