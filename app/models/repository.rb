@@ -12,7 +12,7 @@ class Repository < ActiveRecord::Base
   has_permalink :name, :subdomain
   validates_presence_of :name, :path, :subdomain
   validates_inclusion_of :scm_type, :in => %w(svn git)
-  attr_accessible :name, :path, :subdomain, :public, :full_url
+  attr_accessible :name, :path, :subdomain, :public, :full_url, :scm_type
   
   has_many :permissions, :conditions => ['active = ?', true] do
     def set(user_id, options = {})

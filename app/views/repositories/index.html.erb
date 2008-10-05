@@ -14,6 +14,10 @@
 		<%= text_field_tag 'short_name', '', :onkeyup => 'updateRepos(this,\'browser_url\', \'repo_url\');' %><br/>
 		Browser URL: <%=Warehouse.domain %><span id='browser_url'></span><br/>
 		Repository URL: <%= Warehouse.repository_url % [Warehouse.domain, nil] %><span id='repo_url'></span>
+		<label for="repository_scm_type">Repository Type:</label>
+		<select name="repository[scm_type]" id="repository_scm_type">
+      <%= options_for_select([%w(SVN svn), %w(Git git)]) %>
+    </select>
 	</p>
     <p><%= s.check_box  'Public:', 'Yes, this repository can be viewed by the public', :public %></p>
 	<br/>
