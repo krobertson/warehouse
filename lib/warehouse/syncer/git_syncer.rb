@@ -12,7 +12,7 @@ module Warehouse
             @heads.unshift 'master'
           end
           arguments = @heads.dup
-          arguments << "--since=#{@repo[:synced_changed_at].utc.xmlschema}" if @repo[:synced_changed_at]
+          arguments << "--since=#{(@repo[:synced_changed_at]+1).xmlschema}" if @repo[:synced_changed_at]
           revisions = @silo.send(:backend).git.rev_list({}, *arguments).split
           revisions.reverse!
           @connection.transaction do    
@@ -35,14 +35,14 @@ module Warehouse
         end
       end
       
-    protected
-      def process_change_path_and_save(node, path, changeset, name, diff_node, changes)
-        orig_path = diff_node.path
-        super unless @heads.detect do |head|
-          diff_node = node.repository.node_at("#{head}/#{orig_path}", node.revision)
-          diff_node.exists?
-        end.nil?
-      end
+#    protected
+#      def process_change_path_and_save(node, path, changeset, name, diff_node, changes)
+#        orig_path = diff_node.path
+#        super unless @heads.detect do |head|
+#          diff_node = node.repository.node_at("#{head}/#{orig_path}", node.revision)
+#          diff_node.exists?
+#        end.nil?
+#      end
     end
   end
 end

@@ -50,7 +50,7 @@ module Warehouse
         return if num < 1
         @repo[:changesets_count] = @repo[:changesets_count].to_i + num
         @connection[:repositories].where(:id => @repo[:id]).update :changesets_count => @repo[:changesets_count],
-          :synced_changed_at => changeset[:changed_at], :synced_revision => revision
+          :synced_changed_at => changeset[:changed_at].getlocal, :synced_revision => revision
       end
 
       def create_changeset(revision)
