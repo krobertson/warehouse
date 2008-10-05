@@ -54,6 +54,7 @@ class Changeset < ActiveRecord::Base
   end
   
   def self.find_before(paths, changeset)
+    paths = [paths] unless paths.is_a?(Array)
     if paths.empty? || paths[0].blank?
       find(:first, :conditions => ['changesets.id != ? and changesets.changed_at <= ?', changeset.id, changeset.changed_at], :order => 'changesets.changed_at desc')
     else
@@ -62,6 +63,7 @@ class Changeset < ActiveRecord::Base
   end
   
   def self.find_after(paths, changeset)
+    paths = [paths] unless paths.is_a?(Array)
     if paths.empty? || paths[0].blank?
       find(:first, :conditions => ['changesets.id != ? and changesets.changed_at >= ?', changeset.id, changeset.changed_at], :order => 'changesets.changed_at desc')
     else
