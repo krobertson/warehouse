@@ -10,7 +10,7 @@
 <% @repositories.each do |repo| -%>
   <li class="repo" id="repo-<%= repo.id %>">
     <%= link_to h(repo.name), hosted_url(repo, :permissions) %>
-    <span class="log"><%= repo.path %></span>
+    <span class="log"><%= repo.full_url %></span>
   </li>
 <% end -%>
 </ul>
