@@ -125,6 +125,8 @@ module Warehouse
   self.authentication_realm    ||= ''
   self.svnlook_path            ||= '/usr/bin/svnlook'
   self.source_highlight_theme  ||= :twilight
+  self.repository_path         ||= {}
+  self.repository_url          ||= {}
 end
 
 unless !File.exist?(File.join(RAILS_ROOT, 'config/initializers/warehouse'))

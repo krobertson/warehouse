@@ -13,7 +13,7 @@
 		This name will be used in the URL for browsing the source online and for the repository URL.<br/>
 		<%= text_field_tag 'short_name', '', :onkeyup => 'updateRepos(this,\'browser_url\', \'repo_url\');' %><br/>
 		Browser URL: <%=Warehouse.domain %><span id='browser_url'></span><br/>
-		Repository URL: <%= Warehouse.repository_url % [Warehouse.domain, nil] %><span id='repo_url'></span>
+		Repository URL: <%= Warehouse.repository_url['svn'] % nil %><span id='repo_url'></span>
 		<label for="repository_scm_type">Repository Type:</label>
 		<select name="repository[scm_type]" id="repository_scm_type">
       <%= options_for_select([%w(SVN svn), %w(Git git)]) %>
