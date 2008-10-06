@@ -8,7 +8,7 @@ class RepositoriesController < ApplicationController
   cache_sweeper :repository_sweeper, :only => [:create, :update, :destroy]
 
   def index
-    @repositories = admin? ? Repository.find(:all) : current_user.administered_repositories
+    @repositories = admin? ? Repository.find(:all, :order => [:name]) : current_user.administered_repositories
     if current_repository && @repositories.include?(current_repository)
       @repositories.unshift current_repository
       @repositories.uniq!

@@ -8,7 +8,7 @@ module Silo
       end
 
       def write_post_commit(id)
-    		root = RAILS_ENV == 'production' ? '/var/www/versionized.com/current' : RAILS_ROOT
+    		root = RAILS_ENV == 'production' ? '/var/www/code.invalidlogic.com/current' : RAILS_ROOT
         postcommit = File.open(@options[:path] + '/hooks/post-commit', 'w')
         postcommit.puts "#!/bin/sh"
         postcommit.puts "cd #{root}"

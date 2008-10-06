@@ -103,6 +103,15 @@ namespace :warehouse do
     @command.build_config_for ENV['REPO'], config_path
   end
 
+	task :rebuild_configs => :init do
+		require 'lib/warehouse'
+		require 'config/initializers/warehouse'
+		config_path = ENV['CONFIG'] || 'config/access.conf'
+
+		repositories = @command.connection[:repositories].collect
+		@command.build_config_for repositories, config_path
+	end
+
   task :sync => :init do
     @command.sync_revisions_for(ENV['REPO'], @num)
   end

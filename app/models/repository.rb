@@ -41,8 +41,8 @@ class Repository < ActiveRecord::Base
   end
 
   def subdomain=(value)
-    write_attribute :full_url, Warehouse.repository_url[@scm_type] % value.downcase
-    write_attribute :path, File.join(Warehouse.repository_path[@scm_type], value.downcase)
+    write_attribute :full_url, Warehouse.repository_url[scm_type] % value.downcase
+    write_attribute :path, File.join(Warehouse.repository_path[scm_type], value.downcase)
     write_attribute :subdomain, value.downcase
   end
   
