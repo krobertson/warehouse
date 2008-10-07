@@ -4,7 +4,7 @@ module Silo
     class Error < StandardError; end
     include Comparable
     
-    @@file_extensions = Set.new(%w(txt rb php python rhtml erb phps phtml shtml html c js json atom xml htm bas css yml))
+    @@file_extensions = Set.new(%w(txt rb php python rhtml erb phps phtml shtml html c js json atom xml htm bas css yml cs vb csproj vbproj sln))
     @@image_mime_regex  = /(png|jpe?g|gif)/i
     attr_reader :path, :repository
 

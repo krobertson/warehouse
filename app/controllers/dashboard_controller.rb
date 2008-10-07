@@ -15,7 +15,7 @@ class DashboardController < ApplicationController
       end
     end
 
-    @repositories ||= admin? ? Repository.find(:all, :order => [:name]) : current_user.administered_repositories
+    @repositories ||= admin? ? Repository.find(:all, :order => [:name]) : current_user.repositories
     render :layout => 'application'
   end
 
