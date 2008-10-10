@@ -6,12 +6,12 @@ module Silo
     module Git
 
       def create_repository(id)
-        FileUtils.mkdir(@options[:path])
-        ::Grit::Repo.init_bare(File.join(@options[:path], '.git'))
+        #FileUtils.mkdir(@options[:path])
+        #::Grit::Repo.init_bare(File.join(@options[:path], '.git'))
       end
 
       def remove_repository
-        FileUtils.rm_rf(@options[:path])
+        #FileUtils.rm_rf(@options[:path])
       end
 
       module NodeMethods
